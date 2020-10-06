@@ -391,17 +391,17 @@ bool HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                     while(!lines.at(l).trimmed().startsWith("end if")) {
                         QString lhs = lines.at(l).section(":=",0,0).trimmed();
                         QString rhs = lines.at(l).section(":=",1,1).trimmed();
-                        elseExpressions[vars.indexOf(lhs)] = rhs;
                         rhs.remove(";");
+                        elseExpressions[vars.indexOf(lhs)] = rhs;
                         ++l;
                     }
                 }
                 for(int i=0; i<vars.size(); ++i) {
                     if(elseExpressions.isEmpty()) {
-                        algorithms << vars[i]+":=ifElse("+condition+","+ifExpressions[i]+","+vars[i]+");";
+                        algorithms << vars[i]+"=ifElse("+condition+","+ifExpressions[i]+","+vars[i]+")";
                     }
                     else {
-                        algorithms << vars[i]+":=ifElse("+condition+","+ifExpressions[i]+","+elseExpressions[i]+");";
+                        algorithms << vars[i]+"=ifElse("+condition+","+ifExpressions[i]+","+elseExpressions[i]+")";
                     }
                 }
             }
