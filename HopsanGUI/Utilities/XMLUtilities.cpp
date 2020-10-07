@@ -38,6 +38,8 @@
 #include <QLocale>
 
 #include "GUIObjects/GUIModelObjectAppearance.h"
+#include "MessageHandler.h"
+#include "global.h"
 
 //! @brief Help function to get "correct" string representation of bool
 QString bool2str(const bool in)
@@ -499,7 +501,7 @@ bool verifyHmfFormatVersion(const QString hmfVersion)
 //! @brief Handles compatibility issues for elements loaded from hmf files
 //! @todo Add check for separate orifice areas in the rest of the valves
 //! @todo coreVersion check will not work later when core can save some data by itself, need to use guiversion also
-void verifyHmfComponentCompatibility(QDomElement &element, const QString /*hmfVersion*/, QString coreVersion)
+void updateHmfComponentProperties(QDomElement &element, const QString /*hmfVersion*/, QString coreVersion)
 {
     updateRenamedComponentType(element, "MechanicRotationalInertiaWithCoulumbFriction", "MechanicRotationalInertiaWithCoulombFriction");
 
@@ -627,6 +629,32 @@ void updateRenamedComponentType(QDomElement &rDomElement, const QString oldType,
     }
 }
 
+void updateRenamedComponentName(QDomElement &rDomElement, const QString oldName, const QString newName)
+{
+    if((rDomElement.tagName() == HMF_COMPONENTTAG) && rDomElement.attribute(HMF_NAMETAG) == oldName)
+    {
+        rDomElement.setAttribute(HMF_NAMETAG, newName);
+        gpMessageHandler->addWarningMessage("Renamed component: "+oldName+" to "+newName);
+        QDomElement guiElement = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
+        if(!guiElement.isNull())
+        {
+            QDomElement cafElement = guiElement.firstChildElement(CAF_ROOT);
+            if(!cafElement.isNull())
+            {
+                QDomElement objectElement = cafElement.firstChildElement(CAF_MODELOBJECT);
+                objectElement.setAttribute("displayname", newName);
+            }
+        }
+    }
+    else if ((rDomElement.tagName() == HMF_CONNECTORTAG) && (rDomElement.attribute(HMF_CONNECTORSTARTCOMPONENTTAG) == oldName)) {
+        rDomElement.setAttribute(HMF_CONNECTORSTARTCOMPONENTTAG, newName);
+    }
+    else if ((rDomElement.tagName() == HMF_CONNECTORTAG) && (rDomElement.attribute(HMF_CONNECTORENDCOMPONENTTAG) == oldName)) {
+        rDomElement.setAttribute(HMF_CONNECTORENDCOMPONENTTAG, newName);
+    }
+
+}
+
 void updateRenamedPort(QDomElement &rDomElement, const QString componentType, const QString oldName, const QString newName)
 {
     if(rDomElement.attribute("typename") == componentType)
@@ -682,6 +710,7 @@ void updateRenamedParameter(QDomElement &rDomElement, const QString componentTyp
             if (parameter.attribute(HMF_NAMETAG) == oldName)
             {
                 parameter.setAttribute(HMF_NAMETAG, newName);
+                gpMessageHandler->addWarningMessage("Renamed parameter: "+oldName+" to "+newName+" in: "+rDomElement.attribute(HMF_NAMETAG));
             }
             parameter = parameter.nextSiblingElement(HMF_PARAMETERTAG);
         }
@@ -730,4 +759,36 @@ QString parseDomStringNode(QDomElement domElement, const QString &rDefaultValue)
     }
     // If dom was null we return the default value
     return rDefaultValue;
+}
+
+void updateHmfSystemProperties(QDomElement &systemElement, const QString hmfVersion, QString coreVersion)
+{
+    HOPSAN_UNUSED(hmfVersion)
+
+    // For all versions older then 2.16.0
+    if (isVersionGreaterThan("2.16.0", coreVersion))
+    {
+        // Renaming Time to SimulationTime and similar would be nice, but lets do Time_INVALID_NAME instead to minimize the risk of colission, in case a model already
+        // have a component named SimulationTime
+        QStringList invalidNames = {"Time", "time", "Frequency", "frequency"};
+
+        for (const auto& oldName : invalidNames) {
+            QString newName = oldName+"_INVALID_NAME";
+
+            QDomElement xmlComponent = systemElement.firstChildElement(HMF_OBJECTS).firstChildElement(HMF_COMPONENTTAG);
+            while (!xmlComponent.isNull()) {
+                updateRenamedComponentName(xmlComponent, oldName, newName);
+                xmlComponent = xmlComponent.nextSiblingElement(HMF_COMPONENTTAG);
+            }
+
+            QDomElement xmlConnection = systemElement.firstChildElement(HMF_CONNECTIONS).firstChildElement(HMF_CONNECTORTAG);
+            while(!xmlConnection.isNull()) {
+                updateRenamedComponentName(xmlConnection, oldName, newName);
+                xmlConnection = xmlConnection.nextSiblingElement(HMF_CONNECTORTAG);
+            }
+
+            // This will rename the system parameter and preserve the value, but any user of the parameter must be updated manually
+            updateRenamedParameter(systemElement, "Subsystem", oldName, newName);
+        }
+    }
 }

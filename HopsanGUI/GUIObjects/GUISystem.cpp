@@ -1180,6 +1180,9 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
             mpModelWidget->setTopLevelSimulationTime(startT,stepT,stopT);
         }
 
+        // Update system wide model properties
+        updateHmfSystemProperties(domElement, hmfFormatVersion, coreHmfVersion);
+
         //1. Load global parameters
         QDomElement xmlParameters = domElement.firstChildElement(HMF_PARAMETERS);
         QDomElement xmlSubObject = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
@@ -1195,7 +1198,7 @@ void SystemContainer::loadFromDomElement(QDomElement domElement)
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_COMPONENTTAG);
         while (!xmlSubObject.isNull())
         {
-            verifyHmfComponentCompatibility(xmlSubObject, hmfFormatVersion, coreHmfVersion);
+            updateHmfComponentProperties(xmlSubObject, hmfFormatVersion, coreHmfVersion);
             ModelObject* pObj = loadModelObject(xmlSubObject, this, NoUndo);
             if(pObj == nullptr)
             {

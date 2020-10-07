@@ -88,11 +88,13 @@ void parseRgbString(QString rgb, double &red, double &green, double &blue);
 
 // Update old models functions
 bool verifyHmfFormatVersion(const QString hmfVersion);
-void verifyHmfComponentCompatibility(QDomElement &element, const QString hmfVersion, QString coreVersion);
+void updateHmfComponentProperties(QDomElement &element, const QString hmfVersion, QString coreVersion);
+void updateHmfSystemProperties(QDomElement &systemElement, const QString hmfVersion, QString coreVersion);
 void verifyConfigurationCompatibility(QDomElement &rConfigElement);
 void updateRenamedComponentType(QDomElement &rDomElement, const QString oldType, const QString newType);
 void updateRenamedPort(QDomElement &rDomElement, const QString componentType, const QString oldName, const QString newName);
 void updateRenamedParameter(QDomElement &rDomElement, const QString componentType, const QString oldName, const QString newName);
+void updateRenamedComponentName(QDomElement &rDomElement, const QString oldName, const QString newName);
 
 //Save Load Definitions
 //! @todo clean up this list and give some smarter names, remove TAG from end, also make sure we use theses defines where appropriate instead of hardcoded strings

@@ -135,9 +135,16 @@ ComponentSystem::ComponentSystem() : Component(), mAliasHandler(this)
     mpMultiThreadPrivates = new ComponentSystemMultiThreadPrivates;
     mpNumHopHelper = 0;
 
-    // Prevent creation of components, system parameters and system ports anmed "self"
+    // Prevent creation of components, system parameters and system ports named "self"
     // that would collide with embedded scripts
     reserveUniqueName("self", UniqueReservedNameType);
+
+    // Prevent creation of components, system parameters and system ports named Time and Frequency
+    // that would collide with Time and Frequency result variables in HDF5 export
+    reserveUniqueName("Time", UniqueReservedNameType);
+    reserveUniqueName("time", UniqueReservedNameType);
+    reserveUniqueName("Frequency", UniqueReservedNameType);
+    reserveUniqueName("frequency", UniqueReservedNameType);
 
     // Set default (disabled) values for log data
     disableLog();
