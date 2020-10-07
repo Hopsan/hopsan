@@ -32,25 +32,26 @@ namespace {
 SymHop::Expression gTempExpr;
 
 //! @brief Verifies that a system of equations is solvable (number of equations = number of unknowns etc)
-bool verifyEquationSystem(QList<SymHop::Expression> equations, QList<SymHop::Expression> stateVars, HopsanGeneratorBase *pGenerator)
+bool verifyEquationSystem(QList<SymHop::Expression> equations, QList<SymHop::Expression> unknowns, HopsanGeneratorBase *pGenerator)
 {
     bool retval = true;
 
-    if(equations.size() != stateVars.size())
+    if(equations.size() != unknowns.size())
     {
-        QStringList equationList;
+        QStringList equationStrs;
         for(int s=0; s<equations.size(); ++s)
         {
-            equationList.append(equations[s].toString());
+            equationStrs.append(equations[s].toString());
         }
 
-        QStringList stateVarList;
-        for(int s=0; s<stateVars.size(); ++s)
+        QStringList unknownStrs;
+        for(int s=0; s<unknowns.size(); ++s)
         {
-            stateVarList.append(stateVars[s].toString());
+            unknownStrs.append(unknowns[s].toString());
         }
 
-        pGenerator->printErrorMessage("Number of equations = " + QString::number(equations.size()) + ", number of state variables = " + QString::number(stateVars.size()));
+        pGenerator->printErrorMessage("Number of equations = " + QString::number(equations.size()) + ", number of unknowns = " + QString::number(unknowns.size()));
+        pGenerator->printErrorMessage("Unknowns: "+unknownStrs.join(", "));
         retval = false;
     }
 
