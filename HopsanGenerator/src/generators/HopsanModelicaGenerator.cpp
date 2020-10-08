@@ -207,17 +207,17 @@ bool HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
         }
         else if(section == HeaderSection && words.at(0) == "parameter")         //"parameter" keyword
         {
-            QString name = words.at(2).section("(",0,0);
+            QString name = words.at(2).section("(",0,0).section("=",0,0);
             QString unit = lines.at(l).section("unit=",1,1).section("\"",1,1);
             QString init;
             //Default value can be written with white spaces in different way, test them all
-            if(!words.at(2).section(")", 1).isEmpty())
-                init = words.at(2).section(")", 1).section("=", 1);             //...blabla)=x
-            else if(words.at(2).endsWith("="))
+            if(words.size() == 3)
+                init = words.at(2).section("=", -1,-1);             //...blabla)=x
+            else if(words.size() == 4 && !words.at(3).startsWith("="))
                 init = words.at(3);                                             //...blabla)= x
-            else if(words.at(3).startsWith("=") && words.at(3).size() > 1)
+            else if(words.size() == 4 && words.at(3).startsWith("="))
                 init = words.at(3).section("=", 1);                             //...blabla) =x
-            else if(words.at(3) == "=")
+            else if(words.size() == 5)
                 init = words.at(4);                                             // ...blabla) = x
             init.remove(";");
 
