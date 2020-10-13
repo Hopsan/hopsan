@@ -61,11 +61,11 @@
   </dependency>
 
   <dependency name="qwt">
-    <releasefile sha1="f4915a93cd1beab230b81cb96fafa34aaac68ba0" platform="windows">
-      <url>https://sourceforge.net/projects/qwt/files/qwt/6.1.4/qwt-6.1.4.zip</url>
+    <releasefile sha1="98ab9cd566df9fc8f049dc0aa780d2d8ebe08cde" platform="windows">
+      <url>https://sourceforge.net/projects/qwt/files/qwt/6.1.5/qwt-6.1.5.zip</url>
     </releasefile>
-    <releasefile sha1="a1028cb0a33322920266fb183869023b8ed30394">
-      <url>https://sourceforge.net/projects/qwt/files/qwt/6.1.4/qwt-6.1.4.tar.bz2</url>
+    <releasefile sha1="07c71427f1f4bbd0354b3a98965943ce2f220766">
+      <url>https://sourceforge.net/projects/qwt/files/qwt/6.1.5/qwt-6.1.5.tar.bz2</url>
     </releasefile>
   </dependency>
 
