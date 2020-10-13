@@ -4,7 +4,7 @@ project(Hopsan)
 cmake_policy(SET CMP0054 NEW)
 
 set(HOPSANCORE_INSTALL_DST "HopsanCore")
-message(WARNING "Hopsan CMake support is still experimental. Only the core libraries are build, no generator lib, GUI or network applications")
+message(WARNING "Hopsan CMake support is still experimental, but should be  working for for GCC / MinGW and limited MSVC build")
 
 enable_testing()
 
