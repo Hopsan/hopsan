@@ -116,6 +116,26 @@ private slots:
         QCOMPARE(vec2[2].c_str(), "abc");
     }
 
+    void assigFrom()
+    {
+        const size_t size = 50;
+        HVector<double> vec;
+
+        {
+            double c_array[size];
+            for (size_t i=0; i<size; ++i) {
+                c_array[i] = i;
+            }
+            vec.assign_from(c_array, size);
+        }
+
+        QCOMPARE(vec.capacity(), size);
+        QCOMPARE(vec.size(), size);
+        for (size_t i=0; i<size; ++i) {
+            QCOMPARE(vec[i], static_cast<double>(i));
+        }
+    }
+
     void resizeInit()
     {
         HVector<double> vec;

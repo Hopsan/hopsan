@@ -132,6 +132,16 @@ public:
         mpDataArray[prevSize] = data;
     }
 
+    //! @brief Assign from C-array
+    //! param [in] pData A pointer to the array
+    //! param [in] count The number of elements to copy from the array
+    void assign_from(const T *pData, size_t count)
+    {
+        reserve(count);
+        std::copy(&pData[0], &pData[count], mpDataArray);
+        mSize = count;
+    }
+
     const T& operator[] (size_t i) const
     {
         return mpDataArray[i];

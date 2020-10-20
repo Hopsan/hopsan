@@ -571,30 +571,33 @@ void saveResultsToHDF5(ComponentSystem *pRootSystem, const string &rFileName, co
 
     auto addTimeVariable = [&exporter, howMany](ComponentSystem* pSystem) {
         vector<double> *pLogTimeVector = pSystem->getLogTimeVector();
-        HVector<double> timeVector;
-        if(howMany == Full) {
-            timeVector = HVector<double>(*pLogTimeVector); //! TODO  Copy twice ==== BAAAD
+        const size_t numLoggedSamples = pSystem->getNumActuallyLoggedSamples();
+        if (numLoggedSamples > 0) {
+            HVector<double> timeVector;
+            if(howMany == Full) {
+                timeVector.assign_from(pLogTimeVector->data(), numLoggedSamples);
+            }
+            else {
+                timeVector.append((*pLogTimeVector)[numLoggedSamples-1]);
+            }
+            HString parentSystemNames = generateFullSubSystemHierarchyName(pSystem,".", false);
+            exporter.addVariable(parentSystemNames, "", "","Time","","s","Time",timeVector);
         }
-        else {
-            timeVector.append(pLogTimeVector->back());
-        }
-        HString parentSystemNames = generateFullSubSystemHierarchyName(pSystem,".", false);
-        exporter.addVariable(parentSystemNames, "", "","Time","","s","Time",timeVector);
     };
 
     auto addVariable = [&exporter, howMany](const ComponentSystem* pSystem, const Component* pComponent, const Port* pPort, size_t variableIndex) {
         const vector< vector<double> > *pLogData = pPort->getLogDataVectorPtr();
-        if( (pLogData != nullptr) && !pLogData->empty()) {
+        const size_t numLoggedSamples = pSystem->getNumActuallyLoggedSamples();
+        if( (pLogData != nullptr) && !pLogData->empty() && (numLoggedSamples > 0)) {
             HVector<double> dataVector;
             if(howMany == Full) {
-                const size_t numLoggedSamples = pSystem->getNumActuallyLoggedSamples();
                 dataVector.reserve(numLoggedSamples);
                 for (size_t t=0; t < numLoggedSamples; ++t) {
                     dataVector.append((*pLogData)[t][variableIndex]);
                 }
             }
             else {
-                dataVector.append(pLogData->back()[variableIndex]);
+                dataVector.append((*pLogData)[numLoggedSamples-1][variableIndex]);
             }
 
             HString parentSystemNames = generateFullSubSystemHierarchyName(pSystem,".", false);
@@ -639,7 +642,7 @@ void saveResultsToCSV(ComponentSystem *pRootSystem, const string &rFileName, con
                     vector<double> *pLogTimeVector = pSystem->getLogTimeVector();
                     if (pLogTimeVector->size() > 0) {
                         outfile << parentSystemNames.c_str() << "Time,,s";
-                        for (size_t t=0; t<pLogTimeVector->size(); ++t) {
+                        for (size_t t=0; t<pSystem->getNumActuallyLoggedSamples(); ++t) {
                             outfile << "," << std::scientific << (*pLogTimeVector)[t];
                         }
                         outfile << endl;
