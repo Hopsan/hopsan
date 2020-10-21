@@ -1,14 +1,30 @@
 set(local_zeromq_dir ${CMAKE_CURRENT_LIST_DIR}/zeromq)
-find_package(ZeroMQ CONFIG REQUIRED PATHS ${local_zeromq_dir} NO_DEFAULT_PATH) # Search for local version
-find_package(ZeroMQ CONFIG REQUIRED) # Search in system
+find_package(ZeroMQ CONFIG PATHS ${local_zeromq_dir} NO_DEFAULT_PATH) # Search for local version
+if (NOT WIN32)
+  find_package(PkgConfig QUIET)
+endif()
+
+# Try using PkgConfig to find installation in system
+if (NOT ZeroMQ_FOUND AND PKG_CONFIG_FOUND)
+  message(STATUS "Looking for ZeroMQ using PkgConfig")
+  pkg_check_modules(zmq IMPORTED_TARGET libzmq)
+endif()
 
 if (ZeroMQ_FOUND)
   message(STATUS "Building with ZeroMQ support")
+  target_compile_definitions(libzmq INTERFACE USEZMQ)
+elseif(zmq_FOUND)
+  message(STATUS "Building with ZeroMQ support")
+  if (NOT TARGET libzmq)
+    add_library(libzmq INTERFACE)
+  endif()
+  target_link_libraries(libzmq INTERFACE PkgConfig::zmq)
   target_compile_definitions(libzmq INTERFACE USEZMQ)
 else()
   message(WARNING "Building without ZeroMQ support")
 endif()
 
+# Add ZeroMQ to installtion if local variant found
 if (EXISTS ${local_zeromq_dir})
   # When building with mingw, zeromq uses the lib prefix on windows
   if (WIN32)

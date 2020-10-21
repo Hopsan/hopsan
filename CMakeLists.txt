@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 project(Hopsan)
 
 cmake_policy(SET CMP0054 NEW)
+cmake_policy(SET CMP0079 NEW)
 
 set(HOPSANCORE_INSTALL_DST "HopsanCore")
 message(WARNING "Hopsan CMake support is still experimental, but should be  working for for GCC / MinGW and limited MSVC build")
