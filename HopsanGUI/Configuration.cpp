@@ -1255,6 +1255,7 @@ void Configuration::registerSettings()
     mStringSettings.insert(CFG_REMOTEHOPSANADDRESS, "");
     mStringSettings.insert(CFG_REMOTEHOPSANADDRESSSERVERADDRESS, "");
     mStringSettings.insert(CFG_REMOTEHOPSANUSERIDENTIFICATION, "");
+    mStringSettings.insert(CFG_PARAMETEREXPORTDIR, "");
     mStringSettings.insert(CFG_LOADMODELDIR, gpDesktopHandler->getModelsPath());
     mStringSettings.insert(CFG_MODELGFXDIR, gpDesktopHandler->getDocumentsPath());
     mStringSettings.insert(CFG_PLOTDATADIR, gpDesktopHandler->getDocumentsPath());

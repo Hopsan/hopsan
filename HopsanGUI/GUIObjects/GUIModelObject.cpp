@@ -662,8 +662,12 @@ void ModelObject::openPropertiesDialog()
 void ModelObject::saveParameterValuesToFile(QString parameterFile)
 {
     if (parameterFile.isEmpty()) {
+        QString saveDirectory = gpConfig->getStringSetting(CFG_PARAMETEREXPORTDIR);
+        if(saveDirectory.isEmpty()) {
+            saveDirectory = gpConfig->getStringSetting(CFG_LOADMODELDIR);
+        }
         parameterFile = QFileDialog::getSaveFileName(gpMainWindowWidget, tr("Save Parameter Value File"),
-                                                     gpConfig->getStringSetting(CFG_LOADMODELDIR),
+                                                     saveDirectory,
                                                      tr("Hopsan Parameter Files (*.hpf)"));
     }
     if(parameterFile.isEmpty()) {
@@ -679,7 +683,10 @@ void ModelObject::saveParameterValuesToFile(QString parameterFile)
             return domDocument;
     };
 
-    saveXmlFile(parameterFile, gpMessageHandler, saveFunction);
+    bool didSave = saveXmlFile(parameterFile, gpMessageHandler, saveFunction);
+    if (didSave) {
+        gpMessageHandler->addInfoMessage("Exported parameters to: " + parameterFile);
+    }
 }
 
 void ModelObject::loadParameterValuesFromFile(QString parameterFile)

@@ -983,7 +983,7 @@ void HcomHandler::createCommands()
 
     HcomCommand sapaCmd;
     sapaCmd.cmd = "sapa";
-    sapaCmd.description.append("Save model or component parameter values to XML file (.hpf");
+    sapaCmd.description.append("Save model or component parameter values to XML file (.hpf)");
     sapaCmd.help.append(" Usage: sapa [filepath]\n");
     sapaCmd.help.append(" Usage: sapa [filepath] [componentname]\n");
     sapaCmd.help.append(" Usage: sapa [filepath] [-c]\n"

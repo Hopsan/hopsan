@@ -974,59 +974,58 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
     }
 
     //Get file name in case this is a save as operation
-    QString modelFilePathToSave = mpToplevelSystem->getModelFileInfo().filePath();
-    if((modelFilePathToSave.isEmpty()) || (saveAsFlag == NewFile))
+    const QString filePathToModel = mpToplevelSystem->getModelFileInfo().filePath();
+    QString filePathToDestinationFile = filePathToModel;
+    if((filePathToModel.isEmpty()) || (saveAsFlag == NewFile))
     {
         QString filter;
+        QString dialogTitle;
+        QString saveDirectory;
+
+        const QString modelDirPath = getTopLevelSystemContainer()->getModelFileInfo().absolutePath();
+
         if(contents==FullModel)
         {
             filter = tr("Hopsan Model Files (*.hmf)");
+            dialogTitle = tr("Save Model File");
+            saveDirectory = modelDirPath;
+            if(saveDirectory.isEmpty()) {
+                saveDirectory = gpConfig->getStringSetting(CFG_LOADMODELDIR);
+            }
         }
         else if(contents==ParametersOnly)
         {
             filter = tr("Hopsan Parameter Files (*.hpf)");
+            dialogTitle = tr("Save Parameter File");
+            saveDirectory = gpConfig->getStringSetting(CFG_PARAMETEREXPORTDIR);
+            if(saveDirectory.isEmpty()) {
+                saveDirectory = modelDirPath;
+            }
         }
 
-        QString modelPath = getTopLevelSystemContainer()->getModelFileInfo().absolutePath();
-        if(modelPath.isEmpty())
-        {
-            modelPath = gpConfig->getStringSetting(CFG_LOADMODELDIR);
-        }
-
-        modelFilePathToSave = QFileDialog::getSaveFileName(this, tr("Save Model File"),
-                                                     modelPath,
-                                                     filter);
-
-        if(modelFilePathToSave.isEmpty())     //Don't save anything if user presses cancel
-        {
+        filePathToDestinationFile = QFileDialog::getSaveFileName(this, dialogTitle, saveDirectory, filter);
+        // Don't save anything if user presses cancel
+        if(filePathToDestinationFile.isEmpty()) {
             return;
         }
-        if(contents==FullModel)
-        {
-            mpToplevelSystem->setModelFile(modelFilePathToSave);
-        }
-        QFileInfo fileInfo = QFileInfo(modelFilePathToSave);
-        gpConfig->setStringSetting(CFG_LOADMODELDIR, fileInfo.absolutePath());
     }
 
-    bool success = saveTo(modelFilePathToSave, contents);
-
-
-    if(success)
+    bool success = saveTo(filePathToDestinationFile, contents);
+    if((contents==FullModel) && success)
     {
-            //Set the tab name to the model name, effectively removing *, also mark the tab as saved
-        //! @todo this should not happen when saving parameters, This needs to be rewritten in a smarter way so that we do not need a special argument and lots of ifs to do special saving of parameters, actually parameters should be saved using the CLI method (and that code should be in a shared utility library)
+        mpToplevelSystem->setModelFile(filePathToDestinationFile);
+
+        // Set the tab name to the model name, effectively removing *, also mark the tab as saved
+        //! @todo This needs to be rewritten in a smarter way so that we do not need a special argument and lots of ifs to do special saving of parameters, actually parameters should be saved using the CLI method (and that code should be in a shared utility library)
         QString tabName = mpToplevelSystem->getModelFileInfo().baseName();
         gpCentralTabWidget->setTabText(gpCentralTabWidget->indexOf(mpParentModelHandler->getCurrentModel()), tabName);
-        if(contents == FullModel)
-        {
-            gpConfig->addRecentModel(mpToplevelSystem->getModelFileInfo().filePath());
-            this->setSaved(true);
-        }
-
-        mpMessageHandler->addInfoMessage("Saved model: " + modelFilePathToSave);
+        gpConfig->addRecentModel(mpToplevelSystem->getModelFileInfo().filePath());
+        this->setSaved(true);
 
         mpToplevelSystem->getCoreSystemAccessPtr()->addSearchPath(mpToplevelSystem->getModelFileInfo().absolutePath());
+
+        gpConfig->setStringSetting(CFG_LOADMODELDIR, QFileInfo(filePathToDestinationFile).absolutePath());
+        mpMessageHandler->addInfoMessage("Saved model: " + filePathToDestinationFile);
 
         emit modelSaved(this);
 
@@ -1037,6 +1036,11 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
             loadModelRemote();
         }
 #endif
+    }
+    else if ((contents==ParametersOnly) && success)
+    {
+        gpConfig->setStringSetting(CFG_PARAMETEREXPORTDIR, QFileInfo(filePathToDestinationFile).absolutePath());
+        mpMessageHandler->addInfoMessage("Exported model parameters to: " + filePathToDestinationFile);
     }
 }
 
