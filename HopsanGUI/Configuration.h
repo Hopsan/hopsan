@@ -72,6 +72,7 @@
 #define CFG_BACKGROUNDCOLOR "backgroundcolor"
 
 #define CFG_PARAMETEREXPORTDIR "parameterexportdir"
+#define CFG_PARAMETERIMPORTDIR "parameterimportdir"
 #define CFG_LOADMODELDIR "loadmodeldir"
 #define CFG_LOADSCRIPTDIR "loadmodeldir"
 #define CFG_MODELGFXDIR "modelgfxdir"

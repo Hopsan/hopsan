@@ -2183,8 +2183,12 @@ void SystemContainer::setModelFileInfo(QFile &rFile, const QString relModelPath)
 void SystemContainer::loadParameterValuesFromFile(QString parameterFile)
 {
     if(parameterFile.isEmpty()) {
+        QString openLocation = gpConfig->getStringSetting(CFG_PARAMETERIMPORTDIR);
+        if (openLocation.isEmpty()) {
+            openLocation = gpConfig->getStringSetting(CFG_LOADMODELDIR);
+        }
         parameterFile = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Load Parameter File"),
-                                                     gpConfig->getStringSetting(CFG_LOADMODELDIR),
+                                                     openLocation,
                                                      tr("Hopsan Parameter Files (*.hpf *.xml)"));
     }
 
@@ -2193,7 +2197,7 @@ void SystemContainer::loadParameterValuesFromFile(QString parameterFile)
         if (numChanged > 0) {
             mpModelWidget->hasChanged();
         }
-        gpConfig->setStringSetting(CFG_LOADMODELDIR,  QFileInfo(parameterFile).absolutePath());
+        gpConfig->setStringSetting(CFG_PARAMETERIMPORTDIR,  QFileInfo(parameterFile).absolutePath());
     }
     emit checkMessages();
 }

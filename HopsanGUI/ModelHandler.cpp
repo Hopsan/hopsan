@@ -281,7 +281,7 @@ void ModelHandler::loadModel(QAction *action)
 }
 
 
-//! @brief Screates a new empty HCOM script and opens it in a new project tab
+//! @brief Creates a new empty HCOM script and opens it in a new project tab
 //! @see loadScriptFile()
 void ModelHandler::newTextFile()
 {
