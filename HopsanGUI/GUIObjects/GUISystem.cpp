@@ -2196,6 +2196,8 @@ void SystemContainer::loadParameterValuesFromFile(QString parameterFile)
         auto numChanged = getCoreSystemAccessPtr()->loadParameterFile(parameterFile);
         if (numChanged > 0) {
             mpModelWidget->hasChanged();
+            // Trigger system parameter widget refresh, regardless if any system parameters actually changed
+            emit systemParametersChanged();
         }
         gpConfig->setStringSetting(CFG_PARAMETERIMPORTDIR,  QFileInfo(parameterFile).absolutePath());
     }
