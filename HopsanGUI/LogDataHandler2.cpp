@@ -2397,7 +2397,7 @@ bool LogDataHandler2::registerQuantity(const QString &rFullName, const QString &
     {
         gen = mCurrentGenerationNumber;
     }
-    auto pGen = mGenerationMap.value(gen, 0);
+    auto pGen = mGenerationMap.value(gen, nullptr);
     if (pGen)
     {
         bool rc = pGen->registerQuantity(rFullName, rQuantity);

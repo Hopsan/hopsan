@@ -3454,7 +3454,7 @@ void HcomHandler::executeSetQuantityCommand(const QString args)
     QStringList arglist = splitCommandArguments(args);
     if(arglist.size() != 2)
     {
-        HCOMERR("Needs two arguments");
+        HCOMERR("Needs two arguments, variable name and quantity (or - to clear)");
         return;
     }
     if(!mpModel) { return; }
@@ -3462,87 +3462,88 @@ void HcomHandler::executeSetQuantityCommand(const QString args)
     if(!pSystem) { return; }
 
 
-    QString &variableName = arglist.first();
-    QString &quantity = arglist.last();
+    QString variableName = arglist.first();
+    QString quantity = arglist.last();
 
-    // Check if we should clear qunatity
-    CoreQuantityAccess cqa;
-    if (quantity=="-")
-    {
-        quantity.clear();
-    }
-    // Else check if quantity is valid
-    else if (!cqa.haveQuantity(quantity))
-    {
-        HCOMERR("Invalid quantity: "+quantity);
+    bool genOK;
+    int gen = parseAndChopGenerationSpecifier(variableName, genOK);
+    if (!genOK) {
+        HCOMERR("Could not parse generation specifier");
         return;
     }
 
     // Convert to model name format
     toLongDataNames(variableName);
 
-    bool genOK;
-    int gen = parseAndChopGenerationSpecifier(variableName, genOK);
-    if (!genOK)
-    {
-        HCOMERR("Could not parse generation specifier");
+    // Check if we should clear quantity
+    CoreQuantityAccess cqa;
+    if (quantity == "-") {
+        quantity.clear();
+    }
+    // Else check if quantity is valid
+    else if (!cqa.haveQuantity(quantity)) {
+        HCOMERR("Invalid quantity: "+quantity);
         return;
     }
 
-    // First look for variable in logdata
-    SharedVectorVariableT pLogDataVariable;
-    if (isSingleGenerationValue(gen) || (gen == generationspecifier::noGenerationSpecified))
-    {
-        if (gen == generationspecifier::noGenerationSpecified) {
-            gen = generationspecifier::currentGeneration;
-        }
-        pLogDataVariable = mpModel->getLogDataHandler()->getVectorVariable(variableName, gen);
+    // Handle no specified generation as if the current generation was chosen
+    if (gen == generationspecifier::noGenerationSpecified) {
+        gen = generationspecifier::currentGeneration;
     }
 
-    // If specifier was not given or set to current gen, then also search for variable in model
+    // First look for variable in logdata
+    QVector<int> logDataVariablesGenerations;
+    if (isSingleGenerationValue(gen)) {
+        auto pLogDataVariable = mpModel->getLogDataHandler()->getVectorVariable(variableName, gen);
+        if (pLogDataVariable) {
+            logDataVariablesGenerations.append(pLogDataVariable->getGeneration());
+        }
+    }
+    else if (gen == generationspecifier::allGenerations) {
+        QRegExp regexp(variableName, Qt::CaseSensitive, QRegExp::FixedString);
+        auto logDataVariables = mpModel->getLogDataHandler()->getMatchingVariablesFromAllGenerations(regexp);
+        for (const auto& pVar : logDataVariables) {
+            logDataVariablesGenerations.append(pVar->getGeneration());
+        }
+    }
+
+    // If specifier was not given, set to current gen, or set to all, then also search for variable in model
     bool foundInModel=false;
-    if ((gen == generationspecifier::currentGeneration) || (gen == generationspecifier::noGenerationSpecified))
-    {
-        // Split fullname
+    if ((gen == generationspecifier::currentGeneration) || gen == generationspecifier::allGenerations) {
+        // Split full name
         QStringList sysnames;
         QString comp,port,var;
         bool splitOK = splitFullVariableName(variableName, sysnames, comp, port, var);
-        if (!splitOK)
-        {
+        if (!splitOK) {
             HCOMERR("Invalid or incomplete variable name: "+variableName);
             return;
         }
 
         // Search into subsystem
         pSystem = searchIntoSubsystem(pSystem, sysnames);
-        if (pSystem)
-        {
+        if (pSystem) {
             // Get component
             ModelObject *pComponent = pSystem->getModelObject(comp);
-            if (pComponent)
-            {
+            if (pComponent) {
                 foundInModel=true;
                 // Set the quantity in the model
-                // Note! The quantity change wil lbe signaled to the log data handler as well
+                // Note! The quantity change will be signaled to the log data handler as well
                 bool rc = pComponent->setModifyableSignalQuantity(port+"#"+var, quantity);
-                if (!rc)
-                {
+                if (!rc) {
                     HCOMERR("Could not set quantity: "+quantity+" on model variable: "+variableName);
                 }
             }
         }
 
         // If we did not find it in the model and we do not have an alternate log data variable, then give an error message
-        if(!foundInModel && !pLogDataVariable)
-        {
+        if(!foundInModel && logDataVariablesGenerations.isEmpty()) {
             HCOMERR("Could not find model variable with full name: "+variableName);
             return;
         }
     }
 
-    if (!foundInModel)
-    {
-        // Set quantity for specified log data variable generation
+    // Set quantity for specified log data variable at each desired generation
+    for (const int gen : logDataVariablesGenerations) {
         mpModel->getLogDataHandler()->registerQuantity(variableName, quantity, gen);
     }
 }
