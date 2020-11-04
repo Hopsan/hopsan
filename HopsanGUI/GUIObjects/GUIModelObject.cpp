@@ -656,6 +656,7 @@ void ModelObject::openPropertiesDialog()
     {
         // Note! this is a smart pointer, it will automatically become NULL when dialog is deleted
         mpPropertiesDialog = new ComponentPropertiesDialog3(this, mpDialogParentWidget);
+        mpPropertiesDialog->setAttribute(Qt::WA_DeleteOnClose);
     }
 }
 
