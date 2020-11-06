@@ -15,18 +15,6 @@ QT += core xml
 #--------------------------------------------------------
 # Set the FMILibrary include and library paths
 include($${PWD}/../dependencies/fmilibrary.pri)
-# On Windows, since RPATH is ignored by LoadLibrary(), copy the fmi library file to the bin directory after build,
-# so that libHopsanGenerator may find it when loaded at runtime
-# (this is only necessary for dev builds, on release all DLLs will be copied anyway)
-# TODO: It would be better if this could be handled by the fmilibrary.pri somehow
-win32 {
-  src_file = $$quote($${PWD}/../dependencies/fmilibrary/lib/libfmilib_shared.dll)
-  dst_dir = $$quote($${DESTDIR})
-  # Replace slashes in paths with backslashes for Windows
-  src_file ~= s,/,\\,g
-  dst_dir ~= s,/,\\,g
-  QMAKE_POST_LINK *= $$QMAKE_COPY $${src_file} $${dst_dir}
-}
 
 #--------------------------------------------------
 # Add the include path to our self, (HopsanGenerator)
