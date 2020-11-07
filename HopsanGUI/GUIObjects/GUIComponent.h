@@ -52,22 +52,22 @@ class Component : public ModelObject
 
 public:
     Component(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics);
-    void deleteInHopsanCore();
+    void deleteInHopsanCore() override;
 
     bool hasPowerPorts();
 
-    bool setParameterValue(QString name, QString value, bool force=0);
-    bool setStartValue(QString portName, QString variable, QString sysParName);
+    bool setParameterValue(QString name, QString value, bool force=0) override;
+    bool setStartValue(QString portName, QString variable, QString sysParName) override;
 
     void loadParameterValuesFromFile(QString parameterFile = {}) override;
 
     QString getTypeName() const override;
-    QString getTypeCQS();
+    QString getTypeCQS() override;
 
     // Type info
     enum { Type = ComponentType };
-    int type() const;
-    virtual QString getHmfTagName() const;
+    int type() const override;
+    virtual QString getHmfTagName() const override;
 
 private slots:
     virtual void setVisible(bool visible);
@@ -75,13 +75,13 @@ private slots:
 protected:
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;
 
-    void saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel);
-    QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
-    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    void saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel) override;
+    QDomElement saveGuiDataToDomElement(QDomElement &rDomElement) override;
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
     void createPorts();
 };
 
-class ScopeComponent : public Component
+class ScopeComponent final : public Component
 {
     Q_OBJECT
 public:
