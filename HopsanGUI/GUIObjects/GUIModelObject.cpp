@@ -645,19 +645,15 @@ bool ModelObject::isDisabled()
 //! @brief Slot that opens the parameter dialog for the component
 void ModelObject::openPropertiesDialog()
 {
-    // If properties dialog already exist, then show it (useful if you forgot to close it)
-    if (mpPropertiesDialog)
-    {
-        mpPropertiesDialog->show();
-        mpPropertiesDialog->setWindowState(Qt::WindowActive);
-    }
-    // Else create a new one
-    else
-    {
-        // Note! this is a smart pointer, it will automatically become NULL when dialog is deleted
+    // If properties dialog already exist, then do not create a new one, useful if you forgot to close it or deliberately leave it open
+    if (mpPropertiesDialog == nullptr) {
+        // Note! mpPropertiesDialog is a smart pointer, it will automatically become NULL when dialog is deleted
         mpPropertiesDialog = new ComponentPropertiesDialog3(this, mpDialogParentWidget);
         mpPropertiesDialog->setAttribute(Qt::WA_DeleteOnClose);
     }
+    mpPropertiesDialog->show();
+    mpPropertiesDialog->setWindowState(Qt::WindowActive);
+    mpPropertiesDialog->activateWindow();
 }
 
 void ModelObject::saveParameterValuesToFile(QString parameterFile)
