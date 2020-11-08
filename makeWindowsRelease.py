@@ -13,7 +13,7 @@ import time
 
 # -------------------- Setup Start --------------------
 # Version numbers
-gBaseVersion = '2.15.0'
+gBaseVersion = '2.16.0'
 gReleaseRevision = ''
 gFullVersion = gBaseVersion
 gReleaseFileVersionName = gBaseVersion

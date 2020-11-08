@@ -13,7 +13,7 @@ set -u
 hopsancode_root=$(pwd)
 pbuilderWorkDir=/var/tmp/deb_hopsan/pbuilder
 name=hopsan
-devversion=2.15.0
+devversion=2.16.0
 
 # Pbuilder dists and archs
 debianDistArchArray=( buster:amd64:qt5py3_buster   buster:i386:qt5py3_buster \
