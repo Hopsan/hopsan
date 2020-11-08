@@ -312,7 +312,7 @@ Change parameter value<br>
  Usage: chpa [parameter] [value]
 
 \subsection sapa sapa
-Save model or component parameter values to XML file (.hpf<br>
+Save model or component parameter values to XML file (.hpf)<br>
  Usage: sapa [filepath]<br>
  Usage: sapa [filepath] [componentname]<br>
  Usage: sapa [filepath] [-c]<br>
