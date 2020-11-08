@@ -30,6 +30,56 @@
 ******************************
     Version History
 ******************************
+2.16.0 (2020-11-08)
+
+--- Important Change ---
+
+To avoid name collision in HDF5 exports, the following names were reserved: Time, time, Frequency and frequency, 
+HopsanGUI will attempt to automatically rename such components and system parameter when loading a model,
+but HopsanCLI will not, and models must be updated in the GUI first.
+To avoid name collision, the new names will have the _INVALID_NAME suffix appended.
+You will need to change them manually if you wish.
+
+
+--- Enhancements ---
+
+- HopsanCLI:
+  - Add command-line argument -p or --parallel to enable multi-core simulation from command line.
+    Note! Small models do not benefit from multi-core and will in fact run much slower, measure first
+    to decide if is useful for your model
+  - Unify CSV and HDF5 output code to make them behave the same way
+  - HDF5 exporter now uses the --logonly include filter
+  - Only export relevant time vectors when --logonly specifies a subset of variables
+    Example: If only a subsystem variable is exported, then only the time vector for that system is included
+    
+- HopsanGUI:
+  - Updated QWT so that it works with new Qt versions
+  - Make parameter export and import remember last used directory
+  
+- HopsanGenerator:
+  - Update bundled 7z version to 19.00 (Only used on Windows)
+    
+--- Bug Fixes ---
+
+- HopsanCore:
+  - Restore PLO v2 format import to use one less number of data columns
+
+- HopsanCLI:
+  - If simulation is aborted, then the entire pre-allocated time vector will no longer be export. Only up to the last actual sample
+  
+- HopsanGUI:
+  - Restore PLO v2 format export to use one less number of data columns (fix import crash)
+  - System parameters widget was not updated when importing parameters from file
+  - Do not tag model as changed when exporting parameters
+  - Allow HCOM sequ command to change Quantity for particular generation or all generations
+    Use the all option with care, as it will change the apparent unit on old data (without changing the actual data)
+  - After changing quantities from HCOM, the component properties dialogs would not get updated
+    They still need to be closed and opened
+  - Fix ComponentPropertiesDialog not showing when you double-click (try to open it the first time).
+    You were required to open it again, to actually show the dialog, also the model would be frozen in a non-editable state, due to hidden
+    opened properties dialogs.
+
+--------------------------------------------------------------------------------------------------------------------------------------------
 2.15.0 (2020-09-10)
 
 --- Enhancements ---
