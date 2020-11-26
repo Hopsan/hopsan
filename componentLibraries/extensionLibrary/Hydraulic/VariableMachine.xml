@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="VariableMachine" displayname="VariableMachine" sourcecode="VariableMachine.hpp">
+        <icons>
+            <icon scale="1" path="VariableMachine.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port x=".5741" y="1" a="180" name="P1"/>
+            <port x=".5741" y="0" a="0" name="P2"/>
+			<port x=".8" y="1" a="0" name="P3"/>
+        </ports>
+		    <help>
+            <md>VariableMachine.md</md>
+        </help>
+    </modelobject>
+</hopsanobjectappearance>

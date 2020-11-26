@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="VariableMachineW" displayname="VariableMachineW" sourcecode="VariableMachine.hpp">
+        <icons>
+            <icon scale="1" path="VariableMachine.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port x=".5741" y="1" a="180" name="P1"/>
+            <port x=".5741" y="0" a="0" name="P2"/>
+			<port x=".8" y="1" a="0" name="P3"/>
+			<port x="0" y="0.5" a="0.5" name="P4"/>
+        </ports>
+		    <help>
+            <md>VariableMachineW.md</md>
+        </help>
+    </modelobject>
+</hopsanobjectappearance>

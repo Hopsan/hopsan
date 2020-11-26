@@ -27,3 +27,5 @@ pComponentFactory->registerCreatorFunction("HydraulicLosslessTLMPipe",HydraulicL
 pComponentFactory->registerCreatorFunction("HydraulicVariableVolume",HydraulicVariableVolume::Creator);
 pComponentFactory->registerCreatorFunction("HydraulicVariableVolumeLength",HydraulicVariableVolumeLength::Creator);
 pComponentFactory->registerCreatorFunction("HydraulicVariableVolumeLengthMP",HydraulicVariableVolumeLengthMP::Creator);
+pComponentFactory->registerCreatorFunction("VariableMachine",VariableMachine::Creator);
+pComponentFactory->registerCreatorFunction("VariableMachineW",VariableMachineW::Creator);

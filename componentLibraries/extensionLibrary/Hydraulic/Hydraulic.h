@@ -27,3 +27,5 @@
 #include "HydraulicVariableVolume.hpp"
 #include "HydraulicVariableVolumeLength.hpp"
 #include "HydraulicVariableVolumeLengthMP.hpp"
+#include "VariableMachine.hpp"
+#include "VariableMachineW.hpp"
