@@ -37,6 +37,8 @@
   <componentxml>Hydraulic/HydraulicVariableVolume.xml</componentxml>
   <componentxml>Hydraulic/HydraulicVariableVolumeLength.xml</componentxml>
   <componentxml>Hydraulic/HydraulicVariableVolumeLengthMP.xml</componentxml>
+  <componentxml>Hydraulic/VariableMachine.xml</componentxml>
+  <componentxml>Hydraulic/VariableMachineW.xml</componentxml>
   <componentxml>Grafcet/BackwardStepSkip_begin.xml</componentxml>
   <componentxml>Grafcet/BackwardStepSkip_end.xml</componentxml>
   <componentxml>Grafcet/BottomTopArc.xml</componentxml>
