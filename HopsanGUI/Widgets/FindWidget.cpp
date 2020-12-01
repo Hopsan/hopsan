@@ -87,7 +87,7 @@ FindWidget::FindWidget(QWidget *parent) :
     setWindowTitle("Find Widget");
 }
 
-void FindWidget::setContainer(ContainerObject *pContainer)
+void FindWidget::setContainer(SystemObject *pContainer)
 {
     mpContainer = pContainer;
     mpTextEditor = nullptr;

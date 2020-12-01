@@ -87,7 +87,7 @@ class ModelObject;
 class GraphicsView;
 class Connector;
 class MainWindow;
-class ContainerObject;
+class SystemObject;
 class Widget;
 class UndoWidget;
 
@@ -96,7 +96,7 @@ class UndoStack : public QObject
 friend class UndoWidget;
 
 public:
-    UndoStack(ContainerObject *parentSystem);
+    UndoStack(SystemObject *parentSystem);
 
     QDomElement toXml();
     void fromXml(QDomElement &undoElement);
@@ -128,7 +128,7 @@ public:
     void registerModifiedTextBoxWidget(Widget *pItem);
 
 private:
-    ContainerObject *mpParentContainerObject;
+    SystemObject *mpParentContainerObject;
     int mCurrentStackPosition;
 
     void addTextboxwidget(const QDomElement &rStuffElement);

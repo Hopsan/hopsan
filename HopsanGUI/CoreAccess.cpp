@@ -35,7 +35,7 @@
 
 #include "CoreAccess.h"
 #include "global.h"
-#include "GUIObjects/GUISystem.h"
+#include "GUIObjects/GUIContainerObject.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"
 #include "LibraryHandler.h"
@@ -312,13 +312,13 @@ size_t CoreSystemAccess::getNumLogSamples()
 }
 
 
-QString CoreSystemAccess::getSystemTypeCQS()
+QString CoreSystemAccess::getSystemTypeCQS() const
 {
     //qDebug() << "getRootTypeCQS: " << componentName;
     return mpCoreComponentSystem->getTypeCQSString().c_str();
 }
 
-QString CoreSystemAccess::getSubComponentTypeCQS(const QString componentName)
+QString CoreSystemAccess::getSubComponentTypeCQS(const QString componentName) const
 {
     //qDebug() << "getSubComponentTypeCQS: " << componentName << " in " << QString::fromStdString(mpCoreComponentSystem->getName());
     QString ans = mpCoreComponentSystem->getSubComponent(componentName.toUtf8().constData())->getTypeCQSString().c_str();
@@ -1412,7 +1412,7 @@ QStringList getEmbeddedSriptVariableNames(const QString& expression, const QStri
     return names;
 }
 
-void prependSelfToParameterExpressions(ContainerObject *pTopLevelGUISystem)
+void prependSelfToParameterExpressions(SystemObject *pTopLevelGUISystem)
 {
     std::function<void(hopsan::ComponentSystem*)> processSystem;
     processSystem = [&processSystem](hopsan::ComponentSystem* pSystem) {
@@ -1432,13 +1432,13 @@ void prependSelfToParameterExpressions(ContainerObject *pTopLevelGUISystem)
     }
 }
 
-QString checkPrependSelfToEmbeddedScripts(ContainerObject *pTopLevelGUISystem)
+QString checkPrependSelfToEmbeddedScripts(SystemObject *pTopLevelGUISystem)
 {
     QString output;
     QString topLevelSystemName = pTopLevelGUISystem->getName();
 
-    std::function<void(ContainerObject*)> processSystem;
-    processSystem = [&processSystem, &output, topLevelSystemName](ContainerObject *pGUISystem) {
+    std::function<void(SystemObject*)> processSystem;
+    processSystem = [&processSystem, &output, topLevelSystemName](SystemObject *pGUISystem) {
 
         QString fullSystemName = topLevelSystemName + "." + pGUISystem->getSystemNameHieararchy().join(".");
 
@@ -1451,8 +1451,8 @@ QString checkPrependSelfToEmbeddedScripts(ContainerObject *pTopLevelGUISystem)
         }
         auto childObjects = pGUISystem->getModelObjects();
         for (auto pChild : childObjects) {
-            if (pChild->type() == SystemContainerType) {
-                processSystem(qobject_cast<SystemContainer*>(pChild));
+            if (pChild->type() == SystemObjectType) {
+                processSystem(qobject_cast<SystemObject*>(pChild));
             }
         }
     };

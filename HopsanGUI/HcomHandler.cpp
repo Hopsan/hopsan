@@ -43,7 +43,7 @@
 #include "Dialogs/OptimizationDialog.h"
 #include "GUIConnector.h"
 #include "GUIObjects/GUIComponent.h"
-#include "GUIObjects/GUISystem.h"
+#include "GUIObjects/GUIContainerObject.h"
 #include "GUIPort.h"
 #include "HcomHandler.h"
 #include "OptimizationHandler.h"
@@ -221,10 +221,10 @@ inline bool isString(const QString &expr)
     return (expr.startsWith('"') && expr.endsWith('"'));
 }
 
-SystemContainer* searchIntoSubsystem(SystemContainer* pRootSystem, const QStringList& systemNames) {
+SystemObject* searchIntoSubsystem(SystemObject* pRootSystem, const QStringList& systemNames) {
     auto pSystem = pRootSystem;
     for (const QString &sysname : systemNames) {
-        pSystem = qobject_cast<SystemContainer*>(pSystem->getModelObject(sysname));
+        pSystem = qobject_cast<SystemObject*>(pSystem->getModelObject(sysname));
         if (!pSystem) {
             break;
         }
@@ -2071,7 +2071,7 @@ void HcomHandler::executeAddParameterCommand(const QString cmd)
         return;
     }
 
-    ContainerObject *pContainer = mpModel->getViewContainerObject();
+    SystemObject *pContainer = mpModel->getViewContainerObject();
     if(pContainer)
     {
         QString type = "double";
@@ -2095,7 +2095,7 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
     if(splitCmd.size() == 2)
     {
         if(!mpModel) { return; }
-        SystemContainer *pSystem = dynamic_cast<SystemContainer*>(mpModel->getViewContainerObject());
+        SystemObject *pSystem = dynamic_cast<SystemObject*>(mpModel->getViewContainerObject());
         if(!pSystem) { return; }
 
         QStringList parameterNames;
@@ -2157,10 +2157,10 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
             QString compname, parname;
             splitFullParameterName(parameterNames[p], sysnames, compname, parname);
 
-            pSystem = qobject_cast<SystemContainer*>(getModelPtr()->getViewContainerObject());
+            pSystem = qobject_cast<SystemObject*>(getModelPtr()->getViewContainerObject());
             for(const QString &sysname : sysnames)
             {
-                pSystem = qobject_cast<SystemContainer*>(pSystem->getModelObject(sysname));
+                pSystem = qobject_cast<SystemObject*>(pSystem->getModelObject(sysname));
             }
 
             // First check if this is a system parameter
@@ -2179,7 +2179,7 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
             // Else check if this is an alias
             else if(!pSystem->getFullNameFromAlias(parname).isEmpty())
             {
-                pSystem = qobject_cast<SystemContainer*>(getModelPtr()->getViewContainerObject());
+                pSystem = qobject_cast<SystemObject*>(getModelPtr()->getViewContainerObject());
                 QString nameFromAlias = pSystem->getFullNameFromAlias(parname);
                 QStringList subsystems = nameFromAlias.split("$");
                 subsystems.removeLast();
@@ -2188,7 +2188,7 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
                 QString parName = nameFromAlias.right(nameFromAlias.size()-compName.size()-1);
                 foreach(const QString &subsystem, subsystems)
                 {
-                    pSystem = qobject_cast<SystemContainer*>(pSystem->getModelObject(subsystem));
+                    pSystem = qobject_cast<SystemObject*>(pSystem->getModelObject(subsystem));
                 }
 
                 ModelObject *pComponent = pSystem->getModelObject(compName);
@@ -2244,7 +2244,7 @@ void HcomHandler::executeChangeSimulationSettingsCommand(const QString cmd)
         double stopT = getNumber(splitCmd[2], &ok);
         if(!ok) { allOk=false; }
 
-        SystemContainer *pCurrentSystem = dynamic_cast<SystemContainer*>(mpModel->getViewContainerObject());
+        SystemObject *pCurrentSystem = dynamic_cast<SystemObject*>(mpModel->getViewContainerObject());
         int samples = pCurrentSystem->getNumberOfLogSamples();
         if(splitCmd.size() == 4)
         {
@@ -3458,7 +3458,7 @@ void HcomHandler::executeSetQuantityCommand(const QString args)
         return;
     }
     if(!mpModel) { return; }
-    SystemContainer *pSystem = qobject_cast<SystemContainer*>(mpModel->getViewContainerObject());
+    SystemObject *pSystem = qobject_cast<SystemObject*>(mpModel->getViewContainerObject());
     if(!pSystem) { return; }
 
 
@@ -4478,7 +4478,7 @@ void HcomHandler::executeSaveParametersCommand(const QString cmd)
 
     if (args.size() > 1) {
         if (args.last() == "-c") {
-            auto pSystem = qobject_cast<SystemContainer*>(mpModel->getViewContainerObject());
+            auto pSystem = qobject_cast<SystemObject*>(mpModel->getViewContainerObject());
             if (pSystem) {
                 pSystem->saveParameterValuesToFile(path);
             }
@@ -4492,7 +4492,7 @@ void HcomHandler::executeSaveParametersCommand(const QString cmd)
             QStringList systemHierarchy;
             QString sysOrCompName;
             splitFullComponentName(sysOrCompFullName, systemHierarchy, sysOrCompName);
-            auto pSystem = qobject_cast<SystemContainer*>(mpModel->getViewContainerObject());
+            auto pSystem = qobject_cast<SystemObject*>(mpModel->getViewContainerObject());
             pSystem = searchIntoSubsystem(pSystem, systemHierarchy);
             if (pSystem) {
                 ModelObject* pModelObject = pSystem->getModelObject(sysOrCompName);
@@ -4531,7 +4531,7 @@ void HcomHandler::executeLoadParametersCommand(const QString cmd)
 
     if (args.size() > 1) {
         if (args.last() == "-c") {
-            auto pSystem = qobject_cast<SystemContainer*>(mpModel->getViewContainerObject());
+            auto pSystem = qobject_cast<SystemObject*>(mpModel->getViewContainerObject());
             if (pSystem) {
                 pSystem->loadParameterValuesFromFile(path);
             }
@@ -4545,7 +4545,7 @@ void HcomHandler::executeLoadParametersCommand(const QString cmd)
             QStringList systemHierarchy;
             QString sysOrCompName;
             splitFullComponentName(sysOrCompFullName, systemHierarchy, sysOrCompName);
-            auto pSystem = qobject_cast<SystemContainer*>(mpModel->getViewContainerObject());
+            auto pSystem = qobject_cast<SystemObject*>(mpModel->getViewContainerObject());
             pSystem = searchIntoSubsystem(pSystem, systemHierarchy);
             if (pSystem) {
                 ModelObject* pModelObject = pSystem->getModelObject(sysOrCompName);
@@ -4679,7 +4679,7 @@ void HcomHandler::executeRenameComponentCommand(const QString cmd)
         return;
     }
 
-    ContainerObject *pContainer = mpModel->getViewContainerObject();
+    SystemObject *pContainer = mpModel->getViewContainerObject();
     if(pContainer)
     {
         pContainer->renameModelObject(split[0], split[1]);
@@ -4698,7 +4698,7 @@ void HcomHandler::executeRemoveComponentCommand(const QString cmd)
     QList<ModelObject*> components;
     getComponents(args[0], components);
 
-    ContainerObject *pContainer = mpModel->getViewContainerObject();
+    SystemObject *pContainer = mpModel->getViewContainerObject();
     for(int c=0; c<components.size(); ++c)
     {
         pContainer->deleteModelObject(components[c]->getName());
@@ -6081,14 +6081,14 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         // Parameter name, return its value
         QString parType;
 
-        ContainerObject *pContainer = mpModel->getViewContainerObject();
+        SystemObject *pContainer = mpModel->getViewContainerObject();
 
         QString fullName = expr;
         while(!pContainer->isTopLevelContainer())
         {
             fullName.prepend("$");
             fullName.prepend(pContainer->getName());
-            pContainer = pContainer->getParentContainerObject();
+            pContainer = pContainer->getParentSystemObject();
         }
 
         bool ok;
@@ -7706,7 +7706,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
 //! @brief Help function that returns a list of components depending on input (with support for asterisks)
 //! @param[in] rStr Component name to look for
 //! @param[out] rComponents Reference to list of found components
-void HcomHandler::getComponents(const QString &rStr, QList<ModelObject*> &rComponents, ContainerObject *pSystem) const
+void HcomHandler::getComponents(const QString &rStr, QList<ModelObject*> &rComponents, SystemObject *pSystem) const
 {
     if(!mpModel) { return; }
 
@@ -7746,7 +7746,7 @@ void HcomHandler::getComponents(const QString &rStr, QList<ModelObject*> &rCompo
 void HcomHandler::getPorts(const QString &rStr, QList<Port*> &rPorts) const
 {
     if(!mpModel) { return; }
-    ContainerObject *pCurrentSystem = mpModel->getViewContainerObject();
+    SystemObject *pCurrentSystem = mpModel->getViewContainerObject();
     if(!pCurrentSystem) { return; }
 
     if (rStr.contains("*"))
@@ -7801,7 +7801,7 @@ QString HcomHandler::getfullNameFromAlias(const QString &rAlias) const
 {
     if(mpModel)
     {
-        ContainerObject *pCurrentSystem = mpModel->getViewContainerObject();
+        SystemObject *pCurrentSystem = mpModel->getViewContainerObject();
         if(pCurrentSystem)
         {
             return pCurrentSystem->getFullNameFromAlias(rAlias);
@@ -7819,7 +7819,7 @@ void HcomHandler::getParameters(const QString str, QStringList &rParameters) con
     if(!mpModel) { return; }
 
     QStringList allParameters;
-    ContainerObject *pSystem = mpModel->getViewContainerObject();
+    SystemObject *pSystem = mpModel->getViewContainerObject();
     getParametersFromContainer(pSystem, allParameters);
 
     QStringList aliasNames = pSystem->getAliasNames();
@@ -7846,17 +7846,17 @@ void HcomHandler::getParameters(const QString str, QStringList &rParameters) con
     }
 }
 
-void HcomHandler::getParametersFromContainer(ContainerObject *pSystem, QStringList &rParameters) const
+void HcomHandler::getParametersFromContainer(SystemObject *pSystem, QStringList &rParameters) const
 {
     QStringList sysnames;
     if(pSystem != mpModel->getViewContainerObject())
     {
         sysnames.prepend(pSystem->getName());
-        ContainerObject *pParentSystem = pSystem->getParentContainerObject();
+        SystemObject *pParentSystem = pSystem->getParentSystemObject();
         while(pParentSystem != getModelPtr()->getViewContainerObject())
         {
             sysnames.prepend(pParentSystem->getName());
-            pParentSystem = pParentSystem->getParentContainerObject();
+            pParentSystem = pParentSystem->getParentSystemObject();
         }
     }
 
@@ -7867,7 +7867,7 @@ void HcomHandler::getParametersFromContainer(ContainerObject *pSystem, QStringLi
         // Recursively fetch paramters from subsystems
         if(pMO->getTypeName() == "Subsystem")
         {
-            getParametersFromContainer(qobject_cast<ContainerObject*>(pMO), rParameters);
+            getParametersFromContainer(qobject_cast<SystemObject*>(pMO), rParameters);
         }
         else
         {
@@ -7927,7 +7927,7 @@ QString HcomHandler::getParameterValue(QString parameterName, QString &rParamete
         splitFullParameterName(parameterName, subsystems, compName, parName);
 
         // Seek into the correct system
-        ContainerObject *pContainer;
+        SystemObject *pContainer;
         if(searchFromTopLevel)
         {
             pContainer = mpModel->getTopLevelSystemContainer();
@@ -7938,7 +7938,7 @@ QString HcomHandler::getParameterValue(QString parameterName, QString &rParamete
         }
         foreach(const QString &subsystem, subsystems)
         {
-            pContainer = qobject_cast<ContainerObject*>(pContainer->getModelObject(subsystem));
+            pContainer = qobject_cast<SystemObject*>(pContainer->getModelObject(subsystem));
         }
 
         if(!pContainer)
@@ -8240,7 +8240,7 @@ void HcomHandler::getLogVariablesThatStartsWithString(const QString str, QString
 {
     if(!mpModel) { return; }
 
-    ContainerObject *pSystem = mpModel->getViewContainerObject();
+    SystemObject *pSystem = mpModel->getViewContainerObject();
     QStringList names = mpModel->getLogDataHandler()->getVariableFullNames();
     names.append(pSystem->getAliasNames());
 

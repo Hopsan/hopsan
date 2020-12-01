@@ -37,6 +37,7 @@
 #include <QProgressBar>
 #include <QTreeWidget>
 #include <QPushButton>
+#include <QRadioButton>
 
 #include "global.h"
 #include "Configuration.h"
@@ -45,7 +46,7 @@
 #include "DesktopHandler.h"
 #include "Dialogs/SensitivityAnalysisDialog.h"
 #include "Utilities/HelpPopUpWidget.h"
-#include "GUIObjects/GUISystem.h"
+#include "GUIObjects/GUIContainerObject.h"
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/ModelWidget.h"
 #include "ModelHandler.h"
@@ -224,7 +225,7 @@ void SensitivityAnalysisDialog::open()
 void SensitivityAnalysisDialog::loadSettings()
 {
     mpParametersList->clear();
-    SystemContainer *pSystem = mpModel->getTopLevelSystemContainer();
+    SystemObject *pSystem = mpModel->getTopLevelSystemContainer();
     QStringList componentNames = pSystem->getModelObjectNames();
     for(int c=0; c<componentNames.size(); ++c)
     {

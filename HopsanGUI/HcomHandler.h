@@ -39,7 +39,7 @@
 #include "SymHop.h"
 #include "PlotCurveStyle.h"
 
-class ContainerObject;
+class SystemObject;
 class TerminalWidget;
 class TerminalConsole;
 class ModelObject;
@@ -243,11 +243,11 @@ private:
     void getLogVariablesThatStartsWithString(const QString str, QStringList &variables) const;
     int parseAndChopGenerationSpecifier(QString &rStr, bool &rOk) const;
 
-    void getComponents(const QString &rStr, QList<ModelObject *> &rComponents, ContainerObject *pSystem=0) const;
+    void getComponents(const QString &rStr, QList<ModelObject *> &rComponents, SystemObject *pSystem=0) const;
     void getPorts(const QString &rStr, QList<Port *> &rPorts) const;
 
     void getParameters(QString str, QStringList &rParameters) const;
-    void getParametersFromContainer(ContainerObject *pSystem, QStringList &rParameters) const;
+    void getParametersFromContainer(SystemObject *pSystem, QStringList &rParameters) const;
     QString getParameterValue(QString parameterName, QString &rParameterType, bool searchFromTopLevel=false) const;
     QString getParameterValue(QString parameterName) const;
 

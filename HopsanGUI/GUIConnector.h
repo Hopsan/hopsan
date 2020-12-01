@@ -49,8 +49,8 @@ class ConnectorLine;
 class GraphicsView;
 class WorkspaceObject;
 class Port;
-class SystemContainer;
-class ContainerObject;
+class SystemObject;
+class SystemObject;
 class Component;
 
 class Connector : public QGraphicsWidget
@@ -59,11 +59,11 @@ class Connector : public QGraphicsWidget
     friend class ConnectorLine;
     friend class AnimatedConnector;
 public:
-    Connector(ContainerObject *pParentContainer);
+    Connector(SystemObject *pParentContainer);
     ~Connector();
 
-    void setParentContainer(ContainerObject *pParentContainer);
-    ContainerObject *getParentContainer();
+    void setParentContainer(SystemObject *pParentContainer);
+    SystemObject *getParentContainer();
 
     Port *getStartPort();
     Port *getEndPort();
@@ -146,7 +146,7 @@ private:
     bool mMakingDiagonal;
     bool mIsDashed;
 
-    ContainerObject *mpParentContainerObject;
+    SystemObject *mpParentContainerObject;
     ConnectorAppearance *mpConnectorAppearance;
     Port *mpStartPort;
     Port *mpEndPort;
@@ -220,7 +220,7 @@ private:
 class Volunector : public Connector
 {
 public:
-    Volunector(ContainerObject *pParentContainer);
+    Volunector(SystemObject *pParentContainer);
 private:
     Component *mpVolunectorComponent;
 };

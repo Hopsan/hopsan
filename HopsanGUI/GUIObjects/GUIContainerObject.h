@@ -53,17 +53,101 @@ class TextBoxWidget;
 class QTableView;
 class QRadioButton;
 
-class ContainerObject : public ModelObject
+//Forward Declaration
+class ModelWidget;
+
+
+class OptParameter
+{
+public:
+    QString mComponentName, mParameterName;
+    double mMin, mMax;
+};
+
+
+class Objectives
+{
+public:
+    QString mFunctionName;
+    QStringList mData;
+    QList<QStringList> mVariableInfo;
+    double mWeight, mNorm, mExp;
+};
+
+
+class OptimizationSettings
+{
+public:
+    OptimizationSettings();
+
+    QString mScriptFile;
+    int mNiter;
+    int mNsearchp;
+    double mRefcoeff;
+    double mRandfac;
+    double mForgfac;
+    double mPartol;
+    bool mPlot;
+    bool mSavecsv;
+    bool mFinalEval;
+    bool mlogPar;
+
+    //Parameters
+    QVector<OptParameter> mParamters;
+    QVector<Objectives> mObjectives;
+};
+
+
+class SensitivityAnalysisParameter
+{
+public:
+    QString compName, parName;
+    double min, max;      //Used for square distribution
+    double aver, sigma;   //Used for normal distribution
+};
+
+
+class SensitivityAnalysisVariable
+{
+public:
+    QString compName, portName, varName;
+};
+
+
+class SensitivityAnalysisSettings
+{
+public:
+    SensitivityAnalysisSettings();
+
+    enum DistributionEnumT { UniformDistribution, NormalDistribution };
+
+    int nIter;     //Number of iterations
+    QVector<SensitivityAnalysisParameter> parameters;
+    QVector<SensitivityAnalysisVariable> variables;
+    DistributionEnumT distribution;
+};
+
+class SystemObject : public ModelObject
 {
     friend class UndoStack;     //! @todo Not sure about this, but the alternative would be to have lots and lots of access functions only used by undo stack...
     Q_OBJECT
 public:
     enum ContainerEdgeEnumT {RightEdge, BottomEdge, LeftEdge, TopEdge};
-    ContainerObject(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics, ContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
-    virtual ~ContainerObject();
+    SystemObject(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics, SystemObject *pParentContainer=0, QGraphicsItem *pParent=0);
+    SystemObject(ModelWidget *parentModelWidget, QGraphicsItem *pParentGraphicsItem);
+    virtual ~SystemObject();
+
+    void deleteInHopsanCore() override;
+
+    QString getTypeName() const override;
+    void setName(QString newName) override;
+    QString getTypeCQS() const override;
+
+    double getTimeStep();
+    bool doesInheritTimeStep();
 
     bool isTopLevelContainer() const;
-    QStringList getSystemNameHieararchy() const;
+    QStringList getSystemNameHieararchy() const override;
 
     void hasChanged();
     ModelWidget *mpModelWidget;  //!< @todo not public
@@ -79,6 +163,7 @@ public:
 
     // Core access
     virtual CoreSystemAccess *getCoreSystemAccessPtr();
+    SystemObject *getParentSystemObject() override;
 
     //GUIModelObjects and GUIWidgets methods
     void takeOwnershipOf(QList<ModelObject*> &rModeObjectlist, QList<Widget*> &rWidgetList);
@@ -122,10 +207,16 @@ public:
     QList<Widget *> getSelectedGUIWidgetPtrs();
 
     // Parameter Methods
-    virtual bool setParameterValue(QString name, QString value, bool force=false);
+    QStringList getParameterNames() override;
+    void getParameters(QVector<CoreParameterData> &rParameterDataVec) override;
+    void getParameter(const QString paramName, CoreParameterData &rData) override;
+    QString getParameterValue(const QString paramName) override;
+    bool hasParameter(const QString &rParamName) override;
+    virtual bool setParameterValue(QString name, QString value, bool force=false) override;
     virtual bool setParameter(const CoreParameterData &rParameter, bool force=false);
     virtual bool setOrAddParameter(const CoreParameterData &rParameter, bool force=false);
     virtual bool renameParameter(const QString oldName, const QString newName);
+    void loadParameterValuesFromFile(QString parameterFile = {}) override;
 
     // NumHop Methods
     void setNumHopScript(const QString &rScript);
@@ -151,8 +242,8 @@ public:
     QString getIconPath(const GraphicsTypeEnumT gfxType, const AbsoluteRelativeEnumT absrelType);
     void setIconPath(const QString path, const GraphicsTypeEnumT gfxType, const AbsoluteRelativeEnumT absrelType);
     ContainerEdgeEnumT findPortEdge(QPointF center, QPointF pt); //!< @todo maybe not public
-    virtual void refreshAppearance();
-    void refreshExternalPortsAppearanceAndPosition();
+    virtual void refreshAppearance() override;
+    void refreshExternalPortsAppearanceAndPosition() override;
     void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y); //!< @todo maybe not public
 
     //Plot and simulation results methods
@@ -180,6 +271,7 @@ public:
     //Model and script file methods
     void setModelFile(QString path);
     const QFileInfo &getModelFileInfo() const;
+    void setModelFileInfo(QFile &rFile, const QString relModelPath="") override;
     QString getModelFilePath() const;
     QString getModelPath() const;
 
@@ -195,7 +287,34 @@ public:
     bool isAnimationDisabled();
     void setAnimationDisabled(bool disabled);
 
+    // Export methods
+    void exportToLabView();
+    void exportToFMU1_32();
+    void exportToFMU1_64();
+    void exportToFMU2_32();
+    void exportToFMU2_64();
+    void exportToFMU(QString savePath, int version, ArchitectureEnumT arch);
+    void exportToSimulink();
+    void exportToExecutableModel(QString savePath, ArchitectureEnumT arch);
+
+    // Type info
+    enum { Type = SystemObjectType };
+    int type() const override;
+    virtual QString getHmfTagName() const override;
+
+    void getSensitivityAnalysisSettings(SensitivityAnalysisSettings &sensSettings);
+    void setSensitivityAnalysisSettings(SensitivityAnalysisSettings &sensSettings);
+    void getOptimizationSettings(OptimizationSettings &optSettings);
+    void setOptimizationSettings(OptimizationSettings &optSettings);
+
+    void saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents = FullModel) override;
+    void loadFromDomElement(QDomElement domElement) override;
+
+
 public slots:
+
+    void setTimeStep(const double timeStep);
+    void setVisibleIfSignal(bool visible);
 
     //Selection slots
     void selectAll();
@@ -310,7 +429,7 @@ signals:
 protected:
 
     //Protected methods
-    virtual Port* createRefreshExternalPort(QString portName);
+    virtual Port* createRefreshExternalPort(QString portName) override;
     virtual void renameExternalPort(QString oldName, QString newName);
     //virtual void openPropertiesDialog();
     void clearContents();
@@ -320,9 +439,12 @@ protected:
     //Help function for creating container ports
     virtual void addExternalContainerPortObject(ModelObject *pModelObject);
 
+    QDomElement saveGuiDataToDomElement(QDomElement &rDomElement) override;
+    void saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel) override;
+
     //Protected overloaded Qt methods
-    //virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-    //virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
 
     //Scene pointer and graphics viewport
     QGraphicsScene *mpScene;
@@ -383,6 +505,22 @@ protected:
 
     //Animation members
     bool mAnimationDisabled = false;
+
+private:
+    void commonConstructorCode();
+    void loadSensitivityAnalysisSettingsFromDomElement(QDomElement &rDomElement);
+    void saveSensitivityAnalysisSettingsToDomElement(QDomElement &rDomElement);
+    void loadOptimizationSettingsFromDomElement(QDomElement &rDomElement);
+    void saveOptimizationSettingsToDomElement(QDomElement &rDomElement);
+
+    int mNumberOfLogSamples;
+    double mLogStartTime;
+
+    QString mLoadType;
+    CoreSystemAccess *mpCoreSystemAccess;
+
+    OptimizationSettings mOptSettings;
+    SensitivityAnalysisSettings mSensSettings;
 };
 
 #endif // GUICONTAINEROBJECT_H

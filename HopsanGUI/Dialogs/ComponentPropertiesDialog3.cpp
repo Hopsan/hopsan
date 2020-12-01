@@ -58,7 +58,6 @@
 #include "Dialogs/MovePortsDialog.h"
 #include "GUIObjects/GUIComponent.h"
 #include "GUIObjects/GUIContainerObject.h"
-#include "GUIObjects/GUISystem.h"
 #include "GUIPort.h"
 #include "UndoStack.h"
 #include "Utilities/GUIUtilities.h"
@@ -123,7 +122,7 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
     setWindowTitle(tr("Component Properties"));
     createEditStuff();
 
-    connect(this, SIGNAL(setLimitedModelEditingLock(bool)), mpModelObject->getParentContainerObject()->mpModelWidget, SLOT(lockModelEditingLimited(bool)));
+    connect(this, SIGNAL(setLimitedModelEditingLock(bool)), mpModelObject->getParentSystemObject()->mpModelWidget, SLOT(lockModelEditingLimited(bool)));
 
     // Lock model for changes
     emit setLimitedModelEditingLock(true);
@@ -137,7 +136,7 @@ bool VariableTableWidget::cleanAndVerifyParameterValue(QString &rValue, const QS
     //! @todo I think CORE should handle all of this stuff
     QString tempVal = rValue;
     QStringList selfParameterNames = mpModelObject->getParameterNames();
-    QStringList allAccessibleParentSystemParamNames = getAllAccessibleSystemParameterNames(mpModelObject->getParentContainerObject());
+    QStringList allAccessibleParentSystemParamNames = getAllAccessibleSystemParameterNames(mpModelObject->getParentSystemObject());
     QString error;
 
     if(verifyParameterValue(tempVal, type, selfParameterNames, allAccessibleParentSystemParamNames, error))
@@ -168,7 +167,7 @@ bool VariableTableWidget::setAliasName(const int row)
     if (parts.size() == 2)
     {
         //! @todo look over this name stuff
-        mpModelObject->getParentContainerObject()->setVariableAlias(mpModelObject->getName()+"#"+parts[0]+"#"+parts[1], alias);
+        mpModelObject->getParentSystemObject()->setVariableAlias(mpModelObject->getName()+"#"+parts[0]+"#"+parts[1], alias);
     }
     return true;
 }
@@ -189,7 +188,7 @@ void ComponentPropertiesDialog3::okPressed()
 void ComponentPropertiesDialog3::applyAndSimulatePressed()
 {
     applyPressed();
-    mpModelObject->getParentContainerObject()->mpModelWidget->simulate_blocking();
+    mpModelObject->getParentSystemObject()->mpModelWidget->simulate_blocking();
 }
 
 
@@ -216,7 +215,7 @@ void ComponentPropertiesDialog3::openSourceCode()
 void ComponentPropertiesDialog3::editPortPos()
 {
     //! @todo who owns the dialog, is it ever removed?
-    MovePortsDialog *dialog = new MovePortsDialog(mpModelObject->getAppearanceData(), mpModelObject->getLibraryAppearanceData().data(), mpModelObject->getParentContainerObject()->getGfxType());
+    MovePortsDialog *dialog = new MovePortsDialog(mpModelObject->getAppearanceData(), mpModelObject->getLibraryAppearanceData().data(), mpModelObject->getParentSystemObject()->getGfxType());
     connect(dialog, SIGNAL(finished()), mpModelObject, SLOT(refreshExternalPortsAppearanceAndPosition()), Qt::UniqueConnection);
 }
 
@@ -237,7 +236,7 @@ bool ComponentPropertiesDialog3::setVariableValues()
 
 void ComponentPropertiesDialog3::setName()
 {
-    mpModelObject->getParentContainerObject()->renameModelObject(mpModelObject->getName(), mpNameEdit->text());
+    mpModelObject->getParentSystemObject()->renameModelObject(mpModelObject->getName(), mpNameEdit->text());
 }
 
 void ComponentPropertiesDialog3::setSystemProperties()
@@ -636,7 +635,7 @@ QWidget *SystemProperties::createSystemSettings()
     QString timeStepText;
     if(mpTimeStepCheckBox->isChecked())
     {
-        timeStepText.setNum(mpSystemObject->getParentContainerObject()->getCoreSystemAccessPtr()->getDesiredTimeStep());
+        timeStepText.setNum(mpSystemObject->getParentSystemObject()->getCoreSystemAccessPtr()->getDesiredTimeStep());
     }
     else
     {
@@ -848,9 +847,9 @@ void ComponentPropertiesDialog3::createEditStuff()
     pTabWidget->addTab(pHelpWidget, "Description");
 
     // Add tabs for subsystems
-    if (mpModelObject->type() == SystemContainerType)
+    if (mpModelObject->type() == SystemObjectType)
     {
-        mpSystemProperties = new SystemProperties(qobject_cast<SystemContainer*>(mpModelObject), this);
+        mpSystemProperties = new SystemProperties(qobject_cast<SystemObject*>(mpModelObject), this);
         QWidget *pSystemSettingsWidget = mpSystemProperties->createSystemSettings();
         QWidget *pSystemAppearanceWidget = mpSystemProperties->createAppearanceSettings();
         QWidget *pModelInfoWidget = mpSystemProperties->createModelinfoSettings();
@@ -1103,16 +1102,16 @@ bool VariableTableWidget::setStartValues()
                     // Add an undo post (but only one for all values changed this time
                     if(!addedUndoPost)
                     {
-                        mpModelObject->getParentContainerObject()->getUndoStackPtr()->newPost(UNDO_CHANGEDPARAMETERS);
+                        mpModelObject->getParentSystemObject()->getUndoStackPtr()->newPost(UNDO_CHANGEDPARAMETERS);
                         addedUndoPost = true;
                     }
                     // Register the change in undo stack
-                    mpModelObject->getParentContainerObject()->getUndoStackPtr()->registerChangedParameter(mpModelObject->getName(),
+                    mpModelObject->getParentSystemObject()->getUndoStackPtr()->registerChangedParameter(mpModelObject->getName(),
                                                                                                            name,
                                                                                                            previousValue,
                                                                                                            value);
                     // Mark project tab as changed
-                    mpModelObject->getParentContainerObject()->hasChanged();
+                    mpModelObject->getParentSystemObject()->hasChanged();
 
                     setNewValueSucess =true;
                 }
@@ -1726,7 +1725,7 @@ void ParameterValueSelectionWidget::createSysParameterSelectionMenu()
     QMap<QAction*, QString> actionParamMap;
 
     QVector<CoreParameterData> paramDataVector;
-    mpModelObject->getParentContainerObject()->getParameters(paramDataVector);
+    mpModelObject->getParentSystemObject()->getParameters(paramDataVector);
 
     for (int i=0; i<paramDataVector.size(); ++i)
     {
@@ -1843,7 +1842,7 @@ bool ParameterValueSelectionWidget::checkIfSysParEntered()
     bool syspar = false;
     if (mpValueEdit)
     {
-        syspar = mpModelObject->getParentContainerObject()->hasParameter(mpValueEdit->text());
+        syspar = mpModelObject->getParentSystemObject()->hasParameter(mpValueEdit->text());
     }
 
     if (mpUnitSelectionWidget)
@@ -2184,7 +2183,7 @@ void PlotSettingsWidget::setPlotLabel(QString label)
     mpModelObject->setVariablePlotLabel(mVariablePortDataName, label);
 }
 
-SystemProperties::SystemProperties(SystemContainer *pSystemObject, QWidget *pParentWidget) :
+SystemProperties::SystemProperties(SystemObject *pSystemObject, QWidget *pParentWidget) :
     QObject(pParentWidget)
 {
     mpSystemObject = pSystemObject;
@@ -2195,7 +2194,7 @@ void SystemProperties::fixTimeStepInheritance(bool value)
     double ts;
     if(value)
     {
-        ts = mpSystemObject->getParentContainerObject()->getCoreSystemAccessPtr()->getDesiredTimeStep();
+        ts = mpSystemObject->getParentSystemObject()->getCoreSystemAccessPtr()->getDesiredTimeStep();
     }
     else
     {

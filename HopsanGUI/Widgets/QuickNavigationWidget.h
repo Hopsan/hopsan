@@ -40,14 +40,14 @@
 #include <QLabel>
 
 //Forward Declarations
-class ContainerObject;
+class SystemObject;
 
 class QuickNavigationWidget : public QWidget
 {
     Q_OBJECT
 public:
     QuickNavigationWidget(QWidget *parent = 0);
-    void addOpenContainer(ContainerObject* pContainer);
+    void addOpenContainer(SystemObject* pContainer);
     int getCurrentId();
 
 signals:
@@ -59,7 +59,7 @@ private:
     void refreshCurrentLabel();
     void refreshVisible();
 
-    QVector<ContainerObject*> mContainerObjectPtrs;
+    QVector<SystemObject*> mContainerObjectPtrs;
     QVector<QPushButton*> mPushButtonPtrs;
     QLabel *mpCurrentSysNameLabel;
     QButtonGroup *mpButtonGroup;

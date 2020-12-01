@@ -94,7 +94,7 @@
 
 //! @todo maybe we can make sure that we don't need to include these here
 #include "GraphicsView.h"
-#include "GUIObjects/GUISystem.h"
+#include "GUIObjects/GUIContainerObject.h"
 
 // Declare (create) global pointers that will point to MainWindow children
 PlotHandler *gpPlotHandler = 0;
@@ -1553,7 +1553,7 @@ void MainWindow::revertModel()
 
 void MainWindow::openNumHopDialog()
 {
-    ContainerObject *pContainer = gpModelHandler->getCurrentViewContainerObject();
+    SystemObject *pContainer = gpModelHandler->getCurrentViewContainerObject();
     if (pContainer)
     {
         NumHopScriptDialog *pDialog = new NumHopScriptDialog(pContainer, gpMainWindowWidget);

@@ -54,7 +54,7 @@ class QCheckBox;
 // Hopsan forward declaration
 class ModelWidget;
 class SensitivityAnalysisSettings;
-class SystemContainer;
+class SystemObject;
 class SensitivityAnalysisDialog;
 class RemoteSimulationQueueHandler;
 

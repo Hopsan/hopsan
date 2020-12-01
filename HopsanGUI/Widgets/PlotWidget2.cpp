@@ -53,7 +53,6 @@
 #include "GraphicsView.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUIModelObject.h"
-#include "GUIObjects/GUISystem.h"
 #include "GUIPort.h"
 #include "LibraryWidget.h"
 #include "loadFunctions.h"

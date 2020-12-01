@@ -50,7 +50,6 @@
 #include "Widgets/ModelWidget.h"
 #include "Utilities/GUIUtilities.h"
 #include "Dialogs/OptionsDialog.h"
-#include "GUIObjects/GUISystem.h"
 #include "PlotWindow.h"
 #include "GUIPort.h"
 #include "GraphicsView.h"

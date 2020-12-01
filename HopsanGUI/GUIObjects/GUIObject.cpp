@@ -42,14 +42,14 @@
 #include "Utilities/GUIUtilities.h"
 
 
-WorkspaceObject::WorkspaceObject(QPointF pos, double rot, SelectionStatusEnumT, ContainerObject *pParentContainer, QGraphicsItem *pParent)
+WorkspaceObject::WorkspaceObject(QPointF pos, double rot, SelectionStatusEnumT, SystemObject *pParentContainer, QGraphicsItem *pParent)
     : QGraphicsWidget(pParent)
 {
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
     setAcceptHoverEvents(true);
 
-    setParentContainerObject(pParentContainer);
-    if (mpParentContainerObject)
+    setParentSystemObject(pParentContainer);
+    if (mpParentSystemObject)
     {
         pParentContainer->getContainedScenePtr()->addItem(this);
     }
@@ -67,17 +67,17 @@ WorkspaceObject::WorkspaceObject(QPointF pos, double rot, SelectionStatusEnumT, 
 }
 
 
-void WorkspaceObject::setParentContainerObject(ContainerObject *pParentContainer)
+void WorkspaceObject::setParentSystemObject(SystemObject *pParentSystem)
 {
-    if(mpParentContainerObject)
+    if(mpParentSystemObject)
     {
         // First clear the slot and then establish new connection
-        disconnect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
+        disconnect(mpParentSystemObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
     }
-    mpParentContainerObject = pParentContainer;
-    if(mpParentContainerObject)
+    mpParentSystemObject = pParentSystem;
+    if(mpParentSystemObject)
     {
-        connect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()), Qt::UniqueConnection);
+        connect(mpParentSystemObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()), Qt::UniqueConnection);
     }
 }
 
@@ -125,9 +125,9 @@ QPointF WorkspaceObject::getPreviousPos() const
 }
 
 //! @brief Returns the objects parent ContainerObject or 0 if no parent container
-ContainerObject *WorkspaceObject::getParentContainerObject()
+SystemObject *WorkspaceObject::getParentSystemObject()
 {
-    return mpParentContainerObject;
+    return mpParentSystemObject;
 }
 
 
@@ -177,7 +177,7 @@ void WorkspaceObject::refreshSelectionBoxSize()
 //! @brief Defines what happens if a mouse key is pressed while hovering an object
 void WorkspaceObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(!mpParentContainerObject)
+    if(!mpParentSystemObject)
     {
         return;
     }
@@ -185,7 +185,7 @@ void WorkspaceObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
     // We need the following code her to renven all objects including widgets from being movable while a connection is being created
 
     // Objects shall not be selectable while creating a connector
-    if(mpParentContainerObject->isCreatingConnector())
+    if(mpParentSystemObject->isCreatingConnector())
     {
         setFlag(QGraphicsItem::ItemIsMovable, false);    // Make the component not movable during connection
         setFlag(QGraphicsItem::ItemIsSelectable, false); // Make the component not selectable during connection
@@ -205,11 +205,11 @@ void WorkspaceObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
     // Store old positions for all components, in case more than one is selected
     //! @todo this should be handled elsewhere
-    if(mpParentContainerObject && event->button() == Qt::LeftButton )
+    if(mpParentSystemObject && event->button() == Qt::LeftButton )
     {
-        for(int i=0; i<mpParentContainerObject->getSelectedGUIWidgetPtrs().size(); ++i)
+        for(int i=0; i<mpParentSystemObject->getSelectedGUIWidgetPtrs().size(); ++i)
         {
-            mpParentContainerObject->getSelectedGUIWidgetPtrs()[i]->rememberPos();
+            mpParentSystemObject->getSelectedGUIWidgetPtrs()[i]->rememberPos();
         }
     }
 
@@ -222,7 +222,7 @@ void WorkspaceObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsWidget::mouseReleaseEvent(event);
 
     // Objects shall not be selected while creating a connector
-    if(mpParentContainerObject && mpParentContainerObject->isCreatingConnector())
+    if(mpParentSystemObject && mpParentSystemObject->isCreatingConnector())
     {
         setSelected(false);
         setActive(false);
@@ -237,19 +237,19 @@ QVariant WorkspaceObject::itemChange(GraphicsItemChange change, const QVariant &
     // If item selection changes then connect or disconnect the appropriate signals
     if (change == QGraphicsItem::ItemSelectedHasChanged)
     {
-        if (isSelected() && mpParentContainerObject)
+        if (isSelected() && mpParentSystemObject)
         {
             mpSelectionBox->setActive();
 
-            connect(mpParentContainerObject,    SIGNAL(deleteSelected()),                   this, SLOT(deleteMe()));
-            connect(mpParentContainerObject,    SIGNAL(rotateSelectedObjectsRight()),       this, SLOT(rotate90cw()));
-            connect(mpParentContainerObject,    SIGNAL(rotateSelectedObjectsLeft()),        this, SLOT(rotate90ccw()));
-            connect(mpParentContainerObject,    SIGNAL(flipSelectedObjectsHorizontal()),    this, SLOT(flipHorizontal()));
-            connect(mpParentContainerObject,    SIGNAL(flipSelectedObjectsVertical()),      this, SLOT(flipVertical()));
-            connect(mpParentContainerObject,    SIGNAL(deselectAllGUIObjects()),            this, SLOT(deselect()));
-            disconnect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()),              this, SLOT(select()));
+            connect(mpParentSystemObject,    SIGNAL(deleteSelected()),                   this, SLOT(deleteMe()));
+            connect(mpParentSystemObject,    SIGNAL(rotateSelectedObjectsRight()),       this, SLOT(rotate90cw()));
+            connect(mpParentSystemObject,    SIGNAL(rotateSelectedObjectsLeft()),        this, SLOT(rotate90ccw()));
+            connect(mpParentSystemObject,    SIGNAL(flipSelectedObjectsHorizontal()),    this, SLOT(flipHorizontal()));
+            connect(mpParentSystemObject,    SIGNAL(flipSelectedObjectsVertical()),      this, SLOT(flipVertical()));
+            connect(mpParentSystemObject,    SIGNAL(deselectAllGUIObjects()),            this, SLOT(deselect()));
+            disconnect(mpParentSystemObject, SIGNAL(selectAllGUIObjects()),              this, SLOT(select()));
 
-            GraphicsView *pGraphicsView = mpParentContainerObject->mpModelWidget->getGraphicsView();
+            GraphicsView *pGraphicsView = mpParentSystemObject->mpModelWidget->getGraphicsView();
             connect(pGraphicsView,              SIGNAL(keyPressDelete()),                   this, SLOT(deleteMe()));
             connect(pGraphicsView,              SIGNAL(keyPressCtrlUp()),                   this, SLOT(moveUp()));
             connect(pGraphicsView,              SIGNAL(keyPressCtrlDown()),                 this, SLOT(moveDown()));
@@ -258,17 +258,17 @@ QVariant WorkspaceObject::itemChange(GraphicsItemChange change, const QVariant &
 
             emit objectSelected();
         }
-        else if(mpParentContainerObject)
+        else if(mpParentSystemObject)
         {
-            disconnect(mpParentContainerObject, SIGNAL(deleteSelected()),                   this, SLOT(deleteMe()));
-            disconnect(mpParentContainerObject, SIGNAL(rotateSelectedObjectsRight()),       this, SLOT(rotate90cw()));
-            disconnect(mpParentContainerObject, SIGNAL(rotateSelectedObjectsLeft()),        this, SLOT(rotate90ccw()));
-            disconnect(mpParentContainerObject, SIGNAL(flipSelectedObjectsHorizontal()),    this, SLOT(flipHorizontal()));
-            disconnect(mpParentContainerObject, SIGNAL(flipSelectedObjectsVertical()),      this, SLOT(flipVertical()));
-            disconnect(mpParentContainerObject, SIGNAL(deselectAllGUIObjects()),            this, SLOT(deselect()));
-            connect(mpParentContainerObject,    SIGNAL(selectAllGUIObjects()),              this, SLOT(select()));
+            disconnect(mpParentSystemObject, SIGNAL(deleteSelected()),                   this, SLOT(deleteMe()));
+            disconnect(mpParentSystemObject, SIGNAL(rotateSelectedObjectsRight()),       this, SLOT(rotate90cw()));
+            disconnect(mpParentSystemObject, SIGNAL(rotateSelectedObjectsLeft()),        this, SLOT(rotate90ccw()));
+            disconnect(mpParentSystemObject, SIGNAL(flipSelectedObjectsHorizontal()),    this, SLOT(flipHorizontal()));
+            disconnect(mpParentSystemObject, SIGNAL(flipSelectedObjectsVertical()),      this, SLOT(flipVertical()));
+            disconnect(mpParentSystemObject, SIGNAL(deselectAllGUIObjects()),            this, SLOT(deselect()));
+            connect(mpParentSystemObject,    SIGNAL(selectAllGUIObjects()),              this, SLOT(select()));
 
-            GraphicsView *pGraphicsView = mpParentContainerObject->mpModelWidget->getGraphicsView();
+            GraphicsView *pGraphicsView = mpParentSystemObject->mpModelWidget->getGraphicsView();
             disconnect(pGraphicsView,           SIGNAL(keyPressDelete()),                   this, SLOT(deleteMe()));
             disconnect(pGraphicsView,           SIGNAL(keyPressCtrlUp()),                   this, SLOT(moveUp()));
             disconnect(pGraphicsView,           SIGNAL(keyPressCtrlDown()),                 this, SLOT(moveDown()));
@@ -282,10 +282,10 @@ QVariant WorkspaceObject::itemChange(GraphicsItemChange change, const QVariant &
     QGraphicsWidget::itemChange(change, value);
 
     // Move component only horizontal, vertical or snap to original position if Ctrl is pressed
-    if (mpParentContainerObject && (change == QGraphicsItem::ItemPositionHasChanged) && mEnableSnap)
+    if (mpParentSystemObject && (change == QGraphicsItem::ItemPositionHasChanged) && mEnableSnap)
     {
-        GraphicsView *pGraphicsView = mpParentContainerObject->mpModelWidget->getGraphicsView();
-        if(mpParentContainerObject && pGraphicsView->isCtrlKeyPressed() && pGraphicsView->isLeftMouseButtonPressed())
+        GraphicsView *pGraphicsView = mpParentSystemObject->mpModelWidget->getGraphicsView();
+        if(mpParentSystemObject && pGraphicsView->isCtrlKeyPressed() && pGraphicsView->isLeftMouseButtonPressed())
         {
             QPointF diff = this->pos()-mPreviousPos;
             if( diff.manhattanLength() < 0.5*SNAPDISTANCE)
@@ -353,7 +353,7 @@ void WorkspaceObject::moveUp()
     if (!isLocallyLocked() && (getModelLockLevel()==NotLocked))
     {
         setPos(pos().x(), mapFromScene(mapToScene(pos())).y()-1);
-        mpParentContainerObject->mpModelWidget->getGraphicsView()->updateViewPort(); //!< @todo If we have many objects selected this will probably call MANY updates of the viewport, maybe should do in some other way, same "problem" in other places
+        mpParentSystemObject->mpModelWidget->getGraphicsView()->updateViewPort(); //!< @todo If we have many objects selected this will probably call MANY updates of the viewport, maybe should do in some other way, same "problem" in other places
     }
 }
 
@@ -367,7 +367,7 @@ void WorkspaceObject::moveDown()
     if (!isLocallyLocked() && (getModelLockLevel()==NotLocked))
     {
         setPos(pos().x(), mapFromScene(mapToScene(pos())).y()+1);
-        mpParentContainerObject->mpModelWidget->getGraphicsView()->updateViewPort();
+        mpParentSystemObject->mpModelWidget->getGraphicsView()->updateViewPort();
     }
 }
 
@@ -381,7 +381,7 @@ void WorkspaceObject::moveLeft()
     if (!isLocallyLocked() && (getModelLockLevel()==NotLocked))
     {
         setPos(mapFromScene(mapToScene(pos())).x()-1, pos().y());
-        mpParentContainerObject->mpModelWidget->getGraphicsView()->updateViewPort();
+        mpParentSystemObject->mpModelWidget->getGraphicsView()->updateViewPort();
     }
 }
 
@@ -395,7 +395,7 @@ void WorkspaceObject::moveRight()
     if (!isLocallyLocked() && (getModelLockLevel()==NotLocked))
     {
         setPos(mapFromScene(mapToScene(pos())).x()+1, pos().y());
-        mpParentContainerObject->mpModelWidget->getGraphicsView()->updateViewPort();
+        mpParentSystemObject->mpModelWidget->getGraphicsView()->updateViewPort();
     }
 }
 
@@ -419,9 +419,9 @@ bool WorkspaceObject::isLocallyLocked() const
 
 LocklevelEnumT WorkspaceObject::getModelLockLevel() const
 {
-    if (mpParentContainerObject && mpParentContainerObject->mpModelWidget)
+    if (mpParentSystemObject && mpParentSystemObject->mpModelWidget)
     {
-        return mpParentContainerObject->mpModelWidget->getCurrentLockLevel();
+        return mpParentSystemObject->mpModelWidget->getCurrentLockLevel();
     }
     return NotLocked;
 }

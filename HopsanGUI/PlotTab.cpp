@@ -59,7 +59,6 @@
 #include "Widgets/ModelWidget.h"
 #include "PlotArea.h"
 #include "Utilities/HelpPopUpWidget.h"
-#include "GUIObjects/GUISystem.h"
 
 #include "qwt_plot_renderer.h"
 #include "dependencies/BarChartPlotter/barchartplotter.h"

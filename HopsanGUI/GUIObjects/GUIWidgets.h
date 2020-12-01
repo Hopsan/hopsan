@@ -57,7 +57,7 @@ class Widget : public WorkspaceObject
     Q_OBJECT
 
 public:
-    Widget(QPointF pos, double rot, SelectionStatusEnumT startSelected, ContainerObject *pSystem, QGraphicsItem *pParent=0);
+    Widget(QPointF pos, double rot, SelectionStatusEnumT startSelected, SystemObject *pSystem, QGraphicsItem *pParent=0);
     virtual WidgetTypesEnumT getWidgetType() const = 0;
     int getWidgetIndex();
 
@@ -82,8 +82,8 @@ class TextBoxWidget : public Widget
     Q_OBJECT
 
 public:
-    TextBoxWidget(QString text, QPointF pos, double rot, SelectionStatusEnumT startSelected, ContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
-    TextBoxWidget(const TextBoxWidget &other, ContainerObject *pSystem);
+    TextBoxWidget(QString text, QPointF pos, double rot, SelectionStatusEnumT startSelected, SystemObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
+    TextBoxWidget(const TextBoxWidget &other, SystemObject *pSystem);
 
     // Type info
     virtual WidgetTypesEnumT getWidgetType() const;

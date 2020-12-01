@@ -55,7 +55,6 @@
 #include "ModelHandler.h"
 #include "MessageHandler.h"
 #include "GUIObjects/GUIContainerObject.h"
-#include "GUIObjects/GUISystem.h"
 #include "LibraryHandler.h"
 
 //Maybe we can remove these to when some cleanup has happened in the code later on (maybe even GUIPort.h)
@@ -297,7 +296,7 @@ void GraphicsView::updateViewPort()
 }
 
 //! @brief Set the system that the view is representing
-void GraphicsView::setContainerPtr(ContainerObject *pContainer)
+void GraphicsView::setContainerPtr(SystemObject *pContainer)
 {
     mpContainerObject = pContainer;
     setScene(mpContainerObject->getContainedScenePtr());
@@ -305,7 +304,7 @@ void GraphicsView::setContainerPtr(ContainerObject *pContainer)
 
 
 //! @brief Returns a pointer to the container object in the graphics view
-ContainerObject *GraphicsView::getContainerPtr()
+SystemObject *GraphicsView::getContainerPtr()
 {
     return this->mpContainerObject;
 }

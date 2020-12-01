@@ -76,7 +76,7 @@
 #include "ModelHandler.h"
 #include "version_gui.h"
 #include "MessageHandler.h"
-#include "GUIObjects/GUISystem.h"
+#include "GUIObjects/GUIContainerObject.h"
 #include "GeneratorUtils.h"
 #include "Utilities/GUIUtilities.h"
 
@@ -1517,7 +1517,7 @@ bool LibraryHandler::isTypeNamesOkToUnload(const QStringList &typeNames)
     for(int m=0; m<gpModelHandler->count(); ++m)
     {
         bool hasUnloadingComponent=false;
-        SystemContainer *pSystem = gpModelHandler->getTopLevelSystem(m);
+        SystemObject *pSystem = gpModelHandler->getTopLevelSystem(m);
         Q_FOREACH(const QString &comp, pSystem->getModelObjectNames())
         {
             if(typeNames.contains(pSystem->getModelObject(comp)->getTypeName()))

@@ -44,10 +44,10 @@
 
 namespace {
 
-QStringList getAllAccesibleParentAndGrandparentSystemParameterNames(ContainerObject* pThisSystem) {
+QStringList getAllAccesibleParentAndGrandparentSystemParameterNames(SystemObject* pThisSystem) {
     QStringList output;
     if (!pThisSystem->isTopLevelContainer()) {
-        output = getAllAccessibleSystemParameterNames(pThisSystem->getParentContainerObject());
+        output = getAllAccessibleSystemParameterNames(pThisSystem->getParentSystemObject());
     }
     return output;
 }
@@ -83,7 +83,7 @@ void ParamTypeComboBoxDelegate::updateEditorGeometry(QWidget *editor, const QSty
     editor->setGeometry(option.rect);
 }
 
-SysParamTableModel::SysParamTableModel(ContainerObject *pContainerObject, QObject *pParent)
+SysParamTableModel::SysParamTableModel(SystemObject *pContainerObject, QObject *pParent)
     : QAbstractTableModel(pParent)
 {
     this->setContainer(pContainerObject);
@@ -325,7 +325,7 @@ void SysParamTableModel::sortByColumn(int c)
     this->sort(c);
 }
 
-void SysParamTableModel::setContainer(ContainerObject *pContainerObject)
+void SysParamTableModel::setContainer(SystemObject *pContainerObject)
 {
     mpContainerObject = pContainerObject;
     if (mpContainerObject)
@@ -418,12 +418,12 @@ SystemParametersWidget::SystemParametersWidget(QWidget *pParent)
     connect(mpRemoveButton, SIGNAL(clicked()), this, SLOT(removeSelected()));
 }
 
-QPointer<ContainerObject> SystemParametersWidget::getRepresentedContainerObject()
+QPointer<SystemObject> SystemParametersWidget::getRepresentedContainerObject()
 {
     return mpContainerObject;
 }
 
-void SystemParametersWidget::update(ContainerObject *pNewContainer)
+void SystemParametersWidget::update(SystemObject *pNewContainer)
 {
     if (mpContainerObject != pNewContainer)
     {

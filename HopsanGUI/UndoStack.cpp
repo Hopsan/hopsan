@@ -36,7 +36,6 @@
 #include "GUIConnector.h"
 #include "loadFunctions.h"
 #include "GUIObjects/GUIContainerObject.h"
-#include "GUIObjects/GUISystem.h"
 #include "GUIObjects/GUIWidgets.h"
 #include "MessageHandler.h"
 #include "Widgets/UndoWidget.h"
@@ -53,7 +52,7 @@
 
 //! @brief Constructor for the undo stack
 //! @param parentSystem Pointer to the current system
-UndoStack::UndoStack(ContainerObject *parentSystem) : QObject()
+UndoStack::UndoStack(SystemObject *parentSystem) : QObject()
 {
     mpParentContainerObject = parentSystem;
     mCurrentStackPosition = -1;
@@ -449,7 +448,7 @@ void UndoStack::undoOneStep()
     for(it = addedsubsystemsList.begin(); it!=addedsubsystemsList.end(); ++it)
     {
         QString name = (*it).attribute(HMF_NAMETAG);
-        SystemContainer *pItem = qobject_cast<SystemContainer *>(mpParentContainerObject->getModelObject(name));
+        SystemObject *pItem = qobject_cast<SystemObject *>(mpParentContainerObject->getModelObject(name));
 
         //Update information about Subsystem in dom thread, in case it has changed since registered
         QDomElement whatElement = (*it).parentNode().toElement();

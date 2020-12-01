@@ -48,7 +48,7 @@
 #include "DesktopHandler.h"
 #include "Dialogs/OptimizationDialog.h"
 #include "global.h"
-#include "GUIObjects/GUISystem.h"
+#include "GUIObjects/GUIContainerObject.h"
 #include "GUIPort.h"
 #include "HcomHandler.h"
 #include "Utilities/HelpPopUpWidget.h"
@@ -82,7 +82,7 @@ bool OptimizationScriptWizardPage::isComplete() const
 
 
 //! @brief Constructor
-OptimizationScriptWizard::OptimizationScriptWizard(SystemContainer* pSystem, QWidget *parent)
+OptimizationScriptWizard::OptimizationScriptWizard(SystemObject* pSystem, QWidget *parent)
     : QWizard(parent)
 {
         //Set the name and size of the main window

@@ -33,7 +33,7 @@
 #include "MessageHandler.h"
 #include "global.h"
 
-NumHopScriptDialog::NumHopScriptDialog(ContainerObject *pSystem, QWidget *pParent) :
+NumHopScriptDialog::NumHopScriptDialog(SystemObject *pSystem, QWidget *pParent) :
     QDialog(pParent)
 {
     mpSystem = pSystem;

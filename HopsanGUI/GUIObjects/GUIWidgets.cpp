@@ -44,13 +44,13 @@
 
 #include "global.h"
 #include "GUIWidgets.h"
-#include "GUISystem.h"
+#include "GUIContainerObject.h"
 #include "Widgets/ModelWidget.h"
 #include "Utilities/GUIUtilities.h"
 #include "UndoStack.h"
 #include "GraphicsView.h"
 
-Widget::Widget(QPointF pos, double rot, SelectionStatusEnumT startSelected, ContainerObject *pSystem, QGraphicsItem *pParent)
+Widget::Widget(QPointF pos, double rot, SelectionStatusEnumT startSelected, SystemObject *pSystem, QGraphicsItem *pParent)
     : WorkspaceObject(pos, rot, startSelected, pSystem, pParent)
 {
     setFlag(QGraphicsItem::ItemIsMovable, true);
@@ -80,11 +80,11 @@ QVariant Widget::itemChange(GraphicsItemChange change, const QVariant &value)
     {
         if(this->isSelected())
         {
-            mpParentContainerObject->rememberSelectedWidget(this);
+            mpParentSystemObject->rememberSelectedWidget(this);
         }
         else
         {
-            mpParentContainerObject->forgetSelectedWidget(this);
+            mpParentSystemObject->forgetSelectedWidget(this);
         }
     }
     else if (change == QGraphicsItem::ItemPositionHasChanged)
@@ -109,7 +109,7 @@ void Widget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
         //Loop through all selected widgets and register changed positions in undo stack
     bool alreadyClearedRedo = false;
-    QList<Widget *> selectedWidgets = mpParentContainerObject->getSelectedGUIWidgetPtrs();
+    QList<Widget *> selectedWidgets = mpParentSystemObject->getSelectedGUIWidgetPtrs();
     for(int i=0; i<selectedWidgets.size(); ++i)
     {
         if((selectedWidgets[i]->mPreviousPos != selectedWidgets[i]->pos()) && (event->button() == Qt::LeftButton) && !selectedWidgets[i]->mIsResizing)
@@ -117,19 +117,19 @@ void Widget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
                 //This check makes sure that only one undo post is created when moving several objects at once
             if(!alreadyClearedRedo)
             {
-                if(mpParentContainerObject->getSelectedGUIWidgetPtrs().size() > 1)
+                if(mpParentSystemObject->getSelectedGUIWidgetPtrs().size() > 1)
                 {
-                    mpParentContainerObject->getUndoStackPtr()->newPost(UNDO_MOVEDMULTIPLEWIDGETS);
+                    mpParentSystemObject->getUndoStackPtr()->newPost(UNDO_MOVEDMULTIPLEWIDGETS);
                 }
                 else
                 {
-                    mpParentContainerObject->getUndoStackPtr()->newPost();
+                    mpParentSystemObject->getUndoStackPtr()->newPost();
                 }
-                mpParentContainerObject->mpModelWidget->hasChanged();
+                mpParentSystemObject->mpModelWidget->hasChanged();
                 alreadyClearedRedo = true;
             }
 
-            mpParentContainerObject->getUndoStackPtr()->registerMovedWidget(selectedWidgets[i], selectedWidgets[i]->mPreviousPos, selectedWidgets[i]->pos());
+            mpParentSystemObject->getUndoStackPtr()->registerMovedWidget(selectedWidgets[i], selectedWidgets[i]->mPreviousPos, selectedWidgets[i]->pos());
         }
         selectedWidgets[i]->mIsResizing = false;
     }
@@ -138,7 +138,7 @@ void Widget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 }
 
 
-TextBoxWidget::TextBoxWidget(QString text, QPointF pos, double rot, SelectionStatusEnumT startSelected, ContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent)
+TextBoxWidget::TextBoxWidget(QString text, QPointF pos, double rot, SelectionStatusEnumT startSelected, SystemObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent)
     : Widget(pos, rot, startSelected, pSystem, pParent)
 {
     mWidgetIndex = widgetIndex;
@@ -177,7 +177,7 @@ TextBoxWidget::TextBoxWidget(QString text, QPointF pos, double rot, SelectionSta
 }
 
 
-TextBoxWidget::TextBoxWidget(const TextBoxWidget &other, ContainerObject *pSystem)
+TextBoxWidget::TextBoxWidget(const TextBoxWidget &other, SystemObject *pSystem)
     : Widget(other.pos(), other.rotation(), Deselected, pSystem, 0)
 {
     mpBorderItem = new QGraphicsRectItem(other.mpBorderItem->rect(), this);
@@ -406,7 +406,7 @@ void TextBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     Q_UNUSED(event)
 
-    if (mpEditDialog.isNull() && !mpParentContainerObject->mpModelWidget->getGraphicsView()->isCtrlKeyPressed())
+    if (mpEditDialog.isNull() && !mpParentSystemObject->mpModelWidget->getGraphicsView()->isCtrlKeyPressed())
     {
         // Open a dialog where line width and color can be selected
         mpEditDialog = new QDialog(gpMainWindowWidget);
@@ -666,8 +666,8 @@ void TextBoxWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     Widget::mouseReleaseEvent(event);
     if(mWidthBeforeResize != mpBorderItem->rect().width() || mHeightBeforeResize != mpBorderItem->rect().height())
     {
-        mpParentContainerObject->getUndoStackPtr()->newPost();
-        mpParentContainerObject->getUndoStackPtr()->registerResizedTextBoxWidget( mWidgetIndex, mWidthBeforeResize, mHeightBeforeResize, mpBorderItem->rect().width(), mpBorderItem->rect().height(), mPosBeforeResize, this->pos());
+        mpParentSystemObject->getUndoStackPtr()->newPost();
+        mpParentSystemObject->getUndoStackPtr()->registerResizedTextBoxWidget( mWidgetIndex, mWidthBeforeResize, mHeightBeforeResize, mpBorderItem->rect().width(), mpBorderItem->rect().height(), mPosBeforeResize, this->pos());
         mWidthBeforeResize = mpBorderItem->rect().width();
         mHeightBeforeResize = mpBorderItem->rect().height();
         mPosBeforeResize = this->pos();
@@ -683,7 +683,7 @@ void TextBoxWidget::deleteMe(UndoStatusEnumT undoSettings)
 {
     if (!isLocallyLocked() && getModelLockLevel()==NotLocked)
     {
-        mpParentContainerObject->deleteWidget(this, undoSettings);
+        mpParentSystemObject->deleteWidget(this, undoSettings);
     }
 }
 
@@ -722,8 +722,8 @@ void TextBoxWidget::updateWidgetFromDialog()
     }
 
     // Remember for UnDo
-    mpParentContainerObject->getUndoStackPtr()->newPost("Modified TextBox");
-    mpParentContainerObject->getUndoStackPtr()->registerModifiedTextBoxWidget(this);
+    mpParentSystemObject->getUndoStackPtr()->newPost("Modified TextBox");
+    mpParentSystemObject->getUndoStackPtr()->registerModifiedTextBoxWidget(this);
 
     // Update text
     mReflowText = mpDialogReflowCheckBox->isChecked();
@@ -756,7 +756,7 @@ void TextBoxWidget::updateWidgetFromDialog()
         mpSelectionBox->setActive();
     }
 
-    mpParentContainerObject->mpModelWidget->hasChanged();
+    mpParentSystemObject->mpModelWidget->hasChanged();
 
     mpEditDialog->close();
 }

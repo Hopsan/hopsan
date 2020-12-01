@@ -121,7 +121,7 @@ Port::Port(QString portName, double xpos, double ypos, SharedPortAppearanceT pPo
 
     //Setup overlay (if it exists)
     refreshPortOverlayGraphics();
-    refreshPortOverlayScale(mpParentModelObject->getParentContainerObject()->mpModelWidget->getGraphicsView()->getZoomFactor());
+    refreshPortOverlayScale(mpParentModelObject->getParentSystemObject()->mpModelWidget->getGraphicsView()->getZoomFactor());
 
     mPortAppearanceAfterLastRefresh = *mpPortAppearance; //Remember current appearance
 
@@ -267,7 +267,7 @@ void Port::mousePressEvent(QGraphicsSceneMouseEvent *event)
             return;
 
         //QGraphicsSvgItem::mousePressEvent(event); //Don't work if this is called
-        GraphicsView *pView = mpParentModelObject->getParentContainerObject()->mpModelWidget->getGraphicsView();
+        GraphicsView *pView = mpParentModelObject->getParentSystemObject()->mpModelWidget->getGraphicsView();
         if (event->button() == Qt::LeftButton && !pView->isCtrlKeyPressed())
         {
             getParentContainerObject()->createConnector(this);
@@ -350,7 +350,7 @@ void Port::openRightClickMenu(QPoint screenPos)
     // Now build plot menu
     QMap<QAction*, int> plotActions;
 
-    LogDataHandler2* pLogHandler = mpParentModelObject->getParentContainerObject()->getLogDataHandler().data();
+    LogDataHandler2* pLogHandler = mpParentModelObject->getParentSystemObject()->getLogDataHandler().data();
     QList<SharedVectorVariableT> logVars;
     QString comp, port;
     if(getPortType() == QString("PowerMultiportType"))
@@ -724,9 +724,9 @@ void Port::refreshPortLabelText()
 }
 
 //! @brief Returns a pointer to the GraphicsView that the port belongs to.
-ContainerObject *Port::getParentContainerObject()
+SystemObject *Port::getParentContainerObject()
 {
-    return mpParentModelObject->getParentContainerObject();
+    return mpParentModelObject->getParentSystemObject();
 }
 
 
@@ -971,7 +971,7 @@ void Port::setDisplayName(const QString name)
 
 bool Port::getLastNodeData(QString dataName, double& rData) const
 {
-    return mpParentModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getLastNodeData(getParentModelObjectName(), this->getName(), dataName, rData);
+    return mpParentModelObject->getParentSystemObject()->getCoreSystemAccessPtr()->getLastNodeData(getParentModelObjectName(), this->getName(), dataName, rData);
 }
 
 

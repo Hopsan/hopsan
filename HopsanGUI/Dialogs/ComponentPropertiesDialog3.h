@@ -134,7 +134,7 @@ class SystemProperties : public QObject
     Q_OBJECT
 
 public:
-    SystemProperties(SystemContainer *pSystemObject, QWidget *pParentWidget);
+    SystemProperties(SystemObject *pSystemObject, QWidget *pParentWidget);
 
     QWidget* createSystemSettings();
     QWidget* createAppearanceSettings();
@@ -144,7 +144,7 @@ public slots:
     void setValues();
 
 private:
-    SystemContainer *mpSystemObject;
+    SystemObject *mpSystemObject;
 
     QLineEdit *mpUserIconPath;
     QLineEdit *mpIsoIconPath;

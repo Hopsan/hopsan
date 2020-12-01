@@ -42,7 +42,7 @@
 #include "DesktopHandler.h"
 #include "GraphicsView.h"
 #include "GraphicsViewPort.h"
-#include "GUIObjects/GUISystem.h"
+#include "GUIObjects/GUIContainerObject.h"
 #include "MessageHandler.h"
 #include "MainWindow.h"
 #include "ModelHandler.h"
@@ -162,7 +162,7 @@ ModelWidget *ModelHandler::getCurrentModel()
     return getModel(mCurrentIdx);
 }
 
-SystemContainer *ModelHandler::getTopLevelSystem(const QString &rModelFilePath)
+SystemObject *ModelHandler::getTopLevelSystem(const QString &rModelFilePath)
 {
     ModelWidget *pMW = getModel(rModelFilePath);
     if (pMW)
@@ -172,7 +172,7 @@ SystemContainer *ModelHandler::getTopLevelSystem(const QString &rModelFilePath)
     return 0;
 }
 
-SystemContainer *ModelHandler::getTopLevelSystem(int idx)
+SystemObject *ModelHandler::getTopLevelSystem(int idx)
 {
     ModelWidget *pMW = getModel(idx);
     if (pMW)
@@ -182,7 +182,7 @@ SystemContainer *ModelHandler::getTopLevelSystem(int idx)
     return 0;
 }
 
-SystemContainer *ModelHandler::getCurrentTopLevelSystem()
+SystemObject *ModelHandler::getCurrentTopLevelSystem()
 {
     ModelWidget *pMW = getCurrentModel();
     if (pMW)
@@ -192,7 +192,7 @@ SystemContainer *ModelHandler::getCurrentTopLevelSystem()
     return 0;
 }
 
-ContainerObject *ModelHandler::getViewContainerObject(int idx)
+SystemObject *ModelHandler::getViewContainerObject(int idx)
 {
     ModelWidget *pMW = getModel(idx);
     if (pMW)
@@ -202,7 +202,7 @@ ContainerObject *ModelHandler::getViewContainerObject(int idx)
     return 0;
 }
 
-ContainerObject *ModelHandler::getCurrentViewContainerObject()
+SystemObject *ModelHandler::getCurrentViewContainerObject()
 {
     ModelWidget *pMW = getCurrentModel();
     if (pMW)
@@ -856,54 +856,54 @@ void ModelHandler::revertCurrentModel()
 
 void ModelHandler::createLabviewWrapperFromCurrentModel()
 {
-    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToLabView();
+    qobject_cast<SystemObject*>(getCurrentViewContainerObject())->exportToLabView();
 }
 
 
 void ModelHandler::exportCurrentModelToFMU1_32()
 {
-    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToFMU1_32();
+    qobject_cast<SystemObject*>(getCurrentViewContainerObject())->exportToFMU1_32();
 }
 
 void ModelHandler::exportCurrentModelToFMU1_64()
 {
-    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToFMU1_64();
+    qobject_cast<SystemObject*>(getCurrentViewContainerObject())->exportToFMU1_64();
 }
 
 void ModelHandler::exportCurrentModelToFMU2_32()
 {
-    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToFMU2_32();
+    qobject_cast<SystemObject*>(getCurrentViewContainerObject())->exportToFMU2_32();
 }
 
 void ModelHandler::exportCurrentModelToFMU2_64()
 {
-    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToFMU2_64();
+    qobject_cast<SystemObject*>(getCurrentViewContainerObject())->exportToFMU2_64();
 }
 
 void ModelHandler::exportCurrentModelToSimulink()
 {
-    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToSimulink();
+    qobject_cast<SystemObject*>(getCurrentViewContainerObject())->exportToSimulink();
 }
 
 void ModelHandler::exportCurrentModelToExe_32()
 {
-    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToExecutableModel("", ArchitectureEnumT::x86);
+    qobject_cast<SystemObject*>(getCurrentViewContainerObject())->exportToExecutableModel("", ArchitectureEnumT::x86);
 }
 
 void ModelHandler::exportCurrentModelToExe_64()
 {
-    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToExecutableModel("", ArchitectureEnumT::x64);
+    qobject_cast<SystemObject*>(getCurrentViewContainerObject())->exportToExecutableModel("", ArchitectureEnumT::x64);
 }
 
 void ModelHandler::showLosses(bool show)
 {
-    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->showLosses(show);
+    qobject_cast<SystemObject*>(getCurrentViewContainerObject())->showLosses(show);
 }
 
 
 void ModelHandler::measureSimulationTime()
 {
-    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->measureSimulationTime();
+    qobject_cast<SystemObject*>(getCurrentViewContainerObject())->measureSimulationTime();
 }
 
 
@@ -976,7 +976,7 @@ bool ModelHandler::simulateMultipleModels_nonblocking(QVector<ModelWidget*> mode
         size_t nSamples = models.first()->getTopLevelSystemContainer()->getNumberOfLogSamples();
         double logStartT = models.first()->getTopLevelSystemContainer()->getLogStartTime();
 
-        QVector<SystemContainer*> systemsVector;
+        QVector<SystemObject*> systemsVector;
         bool lockOK=false;
         int i;
         for(i=0; i<models.size(); ++i)
@@ -1030,7 +1030,7 @@ bool ModelHandler::simulateMultipleModels_blocking(QVector<ModelWidget*> models,
         size_t nSamples = models.first()->getTopLevelSystemContainer()->getNumberOfLogSamples();
         double logStartT = models.first()->getTopLevelSystemContainer()->getLogStartTime();
 
-        QVector<SystemContainer*> systemsVector;
+        QVector<SystemObject*> systemsVector;
         bool lockOK=false;
         int i;
         for(i=0; i<models.size(); ++i)

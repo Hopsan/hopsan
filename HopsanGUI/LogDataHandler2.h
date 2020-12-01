@@ -189,7 +189,7 @@ private:
     SharedVectorVariableT insertFrequencyDomainVariable(SharedVectorVariableT pFrequencyVector, const QVector<double> &rDataVector, SharedVariableDescriptionT pVarDesc, const QString &rImportFileName);
     SharedVectorVariableT insertVariable(SharedVectorVariableT pVariable, QString keyName=QString(), int gen=-1);
 
-    bool collectLogDataFromSystem(SystemContainer *pCurrentSystem, const QStringList &rSystemHieararchy, QMap<std::vector<double> *, SharedVectorVariableT> &rGenTimeVectors);
+    bool collectLogDataFromSystem(SystemObject *pCurrentSystem, const QStringList &rSystemHieararchy, QMap<std::vector<double> *, SharedVectorVariableT> &rGenTimeVectors);
 
     QString getNewCacheName(const QString &rDesiredName=QString());
     void removeGenerationCacheIfEmpty(const int gen);

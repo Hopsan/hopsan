@@ -47,7 +47,6 @@
 #include "GUIConnector.h"
 #include "GUIObjects/AnimatedComponent.h"
 #include "GUIObjects/GUIContainerObject.h"
-#include "GUIObjects/GUISystem.h"
 #include "GUIObjects/GUIWidgets.h"
 #include "GUIPort.h"
 #include "ModelHandler.h"

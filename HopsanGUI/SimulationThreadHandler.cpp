@@ -37,7 +37,7 @@
 #include "Configuration.h"
 #include "common.h"
 #include "global.h"
-#include "GUIObjects/GUISystem.h"
+#include "GUIObjects/GUIContainerObject.h"
 
 void printRemoteCoreMessages(GUIMessageHandler *pMessageHandler, QVector<QString> &rTypes, QVector<QString> &rTags, QVector<QString> &rMessages)
 {
@@ -47,7 +47,7 @@ void printRemoteCoreMessages(GUIMessageHandler *pMessageHandler, QVector<QString
     }
 }
 
-LocalSimulationWorkerObject::LocalSimulationWorkerObject(QVector<SystemContainer *> vpSystems, const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples, const bool noChanges)
+LocalSimulationWorkerObject::LocalSimulationWorkerObject(QVector<SystemObject *> vpSystems, const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples, const bool noChanges)
 {
     mvpSystems = vpSystems;
     mStartTime = startTime;
@@ -161,7 +161,7 @@ void RemoteSimulationWorkerObject::initSimulateFinalize()
 }
 
 RemoteProgressbarWorkerObject::RemoteProgressbarWorkerObject(const double startTime, const double stopTime, SharedRemoteCoreSimulationHandlerT pRCSH) :
-    ProgressBarWorkerObject(startTime, stopTime, QVector<SystemContainer*>())
+    ProgressBarWorkerObject(startTime, stopTime, QVector<SystemObject*>())
 {
     mpRCSH = pRCSH;
     mProgress = 0;
@@ -174,7 +174,7 @@ void SimulationWorkerObjectBase::setMessageHandler(GUIMessageHandler *pMessageHa
      mpMessageHandler = pMessageHandler;
 }
 
-ProgressBarWorkerObject::ProgressBarWorkerObject(const double startTime, const double stopTime, const QVector<SystemContainer*> &rvSystems)
+ProgressBarWorkerObject::ProgressBarWorkerObject(const double startTime, const double stopTime, const QVector<SystemObject*> &rvSystems)
 {
     mLastProgressRefreshStep = -1;
     mStartT = startTime;
@@ -246,9 +246,9 @@ void SimulationThreadHandler::setProgressDilaogBehaviour(bool enabled, bool moda
     mProgressBarModal = modal;
 }
 
-void SimulationThreadHandler::initSimulateFinalize(SystemContainer* pSystem, const bool noChanges)
+void SimulationThreadHandler::initSimulateFinalize(SystemObject* pSystem, const bool noChanges)
 {
-    QVector<SystemContainer*> vpSystems;
+    QVector<SystemObject*> vpSystems;
     vpSystems.push_back(pSystem);
     initSimulateFinalize(vpSystems, noChanges);
 }
@@ -263,14 +263,14 @@ void SimulationThreadHandler::initSimulateFinalizeRemote(SharedRemoteCoreSimulat
 }
 #endif
 
-void SimulationThreadHandler::initSimulateFinalize(QVector<SystemContainer*> vpSystems, const bool noChanges)
+void SimulationThreadHandler::initSimulateFinalize(QVector<SystemObject*> vpSystems, const bool noChanges)
 {
     mvpSystems = vpSystems;
     mpSimulationWorkerObject = new LocalSimulationWorkerObject(mvpSystems, mStartT, mStopT, mLogStartTime, mnLogSamples, noChanges);
     initSimulateFinalizePrivate();
 }
 
-void SimulationThreadHandler::initSimulateFinalize_blocking(QVector<SystemContainer*> vpSystems, const bool noChanges)
+void SimulationThreadHandler::initSimulateFinalize_blocking(QVector<SystemObject*> vpSystems, const bool noChanges)
 {
     QEventLoop loop;
     connect(this, SIGNAL(done(bool)), &loop, SLOT(quit()), Qt::UniqueConnection);

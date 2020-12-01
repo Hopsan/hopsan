@@ -37,7 +37,7 @@
 #include "GUIPort.h"
 #include "Dialogs/ContainerPortPropertiesDialog.h"
 
-ContainerPort::ContainerPort(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
+ContainerPort::ContainerPort(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, SystemObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
         : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
 {
     // Sets the ports
@@ -49,11 +49,11 @@ void ContainerPort::deleteInHopsanCore()
 {
     if (isSystemPort())
     {
-        mpParentContainerObject->getCoreSystemAccessPtr()->deleteSystemPort(this->getName());
+        mpParentSystemObject->getCoreSystemAccessPtr()->deleteSystemPort(this->getName());
     }
     else
     {
-        mpParentContainerObject->getCoreSystemAccessPtr()->unReserveUniqueName(this->getName());
+        mpParentSystemObject->getCoreSystemAccessPtr()->unReserveUniqueName(this->getName());
     }
 }
 
@@ -82,7 +82,7 @@ void ContainerPort::createPorts()
     i.value()->selectPortIcon("", "", "NodeEmpty");
 
     //qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Adding systemport with name: " << desiredportname;
-    mName = mpParentContainerObject->getCoreSystemAccessPtr()->addSystemPort(desiredportname);
+    mName = mpParentSystemObject->getCoreSystemAccessPtr()->addSystemPort(desiredportname);
     //qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,resulting in name from core: " << mModelObjectAppearance.getDisplayName();
     mpPort = new Port(mName, x*boundingRect().width(), y*boundingRect().height(), i.value(), this);
 
@@ -144,5 +144,5 @@ QString ContainerPort::getHmfTagName() const
 //! @brief Check if this is a system port (a container port belonging to a system)
 bool ContainerPort::isSystemPort() const
 {
-    return (mpParentContainerObject->type() == SystemContainerType);
+    return (mpParentSystemObject->type() == SystemObjectType);
 }

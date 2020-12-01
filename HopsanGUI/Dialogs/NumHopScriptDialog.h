@@ -28,7 +28,7 @@
 #include <QDialog>
 #include <QPointer>
 
-class ContainerObject;
+class SystemObject;
 class QTextEdit;
 
 class NumHopScriptDialog : public QDialog
@@ -36,7 +36,7 @@ class NumHopScriptDialog : public QDialog
     Q_OBJECT
 
 public:
-    NumHopScriptDialog(ContainerObject *pSystem, QWidget *pParent);
+    NumHopScriptDialog(SystemObject *pSystem, QWidget *pParent);
 
 protected slots:
     void applyPressed();
@@ -46,7 +46,7 @@ protected slots:
 
 private:
     QTextEdit *mpTextEdit;
-    QPointer<ContainerObject> mpSystem;
+    QPointer<SystemObject> mpSystem;
 
 };
 

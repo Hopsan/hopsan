@@ -42,19 +42,19 @@
 
 class QDomElement;
 class WorkspaceObjectSelectionBox;
-class ContainerObject;
+class SystemObject;
 
-enum GUIObjectEnumT {WorkspaceObjectType=QGraphicsItem::UserType+1, WidgetType, ModelObjectType, ContainerObjectType, SystemContainerType, ComponentType, ScopeComponentType, ContainerPortType, AnimatedObjectType};
+enum GUIObjectEnumT {WorkspaceObjectType=QGraphicsItem::UserType+1, WidgetType, ModelObjectType, SystemObjectType, ComponentType, ScopeComponentType, ContainerPortType, AnimatedObjectType};
 
 class WorkspaceObject : public QGraphicsWidget
 {
     Q_OBJECT
 
 public:
-    WorkspaceObject(QPointF pos, double rot, SelectionStatusEnumT=Deselected, ContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
+    WorkspaceObject(QPointF pos, double rot, SelectionStatusEnumT=Deselected, SystemObject *pParentContainer=0, QGraphicsItem *pParent=0);
 
-    virtual void setParentContainerObject(ContainerObject *pParentContainer);
-    virtual ContainerObject *getParentContainerObject();
+    virtual void setParentSystemObject(SystemObject *pParentSystem);
+    virtual SystemObject *getParentSystemObject();
 
     // Position methods
     QPointF getCenterPos();
@@ -110,10 +110,10 @@ protected:
     virtual void refreshSelectionBoxSize();
 
     // Protected members
-    ContainerObject *mpParentContainerObject = nullptr;
+    SystemObject *mpParentSystemObject = nullptr;
     bool mIsFlipped = false;
     bool mEnableSnap = true;
-    bool mIsLocked=false;
+    bool mIsLocked = false;
     WorkspaceObjectSelectionBox *mpSelectionBox = nullptr;
     QPointF mPreviousPos;
 };

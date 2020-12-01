@@ -41,24 +41,24 @@
 //Forward Declarations
 class LibraryWidget;
 class ModelObject;
-class ContainerObject;
+class SystemObject;
 class TextBoxWidget;
 
 
-ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContainer, UndoStatusEnumT undoSettings=Undo);
+ModelObject* loadModelObject(QDomElement &rDomElement, SystemObject* pContainer, UndoStatusEnumT undoSettings=Undo);
 
-ModelObject* loadContainerPortObject(QDomElement &rDomElement, ContainerObject* pContainer, UndoStatusEnumT undoSettings=Undo);
+ModelObject* loadContainerPortObject(QDomElement &rDomElement, SystemObject* pContainer, UndoStatusEnumT undoSettings=Undo);
 
-bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, UndoStatusEnumT undoSettings=Undo);
+bool loadConnector(QDomElement &rDomElement, SystemObject* pContainer, UndoStatusEnumT undoSettings=Undo);
 
 void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStatusEnumT undoSettings=Undo);
 
 void loadStartValue(QDomElement &rDomElement, ModelObject* pObject, UndoStatusEnumT undoSettings=Undo);
 
-void loadSystemParameter(QDomElement &rDomElement, bool doAdd, const QString hmfVersion, ContainerObject* pContainer);
+void loadSystemParameter(QDomElement &rDomElement, bool doAdd, const QString hmfVersion, SystemObject* pContainer);
 
-void loadPlotAlias(QDomElement &rDomElement, ContainerObject* pContainer);
+void loadPlotAlias(QDomElement &rDomElement, SystemObject* pContainer);
 
-TextBoxWidget* loadTextBoxWidget(QDomElement &rDomElement, ContainerObject *pContainer, UndoStatusEnumT undoSettings=Undo);
+TextBoxWidget* loadTextBoxWidget(QDomElement &rDomElement, SystemObject *pContainer, UndoStatusEnumT undoSettings=Undo);
 
 #endif // LOADFUNCTIONS_H

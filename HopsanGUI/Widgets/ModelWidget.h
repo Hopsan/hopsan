@@ -46,9 +46,9 @@
 #include "common.h"
 
 //Forward declarations
-class SystemContainer;
+class SystemObject;
 class GraphicsView;
-class ContainerObject;
+class SystemObject;
 class QuickNavigationWidget;
 class ModelHandler;
 class CentralTabWidget;
@@ -103,8 +103,8 @@ public:
     bool loadModelRemote();
     bool loadModel(QFile &rModelFile);
 
-    SystemContainer *getTopLevelSystemContainer() const;
-    ContainerObject *getViewContainerObject();
+    SystemObject *getTopLevelSystemContainer() const;
+    SystemObject *getViewContainerObject();
     GraphicsView *getGraphicsView();
     QuickNavigationWidget *getQuickNavigationWidget();
     SimulationThreadHandler *getSimulationThreadHandler();
@@ -162,7 +162,7 @@ private:
     QWidget *mpExternalSystemWarningWidget;
     QWidget *mpLockedSystemWarningWidget;
 
-    SystemContainer *mpToplevelSystem=nullptr;
+    SystemObject *mpToplevelSystem=nullptr;
     QSharedPointer<LogDataHandler2> mpLogDataHandler;
     GUIMessageHandler *mpMessageHandler;
     SimulationThreadHandler *mpSimulationThreadHandler;

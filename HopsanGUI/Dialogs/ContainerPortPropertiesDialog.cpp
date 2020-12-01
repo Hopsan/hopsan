@@ -92,6 +92,6 @@ ContainerPortPropertiesDialog::ContainerPortPropertiesDialog(ContainerPort *pCon
 //! @brief Updates settings according to the selected values
 void ContainerPortPropertiesDialog::setValues()
 {
-    mpContainerPort->getParentContainerObject()->renameModelObject(mpContainerPort->getName(), mpNameEdit->text());
+    mpContainerPort->getParentSystemObject()->renameModelObject(mpContainerPort->getName(), mpNameEdit->text());
     this->accept();
 }

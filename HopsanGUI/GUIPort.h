@@ -46,8 +46,8 @@
 
 //Forward declarations
 class ModelObject;
-class SystemContainer;
-class ContainerObject;
+class SystemObject;
+class SystemObject;
 class Connector;
 class PlotWindow;
 
@@ -60,7 +60,7 @@ public:
     Port(QString name, double xpos, double ypos, SharedPortAppearanceT pPortAppearance, ModelObject *pParent = 0);
     ~Port();
 
-    ContainerObject *getParentContainerObject();
+    SystemObject *getParentContainerObject();
     ModelObject *getParentModelObject();
     const ModelObject *getParentModelObject() const;
     QString getParentModelObjectName() const;

@@ -41,8 +41,8 @@
 
 //Forward declarations of HopsanGUI classes
 class LibraryWidget;
-class SystemContainer;
-class ContainerObject;
+class SystemObject;
+class SystemObject;
 class CoreSystemAccess;
 
 //Forward declaration of HopsanCore classes
@@ -100,8 +100,8 @@ double evalWithNumHop(const QString &rExpression);
 
 QStringList getEmbeddedSriptVariableNames(const QString& expression, const QString& subcomponentName, CoreSystemAccess* pCoreSystem);
 
-void prependSelfToParameterExpressions(ContainerObject* pTopLevelGUISystem);
-QString checkPrependSelfToEmbeddedScripts(ContainerObject *pTopLevelGUISystem);
+void prependSelfToParameterExpressions(SystemObject* pTopLevelGUISystem);
+QString checkPrependSelfToEmbeddedScripts(SystemObject *pTopLevelGUISystem);
 
 
 class CoreParameterData
@@ -174,8 +174,8 @@ public:
 
     // Name and type functions
     //! @todo maybe we should use name="" (empty) to indicate root system instead, to cut down on the number of functions
-    QString getSystemTypeCQS();
-    QString getSubComponentTypeCQS(const QString componentName);
+    QString getSystemTypeCQS() const;
+    QString getSubComponentTypeCQS(const QString componentName) const;
     void setExternalModelFilePath(const QString path);
 
     // Commented by Peter, maybe should be used in the future

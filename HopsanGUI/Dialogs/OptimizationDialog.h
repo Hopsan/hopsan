@@ -56,7 +56,7 @@
 #include "common.h"
 
 class TerminalWidget;
-class SystemContainer;
+class SystemObject;
 class GUIMessageHandler;
 class OptimizationScriptWizard;
 
@@ -98,7 +98,7 @@ private:
     QWidget *createRunWidget();
 
     //Original system
-    SystemContainer *mpSystem;
+    SystemObject *mpSystem;
 
     //Main dialog
     QTabWidget *mpTabWidget;

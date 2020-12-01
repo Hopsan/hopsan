@@ -44,7 +44,7 @@
 #include "CoreAccess.h"
 
 // Forward Declarations
-class ContainerObject;
+class SystemObject;
 
 class ParameterTypeComboBox : public QComboBox
 {
@@ -74,7 +74,7 @@ class SysParamTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    SysParamTableModel(ContainerObject *pContainerObject, QObject *pParent=0);
+    SysParamTableModel(SystemObject *pContainerObject, QObject *pParent=0);
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
@@ -84,7 +84,7 @@ public:
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
     bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex());
 
-    void setContainer(ContainerObject *pContainerObject);
+    void setContainer(SystemObject *pContainerObject);
     bool addOrSetParameter(CoreParameterData &rParameterData);
     void getFullParameterData(const QModelIndex &index, CoreParameterData &rParameterData);
     bool hasParameter(const QString name);
@@ -95,7 +95,7 @@ public slots:
 protected:
     void removeParameter(const int row);
 
-    QPointer<ContainerObject> mpContainerObject;
+    QPointer<SystemObject> mpContainerObject;
     QVector<CoreParameterData> mParameterData;
 };
 
@@ -105,11 +105,11 @@ class SystemParametersWidget : public QWidget
     Q_OBJECT
 public:
     SystemParametersWidget(QWidget *pParent=0);
-    QPointer<ContainerObject> getRepresentedContainerObject();
+    QPointer<SystemObject> getRepresentedContainerObject();
 
 public slots:
     void update();
-    void update(ContainerObject* pNewContainer);
+    void update(SystemObject* pNewContainer);
     void openAddParameterDialog();
     void openEditParameterDialog();
     void highlightComponents(QModelIndex index);
@@ -124,7 +124,7 @@ protected slots:
 private:
     bool addOrEditParameter(bool editing);
 
-    QPointer<ContainerObject> mpContainerObject;
+    QPointer<SystemObject> mpContainerObject;
     QTableView *mpSysParamTableView;
     QSortFilterProxyModel *mpProxyModel;
     SysParamTableModel *mpModel;

@@ -44,7 +44,6 @@
 #include "PlotWindow.h"
 #include "DesktopHandler.h"
 #include "GUIObjects/GUIContainerObject.h"
-#include "GUIObjects/GUISystem.h"
 #include "MessageHandler.h"
 #include "Widgets/ModelWidget.h"
 #include "common.h"
@@ -1132,7 +1131,7 @@ void LogDataHandler2::collectLogDataFromModel(bool overWriteLastGeneration)
     {
         return;
     }
-    SystemContainer *pTopLevelSystem = mpParentModel->getTopLevelSystemContainer();
+    SystemObject *pTopLevelSystem = mpParentModel->getTopLevelSystemContainer();
     if (pTopLevelSystem->getCoreSystemAccessPtr()->getNumLogSamples() == 0)
     {
         //Don't collect plot data if logging is disabled (to avoid empty generations)
@@ -1192,7 +1191,7 @@ void LogDataHandler2::collectLogDataFromModel(bool overWriteLastGeneration)
     }
 }
 
-bool LogDataHandler2::collectLogDataFromSystem(SystemContainer *pCurrentSystem, const QStringList &rSystemHieararchy, QMap<std::vector<double>*, SharedVectorVariableT> &rGenTimeVectors)
+bool LogDataHandler2::collectLogDataFromSystem(SystemObject *pCurrentSystem, const QStringList &rSystemHieararchy, QMap<std::vector<double>*, SharedVectorVariableT> &rGenTimeVectors)
 {
     SharedSystemHierarchyT sharedSystemHierarchy(new QStringList(rSystemHieararchy));
     bool foundData=false, foundDataInSubsys=false;
@@ -1249,7 +1248,7 @@ bool LogDataHandler2::collectLogDataFromSystem(SystemContainer *pCurrentSystem, 
                     {
                         foundData=true;
                         SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription);
-                        pVarDesc->mModelPath = pModelObject->getParentContainerObject()->getModelFilePath();
+                        pVarDesc->mModelPath = pModelObject->getParentSystemObject()->getModelFilePath();
                         pVarDesc->mpSystemHierarchy = sharedSystemHierarchy;
                         pVarDesc->mComponentName = pModelObject->getName();
                         pVarDesc->mPortName = pPort->getName();
@@ -1284,11 +1283,11 @@ bool LogDataHandler2::collectLogDataFromSystem(SystemContainer *pCurrentSystem, 
         }
 
         // If this is a subsystem, then go into it
-        if (pModelObject->type() == SystemContainerType )
+        if (pModelObject->type() == SystemObjectType )
         {
             QStringList subsysHierarchy = rSystemHieararchy;
             subsysHierarchy << pModelObject->getName();
-            bool foundDataInThisSubsys = collectLogDataFromSystem(qobject_cast<SystemContainer*>(pModelObject), subsysHierarchy, rGenTimeVectors);
+            bool foundDataInThisSubsys = collectLogDataFromSystem(qobject_cast<SystemObject*>(pModelObject), subsysHierarchy, rGenTimeVectors);
             foundDataInSubsys = foundDataInSubsys || foundDataInThisSubsys;
         }
     }

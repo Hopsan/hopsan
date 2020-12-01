@@ -37,7 +37,6 @@
 #include "DesktopHandler.h"
 #include "GUIObjects/GUIModelObject.h"
 #include "GUIObjects/GUIContainerObject.h"
-#include "GUIObjects/GUISystem.h"
 #include "GUIObjects/GUIWidgets.h"
 #include "GUIConnector.h"
 #include "GUIPort.h"
@@ -53,7 +52,7 @@
 //! @param[in] rDomElement The DOM element to load from
 //! @param[in] pContainer The Container Object to load into
 //! @param[in] undoSettings Whether or not to register undo for the operation
-bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, UndoStatusEnumT undoSettings)
+bool loadConnector(QDomElement &rDomElement, SystemObject* pContainer, UndoStatusEnumT undoSettings)
 {
     // -----First read from DOM element-----
     QString startComponentName, endComponentName, startPortName, endPortName;
@@ -261,7 +260,7 @@ void loadStartValue(QDomElement &rDomElement, ModelObject* pObject, UndoStatusEn
 //! @param[in] pLibrary a pointer to the library widget which holds appearance data
 //! @param[in] pContainer The Container Object to load into
 //! @param[in] undoSettings Whether or not to register undo for the operation
-ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContainer, UndoStatusEnumT undoSettings)
+ModelObject* loadModelObject(QDomElement &rDomElement, SystemObject* pContainer, UndoStatusEnumT undoSettings)
 {
     //Read core specific data
     QString type = rDomElement.attribute(HMF_TYPENAME);
@@ -379,7 +378,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
                     QDomElement xmlParameter = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
                     while (!xmlParameter.isNull())
                     {
-                        ContainerObject* pCont = dynamic_cast<ContainerObject*>(pObj);
+                        SystemObject* pCont = dynamic_cast<SystemObject*>(pObj);
                         loadSystemParameter(xmlParameter, false, "1000", pCont);
                         xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
                     }
@@ -511,7 +510,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, ContainerObject* pContain
 
 
 //! @brief Loads a containerport object from a xml dom element
-ModelObject* loadContainerPortObject(QDomElement &rDomElement, ContainerObject* pContainer, UndoStatusEnumT undoSettings)
+ModelObject* loadContainerPortObject(QDomElement &rDomElement, SystemObject* pContainer, UndoStatusEnumT undoSettings)
 {
     //! @todo this does not feel right should try to avoid it maybe
     rDomElement.setAttribute(HMF_TYPENAME, HOPSANGUICONTAINERPORTTYPENAME); //Set the typename for the gui, or overwrite if anything was actually given in the HMF file (should not be)
@@ -523,7 +522,7 @@ ModelObject* loadContainerPortObject(QDomElement &rDomElement, ContainerObject* 
 //! @param[in] doAdd Should loading add the system parameter
 //! @param[in] hmfVersion The HopsanModelFile version used during loading
 //! @param[in] pContainer The Container Object to load into
-void loadSystemParameter(QDomElement &rDomElement, bool doAdd, const QString hmfVersion, ContainerObject* pContainer)
+void loadSystemParameter(QDomElement &rDomElement, bool doAdd, const QString hmfVersion, SystemObject* pContainer)
 {
     QString name = rDomElement.attribute(HMF_NAMETAG);
     QString value = rDomElement.attribute(HMF_VALUETAG);
@@ -551,7 +550,7 @@ void loadSystemParameter(QDomElement &rDomElement, bool doAdd, const QString hmf
 
 
 //! @todo We should remove Plot from the name as this is supposed to be usable for more then plotting only
-void loadPlotAlias(QDomElement &rDomElement, ContainerObject* pContainer)
+void loadPlotAlias(QDomElement &rDomElement, SystemObject* pContainer)
 {
     QString aliasname, fullName;
 
@@ -583,7 +582,7 @@ void loadPlotAlias(QDomElement &rDomElement, ContainerObject* pContainer)
 
 
 //! @todo this function should not be needed, figure out the stupid stuff below then code this function away
-TextBoxWidget *loadTextBoxWidget(QDomElement &rDomElement, ContainerObject *pContainer, UndoStatusEnumT undoSettings)
+TextBoxWidget *loadTextBoxWidget(QDomElement &rDomElement, SystemObject *pContainer, UndoStatusEnumT undoSettings)
 {
     TextBoxWidget *pWidget = pContainer->addTextBoxWidget(QPointF(1,1), undoSettings);
     pWidget->loadFromDomElement(rDomElement);

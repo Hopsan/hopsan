@@ -467,7 +467,7 @@ void AnimatedComponent::textEdited()
         qDebug() << "Double value: " << text.toDouble();
         if(mpModelObject->getPort("out"))
         {
-            mpModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->writeNodeData(mpModelObject->getName(), "out", "Value", text.toDouble());
+            mpModelObject->getParentSystemObject()->getCoreSystemAccessPtr()->writeNodeData(mpModelObject->getName(), "out", "Value", text.toDouble());
         }
     }
     else
@@ -614,13 +614,13 @@ void AnimatedComponent::setupAnimationMovable(int m)
             QString parValue = mpModelObject->getParameterValue(multStr);
             if(!parValue.isEmpty() && parValue[0].isLetter())   //Starts with letter, to it must be a system parameter
             {
-                parValue = mpModelObject->getParentContainerObject()->getParameterValue(parValue);
+                parValue = mpModelObject->getParentSystemObject()->getParameterValue(parValue);
             }
             bool ok;
             double temp = parValue.toDouble(&ok);
             if(!ok)
             {
-                temp = mpModelObject->getParentContainerObject()->getParameterValue(parValue).toDouble(&ok);
+                temp = mpModelObject->getParentSystemObject()->getParameterValue(parValue).toDouble(&ok);
             }
             mpAnimationData->movables[m].movementData[i].multiplierValue = temp;
         }
@@ -631,13 +631,13 @@ void AnimatedComponent::setupAnimationMovable(int m)
             QString parValue = mpModelObject->getParameterValue(divStr);
             if(!parValue.isEmpty() && parValue[0].isLetter())   //Starts with letter, to it must be a system parameter
             {
-                parValue = mpModelObject->getParentContainerObject()->getParameterValue(parValue);
+                parValue = mpModelObject->getParentSystemObject()->getParameterValue(parValue);
             }
             bool ok;
             double temp = parValue.toDouble(&ok);
             if(!ok)
             {
-                temp = mpModelObject->getParentContainerObject()->getParameterValue(parValue).toDouble(&ok);
+                temp = mpModelObject->getParentSystemObject()->getParameterValue(parValue).toDouble(&ok);
             }
             mpAnimationData->movables[m].movementData[i].divisorValue = temp;
         }
@@ -652,13 +652,13 @@ void AnimatedComponent::setupAnimationMovable(int m)
             QString parValue = mpModelObject->getParameterValue(multStr);
             if(!parValue.isEmpty() && parValue[0].isLetter())   //Starts with letter, to it must be a system parameter
             {
-                parValue = mpModelObject->getParentContainerObject()->getParameterValue(parValue);
+                parValue = mpModelObject->getParentSystemObject()->getParameterValue(parValue);
             }
             bool ok;
             double temp = parValue.toDouble(&ok);
             if(!ok)
             {
-                temp = mpModelObject->getParentContainerObject()->getParameterValue(parValue).toDouble(&ok);
+                temp = mpModelObject->getParentSystemObject()->getParameterValue(parValue).toDouble(&ok);
             }
             mpAnimationData->movables[m].resizeData[i].multiplierValue = temp;
         }
@@ -669,13 +669,13 @@ void AnimatedComponent::setupAnimationMovable(int m)
             QString parValue = mpModelObject->getParameterValue(divStr);
             if(!parValue.isEmpty() && parValue[0].isLetter())   //Starts with letter, to it must be a system parameter
             {
-                parValue = mpModelObject->getParentContainerObject()->getParameterValue(parValue);
+                parValue = mpModelObject->getParentSystemObject()->getParameterValue(parValue);
             }
             bool ok;
             double temp = parValue.toDouble(&ok);
             if(!ok)
             {
-                temp = mpModelObject->getParentContainerObject()->getParameterValue(parValue).toDouble(&ok);
+                temp = mpModelObject->getParentSystemObject()->getParameterValue(parValue).toDouble(&ok);
             }
             mpAnimationData->movables[m].resizeData[i].divisorValue = temp;
         }
@@ -688,13 +688,13 @@ void AnimatedComponent::setupAnimationMovable(int m)
         QString parValue = mpModelObject->getParameterValue(multStr);
         if(!parValue.isEmpty() && parValue[0].isLetter())   //Starts with letter, to it must be a system parameter
         {
-            parValue = mpModelObject->getParentContainerObject()->getParameterValue(parValue);
+            parValue = mpModelObject->getParentSystemObject()->getParameterValue(parValue);
         }
         bool ok;
         double temp = parValue.toDouble(&ok);
         if(!ok)
         {
-            temp = mpModelObject->getParentContainerObject()->getParameterValue(parValue).toDouble(&ok);
+            temp = mpModelObject->getParentSystemObject()->getParameterValue(parValue).toDouble(&ok);
         }
         mpAnimationData->movables[m].colorData.multiplierValue = temp;
     }
@@ -705,13 +705,13 @@ void AnimatedComponent::setupAnimationMovable(int m)
         QString parValue = mpModelObject->getParameterValue(divStr);
         if(!parValue.isEmpty() && parValue[0].isLetter())   //Starts with letter, to it must be a system parameter
         {
-            parValue = mpModelObject->getParentContainerObject()->getParameterValue(parValue);
+            parValue = mpModelObject->getParentSystemObject()->getParameterValue(parValue);
         }
         bool ok;
         double temp = parValue.toDouble(&ok);
         if(!ok)
         {
-            temp = mpModelObject->getParentContainerObject()->getParameterValue(parValue).toDouble(&ok);
+            temp = mpModelObject->getParentSystemObject()->getParameterValue(parValue).toDouble(&ok);
         }
         mpAnimationData->movables[m].colorData.divisorValue = temp;
     }
@@ -726,13 +726,13 @@ void AnimatedComponent::setupAnimationMovable(int m)
         QString parValue = mpModelObject->getParameterValue(mpAnimationData->movables[m].multipliers[p]);
         if(!parValue.isEmpty() && parValue[0].isLetter())   //Starts with letter, to it must be a system parameter
         {
-            parValue = mpModelObject->getParentContainerObject()->getParameterValue(parValue);
+            parValue = mpModelObject->getParentSystemObject()->getParameterValue(parValue);
         }
         bool ok;
         double temp = parValue.toDouble(&ok);
         if(!ok)
         {
-            temp = mpModelObject->getParentContainerObject()->getParameterValue(parValue).toDouble(&ok);
+            temp = mpModelObject->getParentSystemObject()->getParameterValue(parValue).toDouble(&ok);
         }
         multiplierValue *= temp;
     }
@@ -750,13 +750,13 @@ void AnimatedComponent::setupAnimationMovable(int m)
         QString parValue = mpModelObject->getParameterValue(mpAnimationData->movables[m].divisors[p]);
         if(!parValue.isEmpty() && parValue[0].isLetter())   //Starts with letter, to it must be a system parameter
         {
-            parValue = mpModelObject->getParentContainerObject()->getParameterValue(parValue);
+            parValue = mpModelObject->getParentSystemObject()->getParameterValue(parValue);
         }
         bool ok;
         double temp = parValue.toDouble(&ok);
         if(!ok)
         {
-            temp = mpModelObject->getParentContainerObject()->getParameterValue(parValue).toDouble(&ok);
+            temp = mpModelObject->getParentSystemObject()->getParameterValue(parValue).toDouble(&ok);
         }
         divisorValue *= temp;
     }
@@ -802,7 +802,7 @@ void AnimatedComponent::limitMovables()
 //! @param [in] pAnimatedComponent Pointer to animated component icon belongs to
 //! @param [in] pParentContainer Pointer to container object animation is showing
 //! @param [in] pParent Parent object (QGraphicsItem), used for the coordinate system
-AnimatedIcon::AnimatedIcon(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, AnimatedComponent *pAnimatedComponent, ContainerObject *pParentContainer, int idx, QGraphicsItem *pParent)
+AnimatedIcon::AnimatedIcon(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, AnimatedComponent *pAnimatedComponent, SystemObject *pParentContainer, int idx, QGraphicsItem *pParent)
         : WorkspaceObject(position, rotation, Deselected, pParentContainer, pParent)
 {
     //Store original position
@@ -1087,7 +1087,7 @@ void AnimatedScope::openPlotwindow()
         return;
     }
 
-    LogDataHandler2* pHandler = mpModelObject->getParentContainerObject()->getLogDataHandler().data();
+    LogDataHandler2* pHandler = mpModelObject->getParentSystemObject()->getLogDataHandler().data();
     const QString scopeName = mpModelObject->getName();
 
     mpPlotWindow = gpPlotHandler->createNewUniquePlotWindow(scopeName);

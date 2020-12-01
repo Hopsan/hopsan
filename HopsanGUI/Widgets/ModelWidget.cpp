@@ -49,7 +49,7 @@
 #include "GraphicsView.h"
 #include "GUIConnector.h"
 #include "GUIObjects/GUIModelObject.h"
-#include "GUIObjects/GUISystem.h"
+#include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUIWidgets.h"
 #include "Utilities/GUIUtilities.h"
 #include "InitializationThread.h"
@@ -256,13 +256,13 @@ void ModelWidget::hasChanged()
 
 
 //! @brief Returns a pointer to the system in the tab
-SystemContainer *ModelWidget::getTopLevelSystemContainer() const
+SystemObject *ModelWidget::getTopLevelSystemContainer() const
 {
     return mpToplevelSystem;
 }
 
 //! @brief Returns a pointer to the currently opened container in this model
-ContainerObject *ModelWidget::getViewContainerObject()
+SystemObject *ModelWidget::getViewContainerObject()
 {
     return mpGraphicsView->getContainerPtr();
 }
@@ -347,7 +347,7 @@ bool ModelWidget::defineVariableAlias(const QString &rFullName, const QString &r
     QStringList systems;
     QString c,p,d;
     // Find the subsystem
-    SystemContainer *pSystem=0;
+    SystemObject *pSystem=0;
     if (splitFullVariableName(rFullName,systems,c,p,d))
     {
         if (mpToplevelSystem)
@@ -355,7 +355,7 @@ bool ModelWidget::defineVariableAlias(const QString &rFullName, const QString &r
             pSystem = mpToplevelSystem;
             for (auto &sysname : systems)
             {
-                pSystem = qobject_cast<SystemContainer*>(pSystem->getModelObject(sysname));
+                pSystem = qobject_cast<SystemObject*>(pSystem->getModelObject(sysname));
                 if (!pSystem)
                 {
                     return false;
@@ -392,7 +392,7 @@ bool ModelWidget::undefineVariableAlias(const QString &rFullName)
     QStringList systems;
     QString c,p,d;
     // Find the subsystem
-    SystemContainer *pSystem=0;
+    SystemObject *pSystem=0;
     if (splitFullVariableName(rFullName,systems,c,p,d))
     {
         if (mpToplevelSystem)
@@ -400,7 +400,7 @@ bool ModelWidget::undefineVariableAlias(const QString &rFullName)
             pSystem = mpToplevelSystem;
             for (auto &sysname : systems)
             {
-                pSystem = qobject_cast<SystemContainer*>(pSystem->getModelObject(sysname));
+                pSystem = qobject_cast<SystemObject*>(pSystem->getModelObject(sysname));
                 if (!pSystem)
                 {
                     return false;
@@ -423,7 +423,7 @@ QString ModelWidget::getVariableAlias(const QString &rFullName)
     QStringList systems;
     QString c,p,d;
     // Find the subsystem
-    SystemContainer *pSystem=0;
+    SystemObject *pSystem=0;
     if (splitFullVariableName(rFullName,systems,c,p,d))
     {
         if (mpToplevelSystem)
@@ -431,7 +431,7 @@ QString ModelWidget::getVariableAlias(const QString &rFullName)
             pSystem = mpToplevelSystem;
             for (auto &sysname : systems)
             {
-                pSystem = qobject_cast<SystemContainer*>(pSystem->getModelObject(sysname));
+                pSystem = qobject_cast<SystemObject*>(pSystem->getModelObject(sysname));
                 if (!pSystem)
                 {
                     return QString();
@@ -672,7 +672,7 @@ bool ModelWidget::simulate_blocking()
 
         mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
         mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
-        QVector<SystemContainer*> vec;
+        QVector<SystemObject*> vec;
         vec.push_back(mpToplevelSystem);
         mpSimulationThreadHandler->initSimulateFinalize_blocking(vec);
     }
@@ -927,7 +927,7 @@ void ModelWidget::unlockSimulateMutex()
 //! iterate through parent containers until it finds one that is.
 void ModelWidget::openCurrentContainerInNewTab()
 {
-    ContainerObject *pContainer = mpGraphicsView->getContainerPtr();
+    SystemObject *pContainer = mpGraphicsView->getContainerPtr();
 
     while(true)
     {
@@ -937,7 +937,7 @@ void ModelWidget::openCurrentContainerInNewTab()
         }
         else if(!pContainer->isExternal())
         {
-            pContainer = pContainer->getParentContainerObject();
+            pContainer = pContainer->getParentSystemObject();
         }
         else
         {
@@ -1056,7 +1056,7 @@ void ModelWidget::createOrDestroyToplevelSystem(bool recreate)
         }
 
         // Create new
-        mpToplevelSystem = new SystemContainer(this, 0);
+        mpToplevelSystem = new SystemObject(this, 0);
     }
     // Destroy
     else

@@ -42,7 +42,7 @@
 #include <QSharedPointer>
 
 // Forward Declarations
-class ContainerObject;
+class SystemObject;
 class PlotWindow;
 class VectorVariable;
 

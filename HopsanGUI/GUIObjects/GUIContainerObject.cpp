@@ -43,6 +43,7 @@
 #include <QInputDialog>
 #include <QHeaderView>
 #include <QDialogButtonBox>
+#include <QRadioButton>
 #include <cassert>
 
 //Hopsan includes
@@ -57,7 +58,6 @@
 #include "GUIContainerObject.h"
 #include "GUIContainerPort.h"
 #include "GUIPort.h"
-#include "GUISystem.h"
 #include "GUIWidgets.h"
 #include "loadFunctions.h"
 #include "MainWindow.h"
@@ -80,6 +80,7 @@
 #include "Widgets/MessageWidget.h"
 #include "PlotHandler.h"
 #include "Utilities/HelpPopUpWidget.h"
+#include "GeneratorUtils.h"
 
 //! @brief Constructor for container objects.
 //! @param position Initial position where container object is to be placed in its parent container
@@ -89,10 +90,28 @@
 //! @param gfxType Tells whether the initial graphics shall be user or ISO
 //! @param pParentContainer Pointer to the parent container object (leave empty if not a sub container)
 //! @param pParent Pointer to parent object
-ContainerObject::ContainerObject(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType, ContainerObject *pParentContainer, QGraphicsItem *pParent)
-        : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParent)
+SystemObject::SystemObject(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType, SystemObject *pParentSystem, QGraphicsItem *pParent)
+        : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentSystem, pParent)
 {
-    // Initialize
+    mpModelWidget = pParentSystem->mpModelWidget;
+    commonConstructorCode();
+}
+
+// Root system specific constructor
+SystemObject::SystemObject(ModelWidget *parentModelWidget, QGraphicsItem *pParentGraphicsItem) :
+    ModelObject(QPointF(0,0), 0, nullptr, SelectionStatusEnumT::Deselected,  GraphicsTypeEnumT::UserGraphics, nullptr, pParentGraphicsItem)
+{
+    const auto pDefaultSystemAppearance = gpLibraryHandler->getModelObjectAppearancePtr(HOPSANGUISYSTEMTYPENAME);
+    mModelObjectAppearance = *pDefaultSystemAppearance; //This will crash if Subsystem not already loaded
+    mpModelWidget = parentModelWidget;
+    commonConstructorCode();
+    mpUndoStack->newPost();
+}
+
+//! @brief This code is common among the two constructors, we use one function to avoid code duplication
+void SystemObject::commonConstructorCode()
+{
+    // Initialize default values
     mIsCreatingConnector = false;
     mShowSubComponentPorts = gpMainWindow->mpTogglePortsAction->isChecked();
     mShowSubComponentNames = gpMainWindow->mpToggleNamesAction->isChecked();
@@ -100,7 +119,10 @@ ContainerObject::ContainerObject(QPointF position, double rotation, const ModelO
     mLossesVisible = false;
     mUndoDisabled = false;
     mGfxType = UserGraphics;
-
+    mLoadType = "EMBEDED";
+    mNumberOfLogSamples = 2048;
+    mLogStartTime = 0;
+    mSaveUndoStack = false;       //Do not save undo stack by default
     mPasteOffset = -30;
 
     // Create the scene
@@ -115,41 +137,82 @@ ContainerObject::ContainerObject(QPointF position, double rotation, const ModelO
 
     // Establish connections that should always remain
     connect(this, SIGNAL(checkMessages()), gpMessageHandler, SLOT(collectHopsanCoreMessages()), Qt::UniqueConnection);
+
+    // Connect propagation signal when alias is changed
+    connect(this, SIGNAL(aliasChanged(QString,QString)), mpModelWidget, SIGNAL(aliasChanged(QString,QString)));
+
+    // Create the object in core, and update name
+    if (this->mpParentSystemObject == 0)
+    {
+        //Create root system
+        qDebug() << "creating ROOT access system";
+        mpCoreSystemAccess = new CoreSystemAccess();
+        this->setName("RootSystem");
+        //qDebug() << "the core root system name: " << mpCoreSystemAccess->getRootSystemName();
+    }
+    else
+    {
+        //Create subsystem
+        qDebug() << "creating subsystem and setting name in " << mpParentSystemObject->getCoreSystemAccessPtr()->getSystemName();
+        if(this->getTypeName() == HOPSANGUICONDITIONALSYSTEMTYPENAME)
+        {
+            mName = mpParentSystemObject->getCoreSystemAccessPtr()->createConditionalSubSystem(this->getName());
+        }
+        else
+        {
+            mName = mpParentSystemObject->getCoreSystemAccessPtr()->createSubSystem(this->getName());
+        }
+        refreshDisplayName();
+        qDebug() << "creating CoreSystemAccess for this subsystem, name: " << this->getName() << " parentname: " << mpParentSystemObject->getName();
+        mpCoreSystemAccess = new CoreSystemAccess(this->getName(), mpParentSystemObject->getCoreSystemAccessPtr());
+    }
+
+    if(!isTopLevelContainer())
+    {
+        refreshAppearance();
+        refreshExternalPortsAppearanceAndPosition();
+        refreshDisplayName(); //Make sure name window is correct size for center positioning
+    }
+
+    if(mpParentSystemObject)
+    {
+        connect(mpParentSystemObject, SIGNAL(showOrHideSignals(bool)), this, SLOT(setVisibleIfSignal(bool)));
+    }
 }
 
 
 //! @brief Destructor for container object
-ContainerObject::~ContainerObject()
+SystemObject::~SystemObject()
 {
     //qDebug() << ",,,,,,,,,,,,GUIContainer destructor";
 }
 
-bool ContainerObject::isTopLevelContainer() const
+bool SystemObject::isTopLevelContainer() const
 {
-    return (mpParentContainerObject==0);
+    return (mpParentSystemObject==0);
 }
 
-QStringList ContainerObject::getSystemNameHieararchy() const
+QStringList SystemObject::getSystemNameHieararchy() const
 {
     QStringList parentSystemNames;
     // Note! This wil lreturn empty lsit for top-level system, and that is OK, it is supposed to do that
-    if (mpParentContainerObject)
+    if (mpParentSystemObject)
     {
-        parentSystemNames = mpParentContainerObject->getSystemNameHieararchy();
+        parentSystemNames = mpParentSystemObject->getSystemNameHieararchy();
         parentSystemNames << this->getName();
     }
     return parentSystemNames;
 }
 
 //! @brief Notify the parent project tab that changes has occurred
-void ContainerObject::hasChanged()
+void SystemObject::hasChanged()
 {
     mpModelWidget->hasChanged();
 }
 
 //! @brief Connects all SignalAndSlot connections to the mainwindow buttons from this container
 //! This is useful when we are switching what container we want the buttons to trigger actions in
-void ContainerObject::makeMainWindowConnectionsAndRefresh()
+void SystemObject::makeMainWindowConnectionsAndRefresh()
 {
     connect(gpMainWindow->mpUndoAction, SIGNAL(triggered()), this, SLOT(undo()), Qt::UniqueConnection);
     connect(gpMainWindow->mpRedoAction, SIGNAL(triggered()), this, SLOT(redo()), Qt::UniqueConnection);
@@ -190,7 +253,7 @@ void ContainerObject::makeMainWindowConnectionsAndRefresh()
 
 //! @brief Disconnects all SignalAndSlot connections to the mainwindow buttons from this container
 //! This is useful when we are switching what container we want the buttons to trigger actions in
-void ContainerObject::unmakeMainWindowConnectionsAndRefresh()
+void SystemObject::unmakeMainWindowConnectionsAndRefresh()
 {
     // Update Systemparameter widget to have no contents, but only if this is the system that is actually represented
     if (gpMainWindow->mpSystemParametersWidget->getRepresentedContainerObject() == this)
@@ -224,7 +287,7 @@ void ContainerObject::unmakeMainWindowConnectionsAndRefresh()
 //! @param[in] center The center point of all objects to be compared with
 //! @param[in] pt The position of this object, used to determine the center relative position
 //! @returns An enum that indicates on which side the port should be placed
-ContainerObject::ContainerEdgeEnumT ContainerObject::findPortEdge(QPointF center, QPointF pt)
+SystemObject::ContainerEdgeEnumT SystemObject::findPortEdge(QPointF center, QPointF pt)
 {
     //By swapping place of pt1 and pt2 we get the angle in the same coordinate system as the view
     QPointF diff = pt-center;
@@ -259,7 +322,7 @@ ContainerObject::ContainerEdgeEnumT ContainerObject::findPortEdge(QPointF center
 }
 
 //! @brief Refreshes the appearance and position of all external ports
-void ContainerObject::refreshExternalPortsAppearanceAndPosition()
+void SystemObject::refreshExternalPortsAppearanceAndPosition()
 {
     //refresh the external port poses
     ModelObjectMapT::iterator moit;
@@ -388,7 +451,7 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
 }
 
 //! @brief Overloaded refreshAppearance for containers, to make sure that port positions are updated if graphics size is changed
-void ContainerObject::refreshAppearance()
+void SystemObject::refreshAppearance()
 {
     ModelObject::refreshAppearance();
     this->refreshExternalPortsAppearanceAndPosition();
@@ -401,7 +464,7 @@ void ContainerObject::refreshAppearance()
 //! @param[out] x the new calculated horizontal placement for the port
 //! @param[out] y the new calculated vertical placement for the port
 //! @todo rename this one and maybe change it a bit as it is now included in this class, it should be common for subsystems and groups
-void ContainerObject::calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y)
+void SystemObject::calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y)
 {
     //! @todo make common PI declaration, maybe also PIhalf or include math.h and use M_PI
     double tanAngle = tan(angle);//Otherwise division by zero
@@ -432,27 +495,18 @@ void ContainerObject::calcSubsystemPortPosition(const double w, const double h, 
 }
 
 
-//! @brief Returns a pointer to the CoreSystemAccess that this container represents
-//! @returns Pointer the the CoreSystemAccess that this container represents
-CoreSystemAccess *ContainerObject::getCoreSystemAccessPtr()
-{
-    //Should be overloaded
-    return 0;
-}
-
-
 //! @brief Returns a pointer to the contained scene
-QGraphicsScene *ContainerObject::getContainedScenePtr()
+QGraphicsScene *SystemObject::getContainedScenePtr()
 {
     return mpScene;
 }
 
-void ContainerObject::setGraphicsViewport(GraphicsViewPort vp)
+void SystemObject::setGraphicsViewport(GraphicsViewPort vp)
 {
     mGraphicsViewPort = vp;
 }
 
-GraphicsViewPort ContainerObject::getGraphicsViewport() const
+GraphicsViewPort SystemObject::getGraphicsViewport() const
 {
     return mGraphicsViewPort;
 }
@@ -462,7 +516,7 @@ GraphicsViewPort ContainerObject::getGraphicsViewport() const
 //! @param[portName] The name of the port to create
 //! @todo maybe default create that info if it is missing
 //! @todo massive duplicate implementation with the one in modelobject
-Port *ContainerObject::createRefreshExternalPort(QString portName)
+Port *SystemObject::createRefreshExternalPort(QString portName)
 {
     // If port appearance is not already existing then we create it
     if ( !mModelObjectAppearance.getPortAppearanceMap().contains(portName) )
@@ -525,7 +579,7 @@ Port *ContainerObject::createRefreshExternalPort(QString portName)
 //! @param[in] oldName The name to be replaced
 //! @param[in] newName The new name
 //! This function assumes that oldName exist and that newName is correct, no error checking is done
-void ContainerObject::renameExternalPort(const QString oldName, const QString newName)
+void SystemObject::renameExternalPort(const QString oldName, const QString newName)
 {
     QList<Port*>::iterator plit;
     for (plit=mPortListPtrs.begin(); plit!=mPortListPtrs.end(); ++plit)
@@ -546,7 +600,7 @@ void ContainerObject::renameExternalPort(const QString oldName, const QString ne
 
 
 //! @brief Helper function that allows calling addGUIModelObject with typeName instead of appearance data
-ModelObject* ContainerObject::addModelObject(QString fullTypeName, QPointF position, double rotation, SelectionStatusEnumT startSelected, NameVisibilityEnumT nameStatus, UndoStatusEnumT undoSettings)
+ModelObject* SystemObject::addModelObject(QString fullTypeName, QPointF position, double rotation, SelectionStatusEnumT startSelected, NameVisibilityEnumT nameStatus, UndoStatusEnumT undoSettings)
 {
     ModelObjectAppearance *pAppearanceData = gpLibraryHandler->getModelObjectAppearancePtr(fullTypeName).data();
 
@@ -558,7 +612,7 @@ ModelObject* ContainerObject::addModelObject(QString fullTypeName, QPointF posit
     {
         QString hmfFile = pAppearanceData->getHmfFile();
         QString subTypeName = pAppearanceData->getSubTypeName();
-        ContainerObject *pObj = dynamic_cast<ContainerObject*>(addModelObject("Subsystem", position, rotation, startSelected, nameStatus, undoSettings));
+        SystemObject *pObj = dynamic_cast<SystemObject*>(addModelObject("Subsystem", position, rotation, startSelected, nameStatus, undoSettings));
         pObj->setSubTypeName(subTypeName);
         //pObj->clearContents();
 
@@ -591,7 +645,7 @@ ModelObject* ContainerObject::addModelObject(QString fullTypeName, QPointF posit
 //! @param name will be the name of the component.
 //! @returns a pointer to the created and added object
 //! @todo only modelobjects for now
-ModelObject* ContainerObject::addModelObject(ModelObjectAppearance *pAppearanceData, QPointF position, double rotation, SelectionStatusEnumT startSelected, NameVisibilityEnumT nameStatus, UndoStatusEnumT undoSettings)
+ModelObject* SystemObject::addModelObject(ModelObjectAppearance *pAppearanceData, QPointF position, double rotation, SelectionStatusEnumT startSelected, NameVisibilityEnumT nameStatus, UndoStatusEnumT undoSettings)
 {
     // Deselect all other components and connectors
     emit deselectAllGUIObjects();
@@ -601,7 +655,7 @@ ModelObject* ContainerObject::addModelObject(ModelObjectAppearance *pAppearanceD
     QString componentTypeName = pAppearanceData->getTypeName();
     if (componentTypeName == HOPSANGUISYSTEMTYPENAME || componentTypeName == HOPSANGUICONDITIONALSYSTEMTYPENAME)
     {
-        pNewModelObject = new SystemContainer(position, rotation, pAppearanceData, this, startSelected, mGfxType);
+        pNewModelObject = new SystemObject(position, rotation, pAppearanceData, startSelected, mGfxType, this);
     }
     else if (componentTypeName == HOPSANGUICONTAINERPORTTYPENAME)
     {
@@ -655,18 +709,18 @@ ModelObject* ContainerObject::addModelObject(ModelObjectAppearance *pAppearanceD
 }
 
 
-bool ContainerObject::areLossesVisible()
+bool SystemObject::areLossesVisible()
 {
     return mLossesVisible;
 }
 
 
-TextBoxWidget *ContainerObject::addTextBoxWidget(QPointF position, UndoStatusEnumT undoSettings)
+TextBoxWidget *SystemObject::addTextBoxWidget(QPointF position, UndoStatusEnumT undoSettings)
 {
     return addTextBoxWidget(position, 0, undoSettings);
 }
 
-TextBoxWidget *ContainerObject::addTextBoxWidget(QPointF position, const int desiredWidgetId, UndoStatusEnumT undoSettings)
+TextBoxWidget *SystemObject::addTextBoxWidget(QPointF position, const int desiredWidgetId, UndoStatusEnumT undoSettings)
 {
     TextBoxWidget *pNewTextBoxWidget;
     if (mWidgetMap.contains(desiredWidgetId))
@@ -693,7 +747,7 @@ TextBoxWidget *ContainerObject::addTextBoxWidget(QPointF position, const int des
 //! Works for both text and box widgets
 //! @param pWidget Pointer to widget to remove
 //! @param undoSettings Tells whether or not this shall be registered in undo stack
-void ContainerObject::deleteWidget(Widget *pWidget, UndoStatusEnumT undoSettings)
+void SystemObject::deleteWidget(Widget *pWidget, UndoStatusEnumT undoSettings)
 {
     if(undoSettings == Undo)
     {
@@ -706,7 +760,7 @@ void ContainerObject::deleteWidget(Widget *pWidget, UndoStatusEnumT undoSettings
     pWidget->deleteLater();
 }
 
-void ContainerObject::deleteWidget(const int id, UndoStatusEnumT undoSettings)
+void SystemObject::deleteWidget(const int id, UndoStatusEnumT undoSettings)
 {
     Widget *pWidget = mWidgetMap.value(id, 0);
     if (pWidget)
@@ -718,7 +772,7 @@ void ContainerObject::deleteWidget(const int id, UndoStatusEnumT undoSettings)
 
 //! @brief Delete ModelObject with specified name
 //! @param rObjectName is the name of the component to delete
-void ContainerObject::deleteModelObject(const QString &rObjectName, UndoStatusEnumT undoSettings)
+void SystemObject::deleteModelObject(const QString &rObjectName, UndoStatusEnumT undoSettings)
 {
     ModelObjectMapT::iterator it = mModelObjectMap.find(rObjectName);
     if (it != mModelObjectMap.end())
@@ -779,7 +833,7 @@ void ContainerObject::deleteModelObject(const QString &rObjectName, UndoStatusEn
 
 
 //! @brief This function is used to rename a SubGUIObject
-void ContainerObject::renameModelObject(QString oldName, QString newName, UndoStatusEnumT undoSettings)
+void SystemObject::renameModelObject(QString oldName, QString newName, UndoStatusEnumT undoSettings)
 {
     //Avoid work if no change is requested
     if (oldName != newName)
@@ -827,7 +881,7 @@ void ContainerObject::renameModelObject(QString oldName, QString newName, UndoSt
 
 
 //! @brief Tells whether or not a component with specified name exist in the GraphicsView
-bool ContainerObject::hasModelObject(const QString &rName) const
+bool SystemObject::hasModelObject(const QString &rName) const
 {
     return (mModelObjectMap.count(rName) > 0);
 }
@@ -835,7 +889,7 @@ bool ContainerObject::hasModelObject(const QString &rName) const
 //! @brief Takes ownership of supplied objects, widgets and connectors
 //!
 //! This method assumes that the previous owner have forgotten all about these objects, it however sets itself as new Qtparent, parentContainer and scene, overwriting the old values
-void ContainerObject::takeOwnershipOf(QList<ModelObject*> &rModelObjectList, QList<Widget*> &rWidgetList)
+void SystemObject::takeOwnershipOf(QList<ModelObject*> &rModelObjectList, QList<Widget*> &rWidgetList)
 {
     for (int i=0; i<rModelObjectList.size(); ++i)
     {
@@ -843,7 +897,7 @@ void ContainerObject::takeOwnershipOf(QList<ModelObject*> &rModelObjectList, QLi
         if (rModelObjectList[i]->type() != ContainerPortType)
         {
             this->getContainedScenePtr()->addItem(rModelObjectList[i]);
-            rModelObjectList[i]->setParentContainerObject(this);
+            rModelObjectList[i]->setParentSystemObject(this);
             mModelObjectMap.insert(rModelObjectList[i]->getName(), rModelObjectList[i]);
             //! @todo what if name already taken, don't care for now as we shall only move into groups when they are created
 
@@ -859,7 +913,7 @@ void ContainerObject::takeOwnershipOf(QList<ModelObject*> &rModelObjectList, QLi
     for (int i=0; i<rWidgetList.size(); ++i)
     {
         this->getContainedScenePtr()->addItem(rWidgetList[i]);
-        rWidgetList[i]->setParentContainerObject(this);
+        rWidgetList[i]->setParentSystemObject(this);
         mWidgetMap.insert(rWidgetList[i]->getWidgetIndex(), rWidgetList[i]);
         //! @todo what if idx already taken, don't care for now as we shall only move into groups when they are created
     }
@@ -972,28 +1026,28 @@ void ContainerObject::takeOwnershipOf(QList<ModelObject*> &rModelObjectList, QLi
 
 
 //! @brief Notifies container object that a gui widget has been selected
-void ContainerObject::rememberSelectedWidget(Widget *widget)
+void SystemObject::rememberSelectedWidget(Widget *widget)
 {
     mSelectedWidgetsList.append(widget);
 }
 
 
 //! @brief Notifies container object that a gui widget is no longer selected
-void ContainerObject::forgetSelectedWidget(Widget *widget)
+void SystemObject::forgetSelectedWidget(Widget *widget)
 {
     mSelectedWidgetsList.removeAll(widget);
 }
 
 
 //! @brief Returns a list with pointers to the selected GUI widgets
-QList<Widget *> ContainerObject::getSelectedGUIWidgetPtrs()
+QList<Widget *> SystemObject::getSelectedGUIWidgetPtrs()
 {
     return mSelectedWidgetsList;
 }
 
 
 //! @brief Set a system parameter value
-bool ContainerObject::setParameterValue(QString name, QString value, bool force)
+bool SystemObject::setParameterValue(QString name, QString value, bool force)
 {
     const bool rc =  this->getCoreSystemAccessPtr()->setSystemParameterValue(name, value, force);
     if (rc)
@@ -1004,7 +1058,7 @@ bool ContainerObject::setParameterValue(QString name, QString value, bool force)
     return rc;
 }
 
-bool ContainerObject::setParameter(const CoreParameterData &rParameter, bool force)
+bool SystemObject::setParameter(const CoreParameterData &rParameter, bool force)
 {
     const bool rc = this->getCoreSystemAccessPtr()->setSystemParameter(rParameter, false, force);
     emit checkMessages();
@@ -1016,7 +1070,7 @@ bool ContainerObject::setParameter(const CoreParameterData &rParameter, bool for
     return rc;
 }
 
-bool ContainerObject::setOrAddParameter(const CoreParameterData &rParameter, bool force)
+bool SystemObject::setOrAddParameter(const CoreParameterData &rParameter, bool force)
 {
     const bool rc = this->getCoreSystemAccessPtr()->setSystemParameter(rParameter, true, force);
     emit checkMessages();
@@ -1028,7 +1082,7 @@ bool ContainerObject::setOrAddParameter(const CoreParameterData &rParameter, boo
     return rc;
 }
 
-bool ContainerObject::renameParameter(const QString oldName, const QString newName)
+bool SystemObject::renameParameter(const QString oldName, const QString newName)
 {
     const bool rc = this->getCoreSystemAccessPtr()->renameSystemParameter(oldName, newName);
     if (rc)
@@ -1039,7 +1093,7 @@ bool ContainerObject::renameParameter(const QString oldName, const QString newNa
     return rc;
 }
 
-void ContainerObject::setNumHopScript(const QString &rScript)
+void SystemObject::setNumHopScript(const QString &rScript)
 {
     mNumHopScript = rScript;
     CoreSystemAccess *pCoreSys = getCoreSystemAccessPtr();
@@ -1049,12 +1103,12 @@ void ContainerObject::setNumHopScript(const QString &rScript)
     }
 }
 
-QString ContainerObject::getNumHopScript() const
+QString SystemObject::getNumHopScript() const
 {
     return mNumHopScript;
 }
 
-void ContainerObject::runNumHopScript(const QString &rScript, bool printOutput, QString &rOutput)
+void SystemObject::runNumHopScript(const QString &rScript, bool printOutput, QString &rOutput)
 {
     CoreSystemAccess *pCoreSys = getCoreSystemAccessPtr();
     if (pCoreSys)
@@ -1064,7 +1118,7 @@ void ContainerObject::runNumHopScript(const QString &rScript, bool printOutput, 
 }
 
 //! @brief Notifies container object that a gui model object has been selected
-void ContainerObject::rememberSelectedModelObject(ModelObject *object)
+void SystemObject::rememberSelectedModelObject(ModelObject *object)
 {
     QString name = object->getName();
     if(mModelObjectMap.contains(name) && mModelObjectMap.find(name).value() == object)
@@ -1073,21 +1127,21 @@ void ContainerObject::rememberSelectedModelObject(ModelObject *object)
 
 
 //! @brief Notifies container object that a gui model object is no longer selected
-void ContainerObject::forgetSelectedModelObject(ModelObject *object)
+void SystemObject::forgetSelectedModelObject(ModelObject *object)
 {
     mSelectedModelObjectsList.removeAll(object);
 }
 
 
 //! @brief Returns a list with pointers to the selected GUI model objects
-QList<ModelObject *> ContainerObject::getSelectedModelObjectPtrs()
+QList<ModelObject *> SystemObject::getSelectedModelObjectPtrs()
 {
     return mSelectedModelObjectsList;
 }
 
 
 //! @brief Returns a pointer to the component with specified name, 0 if not found
-ModelObject *ContainerObject::getModelObject(const QString &rModelObjectName)
+ModelObject *SystemObject::getModelObject(const QString &rModelObjectName)
 {
     auto moit = mModelObjectMap.find(rModelObjectName);
     if (moit != mModelObjectMap.end())
@@ -1100,13 +1154,13 @@ ModelObject *ContainerObject::getModelObject(const QString &rModelObjectName)
     }
 }
 
-QList<ModelObject *> ContainerObject::getModelObjects() const
+QList<ModelObject *> SystemObject::getModelObjects() const
 {
     return mModelObjectMap.values();
 }
 
 //! @brief Get the port of a sub model object, returns 0 if modelobject or port not found
-Port *ContainerObject::getModelObjectPort(const QString modelObjectName, const QString portName)
+Port *SystemObject::getModelObjectPort(const QString modelObjectName, const QString portName)
 {
     ModelObject *pModelObject = this->getModelObject(modelObjectName);
     if (pModelObject != nullptr)
@@ -1121,10 +1175,9 @@ Port *ContainerObject::getModelObjectPort(const QString modelObjectName, const Q
 
 
 //! @brief Find a connector in the connector vector
-Connector* ContainerObject::findConnector(QString startComp, QString startPort, QString endComp, QString endPort)
+Connector* SystemObject::findConnector(QString startComp, QString startPort, QString endComp, QString endPort)
 {
-    Connector *item;
-    item = 0;
+    Connector *item = nullptr;
     for(int i = 0; i < mSubConnectorList.size(); ++i)
     {
         if((mSubConnectorList[i]->getStartComponentName() == startComp) &&
@@ -1145,13 +1198,13 @@ Connector* ContainerObject::findConnector(QString startComp, QString startPort, 
             break;
         }
     }
-    assert(!item == 0); // magse: strange? assert(item) ?
+    assert(item != nullptr);
     return item;
 }
 
 
 //! @brief Tells whether or not there is a connector between two specified ports
-bool ContainerObject::hasConnector(QString startComp, QString startPort, QString endComp, QString endPort)
+bool SystemObject::hasConnector(QString startComp, QString startPort, QString endComp, QString endPort)
 {
     for(int i = 0; i < mSubConnectorList.size(); ++i)
     {
@@ -1176,14 +1229,14 @@ bool ContainerObject::hasConnector(QString startComp, QString startPort, QString
 
 
 //! @brief Notifies container object that a subconnector has been selected
-void ContainerObject::rememberSelectedSubConnector(Connector *pConnector)
+void SystemObject::rememberSelectedSubConnector(Connector *pConnector)
 {
     mSelectedSubConnectorsList.append(pConnector);
 }
 
 
 //! @brief Notifies container object that a subconnector has been deselected
-void ContainerObject::forgetSelectedSubConnector(Connector *pConnector)
+void SystemObject::forgetSelectedSubConnector(Connector *pConnector)
 {
     mSelectedSubConnectorsList.removeAll(pConnector);
 }
@@ -1192,7 +1245,7 @@ void ContainerObject::forgetSelectedSubConnector(Connector *pConnector)
 //! @brief Removes a specified connector from the model.
 //! @param pConnector is a pointer to the connector to remove.
 //! @param undoSettings is true if the removal of the connector shall not be registered in the undo stack, for example if this function is called by a redo-function.
-void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT undoSettings)
+void SystemObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT undoSettings)
 {
     bool success=false;
 
@@ -1283,7 +1336,7 @@ void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT 
 //! @param pPort is a pointer to the clicked port, either start or end depending on the mIsCreatingConnector flag.
 //! @param undoSettings is true if the added connector shall not be registered in the undo stack, for example if this function is called by a redo function.
 //! @return A pointer to the created connector, 0 if failed, or connector unfinished
-Connector* ContainerObject::createConnector(Port *pPort, UndoStatusEnumT undoSettings)
+Connector* SystemObject::createConnector(Port *pPort, UndoStatusEnumT undoSettings)
 {
     // When clicking end port (finish creation of connector)
     if (mIsCreatingConnector)
@@ -1383,7 +1436,7 @@ Connector* ContainerObject::createConnector(Port *pPort, UndoStatusEnumT undoSet
 }
 
 //! @brief Create a connector when both ports are known (when loading primarily)
-Connector* ContainerObject::createConnector(Port *pPort1, Port *pPort2, UndoStatusEnumT undoSettings)
+Connector* SystemObject::createConnector(Port *pPort1, Port *pPort2, UndoStatusEnumT undoSettings)
 {
     if (!mIsCreatingConnector)
     {
@@ -1414,7 +1467,7 @@ Connector* ContainerObject::createConnector(Port *pPort1, Port *pPort2, UndoStat
 //! @brief Copies the selected components, and then deletes them.
 //! @see copySelected()
 //! @see paste()
-void ContainerObject::cutSelected(CopyStack *xmlStack)
+void SystemObject::cutSelected(CopyStack *xmlStack)
 {
     // Don't copy if message widget as focus (they also use ctrl-c key sequence)
     // Also Check if we have any selected object, prevent clearing copy stack if nothing selected
@@ -1435,7 +1488,7 @@ void ContainerObject::cutSelected(CopyStack *xmlStack)
 //! @brief Puts the selected components in the copy stack, and their positions in the copy position stack.
 //! @see cutSelected()
 //! @see paste()
-void ContainerObject::copySelected(CopyStack *xmlStack)
+void SystemObject::copySelected(CopyStack *xmlStack)
 {
     // Don't copy if message widget as focus (they also use ctrl-c key sequence)
     // Also Check if we have any selected object, prevent clearing copy stack if nothing selected
@@ -1554,7 +1607,7 @@ void ContainerObject::copySelected(CopyStack *xmlStack)
 //! @brief Pastes the contents in the copy stack at the mouse position
 //! @see cutSelected()
 //! @see copySelected()
-void ContainerObject::paste(CopyStack *xmlStack)
+void SystemObject::paste(CopyStack *xmlStack)
 {
     // Do not allow past if model or container is locked
     // Do not paste if some other widget has focus (eg. terminal)
@@ -1722,7 +1775,7 @@ void ContainerObject::paste(CopyStack *xmlStack)
 
 
 //! @brief Aligns all selected objects vertically to the last selected object.
-void ContainerObject::alignX()
+void SystemObject::alignX()
 {
     double newX;
     if(!mSelectedModelObjectsList.isEmpty())
@@ -1765,7 +1818,7 @@ void ContainerObject::alignX()
 
 
 //! @brief Aligns all selected objects horizontally to the last selected object.
-void ContainerObject::alignY()
+void SystemObject::alignY()
 {
     double newY;
     if(!mSelectedModelObjectsList.isEmpty())
@@ -1808,7 +1861,7 @@ void ContainerObject::alignY()
 
 
 //Distributes selected model objects equally horizontally
-void ContainerObject::distributeX()
+void SystemObject::distributeX()
 {
     if(!mSelectedModelObjectsList.isEmpty())
     {
@@ -1849,7 +1902,7 @@ void ContainerObject::distributeX()
 
 
 //Distributes selected model objects equally vertically
-void ContainerObject::distributeY()
+void SystemObject::distributeY()
 {
     if(!mSelectedModelObjectsList.isEmpty())
     {
@@ -1891,7 +1944,7 @@ void ContainerObject::distributeY()
 
 
 //! @brief Calculates the geometrical center position of the selected objects.
-QPointF ContainerObject::getCenterPointFromSelection()
+QPointF SystemObject::getCenterPointFromSelection()
 {
     double sumX = 0;
     double sumY = 0;
@@ -1914,7 +1967,7 @@ QPointF ContainerObject::getCenterPointFromSelection()
 
 
 
-void ContainerObject::replaceComponent(QString name, QString newType)
+void SystemObject::replaceComponent(QString name, QString newType)
 {
     if(!gpLibraryHandler->getLoadedTypeNames().contains(newType))
     {
@@ -2007,7 +2060,7 @@ void ContainerObject::replaceComponent(QString name, QString newType)
 //! @brief Selects model objects in section with specified number.
 //! @param no Number of section
 //! @param append True if previously selected objects shall remain selected
-void ContainerObject::selectSection(int no, bool append)
+void SystemObject::selectSection(int no, bool append)
 {
     if(!append)
     {
@@ -2027,7 +2080,7 @@ void ContainerObject::selectSection(int no, bool append)
 //! @brief Assigns the selected component to the section with specified number.
 //! This is used to "group" components into sections with Ctrl+#, so they can be selected quickly again by pressing #.
 //! @param no Number of section
-void ContainerObject::assignSection(int no)
+void SystemObject::assignSection(int no)
 {
     if(!isSubObjectSelected()) return;
     while(mSection.size()<no+1)
@@ -2041,7 +2094,7 @@ void ContainerObject::assignSection(int no)
 
 
 //! @brief Selects all objects and connectors.
-void ContainerObject::selectAll()
+void SystemObject::selectAll()
 {
     emit selectAllGUIObjects();
     emit selectAllConnectors();
@@ -2049,7 +2102,7 @@ void ContainerObject::selectAll()
 
 
 //! @brief Deselects all objects and connectors.
-void ContainerObject::deselectAll()
+void SystemObject::deselectAll()
 {
     emit deselectAllGUIObjects();
     emit deselectAllConnectors();
@@ -2058,7 +2111,7 @@ void ContainerObject::deselectAll()
 
 //! @brief Hides all component names.
 //! @see showNames()
-void ContainerObject::hideNames()
+void SystemObject::hideNames()
 {
     mpUndoStack->newPost(UNDO_HIDEALLNAMES);
     emit deselectAllNameText();
@@ -2068,7 +2121,7 @@ void ContainerObject::hideNames()
 
 //! @brief Shows all component names.
 //! @see hideNames()
-void ContainerObject::showNames()
+void SystemObject::showNames()
 {
     mpUndoStack->newPost(UNDO_SHOWALLNAMES);
     emit showAllNameText();
@@ -2078,7 +2131,7 @@ void ContainerObject::showNames()
 //! @brief Toggles name text on or off
 //! @see showNames();
 //! @see hideNames();
-void ContainerObject::toggleNames(bool value)
+void SystemObject::toggleNames(bool value)
 {
     if(value)
     {
@@ -2092,14 +2145,14 @@ void ContainerObject::toggleNames(bool value)
 }
 
 
-void ContainerObject::toggleSignals(bool value)
+void SystemObject::toggleSignals(bool value)
 {
     mSignalsHidden = !value;
     emit showOrHideSignals(value);
 }
 
 //! @brief Slot that sets hide ports flag to true or false
-void ContainerObject::showSubcomponentPorts(bool doShowThem)
+void SystemObject::showSubcomponentPorts(bool doShowThem)
 {
     mShowSubComponentPorts = doShowThem;
     emit showOrHideAllSubComponentPorts(doShowThem);
@@ -2109,7 +2162,7 @@ void ContainerObject::showSubcomponentPorts(bool doShowThem)
 //! @brief Slot that tells the mUndoStack to execute one undo step. Necessary because the undo stack is not a QT object and cannot use its own slots.
 //! @see redo()
 //! @see clearUndo()
-void ContainerObject::undo()
+void SystemObject::undo()
 {
     mpUndoStack->undoOneStep();
 }
@@ -2118,7 +2171,7 @@ void ContainerObject::undo()
 //! @brief Slot that tells the mUndoStack to execute one redo step. Necessary because the redo stack is not a QT object and cannot use its own slots.
 //! @see undo()
 //! @see clearUndo()
-void ContainerObject::redo()
+void SystemObject::redo()
 {
     mpUndoStack->redoOneStep();
 }
@@ -2126,7 +2179,7 @@ void ContainerObject::redo()
 //! @brief Slot that tells the mUndoStack to clear itself. Necessary because the redo stack is not a QT object and cannot use its own slots.
 //! @see undo()
 //! @see redo()
-void ContainerObject::clearUndo()
+void SystemObject::clearUndo()
 {
     qDebug() << "before mUndoStack->clear(); in GUIContainerObject: " << this->getName();
     mpUndoStack->clear();
@@ -2134,12 +2187,12 @@ void ContainerObject::clearUndo()
 
 
 //! @brief Returns true if at least one GUIObject is selected
-bool ContainerObject::isSubObjectSelected()
+bool SystemObject::isSubObjectSelected()
 {
     return (mSelectedModelObjectsList.size() > 0);
 }
 
-bool ContainerObject::setVariableAlias(const QString &rFullName, const QString &rAlias)
+bool SystemObject::setVariableAlias(const QString &rFullName, const QString &rAlias)
 {
     QString compName, portName, varName;
     QStringList dummy;
@@ -2158,7 +2211,7 @@ bool ContainerObject::setVariableAlias(const QString &rFullName, const QString &
     return isOk;
 }
 
-QString ContainerObject::getVariableAlias(const QString &rFullName)
+QString SystemObject::getVariableAlias(const QString &rFullName)
 {
     QString compName, portName, varName;
     QStringList dummy;
@@ -2166,69 +2219,40 @@ QString ContainerObject::getVariableAlias(const QString &rFullName)
     return getCoreSystemAccessPtr()->getVariableAlias(compName, portName, varName);
 }
 
-QString ContainerObject::getFullNameFromAlias(const QString alias)
+QString SystemObject::getFullNameFromAlias(const QString alias)
 {
     QString comp, port, var;
     getCoreSystemAccessPtr()->getFullVariableNameByAlias(alias, comp, port, var);
     return makeFullVariableName(getParentSystemNameHieararchy(), comp,port,var);
 }
 
-QStringList ContainerObject::getAliasNames()
+QStringList SystemObject::getAliasNames()
 {
     return getCoreSystemAccessPtr()->getAliasNames();
 }
 
 
 //! @brief Returns true if at least one GUIConnector is selected
-bool ContainerObject::isConnectorSelected()
+bool SystemObject::isConnectorSelected()
 {
     return (mSelectedSubConnectorsList.size() > 0);
 }
 
 
 //! @brief Returns a pointer to the undo stack
-UndoStack *ContainerObject::getUndoStackPtr()
+UndoStack *SystemObject::getUndoStackPtr()
 {
     return mpUndoStack;
 }
 
 
 //! @brief Returns a pointer to the drag-copy copy stack
-CopyStack *ContainerObject::getDragCopyStackPtr()
+CopyStack *SystemObject::getDragCopyStackPtr()
 {
     return mpDragCopyStack;
 }
 
-size_t ContainerObject::getNumberOfLogSamples()
-{
-    //Needs to be overloaded
-    Q_ASSERT(false);
-    return 0;
-}
-
-void ContainerObject::setNumberOfLogSamples(size_t nSamples)
-{
-    Q_UNUSED(nSamples)
-    //Needs to be overloaded
-    Q_ASSERT(false);
-}
-
-double ContainerObject::getLogStartTime() const
-{
-    //Needs to be overloaded
-    Q_ASSERT(false);
-    return 0;
-}
-
-void ContainerObject::setLogStartTime(const double logStartT)
-{
-    Q_UNUSED(logStartT)
-    //Needs to be overloaded
-    assert(false);
-}
-
-
-void ContainerObject::setModelInfo(const QString &author, const QString &email, const QString &affiliation, const QString &description)
+void SystemObject::setModelInfo(const QString &author, const QString &email, const QString &affiliation, const QString &description)
 {
     mAuthor = author;
     mEmail = email;
@@ -2236,7 +2260,7 @@ void ContainerObject::setModelInfo(const QString &author, const QString &email, 
     mDescription = description;
 }
 
-void ContainerObject::getModelInfo(QString &author, QString &email, QString &affiliation, QString &description) const
+void SystemObject::getModelInfo(QString &author, QString &email, QString &affiliation, QString &description) const
 {
     author = mAuthor;
     email = mEmail;
@@ -2246,29 +2270,29 @@ void ContainerObject::getModelInfo(QString &author, QString &email, QString &aff
 
 
 //! @brief Specifies model file for the container object
-void ContainerObject::setModelFile(QString path)
+void SystemObject::setModelFile(QString path)
 {
     mModelFileInfo.setFile(path);
 }
 
 
 //! @brief Returns a copy of the model file info of the container object
-const QFileInfo &ContainerObject::getModelFileInfo() const
+const QFileInfo &SystemObject::getModelFileInfo() const
 {
     return mModelFileInfo;
 }
 
 //! @brief Returns the file path to the model that this container belongs to
 //! @details Will ask the parent if the container is an embedded container else returns the path to the external system model
-QString ContainerObject::getModelFilePath() const
+QString SystemObject::getModelFilePath() const
 {
     if (mModelFileInfo.isFile())
     {
         return mModelFileInfo.canonicalFilePath();
     }
-    else if (mpParentContainerObject)
+    else if (mpParentSystemObject)
     {
-        return mpParentContainerObject->getModelFilePath();
+        return mpParentSystemObject->getModelFilePath();
     }
     else
     {
@@ -2278,7 +2302,7 @@ QString ContainerObject::getModelFilePath() const
 
 //! @brief Returns the path to the directory where the model that this container belongs to resides
 //! @details Will ask the parent if the container is an embedded container else returns the path to the external system model
-QString ContainerObject::getModelPath() const
+QString SystemObject::getModelPath() const
 {
     QFileInfo fi(getModelFilePath());
     return fi.absolutePath();
@@ -2286,7 +2310,7 @@ QString ContainerObject::getModelPath() const
 
 
 //! @brief Returns a list with the names of the model objects in the container
-QStringList ContainerObject::getModelObjectNames() const
+QStringList SystemObject::getModelObjectNames() const
 {
     QStringList names;
     for(const auto& mo : mModelObjectMap)
@@ -2298,40 +2322,40 @@ QStringList ContainerObject::getModelObjectNames() const
 
 
 //! @brief Returns a list with pointers to GUI widgets
-QList<Widget *> ContainerObject::getWidgets() const
+QList<Widget *> SystemObject::getWidgets() const
 {
     return mWidgetMap.values();
 }
 
-Widget *ContainerObject::getWidget(const int id) const
+Widget *SystemObject::getWidget(const int id) const
 {
     return mWidgetMap.value(id, nullptr);
 }
 
 //! @brief Returns the path to the icon with iso graphics.
 //! @todo should we return full path or relative
-QString ContainerObject::getIconPath(const GraphicsTypeEnumT gfxType, const AbsoluteRelativeEnumT absrelType)
+QString SystemObject::getIconPath(const GraphicsTypeEnumT gfxType, const AbsoluteRelativeEnumT absrelType)
 {
     return mModelObjectAppearance.getIconPath(gfxType, absrelType);
 }
 
 
 //! @brief Sets the path to the icon of the specified type
-void ContainerObject::setIconPath(const QString path, const GraphicsTypeEnumT gfxType, const AbsoluteRelativeEnumT absrelType)
+void SystemObject::setIconPath(const QString path, const GraphicsTypeEnumT gfxType, const AbsoluteRelativeEnumT absrelType)
 {
     mModelObjectAppearance.setIconPath(path, gfxType, absrelType);
 }
 
 
 //! @brief Access function for mIsCreatingConnector
-bool ContainerObject::isCreatingConnector()
+bool SystemObject::isCreatingConnector()
 {
     return mIsCreatingConnector;
 }
 
 
 //! @brief Tells container object to remember a new sub connector
-void ContainerObject::rememberSubConnector(Connector *pConnector)
+void SystemObject::rememberSubConnector(Connector *pConnector)
 {
     mSubConnectorList.append(pConnector);
 }
@@ -2341,13 +2365,13 @@ void ContainerObject::rememberSubConnector(Connector *pConnector)
 //!
 //! It does not delete the connector and connected components dos not forget about it
 //! use only when transferring ownership of objects to an other container
-void ContainerObject::forgetSubConnector(Connector *pConnector)
+void SystemObject::forgetSubConnector(Connector *pConnector)
 {
     mSubConnectorList.removeAll(pConnector);
 }
 
 //! @brief Refresh the graphics of all internal container ports
-void ContainerObject::refreshInternalContainerPortGraphics()
+void SystemObject::refreshInternalContainerPortGraphics()
 {
     ModelObjectMapT::iterator moit;
     for(moit = mModelObjectMap.begin(); moit != mModelObjectMap.end(); ++moit)
@@ -2361,13 +2385,13 @@ void ContainerObject::refreshInternalContainerPortGraphics()
 }
 
 
-void ContainerObject::addExternalContainerPortObject(ModelObject* pModelObject)
+void SystemObject::addExternalContainerPortObject(ModelObject* pModelObject)
 {
     this->createRefreshExternalPort(pModelObject->getName());
 }
 
 //! @brief Aborts creation of new connector.
-void ContainerObject::cancelCreatingConnector()
+void SystemObject::cancelCreatingConnector()
 {
     if(mIsCreatingConnector)
     {
@@ -2386,7 +2410,7 @@ void ContainerObject::cancelCreatingConnector()
 
 //! @brief Switches mode of connector being created to or from diagonal mode.
 //! @param diagonal Tells whether or not connector shall be diagonal or not
-void ContainerObject::makeConnectorDiagonal(bool diagonal)
+void SystemObject::makeConnectorDiagonal(bool diagonal)
 {
     if (mIsCreatingConnector && (mpTempConnector->isMakingDiagonal() != diagonal))
     {
@@ -2399,7 +2423,7 @@ void ContainerObject::makeConnectorDiagonal(bool diagonal)
 
 //! @brief Redraws the connector being created.
 //! @param pos Position to draw connector to
-void ContainerObject::updateTempConnector(QPointF pos)
+void SystemObject::updateTempConnector(QPointF pos)
 {
     mpTempConnector->updateEndPoint(pos);
     mpTempConnector->drawConnector();
@@ -2408,7 +2432,7 @@ void ContainerObject::updateTempConnector(QPointF pos)
 
 //! @brief Adds one new line to the connector being created.
 //! @param pos Position to add new line at
-void ContainerObject::addOneConnectorLine(QPointF pos)
+void SystemObject::addOneConnectorLine(QPointF pos)
 {
     mpTempConnector->addPoint(pos);
 }
@@ -2416,7 +2440,7 @@ void ContainerObject::addOneConnectorLine(QPointF pos)
 
 //! @brief Removes one line from connector being created.
 //! @param pos Position to redraw connector to after removing the line
-void ContainerObject::removeOneConnectorLine(QPointF pos)
+void SystemObject::removeOneConnectorLine(QPointF pos)
 {
     if((mpTempConnector->getNumberOfLines() == 1 && mpTempConnector->isMakingDiagonal()) ||  (mpTempConnector->getNumberOfLines() == 2 && !mpTempConnector->isMakingDiagonal()))
     {
@@ -2443,7 +2467,7 @@ void ContainerObject::removeOneConnectorLine(QPointF pos)
 }
 
 
-void ContainerObject::setUndoDisabled(bool disabled, bool dontAskJustDoIt)
+void SystemObject::setUndoDisabled(bool disabled, bool dontAskJustDoIt)
 {
     setUndoEnabled(!disabled, dontAskJustDoIt);
 }
@@ -2452,7 +2476,7 @@ void ContainerObject::setUndoDisabled(bool disabled, bool dontAskJustDoIt)
 //! @brief Disables the undo function for the current model.
 //! @param enabled Tells whether or not to enable the undo stack
 //! @param dontAskJustDoIt If true, the warning box will not appear
-void ContainerObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
+void SystemObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
 {
     if(!enabled)
     {
@@ -2493,49 +2517,49 @@ void ContainerObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
 }
 
 
-void ContainerObject::setSaveUndo(bool save)
+void SystemObject::setSaveUndo(bool save)
 {
     mSaveUndoStack = save;
 }
 
 
 //! @brief Tells whether or not unconnected ports in container are hidden
-bool ContainerObject::areSubComponentPortsShown()
+bool SystemObject::areSubComponentPortsShown()
 {
     return mShowSubComponentPorts;
 }
 
 
 //! @brief Tells whether or not object names in container are hidden
-bool ContainerObject::areSubComponentNamesShown()
+bool SystemObject::areSubComponentNamesShown()
 {
     return mShowSubComponentNames;
 }
 
 
 //! @brief Tells whether or not signal components are hidden
-bool ContainerObject::areSignalsHidden()
+bool SystemObject::areSignalsHidden()
 {
     return mSignalsHidden;
 }
 
 
 //! @brief Tells whether or not undo/redo is enabled
-bool ContainerObject::isUndoEnabled()
+bool SystemObject::isUndoEnabled()
 {
     return !mUndoDisabled;
 }
 
 
 //! @brief Tells whether or not the save undo option is active
-bool ContainerObject::getSaveUndo()
+bool SystemObject::getSaveUndo()
 {
     return mSaveUndoStack;
 }
 
 
 //! @brief Enables or disables the undo buttons depending on whether or not undo is disabled in current tab
-void ContainerObject::updateMainWindowButtons()
+void SystemObject::updateMainWindowButtons()
 {
     gpMainWindow->mpUndoAction->setDisabled(mUndoDisabled);
     gpMainWindow->mpRedoAction->setDisabled(mUndoDisabled);
@@ -2552,7 +2576,7 @@ void ContainerObject::updateMainWindowButtons()
 
 
 //! @brief Sets the iso graphics option for the model
-void ContainerObject::setGfxType(GraphicsTypeEnumT gfxType)
+void SystemObject::setGfxType(GraphicsTypeEnumT gfxType)
 {
     this->mGfxType = gfxType;
     this->mpModelWidget->getGraphicsView()->updateViewPort();
@@ -2561,276 +2585,30 @@ void ContainerObject::setGfxType(GraphicsTypeEnumT gfxType)
 
 
 //! @brief Returns current graphics type used by container object
-GraphicsTypeEnumT ContainerObject::getGfxType()
+GraphicsTypeEnumT SystemObject::getGfxType()
 {
     return mGfxType;
 }
 
 
 //! @brief A slot that opens the properties dialog
-void ContainerObject::openPropertiesDialogSlot()
+void SystemObject::openPropertiesDialogSlot()
 {
     this->openPropertiesDialog();
 }
 
 
 //! @brief Slot that tells all selected name texts to deselect themselves
-void ContainerObject::deselectSelectedNameText()
+void SystemObject::deselectSelectedNameText()
 {
     emit deselectAllNameText();
 }
 
 
-////! @brief Defines the right click menu for container objects.
-////! @todo Maybe should try to reduce multiple copies of same functions with other GUIObjects
-//void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
-//{
-//    // This will prevent context menus from appearing automatically - they are started manually from mouse release event.
-//    if(event->reason() == QGraphicsSceneContextMenuEvent::Mouse)
-//        return;
-
-//    QMenu menu;
-//    QAction *loadAction = menu.addAction(tr("Load Subsystem File"));
-//    QAction *saveAction = menu.addAction(tr("Save Subsystem As"));
-//    QAction *saveAsComponentAction = menu.addAction(tr("Save As Component"));
-//    if(!mModelFileInfo.filePath().isEmpty())
-//    {
-//        loadAction->setDisabled(true);
-//    }
-//    if(isExternal())
-//    {
-//        saveAction->setDisabled(true);
-//        saveAsComponentAction->setDisabled(true);
-//    }
-
-//    //qDebug() << "ContainerObject::contextMenuEvent";
-//    QAction *pAction = this->buildBaseContextMenu(menu, event);
-//    if (pAction == loadAction)
-//    {
-//        QDir fileDialog; QFile file;
-//        QString modelFilePath = QFileDialog::getOpenFileName(gpMainWindow, tr("Choose Subsystem File"),
-//                                                             gpConfig->getStringSetting(CFG_SUBSYSTEMDIR),
-//                                                             tr("Hopsan Model Files (*.hmf)"));
-//        if (!modelFilePath.isNull())
-//        {
-//            file.setFileName(modelFilePath);
-//            QFileInfo fileInfo(file);
-//            gpConfig->setStringSetting(CFG_SUBSYSTEMDIR, fileInfo.absolutePath());
-
-//            bool doIt = true;
-//            if (mModelObjectMap.size() > 0)
-//            {
-//                QMessageBox clearAndLoadQuestionBox(QMessageBox::Warning, tr("Warning"),tr("All current contents of the system will be replaced. Do you want to continue?"), 0, 0);
-//                clearAndLoadQuestionBox.addButton(tr("&Yes"), QMessageBox::AcceptRole);
-//                clearAndLoadQuestionBox.addButton(tr("&No"), QMessageBox::RejectRole);
-//                clearAndLoadQuestionBox.setWindowIcon(gpMainWindow->windowIcon());
-//                doIt = (clearAndLoadQuestionBox.exec() == QMessageBox::AcceptRole);
-//            }
-
-//            if (doIt)
-//            {
-//                this->clearContents();
-
-//                QDomDocument domDocument;
-//                QDomElement hmfRoot = loadXMLDomDocument(file, domDocument, HMF_ROOTTAG);
-//                if (!hmfRoot.isNull())
-//                {
-//                    //! @todo Check version numbers
-//                    //! @todo check if we could load else give error message and don't attempt to load
-//                    QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
-//                    this->setModelFileInfo(file); //Remember info about the file from which the data was loaded
-//                    QFileInfo fileInfo(file);
-//                    this->setAppearanceDataBasePath(fileInfo.absolutePath());
-//                    this->loadFromDomElement(systemElement);
-//                }
-//            }
-//        }
-//    }
-//    else if(pAction == saveAction)
-//    {
-//        //Get file name
-//        QString modelFilePath;
-//        modelFilePath = QFileDialog::getSaveFileName(gpMainWindow, tr("Save Subsystem As"),
-//                                                     gpConfig->getStringSetting(CFG_LOADMODELDIR),
-//                                                     gpMainWindow->tr("Hopsan Model Files (*.hmf)"));
-
-//        if(modelFilePath.isEmpty())     //Don't save anything if user presses cancel
-//        {
-//            return;
-//        }
-
-
-//        //! @todo Duplicated code, but we cannot use code from ModelWidget, because it can only save top level system...
-//        QFile file(modelFilePath);   //Create a QFile object
-//        if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-//        {
-//            gpMessageHandler->addErrorMessage("Could not open the file: "+file.fileName()+" for writing." );
-//            return;
-//        }
-
-//        //Save xml document
-//        QDomDocument domDocument;
-//        QDomElement rootElement;
-//        rootElement = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
-
-//        // Save the required external lib names
-//        QVector<QString> extLibNames;
-//        CoreLibraryAccess coreLibAccess;
-//        coreLibAccess.getLoadedLibNames(extLibNames);
-
-//        QDomElement reqDom = appendDomElement(rootElement, "requirements");
-//        for (int i=0; i<extLibNames.size(); ++i)
-//        {
-//            appendDomTextNode(reqDom, "componentlibrary", extLibNames[i]);
-//        }
-
-//        //Save the model component hierarchy
-//        this->saveToDomElement(rootElement, FullModel);
-
-//        //Save to file
-//        QFile xmlFile(modelFilePath);
-//        if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-//        {
-//            gpMessageHandler->addErrorMessage("Could not save to file: " + modelFilePath);
-//            return;
-//        }
-//        QTextStream out(&xmlFile);
-//        appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
-//        domDocument.save(out, XMLINDENTATION);
-
-//        //Close the file
-//        xmlFile.close();
-
-//       // mpModelWidget->saveTo(modelFilePath, FullModel);
-//    }
-//    else if(pAction == saveAsComponentAction)
-//    {
-//        //Get file name
-//        QString cafFilePath;
-//        cafFilePath = QFileDialog::getSaveFileName(gpMainWindow, tr("Save Subsystem As"),
-//                                                     gpConfig->getStringSetting(CFG_LOADMODELDIR),
-//                                                     gpMainWindow->tr("Hopsan Component Appearance Files (*.xml)"));
-
-//        if(cafFilePath.isEmpty())     //Don't save anything if user presses cancel
-//        {
-//            return;
-//        }
-
-//        QString iconFileName = QFileInfo(getIconPath(UserGraphics, Absolute)).fileName();
-//        QString modelFileName = QFileInfo(cafFilePath).baseName()+".hmf";
-
-//        //! @todo wahy is graphics copied twice
-//        QFile::copy(getIconPath(UserGraphics, Absolute), QFileInfo(cafFilePath).path()+"/"+iconFileName);
-//        QFile::copy(getIconPath(UserGraphics, Absolute), getAppearanceData()->getBasePath()+"/"+iconFileName);
-
-//        bool ok;
-//        QString subtype = QInputDialog::getText(gpMainWindowWidget, tr("Decide a unique Subtype"),
-//                                                tr("Decide a unique subtype name for this component:"), QLineEdit::Normal,
-//                                                QString(""), &ok);
-//        if (!ok || subtype.isEmpty())
-//        {
-//            gpMessageHandler->addErrorMessage("You must specify a subtype name. Aborting!");
-//            return;
-//        }
-
-//        //! @todo it would be better if this xml would only include hmffile attribute and all otehr info loaded from there
-//        QString cafStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-//        cafStr.append(QString("<hopsanobjectappearance version=\"0.3\">\n"));
-//        cafStr.append(QString("    <modelobject hmffile=\"%1\" displayname=\"%2\" typename=\"%3\" subtypename=\"%4\">\n").arg(modelFileName).arg(getName()).arg("Subsystem").arg(subtype));
-//        cafStr.append(QString("        <icons>\n"));
-//        cafStr.append(QString("            <icon scale=\"1\" path=\"%1\" iconrotation=\"ON\" type=\"user\"/>\n").arg(iconFileName));
-//        cafStr.append(QString("        </icons>\n"));
-//        cafStr.append(QString("    </modelobject>\n"));
-//        cafStr.append(QString("</hopsanobjectappearance>\n"));
-
-//        QFile cafFile(cafFilePath);
-//        if(!cafFile.open(QFile::Text | QFile::WriteOnly))
-//        {
-//            gpMessageHandler->addErrorMessage("Could not open the file: "+cafFile.fileName()+" for writing.");
-//            return;
-//        }
-//        cafFile.write(cafStr.toUtf8());
-//        cafFile.close();
-
-//        QString modelFilePath = QFileInfo(cafFilePath).path()+"/"+QFileInfo(cafFilePath).baseName()+".hmf";
-
-//        QString orgIconPath = this->getIconPath(UserGraphics, Relative);
-//        this->setIconPath(iconFileName, UserGraphics, Relative);
-
-//        //! @todo Duplicated code, but we cannot use code from ModelWidget, because it can only save top level system...
-//        QFile file(modelFilePath);   //Create a QFile object
-//        if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-//        {
-//            gpMessageHandler->addErrorMessage("Could not open the file: "+file.fileName()+" for writing." );
-//            return;
-//        }
-
-//        //Save xml document
-//        QDomDocument domDocument;
-//        QDomElement rootElement;
-//        rootElement = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
-
-//        // Save the required external lib names
-//        QVector<QString> extLibNames;
-//        CoreLibraryAccess coreLibAccess;
-//        coreLibAccess.getLoadedLibNames(extLibNames);
-
-//        QDomElement reqDom = appendDomElement(rootElement, "requirements");
-//        for (int i=0; i<extLibNames.size(); ++i)
-//        {
-//            appendDomTextNode(reqDom, "componentlibrary", extLibNames[i]);
-//        }
-
-//        //Save the model component hierarchy
-//        QString old_subtype = this->getAppearanceData()->getSubTypeName();
-//        this->getAppearanceData()->setSubTypeName(subtype);
-//        this->saveToDomElement(rootElement, FullModel);
-//        this->getAppearanceData()->setSubTypeName(old_subtype);
-
-//        //Save to file
-//        QFile xmlFile(modelFilePath);
-//        if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-//        {
-//            gpMessageHandler->addErrorMessage("Could not save to file: " + modelFilePath);
-//            return;
-//        }
-//        QTextStream out(&xmlFile);
-//        appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
-//        domDocument.save(out, XMLINDENTATION);
-
-//        //Close the file
-//        xmlFile.close();
-
-//        this->setIconPath(orgIconPath, UserGraphics, Relative);
-
-//        QFile::remove(getModelFilePath()+"/"+iconFileName);
-//    }
-
-//    //Don't call GUIModelObject::contextMenuEvent as that will open an other menu after this one is closed
-//    //GUIModelObject::contextMenuEvent(event);
-//    ////QGraphicsItem::contextMenuEvent(event);
-//}
-
-
-////! @brief Defines the double click event for container objects (used to enter containers).
-//void ContainerObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
-//{
-//    ModelObject::mouseDoubleClickEvent(event);
-//    this->enterContainer();
-//}
-
-
-////! @brief Opens the properties dialog for container objects.
-//void ContainerObject::openPropertiesDialog()
-//{
-//    //Do Nothing
-//}
-
-
 //! @brief Clears all of the contained objects (and deletes them).
 //! This code cant be run in the destructor as this wold cause wired behaviour in the derived system class.
 //! The core system would be deleted before container clear code is run, that is why we have it as a convenient protected function
-void ContainerObject::clearContents()
+void SystemObject::clearContents()
 {
     ModelObjectMapT::iterator mit;
     QMap<size_t, Widget *>::iterator wit;
@@ -2857,13 +2635,13 @@ void ContainerObject::clearContents()
 
 
 //! @brief Enters a container object and makes the view represent it contents.
-void ContainerObject::enterContainer()
+void SystemObject::enterContainer()
 {
     // First deselect everything so that buttons pressed in the view are not sent to objects in the previous container
-    mpParentContainerObject->deselectAll(); //deselect myself and anyone else
+    mpParentSystemObject->deselectAll(); //deselect myself and anyone else
 
     // Remember current viewport, before we switch to the new one
-    mpParentContainerObject->setGraphicsViewport(mpModelWidget->getGraphicsView()->getViewPort());
+    mpParentSystemObject->setGraphicsViewport(mpModelWidget->getGraphicsView()->getViewPort());
 
     // Show this scene
     mpModelWidget->getGraphicsView()->setContainerPtr(this);
@@ -2871,7 +2649,7 @@ void ContainerObject::enterContainer()
     mpModelWidget->getGraphicsView()->setViewPort(getGraphicsViewport());
 
     // Disconnect parent system and connect new system with actions
-    mpParentContainerObject->unmakeMainWindowConnectionsAndRefresh();
+    mpParentSystemObject->unmakeMainWindowConnectionsAndRefresh();
     this->makeMainWindowConnectionsAndRefresh();
 
     refreshInternalContainerPortGraphics();
@@ -2881,7 +2659,7 @@ void ContainerObject::enterContainer()
 }
 
 //! @brief Exit a container object and make its the view represent its parents contents.
-void ContainerObject::exitContainer()
+void SystemObject::exitContainer()
 {
     this->deselectAll();
 
@@ -2889,15 +2667,15 @@ void ContainerObject::exitContainer()
     this->setGraphicsViewport(mpModelWidget->getGraphicsView()->getViewPort());
 
     // Go back to parent system
-    mpModelWidget->getGraphicsView()->setContainerPtr(mpParentContainerObject);
-    mpModelWidget->getGraphicsView()->setViewPort(mpParentContainerObject->getGraphicsViewport());
+    mpModelWidget->getGraphicsView()->setContainerPtr(mpParentSystemObject);
+    mpModelWidget->getGraphicsView()->setViewPort(mpParentSystemObject->getGraphicsViewport());
 
-    mpModelWidget->handleSystemLock((mpParentContainerObject->isExternal() && mpParentContainerObject != mpModelWidget->getTopLevelSystemContainer()) || mpParentContainerObject->isAncestorOfExternalSubsystem(),
-                                    mpParentContainerObject->isLocallyLocked());
+    mpModelWidget->handleSystemLock((mpParentSystemObject->isExternal() && mpParentSystemObject != mpModelWidget->getTopLevelSystemContainer()) || mpParentSystemObject->isAncestorOfExternalSubsystem(),
+                                    mpParentSystemObject->isLocallyLocked());
 
     // Disconnect this system and connect parent system with undo and redo actions
     this->unmakeMainWindowConnectionsAndRefresh();
-    mpParentContainerObject->makeMainWindowConnectionsAndRefresh();
+    mpParentSystemObject->makeMainWindowConnectionsAndRefresh();
 
     // Refresh external port appearance
     //! @todo We only need to do this if ports have change, right now we always refresh, don't know if this is a big deal
@@ -2906,7 +2684,7 @@ void ContainerObject::exitContainer()
 
 
 //! @brief Rotates all selected objects right (clockwise)
-void ContainerObject::rotateSubObjects90cw()
+void SystemObject::rotateSubObjects90cw()
 {
     if(this->isSubObjectSelected())
     {
@@ -2917,7 +2695,7 @@ void ContainerObject::rotateSubObjects90cw()
 
 
 //! @brief Rotates all selected objects left (counter-clockwise)
-void ContainerObject::rotateSubObjects90ccw()
+void SystemObject::rotateSubObjects90ccw()
 {
     if(this->isSubObjectSelected())
     {
@@ -2928,7 +2706,7 @@ void ContainerObject::rotateSubObjects90ccw()
 
 
 //! @brief Flips selected contained objects horizontally
-void ContainerObject::flipSubObjectsHorizontal()
+void SystemObject::flipSubObjectsHorizontal()
 {
     if(this->isSubObjectSelected())
     {
@@ -2939,7 +2717,7 @@ void ContainerObject::flipSubObjectsHorizontal()
 
 
 //! @brief Flips selected contained objects vertically
-void ContainerObject::flipSubObjectsVertical()
+void SystemObject::flipSubObjectsVertical()
 {
     if(this->isSubObjectSelected())
     {
@@ -2949,7 +2727,7 @@ void ContainerObject::flipSubObjectsVertical()
 }
 
 
-void ContainerObject::showLosses(bool show)
+void SystemObject::showLosses(bool show)
 {
     if(!show)
     {
@@ -3030,7 +2808,7 @@ void ContainerObject::showLosses(bool show)
 }
 
 
-void ContainerObject::showLossesFromDialog()
+void SystemObject::showLossesFromDialog()
 {
     mpLossesDialog->close();
 
@@ -3175,7 +2953,7 @@ void ContainerObject::showLossesFromDialog()
 }
 
 
-void ContainerObject::hideLosses()
+void SystemObject::hideLosses()
 {
     ModelObjectMapT::iterator moit;
     for(moit = mModelObjectMap.begin(); moit != mModelObjectMap.end(); ++moit)
@@ -3185,7 +2963,7 @@ void ContainerObject::hideLosses()
 }
 
 
-void ContainerObject::measureSimulationTime()
+void SystemObject::measureSimulationTime()
 {
     int nSteps = QInputDialog::getInt(gpMainWindow, tr("Measure Simulation Time"),
                                  tr("Number of steps:"), 5, 1);
@@ -3330,7 +3108,7 @@ void ContainerObject::measureSimulationTime()
     delete(pDialog);
 }
 
-void ContainerObject::plotMeasuredSimulationTime()
+void SystemObject::plotMeasuredSimulationTime()
 {
     QItemSelectionModel *pSelect;
     QStandardItemModel *pModel;
@@ -3381,7 +3159,7 @@ void ContainerObject::plotMeasuredSimulationTime()
     //pPlotWindow->setAttribute(Qt::WA_DeleteOnClose, false);
 }
 
-void ContainerObject::exportMesasuredSimulationTime()
+void SystemObject::exportMesasuredSimulationTime()
 {
     //! @todo Ask for filename
     QString pathStr = QFileDialog::getSaveFileName(gpMainWindowWidget, "Save measured simulation times", gpConfig->getStringSetting(CFG_PLOTDATADIR), "*.csv");
@@ -3438,7 +3216,7 @@ void ContainerObject::exportMesasuredSimulationTime()
 }
 
 
-bool ContainerObject::isAncestorOfExternalSubsystem()
+bool SystemObject::isAncestorOfExternalSubsystem()
 {
     if(this == mpModelWidget->getTopLevelSystemContainer())
     {
@@ -3450,22 +3228,22 @@ bool ContainerObject::isAncestorOfExternalSubsystem()
     }
     else
     {
-        return mpParentContainerObject->isAncestorOfExternalSubsystem();
+        return mpParentSystemObject->isAncestorOfExternalSubsystem();
     }
 }
 
 
-bool ContainerObject::isExternal()
+bool SystemObject::isExternal()
 {
     return !mModelFileInfo.filePath().isEmpty();
 }
 
-bool ContainerObject::isAnimationDisabled()
+bool SystemObject::isAnimationDisabled()
 {
     return mAnimationDisabled;
 }
 
-void ContainerObject::setAnimationDisabled(bool disabled)
+void SystemObject::setAnimationDisabled(bool disabled)
 {
     if(disabled != mAnimationDisabled)
     {
@@ -3477,20 +3255,20 @@ void ContainerObject::setAnimationDisabled(bool disabled)
 
 
 //! @brief Returns a list with pointers to all sub-connectors in container
-QList<Connector *> ContainerObject::getSubConnectorPtrs()
+QList<Connector *> SystemObject::getSubConnectorPtrs()
 {
     return mSubConnectorList;
 }
 
 
 
-QSharedPointer<LogDataHandler2> ContainerObject::getLogDataHandler()
+QSharedPointer<LogDataHandler2> SystemObject::getLogDataHandler()
 {
     return mpModelWidget->getLogDataHandler();
     //return mpLogDataHandler;
 }
 
-QStringList ContainerObject::getRequiredComponentLibraries() const
+QStringList SystemObject::getRequiredComponentLibraries() const
 {
     QStringList requiredLibraryIds;
     for (const auto& mo : mModelObjectMap)
@@ -3501,10 +3279,1740 @@ QStringList ContainerObject::getRequiredComponentLibraries() const
             requiredLibraryIds.append(entryLib->id);
         }
         // Append subsystem requirements
-        if (mo->type() == SystemContainerType) {
-            requiredLibraryIds.append(qobject_cast<ContainerObject*>(mo)->getRequiredComponentLibraries());
+        if (mo->type() == SystemObjectType) {
+            requiredLibraryIds.append(qobject_cast<SystemObject*>(mo)->getRequiredComponentLibraries());
         }
     }
     requiredLibraryIds.removeDuplicates();
     return requiredLibraryIds;
+}
+
+void SystemObject::exportToLabView()
+{
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(gpMainWindowWidget, tr("Export to LabVIEW/SIT"),
+                                  "This will create source code for a LabVIEW/SIT DLL-file from current model. The  HopsanCore source code is included but you will need Visual Studio 2003 to compile it.\nContinue?",
+                                  QMessageBox::Yes | QMessageBox::No);
+    if (reply == QMessageBox::No)
+        return;
+
+    //Open file dialogue and initialize the file stream
+    QString filePath;
+    filePath = QFileDialog::getSaveFileName(gpMainWindowWidget, tr("Export Project to HopsanRT Wrapper Code"),
+                                            gpConfig->getStringSetting(CFG_LABVIEWEXPORTDIR),
+                                            tr("C++ Source File (*.cpp)"));
+    if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
+
+    QFileInfo file(filePath);
+    gpConfig->setStringSetting(CFG_LABVIEWEXPORTDIR, file.absolutePath());
+
+    auto spGenerator = createDefaultExportGenerator();
+    if (!spGenerator->generateToLabViewSIT(filePath, mpCoreSystemAccess->getCoreSystemPtr()))
+    {
+        gpMessageHandler->addErrorMessage("LabView SIT export failed");
+    }
+}
+
+void SystemObject::exportToFMU1_32()
+{
+    exportToFMU("", 1, ArchitectureEnumT::x86);
+}
+
+void SystemObject::exportToFMU1_64()
+{
+    exportToFMU("", 1, ArchitectureEnumT::x64);
+}
+
+void SystemObject::exportToFMU2_32()
+{
+    exportToFMU("", 2, ArchitectureEnumT::x86);
+}
+
+void SystemObject::exportToFMU2_64()
+{
+    exportToFMU("", 2, ArchitectureEnumT::x64);
+}
+
+
+
+
+void SystemObject::exportToFMU(QString savePath, int version, ArchitectureEnumT arch)
+{
+    if(savePath.isEmpty())
+    {
+        //Open file dialogue and initialize the file stream
+        QDir fileDialogSaveDir;
+        savePath = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Create Functional Mockup Unit"),
+                                                        gpConfig->getStringSetting(CFG_FMUEXPORTDIR),
+                                                        QFileDialog::ShowDirsOnly
+                                                        | QFileDialog::DontResolveSymlinks);
+        if(savePath.isEmpty()) return;    //Don't save anything if user presses cancel
+
+        QDir saveDir;
+        saveDir.setPath(savePath);
+        gpConfig->setStringSetting(CFG_FMUEXPORTDIR, saveDir.absolutePath());
+        saveDir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot);
+        if(!saveDir.entryList().isEmpty())
+        {
+            qDebug() << saveDir.entryList();
+            QMessageBox msgBox;
+            msgBox.setWindowIcon(gpMainWindowWidget->windowIcon());
+            msgBox.setText(QString("Folder is not empty!"));
+            msgBox.setInformativeText("Are you sure you want to export files here?");
+            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            msgBox.setDefaultButton(QMessageBox::No);
+
+            int answer = msgBox.exec();
+            if(answer == QMessageBox::No)
+            {
+                return;
+            }
+        }
+    }
+
+    QDir saveDir(savePath);
+    if(!saveDir.exists())
+    {
+        QDir().mkpath(savePath);
+    }
+    saveDir.setFilter(QDir::NoFilter);
+
+    if(!mpModelWidget->isSaved())
+    {
+        QMessageBox::information(gpMainWindowWidget, tr("Model not saved"), tr("Please save your model before exporting an FMU"));
+        return;
+    }
+
+    //Save model to hmf in export directory
+    mpModelWidget->saveTo(savePath+"/"+mModelFileInfo.fileName().replace(" ", "_"));
+
+    auto spGenerator = createDefaultExportGenerator();
+    spGenerator->setCompilerPath(gpConfig->getCompilerPath(arch));
+
+    HopsanGeneratorGUI::TargetArchitectureT garch;
+    if (arch == ArchitectureEnumT::x64)
+    {
+        garch = HopsanGeneratorGUI::TargetArchitectureT::x64;
+    }
+    else
+    {
+        garch = HopsanGeneratorGUI::TargetArchitectureT::x86;
+    }
+    auto pCoreSystem = mpCoreSystemAccess->getCoreSystemPtr();
+    auto fmuVersion = static_cast<HopsanGeneratorGUI::FmuVersionT>(version);
+    QStringList externalLibraries;
+    //! @todo an idea here is to always treat the default library as external, and export it as such (and never build it in by default), that would reduce special handling of the default library
+    //! @todo This code prevents nesting an external fmu inside an export, not sure if we need to support this
+    for (const auto& pLib : gpLibraryHandler->getLibraries(this->getRequiredComponentLibraries(), LibraryTypeEnumT::ExternalLib)) {
+        const auto mainFile = pLib->getLibraryMainFilePath();
+        spGenerator->checkComponentLibrary(mainFile);
+        externalLibraries.append(pLib->getLibraryMainFilePath());
+    }
+    spGenerator->setAutoCloseWidgetsOnSuccess(false);
+    if (!spGenerator->generateToFmu(savePath, pCoreSystem, externalLibraries, fmuVersion, garch))
+    {
+        gpMessageHandler->addErrorMessage("Failed to export FMU");
+    }
+}
+
+void SystemObject::exportToSimulink()
+{
+    QDialog *pExportDialog = new QDialog(gpMainWindowWidget);
+    pExportDialog->setWindowTitle("Create Simulink Source Files");
+
+    QLabel *pExportDialogLabel1 = new QLabel(tr("This will create source files for Simulink from the current model. These can be compiled into an S-function library by executing HopsanSimulinkCompile.m from Matlab console."), pExportDialog);
+    pExportDialogLabel1->setWordWrap(true);
+
+//    QGroupBox *pCompilerGroupBox = new QGroupBox(tr("Choose compiler:"), pExportDialog);
+//    QRadioButton *pMSVC2008RadioButton = new QRadioButton(tr("Microsoft Visual Studio 2008"));
+//    QRadioButton *pMSVC2010RadioButton = new QRadioButton(tr("Microsoft Visual Studio 2010"));
+//    pMSVC2008RadioButton->setChecked(true);
+//    QVBoxLayout *pCompilerLayout = new QVBoxLayout;
+//    pCompilerLayout->addWidget(pMSVC2008RadioButton);
+//    pCompilerLayout->addWidget(pMSVC2010RadioButton);
+//    pCompilerLayout->addStretch(1);
+//    pCompilerGroupBox->setLayout(pCompilerLayout);
+
+//    QGroupBox *pArchitectureGroupBox = new QGroupBox(tr("Choose architecture:"), pExportDialog);
+//    QRadioButton *p32bitRadioButton = new QRadioButton(tr("32-bit (x86)"));
+//    QRadioButton *p64bitRadioButton = new QRadioButton(tr("64-bit (x64)"));
+//    p32bitRadioButton->setChecked(true);
+//    QVBoxLayout *pArchitectureLayout = new QVBoxLayout;
+//    pArchitectureLayout->addWidget(p32bitRadioButton);
+//    pArchitectureLayout->addWidget(p64bitRadioButton);
+//    pArchitectureLayout->addStretch(1);
+//    pArchitectureGroupBox->setLayout(pArchitectureLayout);
+
+//    QLabel *pExportDialogLabel2 = new QLabel("Matlab must use the same compiler during compilation.    ", pExportDialog);
+
+    QCheckBox *pDisablePortLabels = new QCheckBox("Disable port labels (for older versions of Matlab)");
+
+    QDialogButtonBox *pExportButtonBox = new QDialogButtonBox(pExportDialog);
+    QPushButton *pExportButtonOk = new QPushButton("Ok", pExportDialog);
+    QPushButton *pExportButtonCancel = new QPushButton("Cancel", pExportDialog);
+    pExportButtonBox->addButton(pExportButtonOk, QDialogButtonBox::AcceptRole);
+    pExportButtonBox->addButton(pExportButtonCancel, QDialogButtonBox::RejectRole);
+
+    QVBoxLayout *pExportDialogLayout = new QVBoxLayout(pExportDialog);
+    pExportDialogLayout->addWidget(pExportDialogLabel1);
+//    pExportDialogLayout->addWidget(pCompilerGroupBox);
+//    pExportDialogLayout->addWidget(pArchitectureGroupBox);
+//    pExportDialogLayout->addWidget(pExportDialogLabel2);
+    pExportDialogLayout->addWidget(pDisablePortLabels);
+    pExportDialogLayout->addWidget(pExportButtonBox);
+    pExportDialog->setLayout(pExportDialogLayout);
+
+    connect(pExportButtonBox, SIGNAL(accepted()), pExportDialog, SLOT(accept()));
+    connect(pExportButtonBox, SIGNAL(rejected()), pExportDialog, SLOT(reject()));
+
+    //connect(pExportButtonOk,        SIGNAL(clicked()), pExportDialog, SLOT(accept()));
+    //connect(pExportButtonCancel,    SIGNAL(clicked()), pExportDialog, SLOT(reject()));
+
+    if(pExportDialog->exec() == QDialog::Rejected)
+    {
+        return;
+    }
+
+
+    //QMessageBox::information(gpMainWindow, gpMainWindow->tr("Create Simulink Source Files"),
+    //                         gpMainWindow->tr("This will create source files for Simulink from the current model. These can be compiled into an S-function library by executing HopsanSimulinkCompile.m from Matlab console.\n\nVisual Studio 2008 compiler is supported, although other versions might work as well.."));
+
+    QString fileName;
+    if(!mModelFileInfo.fileName().isEmpty())
+    {
+        fileName = mModelFileInfo.fileName();
+    }
+    else
+    {
+        fileName = "untitled.hmf";
+    }
+
+
+        //Open file dialogue and initialize the file stream
+    QString savePath;
+    savePath = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Create Simulink Source Files"),
+                                                    gpConfig->getStringSetting(CFG_SIMULINKEXPORTDIR),
+                                                    QFileDialog::ShowDirsOnly
+                                                    | QFileDialog::DontResolveSymlinks);
+    if(savePath.isEmpty()) return;    //Don't save anything if user presses cancel
+    QFileInfo file(savePath);
+    gpConfig->setStringSetting(CFG_SIMULINKEXPORTDIR, file.absolutePath());
+
+    // Save xml document
+    mpModelWidget->saveTo(savePath+"/"+fileName);
+
+//    int compiler;
+//    if(pMSVC2008RadioButton->isChecked() && p32bitRadioButton->isChecked())
+//    {
+//        compiler=0;
+//    }
+//    else if(pMSVC2008RadioButton->isChecked() && p64bitRadioButton->isChecked())
+//    {
+//        compiler=1;
+//    }
+//    else if(pMSVC2010RadioButton->isChecked() && p32bitRadioButton->isChecked())
+//    {
+//        compiler=2;
+//    }
+//    else/* if(pMSVC2010RadioButton->isChecked() && p64bitRadioButton->isChecked())*/
+//    {
+//        compiler=3;
+//    }
+
+    auto spGenerator = createDefaultExportGenerator();
+    QString modelPath = getModelFileInfo().fileName();
+    auto pCoreSystem = mpCoreSystemAccess->getCoreSystemPtr();
+    QStringList externalLibraries;
+    for (const auto& pLib : gpLibraryHandler->getLibraries(this->getRequiredComponentLibraries(), LibraryTypeEnumT::ExternalLib)) {
+        externalLibraries.append(pLib->getLibraryMainFilePath());
+    }
+    auto portLabels = pDisablePortLabels->isChecked() ? HopsanGeneratorGUI::UsePortlablesT::DisablePortLables :
+                                                        HopsanGeneratorGUI::UsePortlablesT::EnablePortLabels;
+
+    if (!spGenerator->generateToSimulink(savePath, modelPath, pCoreSystem, externalLibraries, portLabels ))
+    {
+        gpMessageHandler->addErrorMessage("Simulink export generator failed");
+    }
+
+
+    //Clean up widgets that do not have a parent
+    delete(pDisablePortLabels);
+//    delete(pMSVC2008RadioButton);
+//    delete(pMSVC2010RadioButton);
+//    delete(p32bitRadioButton);
+    //    delete(p64bitRadioButton);
+}
+
+void SystemObject::exportToExecutableModel(QString savePath, ArchitectureEnumT arch)
+{
+    if(savePath.isEmpty())
+    {
+        //Open file dialog and initialize the file stream
+        QDir fileDialogSaveDir;
+        savePath = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Compile Executable Model"),
+                                                        gpConfig->getStringSetting(CFG_EXEEXPORTDIR),
+                                                        QFileDialog::ShowDirsOnly
+                                                        | QFileDialog::DontResolveSymlinks);
+        if(savePath.isEmpty()) return;    //Don't save anything if user presses cancel
+
+        QDir saveDir;
+        saveDir.setPath(savePath);
+        gpConfig->setStringSetting(CFG_EXEEXPORTDIR, saveDir.absolutePath());
+        saveDir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot);
+        if(!saveDir.entryList().isEmpty())
+        {
+            qDebug() << saveDir.entryList();
+            QMessageBox msgBox;
+            msgBox.setWindowIcon(gpMainWindowWidget->windowIcon());
+            msgBox.setWindowTitle("Warning");
+            msgBox.setText(QString("Folder is not empty!"));
+            msgBox.setInformativeText("Are you sure you want to export files here?");
+            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            msgBox.setDefaultButton(QMessageBox::No);
+
+            int answer = msgBox.exec();
+            if(answer == QMessageBox::No)
+            {
+                return;
+            }
+        }
+    }
+
+    QDir saveDir(savePath);
+    if(!saveDir.exists())
+    {
+        QDir().mkpath(savePath);
+    }
+    saveDir.setFilter(QDir::NoFilter);
+
+    if(!mpModelWidget->isSaved())
+    {
+        QMessageBox::information(gpMainWindowWidget, tr("Model not saved"), tr("Please save your model before compiling an executable model"));
+        return;
+    }
+
+    //Save model to hmf in export directory
+    mpModelWidget->saveTo(savePath+"/"+mModelFileInfo.fileName().replace(" ", "_"));
+
+    auto spGenerator = createDefaultExportGenerator();
+    spGenerator->setCompilerPath(gpConfig->getCompilerPath(arch));
+
+    HopsanGeneratorGUI::TargetArchitectureT garch;
+    if (arch == ArchitectureEnumT::x64)
+    {
+        garch = HopsanGeneratorGUI::TargetArchitectureT::x64;
+    }
+    else
+    {
+        garch = HopsanGeneratorGUI::TargetArchitectureT::x86;
+    }
+    auto pCoreSystem = mpCoreSystemAccess->getCoreSystemPtr();
+    QStringList externalLibraries;
+    //! @todo an idea here is to always treat the default library as external, and export it as such (and never build it in by default), that would reduce special handling of the default library
+    //! @todo This code prevents nesting an external fmu inside an export, not sure if we need to support this
+    for (const auto& pLib : gpLibraryHandler->getLibraries(this->getRequiredComponentLibraries(), LibraryTypeEnumT::ExternalLib)) {
+        const auto mainFile = pLib->getLibraryMainFilePath();
+        spGenerator->checkComponentLibrary(mainFile);
+        externalLibraries.append(pLib->getLibraryMainFilePath());
+    }
+    spGenerator->setAutoCloseWidgetsOnSuccess(false);
+    if (!spGenerator->generateToExe(savePath, pCoreSystem, externalLibraries, garch))
+    {
+        gpMessageHandler->addErrorMessage("Failed to compile executable model");
+    }
+}
+
+int SystemObject::type() const
+{
+    return Type;
+}
+
+QString SystemObject::getHmfTagName() const
+{
+    return HMF_SYSTEMTAG;
+}
+
+void SystemObject::deleteInHopsanCore()
+{
+    this->setUndoEnabled(false, true); //The last true means DONT ASK
+    //qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,GUISystem destructor";
+    //First remove all contents
+    this->clearContents();
+
+    if (mpParentSystemObject != 0)
+    {
+        mpParentSystemObject->getCoreSystemAccessPtr()->removeSubComponent(this->getName(), true);
+    }
+    else
+    {
+        mpCoreSystemAccess->deleteRootSystemPtr();
+    }
+
+    delete mpCoreSystemAccess;
+}
+
+//! @brief This function sets the desired subsystem name
+//! @param [in] newName The new name
+void SystemObject::setName(QString newName)
+{
+    if (mpParentSystemObject == 0)
+    {
+        mName = mpCoreSystemAccess->setSystemName(newName);
+    }
+    else
+    {
+        mpParentSystemObject->renameModelObject(this->getName(), newName);
+    }
+    refreshDisplayName();
+}
+
+
+//! Returns a string with the sub system type.
+QString SystemObject::getTypeName() const
+{
+     return mModelObjectAppearance.getTypeName();
+}
+
+//! @brief Get the system cqs type
+//! @returns A string containing the CQS type
+QString SystemObject::getTypeCQS() const
+{
+    return mpCoreSystemAccess->getSystemTypeCQS();
+}
+
+//! @brief get The parameter names of this system
+//! @returns A QStringList containing the parameter names
+QStringList SystemObject::getParameterNames()
+{
+    return mpCoreSystemAccess->getSystemParameterNames();
+}
+
+//! @brief Get a vector contain data from all parameters
+//! @param [out] rParameterDataVec A vector that will contain parameter data
+void SystemObject::getParameters(QVector<CoreParameterData> &rParameterDataVec)
+{
+    mpCoreSystemAccess->getSystemParameters(rParameterDataVec);
+}
+
+//! @brief Function that returns the specified parameter value
+//! @param name Name of the parameter to return value from
+QString SystemObject::getParameterValue(const QString paramName)
+{
+    return mpCoreSystemAccess->getSystemParameterValue(paramName);
+}
+
+bool SystemObject::hasParameter(const QString &rParamName)
+{
+    return mpCoreSystemAccess->hasSystemParameter(rParamName);
+}
+
+//! @brief Get parameter data for a specific parameter
+//! @param [out] rData The parameter data
+void SystemObject::getParameter(const QString paramName, CoreParameterData &rData)
+{
+    return mpCoreSystemAccess->getSystemParameter(paramName, rData);
+}
+
+//! @brief Returns a pointer to the CoreSystemAccess that this container represents
+//! @returns Pointer the the CoreSystemAccess that this container represents
+CoreSystemAccess* SystemObject::getCoreSystemAccessPtr()
+{
+    return mpCoreSystemAccess;
+}
+
+//! @brief Overloaded version that returns self if root system
+SystemObject *SystemObject::getParentSystemObject()
+{
+    if (mpParentSystemObject==0)
+    {
+        return this;
+    }
+    else
+    {
+        return mpParentSystemObject;
+    }
+}
+
+
+
+
+
+//! @brief Saves the System specific core data to XML DOM Element
+//! @param[in] rDomElement The DOM Element to save to
+void SystemObject::saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents)
+{
+    ModelObject::saveCoreDataToDomElement(rDomElement, contents);
+
+    if (mLoadType == "EXTERNAL" && contents == FullModel)
+    {
+        // Determine the relative path
+        QFileInfo parentModelPath(mpParentSystemObject->getModelFilePath());
+        QString relPath = relativePath(getModelFilePath(), parentModelPath.absolutePath());
+
+        // This information should ONLY be used to indicate that a subsystem is external, it SHOULD NOT be included in the actual external system
+        // If it would be, the load function will fail
+        rDomElement.setAttribute( HMF_EXTERNALPATHTAG, relPath );
+    }
+
+    if (mLoadType != "EXTERNAL" && contents == FullModel)
+    {
+        appendSimulationTimeTag(rDomElement, mpModelWidget->getStartTime().toDouble(), this->getTimeStep(), mpModelWidget->getStopTime().toDouble(), this->doesInheritTimeStep());
+        appendLogSettingsTag(rDomElement, getLogStartTime(), getNumberOfLogSamples());
+    }
+
+    // Save the NumHop script
+    if (!mNumHopScript.isEmpty())
+    {
+        appendDomTextNode(rDomElement, HMF_NUMHOPSCRIPT, mNumHopScript);
+    }
+
+    // Save the parameter values for the system
+    QVector<CoreParameterData> paramDataVector;
+    this->getParameters(paramDataVector);
+    QDomElement xmlParameters = appendDomElement(rDomElement, HMF_PARAMETERS);
+    for(int i=0; i<paramDataVector.size(); ++i)
+    {
+        QDomElement xmlParameter = appendDomElement(xmlParameters, HMF_PARAMETERTAG);
+        xmlParameter.setAttribute(HMF_NAMETAG, paramDataVector[i].mName);
+        xmlParameter.setAttribute(HMF_VALUETAG, paramDataVector[i].mValue);
+        xmlParameter.setAttribute(HMF_TYPE, paramDataVector[i].mType);
+        if (!paramDataVector[i].mQuantity.isEmpty())
+        {
+            xmlParameter.setAttribute(HMF_QUANTITY, paramDataVector[i].mQuantity);
+        }
+        if (!paramDataVector[i].mUnit.isEmpty())
+        {
+            xmlParameter.setAttribute(HMF_UNIT, paramDataVector[i].mUnit);
+        }
+        if (!paramDataVector[i].mDescription.isEmpty())
+        {
+            xmlParameter.setAttribute(HMF_DESCRIPTIONTAG, paramDataVector[i].mDescription);
+        }
+    }
+
+    // Save the alias names in this system
+    QDomElement xmlAliases = appendDomElement(rDomElement, HMF_ALIASES);
+    QStringList aliases = getAliasNames();
+    //! @todo need one function that gets both alias and full maybe
+    for (int i=0; i<aliases.size(); ++i)
+    {
+        QDomElement alias = appendDomElement(xmlAliases, HMF_ALIAS);
+        alias.setAttribute(HMF_TYPE, "variable"); //!< @todo not manual type
+        alias.setAttribute(HMF_NAMETAG, aliases[i]);
+        QString fullName = getFullNameFromAlias(aliases[i]);
+        appendDomTextNode(alias, "fullname",fullName );
+    }
+}
+
+//! @brief Defines the right click menu for container objects.
+void SystemObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+{
+    // This will prevent context menus from appearing automatically - they are started manually from mouse release event.
+    if(event->reason() == QGraphicsSceneContextMenuEvent::Mouse)
+        return;
+
+    bool allowFullEditing = (!isLocallyLocked() && (getModelLockLevel() == NotLocked));
+    //bool allowLimitedEditing = (!isLocallyLocked() && (getModelLockLevel() <= LimitedLock));
+
+    QMenu menu;
+    QAction *enterAction = menu.addAction(tr("Enter Subsystem"));
+    menu.addSeparator();
+
+    QAction *loadAction = menu.addAction(tr("Load Subsystem File"));
+    QAction *saveAction = menu.addAction(tr("Save Subsystem As"));
+    QAction *saveAsComponentAction = menu.addAction(tr("Save As Component"));
+    menu.addSeparator();
+    QAction *saveParameterValuesAction = menu.addAction(tr("Save parameter values to file"));
+    QAction *loadParameterValuesAction = menu.addAction(tr("Load parameter values from file"));
+    loadAction->setEnabled(allowFullEditing);
+    if(!mModelFileInfo.filePath().isEmpty())
+    {
+        loadAction->setDisabled(true);
+    }
+    if(isExternal())
+    {
+        saveAction->setDisabled(true);
+        saveAsComponentAction->setDisabled(true);
+    }
+
+    QAction *pAction = this->buildBaseContextMenu(menu, event);
+    if (pAction == loadAction)
+    {
+        QString modelFilePath = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Choose Subsystem File"),
+                                                             gpConfig->getStringSetting(CFG_SUBSYSTEMDIR),
+                                                             tr("Hopsan Model Files (*.hmf)"));
+        if (!modelFilePath.isNull())
+        {
+            QFile file;
+            file.setFileName(modelFilePath);
+            QFileInfo fileInfo(file);
+            gpConfig->setStringSetting(CFG_SUBSYSTEMDIR, fileInfo.absolutePath());
+
+            bool doIt = true;
+            if (mModelObjectMap.size() > 0)
+            {
+                QMessageBox clearAndLoadQuestionBox(QMessageBox::Warning, tr("Warning"),tr("All current contents of the system will be replaced. Do you want to continue?"), 0, 0);
+                clearAndLoadQuestionBox.addButton(tr("&Yes"), QMessageBox::AcceptRole);
+                clearAndLoadQuestionBox.addButton(tr("&No"), QMessageBox::RejectRole);
+                clearAndLoadQuestionBox.setWindowIcon(gpMainWindowWidget->windowIcon());
+                doIt = (clearAndLoadQuestionBox.exec() == QMessageBox::AcceptRole);
+            }
+
+            if (doIt)
+            {
+                this->clearContents();
+
+                QDomDocument domDocument;
+                QDomElement hmfRoot = loadXMLDomDocument(file, domDocument, HMF_ROOTTAG);
+                if (!hmfRoot.isNull())
+                {
+                    //! @todo Check version numbers
+                    //! @todo check if we could load else give error message and don't attempt to load
+                    QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
+                    this->setModelFileInfo(file); //Remember info about the file from which the data was loaded
+                    QFileInfo fileInfo(file);
+                    this->setAppearanceDataBasePath(fileInfo.absolutePath());
+                    this->loadFromDomElement(systemElement);
+                }
+            }
+        }
+    }
+    else if(pAction == saveAction)
+    {
+        //Get file name
+        QString modelFilePath;
+        modelFilePath = QFileDialog::getSaveFileName(gpMainWindowWidget, tr("Save Subsystem As"),
+                                                     gpConfig->getStringSetting(CFG_LOADMODELDIR),
+                                                     tr("Hopsan Model Files (*.hmf)"));
+
+        if(modelFilePath.isEmpty())     //Don't save anything if user presses cancel
+        {
+            return;
+        }
+
+
+        //! @todo Duplicated code, but we cannot use code from ModelWidget, because it can only save top level system...
+        QFile file(modelFilePath);   //Create a QFile object
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+        {
+            gpMessageHandler->addErrorMessage("Could not open the file: "+file.fileName()+" for writing." );
+            return;
+        }
+
+        //Save xml document
+        QDomDocument domDocument;
+        QDomElement rootElement;
+        rootElement = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
+
+        // Save the required external library names
+        QStringList requiredLibraries = this->getRequiredComponentLibraries();
+        //! @todo need HMF defines for hardcoded strings
+        QDomElement reqDom = appendDomElement(rootElement, "requirements");
+        for (const auto& libID : requiredLibraries)
+        {
+            auto pLibrary = gpLibraryHandler->getLibrary(libID);
+            if (pLibrary) {
+                auto libdom = appendDomElement(reqDom, "componentlibrary");
+                appendDomTextNode(libdom, "id", libID);
+                appendDomTextNode(libdom, "name", pLibrary->name);
+            }
+        }
+
+        //Save the model component hierarchy
+        this->saveToDomElement(rootElement, FullModel);
+
+        //Save to file
+        QFile xmlFile(modelFilePath);
+        if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+        {
+            gpMessageHandler->addErrorMessage("Could not save to file: " + modelFilePath);
+            return;
+        }
+        QTextStream out(&xmlFile);
+        appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
+        domDocument.save(out, XMLINDENTATION);
+
+        //Close the file
+        xmlFile.close();
+
+       // mpModelWidget->saveTo(modelFilePath, FullModel);
+    }
+    else if(pAction == saveAsComponentAction)
+    {
+        //Get file name
+        QString cafFilePath;
+        cafFilePath = QFileDialog::getSaveFileName(gpMainWindowWidget, tr("Save Subsystem As"),
+                                                   gpConfig->getStringSetting(CFG_LOADMODELDIR),
+                                                   tr("Hopsan Component Appearance Files (*.xml)"));
+
+        if(cafFilePath.isEmpty())     //Don't save anything if user presses cancel
+        {
+            return;
+        }
+
+        QString iconFileName = QFileInfo(getIconPath(UserGraphics, Absolute)).fileName();
+        QString modelFileName = QFileInfo(cafFilePath).baseName()+".hmf";
+
+        //! @todo why is graphics copied twice
+        QFile::copy(getIconPath(UserGraphics, Absolute), QFileInfo(cafFilePath).path()+"/"+iconFileName);
+        QFile::copy(getIconPath(UserGraphics, Absolute), getAppearanceData()->getBasePath()+"/"+iconFileName);
+
+        bool ok;
+        QString subtype = QInputDialog::getText(gpMainWindowWidget, tr("Decide a unique Subtype"),
+                                                tr("Decide a unique subtype name for this component:"), QLineEdit::Normal,
+                                                QString(""), &ok);
+        if (!ok || subtype.isEmpty())
+        {
+            gpMessageHandler->addErrorMessage("You must specify a subtype name. Aborting!");
+            return;
+        }
+
+        //! @todo it would be better if this xml would only include hmffile attribute and all otehr info loaded from there
+        QString cafStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+        cafStr.append(QString("<hopsanobjectappearance version=\"0.3\">\n"));
+        cafStr.append(QString("    <modelobject hmffile=\"%1\" displayname=\"%2\" typename=\"%3\" subtypename=\"%4\">\n").arg(modelFileName).arg(getName()).arg("Subsystem").arg(subtype));
+        cafStr.append(QString("        <icons>\n"));
+        cafStr.append(QString("            <icon scale=\"1\" path=\"%1\" iconrotation=\"ON\" type=\"user\"/>\n").arg(iconFileName));
+        cafStr.append(QString("        </icons>\n"));
+        cafStr.append(QString("    </modelobject>\n"));
+        cafStr.append(QString("</hopsanobjectappearance>\n"));
+
+        QFile cafFile(cafFilePath);
+        if(!cafFile.open(QFile::Text | QFile::WriteOnly))
+        {
+            gpMessageHandler->addErrorMessage("Could not open the file: "+cafFile.fileName()+" for writing.");
+            return;
+        }
+        cafFile.write(cafStr.toUtf8());
+        cafFile.close();
+
+        QString modelFilePath = QFileInfo(cafFilePath).path()+"/"+QFileInfo(cafFilePath).baseName()+".hmf";
+
+        QString orgIconPath = this->getIconPath(UserGraphics, Relative);
+        this->setIconPath(iconFileName, UserGraphics, Relative);
+
+        //! @todo Duplicated code, but we cannot use code from ModelWidget, because it can only save top level system...
+        QFile file(modelFilePath);   //Create a QFile object
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+        {
+            gpMessageHandler->addErrorMessage("Could not open the file: "+file.fileName()+" for writing." );
+            return;
+        }
+
+        //Save xml document
+        QDomDocument domDocument;
+        QDomElement rootElement;
+        rootElement = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
+
+        // Save the required external library names
+        QStringList requiredLibraries = this->getRequiredComponentLibraries();
+        //! @todo need HMF defines for hardcoded strings
+        QDomElement reqDom = appendDomElement(rootElement, "requirements");
+        for (const auto& libID : requiredLibraries)
+        {
+            auto pLibrary = gpLibraryHandler->getLibrary(libID);
+            if (pLibrary) {
+                auto libdom = appendDomElement(reqDom, "componentlibrary");
+                appendDomTextNode(libdom, "id", libID);
+                appendDomTextNode(libdom, "name", pLibrary->name);
+            }
+        }
+
+        //Save the model component hierarchy
+        QString old_subtype = this->getAppearanceData()->getSubTypeName();
+        this->getAppearanceData()->setSubTypeName(subtype);
+        this->saveToDomElement(rootElement, FullModel);
+        this->getAppearanceData()->setSubTypeName(old_subtype);
+
+        //Save to file
+        QFile xmlFile(modelFilePath);
+        if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+        {
+            gpMessageHandler->addErrorMessage("Could not save to file: " + modelFilePath);
+            return;
+        }
+        QTextStream out(&xmlFile);
+        appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
+        domDocument.save(out, XMLINDENTATION);
+
+        //Close the file
+        xmlFile.close();
+
+        this->setIconPath(orgIconPath, UserGraphics, Relative);
+
+        QFile::remove(getModelFilePath()+"/"+iconFileName);
+    }
+    else if (pAction == saveParameterValuesAction)
+    {
+        this->saveParameterValuesToFile();
+    }
+    else if (pAction == loadParameterValuesAction)
+    {
+        this->loadParameterValuesFromFile();
+    }
+    else if (pAction == enterAction)
+    {
+        enterContainer();
+    }
+
+    // Don't call GUIModelObject::contextMenuEvent as that will open an other menu after this one is closed
+}
+
+
+//! @brief Defines the double click event for container objects (used to enter containers).
+void SystemObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    QGraphicsWidget::mouseDoubleClickEvent(event);
+    if (isExternal())
+    {
+        openPropertiesDialog();
+    }
+    else
+    {
+        enterContainer();
+    }
+}
+
+void SystemObject::saveSensitivityAnalysisSettingsToDomElement(QDomElement &rDomElement)
+{
+    QDomElement XMLsens = appendDomElement(rDomElement, HMF_SENSITIVITYANALYSIS);
+    QDomElement XMLsetting = appendDomElement(XMLsens, HMF_SETTINGS);
+    appendDomIntegerNode(XMLsetting, HMF_ITERATIONS, mSensSettings.nIter);
+    if(mSensSettings.distribution == SensitivityAnalysisSettings::UniformDistribution)
+    {
+        appendDomTextNode(XMLsetting, HMF_DISTRIBUTIONTYPE, HMF_UNIFORMDIST);
+    }
+    else if(mSensSettings.distribution == SensitivityAnalysisSettings::NormalDistribution)
+    {
+        appendDomTextNode(XMLsetting, HMF_DISTRIBUTIONTYPE, HMF_NORMALDIST);
+    }
+
+    //Parameters
+    QDomElement XMLparameters = appendDomElement(XMLsens, HMF_PARAMETERS);
+    for(int i = 0; i < mSensSettings.parameters.size(); ++i)
+    {
+        QDomElement XMLparameter = appendDomElement(XMLparameters, HMF_PARAMETERTAG);
+        appendDomTextNode(XMLparameter, HMF_COMPONENTTAG, mSensSettings.parameters.at(i).compName);
+        appendDomTextNode(XMLparameter, HMF_PARAMETERTAG, mSensSettings.parameters.at(i).parName);
+        appendDomValueNode2(XMLparameter, HMF_MINMAX, mSensSettings.parameters.at(i).min, mSensSettings.parameters.at(i).max);
+        appendDomValueNode(XMLparameter, HMF_AVERAGE, mSensSettings.parameters.at(i).aver);
+        appendDomValueNode(XMLparameter, HMF_SIGMA, mSensSettings.parameters.at(i).sigma);
+    }
+
+    //Variables
+    QDomElement XMLobjectives = appendDomElement(XMLsens, HMF_PLOTVARIABLES);
+    for(int i = 0; i < mSensSettings.variables.size(); ++i)
+    {
+        QDomElement XMLobjective = appendDomElement(XMLobjectives, HMF_PLOTVARIABLE);
+        appendDomTextNode(XMLobjective, HMF_COMPONENTTAG, mSensSettings.variables.at(i).compName);
+        appendDomTextNode(XMLobjective, HMF_PORTTAG, mSensSettings.variables.at(i).portName);
+        appendDomTextNode(XMLobjective, HMF_PLOTVARIABLE, mSensSettings.variables.at(i).varName);
+    }
+}
+
+
+void SystemObject::loadSensitivityAnalysisSettingsFromDomElement(QDomElement &rDomElement)
+{
+    qDebug() << rDomElement.toDocument().toString();
+
+    QDomElement settingsElement = rDomElement.firstChildElement(HMF_SETTINGS);
+    if(!settingsElement.isNull())
+    {
+        mSensSettings.nIter = parseDomIntegerNode(settingsElement.firstChildElement(HMF_ITERATIONS), mSensSettings.nIter);
+        QDomElement distElement = settingsElement.firstChildElement(HMF_DISTRIBUTIONTYPE);
+        if(!distElement.isNull() && distElement.text() == HMF_UNIFORMDIST)
+        {
+            mSensSettings.distribution = SensitivityAnalysisSettings::UniformDistribution;
+        }
+        else if(!distElement.isNull() && distElement.text() == HMF_NORMALDIST)
+        {
+            mSensSettings.distribution = SensitivityAnalysisSettings::NormalDistribution;
+        }
+    }
+
+    QDomElement parametersElement = rDomElement.firstChildElement(HMF_PARAMETERS);
+    if(!parametersElement.isNull())
+    {
+        QDomElement parameterElement =parametersElement.firstChildElement(HMF_PARAMETERTAG);
+        while (!parameterElement.isNull())
+        {
+            SensitivityAnalysisParameter par;
+            par.compName = parameterElement.firstChildElement(HMF_COMPONENTTAG).text();
+            par.parName = parameterElement.firstChildElement(HMF_PARAMETERTAG).text();
+            parseDomValueNode2(parameterElement.firstChildElement(HMF_MINMAX), par.min, par.max);
+            par.aver = parseDomValueNode(parameterElement.firstChildElement(HMF_AVERAGE), 0);
+            par.sigma = parseDomValueNode(parameterElement.firstChildElement(HMF_SIGMA), 0);
+            mSensSettings.parameters.append(par);
+
+            parameterElement = parameterElement.nextSiblingElement(HMF_PARAMETERTAG);
+        }
+    }
+
+    QDomElement variablesElement = rDomElement.firstChildElement(HMF_PLOTVARIABLES);
+    if(!variablesElement.isNull())
+    {
+        QDomElement variableElement = variablesElement.firstChildElement(HMF_PLOTVARIABLE);
+        while (!variableElement.isNull())
+        {
+            SensitivityAnalysisVariable var;
+
+            var.compName = variableElement.firstChildElement(HMF_COMPONENTTAG).text();
+            var.portName = variableElement.firstChildElement(HMF_PORTTAG).text();
+            var.varName = variableElement.firstChildElement(HMF_PLOTVARIABLE).text();
+            mSensSettings.variables.append(var);
+
+            variableElement = variableElement.nextSiblingElement((HMF_PLOTVARIABLE));
+        }
+    }
+}
+
+
+void SystemObject::saveOptimizationSettingsToDomElement(QDomElement &rDomElement)
+{
+    QDomElement XMLopt = appendDomElement(rDomElement, HMF_OPTIMIZATION);
+    QDomElement XMLsetting = appendDomElement(XMLopt, HMF_SETTINGS);
+    appendDomTextNode(XMLsetting, HMF_SCRIPTFILETAG, mOptSettings.mScriptFile);
+    appendDomIntegerNode(XMLsetting, HMF_ITERATIONS, mOptSettings.mNiter);
+    appendDomIntegerNode(XMLsetting, HMF_SEARCHPOINTS, mOptSettings.mNsearchp);
+    appendDomValueNode(XMLsetting, HMF_REFLCOEFF, mOptSettings.mRefcoeff);
+    appendDomValueNode(XMLsetting, HMF_RANDOMFACTOR, mOptSettings.mRandfac);
+    appendDomValueNode(XMLsetting, HMF_FORGETTINGFACTOR, mOptSettings.mForgfac);
+    appendDomValueNode(XMLsetting, HMF_PARTOL, mOptSettings.mPartol);
+    appendDomBooleanNode(XMLsetting, HMF_PLOT, mOptSettings.mPlot);
+    appendDomBooleanNode(XMLsetting, HMF_SAVECSV, mOptSettings.mSavecsv);
+    appendDomBooleanNode(XMLsetting, HMF_FINALEVAL, mOptSettings.mFinalEval);
+
+    //Parameters
+    appendDomBooleanNode(XMLsetting, HMF_LOGPAR, mOptSettings.mlogPar);
+    QDomElement XMLparameters = appendDomElement(XMLopt, HMF_PARAMETERS);
+    for(int i = 0; i < mOptSettings.mParamters.size(); ++i)
+    {
+        QDomElement XMLparameter = appendDomElement(XMLparameters, HMF_PARAMETERTAG);
+        appendDomTextNode(XMLparameter, HMF_COMPONENTTAG, mOptSettings.mParamters.at(i).mComponentName);
+        appendDomTextNode(XMLparameter, HMF_PARAMETERTAG, mOptSettings.mParamters.at(i).mParameterName);
+        appendDomValueNode2(XMLparameter, HMF_MINMAX, mOptSettings.mParamters.at(i).mMin, mOptSettings.mParamters.at(i).mMax);
+    }
+
+    //Objective Functions
+    QDomElement XMLobjectives = appendDomElement(XMLopt, HMF_OBJECTIVES);
+    for(int i = 0; i < mOptSettings.mObjectives.size(); ++i)
+    {
+        QDomElement XMLobjective = appendDomElement(XMLobjectives, HMF_OBJECTIVE);
+        appendDomTextNode(XMLobjective, HMF_FUNCNAME, mOptSettings.mObjectives.at(i).mFunctionName);
+        appendDomValueNode(XMLobjective, HMF_WEIGHT, mOptSettings.mObjectives.at(i).mWeight);
+        appendDomValueNode(XMLobjective, HMF_NORM, mOptSettings.mObjectives.at(i).mNorm);
+        appendDomValueNode(XMLobjective, HMF_EXP, mOptSettings.mObjectives.at(i).mExp);
+
+        QDomElement XMLObjectiveVariables = appendDomElement(XMLobjective, HMF_PLOTVARIABLES);
+        if(!(mOptSettings.mObjectives.at(i).mVariableInfo.isEmpty()))
+        {
+            for(int j = 0; j < mOptSettings.mObjectives.at(i).mVariableInfo.size(); ++j)
+            {
+                QDomElement XMLObjectiveVariable = appendDomElement(XMLObjectiveVariables, HMF_PLOTVARIABLE);
+                appendDomTextNode(XMLObjectiveVariable, HMF_COMPONENTTAG, mOptSettings.mObjectives.at(i).mVariableInfo.at(j).at(0));
+                appendDomTextNode(XMLObjectiveVariable, HMF_PORTTAG, mOptSettings.mObjectives.at(i).mVariableInfo.at(j).at(1));
+                appendDomTextNode(XMLObjectiveVariable, HMF_PLOTVARIABLE, mOptSettings.mObjectives.at(i).mVariableInfo.at(j).at(2));
+            }
+        }
+
+
+        if(!(mOptSettings.mObjectives.at(i).mData.isEmpty()))
+        {
+            QDomElement XMLdata = appendDomElement(XMLobjective, HMF_DATA);
+            for(int j = 0; j < mOptSettings.mObjectives.at(i).mData.size(); ++j)
+            {
+                appendDomTextNode(XMLdata, HMF_PARAMETERTAG, mOptSettings.mObjectives.at(i).mData.at(j));
+            }
+        }
+    }
+}
+
+
+void SystemObject::loadOptimizationSettingsFromDomElement(QDomElement &rDomElement)
+{
+    qDebug() << rDomElement.toDocument().toString();
+
+    QDomElement settingsElement = rDomElement.firstChildElement(HMF_SETTINGS);
+    if(!settingsElement.isNull())
+    {
+        mOptSettings.mScriptFile = parseDomStringNode(settingsElement.firstChildElement(HMF_SCRIPTFILETAG), mOptSettings.mScriptFile);
+        mOptSettings.mNiter = parseDomIntegerNode(settingsElement.firstChildElement(HMF_ITERATIONS), mOptSettings.mNiter);
+        mOptSettings.mNsearchp = parseDomIntegerNode(settingsElement.firstChildElement(HMF_SEARCHPOINTS), mOptSettings.mNsearchp);
+        mOptSettings.mRefcoeff = parseDomValueNode(settingsElement.firstChildElement(HMF_REFLCOEFF), mOptSettings.mRefcoeff);
+        mOptSettings.mRandfac = parseDomValueNode(settingsElement.firstChildElement(HMF_RANDOMFACTOR), mOptSettings.mRandfac);
+        mOptSettings.mForgfac = parseDomValueNode(settingsElement.firstChildElement(HMF_FORGETTINGFACTOR), mOptSettings.mForgfac);
+        mOptSettings.mPartol = parseDomValueNode(settingsElement.firstChildElement(HMF_PARTOL), mOptSettings.mPartol);
+        mOptSettings.mPlot = parseDomBooleanNode(settingsElement.firstChildElement(HMF_PLOT), mOptSettings.mPlot);
+        mOptSettings.mSavecsv = parseDomBooleanNode(settingsElement.firstChildElement(HMF_SAVECSV), mOptSettings.mSavecsv);
+        mOptSettings.mFinalEval = parseDomBooleanNode(settingsElement.firstChildElement(HMF_FINALEVAL), mOptSettings.mFinalEval);
+        mOptSettings.mlogPar = parseDomBooleanNode(settingsElement.firstChildElement(HMF_LOGPAR), mOptSettings.mlogPar);
+    }
+
+    QDomElement parametersElement = rDomElement.firstChildElement(HMF_PARAMETERS);
+    if(!parametersElement.isNull())
+    {
+        QDomElement parameterElement = parametersElement.firstChildElement(HMF_PARAMETERTAG);
+        while (!parameterElement.isNull())
+        {
+            OptParameter parameter;
+            parameter.mComponentName = parameterElement.firstChildElement(HMF_COMPONENTTAG).text();
+            parameter.mParameterName = parameterElement.firstChildElement(HMF_PARAMETERTAG).text();
+            parseDomValueNode2(parameterElement.firstChildElement(HMF_MINMAX), parameter.mMin, parameter.mMax);
+            mOptSettings.mParamters.append(parameter);
+
+            parameterElement = parameterElement.nextSiblingElement(HMF_PARAMETERTAG);
+        }
+    }
+
+    QDomElement objectivesElement = rDomElement.firstChildElement(HMF_OBJECTIVES);
+    if(!objectivesElement.isNull())
+    {
+        QDomElement objElement = objectivesElement.firstChildElement(HMF_OBJECTIVE);
+        while (!objElement.isNull())
+        {
+            Objectives objectives;
+
+            objectives.mFunctionName = objElement.firstChildElement(HMF_FUNCNAME).text();
+            objectives.mWeight = objElement.firstChildElement(HMF_WEIGHT).text().toDouble();
+            objectives.mNorm = objElement.firstChildElement(HMF_NORM).text().toDouble();
+            objectives.mExp = objElement.firstChildElement(HMF_EXP).text().toDouble();
+
+            QDomElement variablesElement = objElement.firstChildElement(HMF_PLOTVARIABLES);
+            if(!variablesElement.isNull())
+            {
+                QDomElement varElement = variablesElement.firstChildElement(HMF_PLOTVARIABLE);
+                while (!varElement.isNull())
+                {
+                    QStringList variableInfo;
+
+                    variableInfo.append(varElement.firstChildElement(HMF_COMPONENTTAG).text());
+                    variableInfo.append(varElement.firstChildElement(HMF_PORTTAG).text());
+                    variableInfo.append(varElement.firstChildElement(HMF_PLOTVARIABLE).text());
+
+                    objectives.mVariableInfo.append(variableInfo);
+
+                    varElement = varElement.nextSiblingElement(HMF_PLOTVARIABLE);
+                }
+            }
+
+            QDomElement dataElement = objElement.firstChildElement(HMF_DATA);
+            if(!dataElement.isNull())
+            {
+                QDomElement parElement = dataElement.firstChildElement(HMF_PARAMETERTAG);
+                while (!parElement.isNull())
+                {
+                    objectives.mData.append(parElement.text());
+
+                    parElement = parElement.nextSiblingElement(HMF_PARAMETERTAG);
+                }
+            }
+
+            objElement = objElement.nextSiblingElement(HMF_OBJECTIVE);
+
+            mOptSettings.mObjectives.append(objectives);
+        }
+    }
+}
+
+
+void SystemObject::getSensitivityAnalysisSettings(SensitivityAnalysisSettings &sensSettings)
+{
+    sensSettings = mSensSettings;
+}
+
+
+void SystemObject::setSensitivityAnalysisSettings(SensitivityAnalysisSettings &sensSettings)
+{
+    mSensSettings = sensSettings;
+}
+
+
+void SystemObject::getOptimizationSettings(OptimizationSettings &optSettings)
+{
+    optSettings = mOptSettings;
+}
+
+
+void SystemObject::setOptimizationSettings(OptimizationSettings &optSettings)
+{
+    mOptSettings = optSettings;
+}
+
+
+//! @brief Saves the System specific GUI data to XML DOM Element
+//! @param[in] rDomElement The DOM Element to save to
+QDomElement SystemObject::saveGuiDataToDomElement(QDomElement &rDomElement)
+{
+    QDomElement guiStuff = ModelObject::saveGuiDataToDomElement(rDomElement);
+
+    //Save animation disabled setting
+    QDomElement animationElement = guiStuff.firstChildElement(HMF_ANIMATION);
+    animationElement.setAttribute(HMF_DISABLEDTAG, bool2str(mAnimationDisabled));
+
+    //Should we try to append appearancedata stuff, we don't want this in external systems as they contain their own appearance
+    if (mLoadType!="EXTERNAL")
+    {
+        //Append system meta info
+        QString author, email, affiliation, description;
+        getModelInfo(author, email, affiliation, description);
+        if (!(author.isEmpty() && email.isEmpty() && affiliation.isEmpty() && description.isEmpty()))
+        {
+            QDomElement infoElement = appendDomElement(guiStuff, HMF_INFOTAG);
+            appendDomTextNode(infoElement, HMF_AUTHORTAG, author);
+            appendDomTextNode(infoElement, HMF_EMAILTAG, email);
+            appendDomTextNode(infoElement, HMF_AFFILIATIONTAG, affiliation);
+            appendDomTextNode(infoElement, HMF_DESCRIPTIONTAG, description);
+        }
+
+        GraphicsViewPort vp = this->getGraphicsViewport();
+        appendViewPortTag(guiStuff, vp.mCenter.x(), vp.mCenter.y(), vp.mZoom);
+
+        QDomElement portsHiddenElement = appendDomElement(guiStuff, HMF_PORTSTAG);
+        portsHiddenElement.setAttribute("hidden", !mShowSubComponentPorts);
+        QDomElement namesHiddenElement = appendDomElement(guiStuff, HMF_NAMESTAG);
+        namesHiddenElement.setAttribute("hidden", !mShowSubComponentNames);
+
+        QString gfxType = "iso";
+        if(mGfxType == UserGraphics)
+            gfxType = "user";
+        QDomElement gfxTypeElement = appendDomElement(guiStuff, HMF_GFXTAG);
+        gfxTypeElement.setAttribute("type", gfxType);
+
+        this->refreshExternalPortsAppearanceAndPosition();
+        QDomElement xmlApp = appendOrGetCAFRootTag(guiStuff);
+
+        //Before we save the modelobjectappearance data we need to set the correct basepath, (we ask our parent it will know)
+        if (this->getParentSystemObject() != 0)
+        {
+            this->mModelObjectAppearance.setBasePath(this->getParentSystemObject()->getAppearanceData()->getBasePath());
+        }
+        this->mModelObjectAppearance.saveToDomElement(xmlApp);
+    }
+
+    saveOptimizationSettingsToDomElement(guiStuff);
+    saveSensitivityAnalysisSettingsToDomElement(guiStuff);
+
+    //Save undo stack if setting is activated
+    if(mSaveUndoStack)
+    {
+        guiStuff.appendChild(mpUndoStack->toXml());
+    }
+
+    return guiStuff;
+}
+
+//! @brief Overloaded special XML DOM save function for System Objects
+//! @param[in] rDomElement The DOM Element to save to
+void SystemObject::saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents)
+{
+    //qDebug() << "Saving to dom node in: " << this->mModelObjectAppearance.getName();
+    QDomElement xmlSubsystem = appendDomElement(rDomElement, getHmfTagName());
+
+    //! @todo maybe use enums instead of strings
+    //! @todo should not need to set this here
+    if (mpParentSystemObject==0)
+    {
+        mLoadType = "ROOT"; //!< @todo this is a temporary hack for the xml save function (see bellow)
+    }
+    else if (!mModelFileInfo.filePath().isEmpty())
+    {
+        mLoadType = "EXTERNAL";
+    }
+    else
+    {
+        mLoadType = "EMBEDED";
+    }
+
+    // Save Core related stuff
+    this->saveCoreDataToDomElement(xmlSubsystem, contents);
+
+    if(contents==FullModel)
+    {
+        // Save gui object stuff
+        this->saveGuiDataToDomElement(xmlSubsystem);
+    }
+
+    //Replace volunector with connectors and component
+    QList<Connector*> volunectorPtrs;
+    QList<Connector*> tempConnectorPtrs;  //To be removed later
+    QList<ModelObject*> tempComponentPtrs; //To be removed later
+    for(int i=0; i<mSubConnectorList.size(); ++i)
+    {
+        if(mSubConnectorList[i]->isVolunector())
+        {
+            Connector *pVolunector = mSubConnectorList[i];
+            volunectorPtrs.append(pVolunector);
+            mSubConnectorList.removeAll(pVolunector);
+            --i;
+
+            tempComponentPtrs.append(pVolunector->getVolunectorComponent());
+
+            tempConnectorPtrs.append(new Connector(this));
+            tempConnectorPtrs.last()->setStartPort(pVolunector->getStartPort());
+            tempConnectorPtrs.last()->setEndPort(tempComponentPtrs.last()->getPort("P1"));
+            QVector<QPointF> points;
+            QStringList geometries;
+            points.append(pVolunector->mapToScene(pVolunector->getLine(0)->line().p1()));
+            for(int j=0; j<pVolunector->getNumberOfLines(); ++j)
+            {
+                points.append(pVolunector->mapToScene(pVolunector->getLine(j)->line().p2()));
+                if(pVolunector->getGeometry(j) == Horizontal)
+                    geometries.append("horizontal");
+                else if(pVolunector->getGeometry(j) == Vertical)
+                    geometries.append("vertical");
+                else
+                    geometries.append("diagonal");
+            }
+            tempConnectorPtrs.last()->setPointsAndGeometries(points, geometries);
+
+            tempConnectorPtrs.append(new Connector(this));
+            tempConnectorPtrs.last()->setStartPort(tempComponentPtrs.last()->getPort("P2"));
+            tempConnectorPtrs.last()->setEndPort(pVolunector->getEndPort());
+        }
+
+        for(int j=0; j<tempComponentPtrs.size(); ++j)
+        {
+            mModelObjectMap.insert(tempComponentPtrs[j]->getName(), tempComponentPtrs[j]);
+        }
+    }
+    mSubConnectorList.append(tempConnectorPtrs);
+
+        //Save all of the sub objects
+    if (mLoadType=="EMBEDED" || mLoadType=="ROOT")
+    {
+            //Save subcomponents and subsystems
+        QDomElement xmlObjects = appendDomElement(xmlSubsystem, HMF_OBJECTS);
+        ModelObjectMapT::iterator it;
+        for(it = mModelObjectMap.begin(); it!=mModelObjectMap.end(); ++it)
+        {
+            // TODO dont save containerports if parameters only
+            it.value()->saveToDomElement(xmlObjects, contents);
+            if(tempComponentPtrs.contains(it.value()))
+            {
+                xmlObjects.lastChildElement().setAttribute("volunector", "true");
+            }
+        }
+
+        if(contents==FullModel)
+        {
+                //Save all widgets
+            QMap<size_t, Widget *>::iterator itw;
+            for(itw = mWidgetMap.begin(); itw!=mWidgetMap.end(); ++itw)
+            {
+                itw.value()->saveToDomElement(xmlObjects);
+            }
+
+                //Save the connectors
+            QDomElement xmlConnections = appendDomElement(xmlSubsystem, HMF_CONNECTIONS);
+            for(int i=0; i<mSubConnectorList.size(); ++i)
+            {
+                mSubConnectorList[i]->saveToDomElement(xmlConnections);
+            }
+        }
+    }
+
+    //Remove temporary connectors/components and re-add volunectors
+    for(int i=0; i<tempConnectorPtrs.size(); ++i)
+    {
+        mSubConnectorList.removeAll(tempConnectorPtrs[i]);
+
+        Connector *pConnector = tempConnectorPtrs[i];
+        Port *pStartPort = pConnector->getStartPort();
+        ModelObject *pStartComponent = pStartPort->getParentModelObject();
+        Port *pEndPort = pConnector->getEndPort();
+        ModelObject *pEndComponent = pEndPort->getParentModelObject();
+
+        pStartPort->forgetConnection(pConnector);
+        pStartComponent->forgetConnector(pConnector);
+        pEndPort->forgetConnection(pConnector);
+        pEndComponent->forgetConnector(pConnector);
+
+        delete(tempConnectorPtrs[i]);
+    }
+    for(int i=0; i<volunectorPtrs.size(); ++i)
+    {
+        mSubConnectorList.append(volunectorPtrs[i]);
+    }
+    for(int i=0; i<tempComponentPtrs.size(); ++i)
+    {
+        mModelObjectMap.remove(tempComponentPtrs[i]->getName());
+    }
+
+}
+
+//! @brief Loads a System from an XML DOM Element
+//! @param[in] rDomElement The element to load from
+void SystemObject::loadFromDomElement(QDomElement domElement)
+{
+    // Loop back up to root level to get version numbers
+    QString hmfFormatVersion = domElement.ownerDocument().firstChildElement(HMF_ROOTTAG).attribute(HMF_VERSIONTAG, "0");
+    QString coreHmfVersion = domElement.ownerDocument().firstChildElement(HMF_ROOTTAG).attribute(HMF_HOPSANCOREVERSIONTAG, "0");
+
+    // Check if the subsystem is external or internal, and load appropriately
+    QString external_path = domElement.attribute(HMF_EXTERNALPATHTAG);
+    if (external_path.isEmpty())
+    {
+        // Load embedded subsystem
+        // 0. Load core and gui stuff
+        //! @todo might need some error checking here in case some fields are missing
+        // Now load the core specific data, might need inherited function for this
+        this->setName(domElement.attribute(HMF_NAMETAG));
+
+        // Load the NumHop script
+        setNumHopScript(parseDomStringNode(domElement.firstChildElement(HMF_NUMHOPSCRIPT), ""));
+
+        // Begin loading GUI stuff like appearance data and viewport
+        QDomElement guiStuff = domElement.firstChildElement(HMF_HOPSANGUITAG);
+        mModelObjectAppearance.readFromDomElement(guiStuff.firstChildElement(CAF_ROOT).firstChildElement(CAF_MODELOBJECT));
+        refreshDisplayName(); // This must be done because in some occasions the loadAppearanceData line above will overwrite the correct name
+
+        QDomElement animationElement = guiStuff.firstChildElement(HMF_ANIMATION);
+        bool animationDisabled = false;
+        if(!animationElement.isNull())
+        {
+            animationDisabled = parseAttributeBool(animationElement, HMF_DISABLEDTAG, false);
+        }
+        setAnimationDisabled(animationDisabled);
+
+        // Load system/model info
+        QDomElement infoElement = domElement.parentNode().firstChildElement(HMF_INFOTAG); //!< @deprecated info tag is in the system from 0.7.5 an onwards, this line loads from old models
+        if (infoElement.isNull())
+        {
+            infoElement = guiStuff.firstChildElement(HMF_INFOTAG);
+        }
+        if(!infoElement.isNull())
+        {
+            QString author, email, affiliation, description;
+            QDomElement authorElement = infoElement.firstChildElement(HMF_AUTHORTAG);
+            if(!authorElement.isNull())
+            {
+                author = authorElement.text();
+            }
+            QDomElement emailElement = infoElement.firstChildElement(HMF_EMAILTAG);
+            if(!emailElement.isNull())
+            {
+                email = emailElement.text();
+            }
+            QDomElement affiliationElement = infoElement.firstChildElement(HMF_AFFILIATIONTAG);
+            if(!affiliationElement.isNull())
+            {
+                affiliation = affiliationElement.text();
+            }
+            QDomElement descriptionElement = infoElement.firstChildElement(HMF_DESCRIPTIONTAG);
+            if(!descriptionElement.isNull())
+            {
+                description = descriptionElement.text();
+            }
+
+            this->setModelInfo(author, email, affiliation, description);
+        }
+
+        // Now lets check if the icons were loaded successfully else we may want to ask the library widget for the graphics (components saved as subsystems)
+        if (!mModelObjectAppearance.iconValid(UserGraphics) || !mModelObjectAppearance.iconValid(ISOGraphics))
+        {
+            SharedModelObjectAppearanceT pApp = gpLibraryHandler->getModelObjectAppearancePtr(mModelObjectAppearance.getTypeName(), mModelObjectAppearance.getSubTypeName());
+            if (pApp)
+            {
+                // If our user graphics is invalid but library has valid data then set from library
+                if (!mModelObjectAppearance.iconValid(UserGraphics) && pApp->iconValid(UserGraphics))
+                {
+                    setIconPath(pApp->getIconPath(UserGraphics, Absolute), UserGraphics, Absolute);
+                }
+
+                // If our iso graphics is invalid but library has valid data then set from library
+                if (!mModelObjectAppearance.iconValid(ISOGraphics) && pApp->iconValid(ISOGraphics))
+                {
+                    setIconPath(pApp->getIconPath(ISOGraphics, Absolute), ISOGraphics, Absolute);
+                }
+            }
+        }
+
+        // Continue loading GUI stuff like appearance data and viewport
+        this->mShowSubComponentNames = !parseAttributeBool(guiStuff.firstChildElement(HMF_NAMESTAG),"hidden",true);
+        this->mShowSubComponentPorts = !parseAttributeBool(guiStuff.firstChildElement(HMF_PORTSTAG),"hidden",true);
+        QString gfxType = guiStuff.firstChildElement(HMF_GFXTAG).attribute("type");
+        if(gfxType == "user") { mGfxType = UserGraphics; }
+        else if(gfxType == "iso") { mGfxType = ISOGraphics; }
+        //! @todo these two should not be set here
+        gpToggleNamesAction->setChecked(mShowSubComponentNames);
+        gpTogglePortsAction->setChecked(mShowSubComponentPorts);
+        double x = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("x").toDouble();
+        double y = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("y").toDouble();
+        double zoom = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("zoom").toDouble();
+
+        bool dontClearUndo = false;
+        if(!guiStuff.firstChildElement(HMF_UNDO).isNull())
+        {
+            QDomElement undoElement = guiStuff.firstChildElement(HMF_UNDO);
+            mpUndoStack->fromXml(undoElement);
+            dontClearUndo = true;
+            mSaveUndoStack = true;      //Set save undo stack setting to true if loading a hmf file with undo stack saved
+        }
+
+        // Only set viewport and zoom if the system being loaded is the one shown in the view
+        // But make system remember the setting anyway
+        this->setGraphicsViewport(GraphicsViewPort(x,y,zoom));
+        if (mpModelWidget->getViewContainerObject() == this)
+        {
+            mpModelWidget->getGraphicsView()->setViewPort(GraphicsViewPort(x,y,zoom));
+        }
+
+        //Load simulation time
+        QString startT,stepT,stopT;
+        bool inheritTs;
+        parseSimulationTimeTag(domElement.firstChildElement(HMF_SIMULATIONTIMETAG), startT, stepT, stopT, inheritTs);
+        this->setTimeStep(stepT.toDouble());
+        mpCoreSystemAccess->setInheritTimeStep(inheritTs);
+
+        // Load number of log samples
+        parseLogSettingsTag(domElement.firstChildElement(HMF_SIMULATIONLOGSETTINGS), mLogStartTime, mNumberOfLogSamples);
+        //! @deprecated 20131002 we keep this below for backwards compatibility for a while
+        if(domElement.hasAttribute(HMF_LOGSAMPLES))
+        {
+            mNumberOfLogSamples = domElement.attribute(HMF_LOGSAMPLES).toInt();
+        }
+
+        // Only set start stop time for the top level system
+        if (mpParentSystemObject == 0)
+        {
+            mpModelWidget->setTopLevelSimulationTime(startT,stepT,stopT);
+        }
+
+        // Update system wide model properties
+        updateHmfSystemProperties(domElement, hmfFormatVersion, coreHmfVersion);
+
+        //1. Load global parameters
+        QDomElement xmlParameters = domElement.firstChildElement(HMF_PARAMETERS);
+        QDomElement xmlSubObject = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
+        while (!xmlSubObject.isNull())
+        {
+            loadSystemParameter(xmlSubObject, true, hmfFormatVersion, this);
+            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_PARAMETERTAG);
+        }
+
+        //2. Load all sub-components
+        QList<ModelObject*> volunectorObjectPtrs;
+        QDomElement xmlSubObjects = domElement.firstChildElement(HMF_OBJECTS);
+        xmlSubObject = xmlSubObjects.firstChildElement(HMF_COMPONENTTAG);
+        while (!xmlSubObject.isNull())
+        {
+            updateHmfComponentProperties(xmlSubObject, hmfFormatVersion, coreHmfVersion);
+            ModelObject* pObj = loadModelObject(xmlSubObject, this, NoUndo);
+            if(pObj == nullptr)
+            {
+                gpMessageHandler->addErrorMessage(QString("Model contains component from a library that has not been loaded. TypeName: ") +
+                                                                    xmlSubObject.attribute(HMF_TYPENAME) + QString(", Name: ") + xmlSubObject.attribute(HMF_NAMETAG));
+
+                // Insert missing component dummy instead
+                xmlSubObject.setAttribute(HMF_TYPENAME, "MissingComponent");
+                pObj = loadModelObject(xmlSubObject, this, NoUndo);
+            }
+            else
+            {
+
+
+
+                //! @deprecated This StartValue load code is only kept for up converting old files, we should keep it here until we have some other way of up converting old formats
+                //Load start values //Is not needed, start values are saved as ordinary parameters! This code snippet can probably be removed.
+                QDomElement xmlStartValues = xmlSubObject.firstChildElement(HMF_STARTVALUES);
+                QDomElement xmlStartValue = xmlStartValues.firstChildElement(HMF_STARTVALUE);
+                while (!xmlStartValue.isNull())
+                {
+                    loadStartValue(xmlStartValue, pObj, NoUndo);
+                    xmlStartValue = xmlStartValue.nextSiblingElement(HMF_STARTVALUE);
+                }
+            }
+            if(xmlSubObject.attribute("volunector") == "true")
+            {
+                volunectorObjectPtrs.append(pObj);
+            }
+
+//            if(pObj && pObj->getTypeName().startsWith("CppComponent"))
+//            {
+//                recompileCppComponents(pObj);
+//            }
+
+            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_COMPONENTTAG);
+        }
+
+        //3. Load all text box widgets
+        xmlSubObject = xmlSubObjects.firstChildElement(HMF_TEXTBOXWIDGETTAG);
+        while (!xmlSubObject.isNull())
+        {
+            loadTextBoxWidget(xmlSubObject, this, NoUndo);
+            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_TEXTBOXWIDGETTAG);
+        }
+
+        //5. Load all sub-systems
+        xmlSubObject = xmlSubObjects.firstChildElement(HMF_SYSTEMTAG);
+        while (!xmlSubObject.isNull())
+        {
+            loadModelObject(xmlSubObject, this, NoUndo);
+            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_SYSTEMTAG);
+        }
+
+        //6. Load all system ports
+        xmlSubObject = xmlSubObjects.firstChildElement(HMF_SYSTEMPORTTAG);
+        while (!xmlSubObject.isNull())
+        {
+            loadContainerPortObject(xmlSubObject, this, NoUndo);
+            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_SYSTEMPORTTAG);
+        }
+
+        //7. Load all connectors
+        QDomElement xmlConnections = domElement.firstChildElement(HMF_CONNECTIONS);
+        xmlSubObject = xmlConnections.firstChildElement(HMF_CONNECTORTAG);
+        QList<QDomElement> failedConnections;
+        while (!xmlSubObject.isNull())
+        {
+            if(!loadConnector(xmlSubObject, this, NoUndo))
+            {
+//                failedConnections.append(xmlSubObject);
+            }
+            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_CONNECTORTAG);
+        }
+//        //If some connectors failed to load, it could mean that they were loaded in wrong order.
+//        //Try again until they work, or abort if number of attempts are greater than maximum possible for success.
+//        int stop=failedConnections.size()*(failedConnections.size()+1)/2;
+//        int i=0;
+//        while(!failedConnections.isEmpty())
+//        {
+//            if(!loadConnector(failedConnections.first(), this, NoUndo))
+//            {
+//                failedConnections.append(failedConnections.first());
+//            }
+//            failedConnections.removeFirst();
+//            ++i;
+//            if(i>stop) break;
+//        }
+
+
+        //8. Load system parameters again in case we need to reregister system port start values
+        xmlParameters = domElement.firstChildElement(HMF_PARAMETERS);
+        xmlSubObject = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
+        while (!xmlSubObject.isNull())
+        {
+            loadSystemParameter(xmlSubObject, false, hmfFormatVersion, this);
+            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_PARAMETERTAG);
+        }
+
+        //9. Load plot variable aliases
+        QDomElement xmlAliases = domElement.firstChildElement(HMF_ALIASES);
+        QDomElement xmlAlias = xmlAliases.firstChildElement(HMF_ALIAS);
+        while (!xmlAlias.isNull())
+        {
+            loadPlotAlias(xmlAlias, this);
+            xmlAlias = xmlAlias.nextSiblingElement(HMF_ALIAS);
+        }
+
+        //9.1 Load plot variable aliases
+        //! @deprecated Remove in the future when hmf format stabilized and everyone has upgraded
+        xmlSubObject = xmlParameters.firstChildElement(HMF_ALIAS);
+        while (!xmlSubObject.isNull())
+        {
+            loadPlotAlias(xmlSubObject, this);
+            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_ALIAS);
+        }
+
+        //10. Load optimization settings
+        xmlSubObject = guiStuff.firstChildElement(HMF_OPTIMIZATION);
+        loadOptimizationSettingsFromDomElement(xmlSubObject);
+
+        //11. Load sensitivity analysis settings
+        xmlSubObject = guiStuff.firstChildElement(HMF_SENSITIVITYANALYSIS);
+        loadSensitivityAnalysisSettingsFromDomElement(xmlSubObject);
+
+
+        //Replace volunector components with volunectors
+        for(int i=0; i<volunectorObjectPtrs.size(); ++i)
+        {
+            if(volunectorObjectPtrs[i]->getPort("P1")->isConnected() &&
+                volunectorObjectPtrs[i]->getPort("P2")->isConnected())
+            {
+
+
+                Port *pP1 = volunectorObjectPtrs[i]->getPort("P1");
+                Port *pP2 = volunectorObjectPtrs[i]->getPort("P2");
+                Connector *pVolunector = pP1->getAttachedConnectorPtrs().first();
+                Connector *pExcessiveConnector = pP2->getAttachedConnectorPtrs().first();
+                Port *pEndPort = pExcessiveConnector->getEndPort();
+                ModelObject *pEndComponent = pEndPort->getParentModelObject();
+                ModelObject *pVolunectorObject = volunectorObjectPtrs[i];
+
+
+                //Forget and remove excessive connector
+                mSubConnectorList.removeAll(pExcessiveConnector);
+                pVolunectorObject->forgetConnector(pExcessiveConnector);    //Start component
+                pEndComponent->forgetConnector(pExcessiveConnector);        //Start port
+                pP2->forgetConnection(pExcessiveConnector);                 //End component
+                pEndPort->forgetConnection(pExcessiveConnector);            //End port
+                delete(pExcessiveConnector);
+
+                //Disconnect volunector from volunector component
+                pVolunectorObject->forgetConnector(pVolunector);
+                pP1->forgetConnection(pVolunector);
+
+                //Re-connect volunector with end component
+                pVolunector->setEndPort(pEndPort);
+
+                //Make the connector a volunector
+                pVolunector->makeVolunector(dynamic_cast<Component*>(pVolunectorObject));
+
+                //Remove volunector object parent container object
+                mModelObjectMap.remove(pVolunectorObject->getName());
+                pVolunectorObject->setParent(0);
+
+                //Re-draw connector object
+                pVolunector->drawConnector();
+            }
+        }
+
+
+        //Refresh the appearance of the subsystem and create the GUIPorts based on the loaded portappearance information
+        //! @todo This is a bit strange, refreshAppearance MUST be run before create ports or create ports will not know some necessary stuff
+        this->refreshAppearance();
+        this->refreshExternalPortsAppearanceAndPosition();
+        //this->createPorts();
+
+        //Deselect all components
+        this->deselectAll();
+        if(!dontClearUndo)
+        {
+            this->mpUndoStack->clear();
+        }
+        //Only do this for the root system
+        //! @todo maybe can do this for subsystems to (even if we don't see them right now)
+        if (this->mpParentSystemObject == nullptr)
+        {
+            //mpParentModelWidget->getGraphicsView()->centerView();
+            mpModelWidget->getGraphicsView()->updateViewPort();
+        }
+        this->mpModelWidget->setSaved(true);
+
+        emit systemParametersChanged(); // Make sure we refresh the syspar widget
+        emit checkMessages();
+    }
+    else
+    {
+        gpMessageHandler->addErrorMessage("A system you tried to load is tagged as an external system, but the ContainerSystem load function only loads embedded systems");
+    }
+}
+
+
+
+
+
+
+
+//! @brief Sets the modelfile info from the file representing this system
+//! @param[in] rFile The QFile objects representing the file we want to information about
+//! @param[in] relModelPath Relative filepath to parent model file (model asset path)
+void SystemObject::setModelFileInfo(QFile &rFile, const QString relModelPath)
+{
+    mModelFileInfo.setFile(rFile);
+    if (!relModelPath.isEmpty())
+    {
+        getCoreSystemAccessPtr()->setExternalModelFilePath(relModelPath);
+    }
+}
+
+void SystemObject::loadParameterValuesFromFile(QString parameterFile)
+{
+    if(parameterFile.isEmpty()) {
+        QString openLocation = gpConfig->getStringSetting(CFG_PARAMETERIMPORTDIR);
+        if (openLocation.isEmpty()) {
+            openLocation = gpConfig->getStringSetting(CFG_LOADMODELDIR);
+        }
+        parameterFile = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Load Parameter File"),
+                                                     openLocation,
+                                                     tr("Hopsan Parameter Files (*.hpf *.xml)"));
+    }
+
+    if(!parameterFile.isEmpty()) {
+        auto numChanged = getCoreSystemAccessPtr()->loadParameterFile(parameterFile);
+        if (numChanged > 0) {
+            mpModelWidget->hasChanged();
+            // Trigger system parameter widget refresh, regardless if any system parameters actually changed
+            emit systemParametersChanged();
+        }
+        gpConfig->setStringSetting(CFG_PARAMETERIMPORTDIR,  QFileInfo(parameterFile).absolutePath());
+    }
+    emit checkMessages();
+}
+
+//! @brief Function to set the time step of the current system
+void SystemObject::setTimeStep(const double timeStep)
+{
+    mpCoreSystemAccess->setDesiredTimeStep(timeStep);
+    this->hasChanged();
+}
+
+void SystemObject::setVisibleIfSignal(bool visible)
+{
+    if(this->getTypeCQS() == "S")
+    {
+        this->setVisible(visible);
+    }
+}
+
+//! @brief Returns the time step value of the current project.
+double SystemObject::getTimeStep()
+{
+    return mpCoreSystemAccess->getDesiredTimeStep();
+}
+
+//! @brief Check if the system inherits timestep from its parent
+bool SystemObject::doesInheritTimeStep()
+{
+    return mpCoreSystemAccess->doesInheritTimeStep();
+}
+
+
+//! @brief Returns the number of samples value of the current project.
+//! @see setNumberOfLogSamples(double)
+size_t SystemObject::getNumberOfLogSamples()
+{
+    return mNumberOfLogSamples;
+}
+
+
+//! @brief Sets the number of samples value for the current project
+//! @see getNumberOfLogSamples()
+void SystemObject::setNumberOfLogSamples(size_t nSamples)
+{
+    mNumberOfLogSamples = nSamples;
+}
+
+double SystemObject::getLogStartTime() const
+{
+    return mLogStartTime;
+}
+
+void SystemObject::setLogStartTime(const double logStartT)
+{
+    mLogStartTime = logStartT;
+}
+
+
+OptimizationSettings::OptimizationSettings()
+{
+    // Default values
+    mScriptFile = QString();
+    mNiter=100;
+    mNsearchp=8;
+    mRefcoeff=1.3;
+    mRandfac=.3;
+    mForgfac=0.0;
+    mPartol=.0001;
+    mPlot=true;
+    mSavecsv=false;
+    mFinalEval=true;
+    mlogPar = false;
+}
+
+
+SensitivityAnalysisSettings::SensitivityAnalysisSettings()
+{
+    nIter = 100;
+    distribution = UniformDistribution;
 }

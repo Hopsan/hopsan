@@ -42,7 +42,7 @@
 #include "GraphicsViewPort.h"
 
 //Forward Declarations
-class ContainerObject;
+class SystemObject;
 class ModelWidget;
 
 class GraphicsView : public QGraphicsView
@@ -51,8 +51,8 @@ class GraphicsView : public QGraphicsView
 
 public:
     GraphicsView(ModelWidget *parent = 0);
-    void setContainerPtr(ContainerObject *pContainer);
-    ContainerObject *getContainerPtr();
+    void setContainerPtr(SystemObject *pContainer);
+    SystemObject *getContainerPtr();
 
     void updateViewPort();
     void getViewPort(double &rX, double &rY, double &rZoom) const;
@@ -120,7 +120,7 @@ private:
     QStringList mTypeNames;
     QStringList mDisplayNames;
 
-    ContainerObject *mpContainerObject;
+    SystemObject *mpContainerObject;
 };
 
 

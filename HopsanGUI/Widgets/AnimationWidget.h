@@ -39,7 +39,7 @@
 #include <QMap>
 
 // Forward declarations
-class ContainerObject;
+class SystemObject;
 class CentralTabWidget;
 class ModelWidget;
 class GUIComponent;
@@ -95,7 +95,7 @@ public:
 
     //Public member pointers
     AnimatedGraphicsView *mpGraphicsView=nullptr;
-    ContainerObject *mpContainer=nullptr;
+    SystemObject *mpContainer=nullptr;
     ModelObjectAnimationData *mpAnimationData=nullptr;
 
     //Maps that stores maximum and minimum values for simulation variables ("Pressure", "Velocity" etc)

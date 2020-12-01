@@ -44,7 +44,7 @@
 #include "GUIConnector.h"
 #include "UndoStack.h"
 #include "Widgets/ModelWidget.h"
-#include "GUIObjects/GUISystem.h"
+#include "GUIObjects/GUIContainerObject.h"
 #include "loadFunctions.h"
 #include "Configuration.h"
 #include "LibraryHandler.h"
@@ -54,7 +54,7 @@ class UndoStack;
 //! @brief Constructor for creation of empty non connected connector
 //! @param [in] startPort The initial port the connector
 //! @param [in] pParentContainer The parent container object who ones this connector
-Connector::Connector(ContainerObject *pParentContainer)
+Connector::Connector(SystemObject *pParentContainer)
         : QGraphicsWidget()
 {
     // Init members
@@ -145,7 +145,7 @@ void Connector::connectPortSigSlots(Port* pPort)
     }
 }
 
-void Connector::setParentContainer(ContainerObject *pParentContainer)
+void Connector::setParentContainer(SystemObject *pParentContainer)
 {
     if (mpParentContainerObject)
     {
@@ -161,7 +161,7 @@ void Connector::setParentContainer(ContainerObject *pParentContainer)
     connect(mpParentContainerObject, SIGNAL(setAllGfxType(GraphicsTypeEnumT)),   this, SLOT(setIsoStyle(GraphicsTypeEnumT)),  Qt::UniqueConnection);
 }
 
-ContainerObject *Connector::getParentContainer()
+SystemObject *Connector::getParentContainer()
 {
     return mpParentContainerObject;
 }
@@ -1726,7 +1726,7 @@ void ConnectorLine::setPen (const QPen &pen)
 }
 
 
-Volunector::Volunector(ContainerObject *pParentContainer)
+Volunector::Volunector(SystemObject *pParentContainer)
     : Connector(pParentContainer)
 {
     //ModelObjectAppearance *pAppearance = gpLibraryHandler->getModelObjectAppearancePtr("HydraulicVolume");

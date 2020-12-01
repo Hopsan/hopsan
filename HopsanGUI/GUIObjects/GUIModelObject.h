@@ -43,7 +43,7 @@
 class Connector;
 class ModelObjectDisplayName;
 class Port;
-class SystemContainer;
+class SystemObject;
 class ComponentPropertiesDialog3;
 
 class ModelObject : public WorkspaceObject
@@ -51,11 +51,12 @@ class ModelObject : public WorkspaceObject
     Q_OBJECT
 
 public:
-    ModelObject(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT graphics = UserGraphics, ContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
+    explicit ModelObject(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, SelectionStatusEnumT startSelected = Deselected,
+                         GraphicsTypeEnumT graphics = UserGraphics, SystemObject *pParentSystem=0, QGraphicsItem *pParentGraphicsItem=0);
     virtual ~ModelObject();
     virtual void deleteInHopsanCore();
 
-    virtual void setParentContainerObject(ContainerObject *pParentContainer);
+    virtual void setParentSystemObject(SystemObject *pParentContainer) override;
 
     QStringList getParentSystemNameHieararchy() const;
     virtual QStringList getSystemNameHieararchy() const;
@@ -71,7 +72,7 @@ public:
     virtual void setNameTextPos(int textPos);
 
     // CQS methods
-    virtual QString getTypeCQS(){return "hasNoCqsType";} //Overloaded in GUISystem and GUIComponent
+    virtual QString getTypeCQS() const {return "hasNoCqsType";}
 
     // Appearance methods
     void setAppearanceDataBasePath(const QString basePath);
@@ -126,8 +127,8 @@ public:
     QString getModifyableSignalQuantity(const QString &rVariablePortDataName);
 
     // Load and save methods
-    virtual void loadFromDomElement(QDomElement domElement);
-    virtual void saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel);
+    virtual void loadFromDomElement(QDomElement domElement) override;
+    virtual void saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel) override;
     virtual void setModelFileInfo(QFile &rFile, const QString relModelPath="");
 
     // Connector methods
@@ -144,8 +145,8 @@ public:
 
     // Type info
     enum { Type = ModelObjectType };
-    int type() const;
-    virtual QString getHmfTagName() const;
+    virtual int type()  const override;
+    virtual QString getHmfTagName() const override;
 
     void getLosses(double &total, QMap<QString, double> domainSpecificLosses);
     bool isLossesDisplayVisible();
@@ -153,10 +154,10 @@ public:
 public slots:
     virtual void refreshAppearance();
     virtual void refreshExternalPortsAppearanceAndPosition();
-    void deleteMe(UndoStatusEnumT undoSettings=Undo);
-    virtual void rotate(double angle, UndoStatusEnumT undoSettings = Undo);
-    virtual void flipVertical(UndoStatusEnumT undoSettings = Undo);
-    virtual void flipHorizontal(UndoStatusEnumT undoSettings = Undo);
+    void deleteMe(UndoStatusEnumT undoSettings=Undo) override;
+    virtual void rotate(double angle, UndoStatusEnumT undoSettings = Undo) override;
+    virtual void flipVertical(UndoStatusEnumT undoSettings = Undo) override;
+    virtual void flipHorizontal(UndoStatusEnumT undoSettings = Undo) override;
     void hideName(UndoStatusEnumT undoSettings = NoUndo);
     void showName(UndoStatusEnumT undoSettings = NoUndo);
     void setIcon(GraphicsTypeEnumT);
@@ -178,13 +179,13 @@ protected:
     virtual QAction *buildBaseContextMenu(QMenu &rMenue, QGraphicsSceneContextMenuEvent* pEvent);
 
     // Reimplemented Qt methods
-    virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
-    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+    virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
+    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
 
     // Save and load methods
     virtual QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);

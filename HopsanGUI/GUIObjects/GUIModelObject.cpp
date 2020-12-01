@@ -41,8 +41,7 @@
 
 
 #include "GUIModelObject.h"
-
-#include "GUISystem.h"
+#include "GUIContainerObject.h"
 #include "Widgets/ModelWidget.h"
 #include "GraphicsView.h"
 #include "Utilities/GUIUtilities.h"
@@ -67,8 +66,8 @@
 //! @param gfxType Initial graphics type (user or iso)
 //! @param system Pointer to the parent system
 //! @param parent Pointer to parent object (not mandatory)
-ModelObject::ModelObject(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType, ContainerObject *pParentContainer, QGraphicsItem *pParent)
-        : WorkspaceObject(position, rotation, startSelected, pParentContainer, pParent)
+ModelObject::ModelObject(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType, SystemObject *pParentSystem, QGraphicsItem *pParentGraphicsItem)
+        : WorkspaceObject(position, rotation, startSelected, pParentSystem, pParentGraphicsItem)
 {
     // Initialize variables
     mName="no_name_set_yet";
@@ -99,12 +98,12 @@ ModelObject::ModelObject(QPointF position, double rotation, const ModelObjectApp
         //Create the textbox containing the name
     mpNameText = new ModelObjectDisplayName(this);
     mpNameText->setFlag(QGraphicsItem::ItemIsSelectable, false); //To minimize problems when move after copy and so on
-    if(mpParentContainerObject)
+    if(mpParentSystemObject)
     {
-        setNameTextScale(mpParentContainerObject->mpModelWidget->mpGraphicsView->getZoomFactor());
+        setNameTextScale(mpParentSystemObject->mpModelWidget->mpGraphicsView->getZoomFactor());
     }
     setNameTextPos(0); //Set initial name text position
-    if(pParentContainer && pParentContainer->areSubComponentNamesShown())
+    if(pParentSystem && pParentSystem->areSubComponentNamesShown())
     {
         showName(NoUndo);
     }
@@ -115,14 +114,14 @@ ModelObject::ModelObject(QPointF position, double rotation, const ModelObjectApp
 
     // Create connections
     connect(mpNameText, SIGNAL(textMoved(QPointF)), SLOT(snapNameTextPosition(QPointF)));
-    if(mpParentContainerObject != nullptr)
+    if(mpParentSystemObject != nullptr)
     {
-        connect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(zoomChange(double)), this, SLOT(setNameTextScale(double)));
+        connect(mpParentSystemObject->mpModelWidget->getGraphicsView(), SIGNAL(zoomChange(double)), this, SLOT(setNameTextScale(double)));
 //        connect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
-        connect(mpParentContainerObject, SIGNAL(hideAllNameText()), this, SLOT(hideName()));
-        connect(mpParentContainerObject, SIGNAL(showAllNameText()), this, SLOT(showName()));
-        connect(mpParentContainerObject, SIGNAL(setAllGfxType(GraphicsTypeEnumT)), this, SLOT(setIcon(GraphicsTypeEnumT)));
-        connect(this, SIGNAL(quantityChanged(QString,QString)), mpParentContainerObject->mpModelWidget, SIGNAL(quantityChanged(QString,QString)));
+        connect(mpParentSystemObject, SIGNAL(hideAllNameText()), this, SLOT(hideName()));
+        connect(mpParentSystemObject, SIGNAL(showAllNameText()), this, SLOT(showName()));
+        connect(mpParentSystemObject, SIGNAL(setAllGfxType(GraphicsTypeEnumT)), this, SLOT(setIcon(GraphicsTypeEnumT)));
+        connect(this, SIGNAL(quantityChanged(QString,QString)), mpParentSystemObject->mpModelWidget, SIGNAL(quantityChanged(QString,QString)));
     }
     else
     {
@@ -149,9 +148,9 @@ void ModelObject::deleteInHopsanCore()
     //Needs to be overloaded
 }
 
-void ModelObject::setParentContainerObject(ContainerObject *pParentContainer)
+void ModelObject::setParentSystemObject(SystemObject *pParentContainer)
 {
-    WorkspaceObject::setParentContainerObject(pParentContainer);
+    WorkspaceObject::setParentSystemObject(pParentContainer);
 
     //Refresh the port signals and slots connections
     for (int i=0; i<mPortListPtrs.size(); ++i)
@@ -162,9 +161,9 @@ void ModelObject::setParentContainerObject(ContainerObject *pParentContainer)
 
 QStringList ModelObject::getParentSystemNameHieararchy() const
 {
-    if (mpParentContainerObject)
+    if (mpParentSystemObject)
     {
-        return mpParentContainerObject->getSystemNameHieararchy();
+        return mpParentSystemObject->getSystemNameHieararchy();
     }
     return QStringList();
 }
@@ -215,9 +214,9 @@ void ModelObject::snapNameTextPosition(QPointF pos)
         mNameTextPos = 1;
     }
 
-    if(mpParentContainerObject != 0)
+    if(mpParentSystemObject != 0)
     {
-        mpParentContainerObject->mpModelWidget->getGraphicsView()->updateViewPort();
+        mpParentSystemObject->mpModelWidget->getGraphicsView()->updateViewPort();
     }
 }
 
@@ -377,7 +376,7 @@ void ModelObject::setIcon(GraphicsTypeEnumT gfxType)
         if (mpIcon != 0)
         {
             mpIcon->deleteLater(); //Schedule previous icon for deletion
-            disconnect(this->getParentContainerObject()->mpModelWidget->getGraphicsView(), SIGNAL(zoomChange(double)), this, SLOT(setIconZoom(double)));
+            disconnect(this->getParentSystemObject()->mpModelWidget->getGraphicsView(), SIGNAL(zoomChange(double)), this, SLOT(setIconZoom(double)));
         }
 
         mpIcon = new QGraphicsSvgItem(iconPath, this);
@@ -399,10 +398,10 @@ void ModelObject::setIcon(GraphicsTypeEnumT gfxType)
         {
             mIconRotation = false;
             mpIcon->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
-            if (this->getParentContainerObject() != 0)
+            if (this->getParentSystemObject() != 0)
             {
-                mpIcon->setScale(this->getParentContainerObject()->mpModelWidget->getGraphicsView()->getZoomFactor()*iconScale);
-                connect(this->getParentContainerObject()->mpModelWidget->getGraphicsView(), SIGNAL(zoomChange(double)), this, SLOT(setIconZoom(double)), Qt::UniqueConnection);
+                mpIcon->setScale(this->getParentSystemObject()->mpModelWidget->getGraphicsView()->getZoomFactor()*iconScale);
+                connect(this->getParentSystemObject()->mpModelWidget->getGraphicsView(), SIGNAL(zoomChange(double)), this, SLOT(setIconZoom(double)), Qt::UniqueConnection);
             }
             //! @todo we need to disconnect this also at some point, when swapping between systems or groups
         }
@@ -440,16 +439,16 @@ void ModelObject::showLosses()
 
     QString unit = " J";
     double div = 1;
-    if(mpParentContainerObject->mpAvgPwrRadioButton->isChecked())
+    if(mpParentSystemObject->mpAvgPwrRadioButton->isChecked())
     {
         unit = " W";
-        div = mpParentContainerObject->getLogDataHandler()->copyTimeVector(-1).last();
+        div = mpParentSystemObject->getLogDataHandler()->copyTimeVector(-1).last();
     }
 
     if(getTypeCQS() == "S")
         return;
 
-    int generation = mpParentContainerObject->getLogDataHandler()->getCurrentGenerationNumber();
+    int generation = mpParentSystemObject->getLogDataHandler()->getCurrentGenerationNumber();
 
     time.start();
 
@@ -480,9 +479,9 @@ void ModelObject::showLosses()
                         QString portName = vConnectedPorts.at(i)->getName();
                         QStringList sysHieararchy = vConnectedPorts.at(i)->getParentModelObject()->getParentSystemNameHieararchy();
                         //! @todo Multiplying intensity with flow will give correct value for all nodes except pneumatics (that use massflow), figure out how to solve this
-                        QVector<double> vIntensity = mpParentContainerObject->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(sysHieararchy, componentName, portName, NodeInfo(type).intensity), generation);
-                        QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(sysHieararchy, componentName, portName, NodeInfo(type).flow), generation);
-                        QVector<double> vTime = mpParentContainerObject->getLogDataHandler()->copyTimeVector(generation);
+                        QVector<double> vIntensity = mpParentSystemObject->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(sysHieararchy, componentName, portName, NodeInfo(type).intensity), generation);
+                        QVector<double> vFlow = mpParentSystemObject->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(sysHieararchy, componentName, portName, NodeInfo(type).flow), generation);
+                        QVector<double> vTime = mpParentSystemObject->getLogDataHandler()->copyTimeVector(generation);
                         for(int s=0; s<vIntensity.size()-1; ++s) //Minus one because of integration method
                         {
                             //! @todo here and bellow there is a risk for slowdown when timevector is cached to disk, should copy the vector first (at is the same as peek)
@@ -494,9 +493,9 @@ void ModelObject::showLosses()
                 else    //Normal port!
                 {
                     //! @todo Multiplying intensity with flow will give correct value for all nodes except pneumatics (that use massflow), figure out how to solve this
-                    QVector<double> vIntensity = mpParentContainerObject->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(getParentSystemNameHieararchy(), getName(), mPortListPtrs[p]->getName(), NodeInfo(type).intensity), generation);
-                    QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(getParentSystemNameHieararchy(), getName(), mPortListPtrs[p]->getName(), NodeInfo(type).flow), generation);
-                    QVector<double> vTime = mpParentContainerObject->getLogDataHandler()->copyTimeVector(generation);
+                    QVector<double> vIntensity = mpParentSystemObject->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(getParentSystemNameHieararchy(), getName(), mPortListPtrs[p]->getName(), NodeInfo(type).intensity), generation);
+                    QVector<double> vFlow = mpParentSystemObject->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(getParentSystemNameHieararchy(), getName(), mPortListPtrs[p]->getName(), NodeInfo(type).flow), generation);
+                    QVector<double> vTime = mpParentSystemObject->getLogDataHandler()->copyTimeVector(generation);
                     for(int s=0; s<vIntensity.size()-1; ++s) //Minus one because of integration method
                     {
                         mTotalLosses += vIntensity.at(s) * vFlow.at(s) * (vTime.at(s+1) - vTime.at(s));
@@ -590,9 +589,9 @@ void ModelObject::highlight()
     if (mpIcon != nullptr) {
         mpIcon->setGraphicsEffect(pEffect);
     }
-    if (getParentContainerObject())
+    if (getParentSystemObject())
     {
-        connect(getParentContainerObject()->mpModelWidget->getGraphicsView(), SIGNAL(unHighlightAll()), this, SLOT(unHighlight()), Qt::UniqueConnection);
+        connect(getParentSystemObject()->mpModelWidget->getGraphicsView(), SIGNAL(unHighlightAll()), this, SLOT(unHighlight()), Qt::UniqueConnection);
     }
 
 }
@@ -601,19 +600,19 @@ void ModelObject::unHighlight()
 {
     if ((mpIcon != nullptr) && (mpIcon->graphicsEffect() != nullptr)) {
         mpIcon->setGraphicsEffect(nullptr);
-        disconnect(getParentContainerObject()->mpModelWidget->getGraphicsView(), SIGNAL(unHighlightAll()), this, SLOT(unHighlight()));
+        disconnect(getParentSystemObject()->mpModelWidget->getGraphicsView(), SIGNAL(unHighlightAll()), this, SLOT(unHighlight()));
     }
 }
 
 void ModelObject::setIsLocked(bool value)
 {
-    mpParentContainerObject->hasChanged();
+    mpParentSystemObject->hasChanged();
     mIsLocked = value;
 }
 
 void ModelObject::setDisabled(bool value)
 {
-    mpParentContainerObject->getCoreSystemAccessPtr()->setSubComponentDisabled(this->getName(), value);
+    mpParentSystemObject->getCoreSystemAccessPtr()->setSubComponentDisabled(this->getName(), value);
 
     if(value) {
         QGraphicsColorizeEffect *pGrayEffect = new QGraphicsColorizeEffect();
@@ -632,13 +631,13 @@ void ModelObject::setDisabled(bool value)
 
 bool ModelObject::isDisabled()
 {
-    if(!mpParentContainerObject)
+    if(!mpParentSystemObject)
     {
         return false; //Top-level system cannot be disabled
     }
     else
     {
-        return mpParentContainerObject->getCoreSystemAccessPtr()->isSubComponentDisabled(this->getName());
+        return mpParentSystemObject->getCoreSystemAccessPtr()->isSubComponentDisabled(this->getName());
     }
 }
 
@@ -733,8 +732,8 @@ Port *ModelObject::createRefreshExternalPort(QString portName)
         }
 
         //! @todo to minimize search time make a get porttype  and nodetype function, we need to search twice now
-        QString nodeType = getParentContainerObject()->getCoreSystemAccessPtr()->getNodeType(this->getName(), portName);
-        QString portType = getParentContainerObject()->getCoreSystemAccessPtr()->getPortType(this->getName(), portName);
+        QString nodeType = getParentSystemObject()->getCoreSystemAccessPtr()->getNodeType(this->getName(), portName);
+        QString portType = getParentSystemObject()->getCoreSystemAccessPtr()->getPortType(this->getName(), portName);
 
         if (!portType.isEmpty())
         {
@@ -854,9 +853,9 @@ QMap<QString, QString> ModelObject::getVariableAliases(const QString &rPortName)
 void ModelObject::getVariameterDescriptions(QVector<CoreVariameterDescription> &rVariameterDescriptions) const
 {
     rVariameterDescriptions.clear();
-    if (mpParentContainerObject)
+    if (mpParentSystemObject)
     {
-        mpParentContainerObject->getCoreSystemAccessPtr()->getVariameters(this->getName(), rVariameterDescriptions);
+        mpParentSystemObject->getCoreSystemAccessPtr()->getVariameters(this->getName(), rVariameterDescriptions);
     }
 }
 
@@ -899,7 +898,7 @@ QString ModelObject::getVariablePlotLabel(const QString &rName) const
 
 bool ModelObject::setModifyableSignalQuantity(const QString &rVariablePortDataName, const QString &rQuantity)
 {
-    bool rc = getParentContainerObject()->getCoreSystemAccessPtr()->setModifyableSignalQuantity(this->getName()+"#"+rVariablePortDataName, rQuantity);
+    bool rc = getParentSystemObject()->getCoreSystemAccessPtr()->setModifyableSignalQuantity(this->getName()+"#"+rVariablePortDataName, rQuantity);
     if (rc)
     {
         emit quantityChanged(makeFullVariableName(getSystemNameHieararchy(),"","",getName()+"#"+rVariablePortDataName), rQuantity);
@@ -909,7 +908,7 @@ bool ModelObject::setModifyableSignalQuantity(const QString &rVariablePortDataNa
 
 QString ModelObject::getModifyableSignalQuantity(const QString &rVariablePortDataName)
 {
-    return getParentContainerObject()->getCoreSystemAccessPtr()->getModifyableSignalQuantity(this->getName()+"#"+rVariablePortDataName);
+    return getParentSystemObject()->getCoreSystemAccessPtr()->getModifyableSignalQuantity(this->getName()+"#"+rVariablePortDataName);
 }
 
 void ModelObject::loadFromDomElement(QDomElement domElement)
@@ -922,33 +921,33 @@ void ModelObject::loadFromDomElement(QDomElement domElement)
 //! @param name Name of the parameter to return value from
 QString ModelObject::getParameterValue(const QString paramName)
 {
-    return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValue(this->getName(), paramName);
+    return mpParentSystemObject->getCoreSystemAccessPtr()->getParameterValue(this->getName(), paramName);
 }
 
 bool ModelObject::hasParameter(const QString &rParamName)
 {
-    return mpParentContainerObject->getCoreSystemAccessPtr()->hasParameter(this->getName(), rParamName);
+    return mpParentSystemObject->getCoreSystemAccessPtr()->hasParameter(this->getName(), rParamName);
 }
 
 //! @brief Get a vector contain data from all parameters
 //! @param [out] rParameterDataVec A vector that will contain parameter data
 void ModelObject::getParameters(QVector<CoreParameterData> &rParameterDataVec)
 {
-    mpParentContainerObject->getCoreSystemAccessPtr()->getParameters(this->getName(), rParameterDataVec);
+    mpParentSystemObject->getCoreSystemAccessPtr()->getParameters(this->getName(), rParameterDataVec);
 }
 
 
 //! @brief Get a vector with the names of the available parameters
 QStringList ModelObject::getParameterNames()
 {
-    return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterNames(this->getName());
+    return mpParentSystemObject->getCoreSystemAccessPtr()->getParameterNames(this->getName());
 }
 
 //! @brief Get parameter data for a specific parameter
 //! @param [out] rData The parameter data
 void ModelObject::getParameter(const QString paramName, CoreParameterData &rData)
 {
-    return mpParentContainerObject->getCoreSystemAccessPtr()->getParameter(this->getName(), paramName, rData);
+    return mpParentSystemObject->getCoreSystemAccessPtr()->getParameter(this->getName(), paramName, rData);
 }
 
 
@@ -1146,7 +1145,7 @@ void ModelObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         return;
 
     //Ignore if ctrl key is pressed
-    if(mpParentContainerObject->mpModelWidget->getGraphicsView()->isCtrlKeyPressed())
+    if(mpParentSystemObject->mpModelWidget->getGraphicsView()->isCtrlKeyPressed())
         return;
 
     QMenu menu;
@@ -1182,7 +1181,7 @@ void ModelObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 //! @brief Defines what happens if a mouse key is pressed while hovering an object
 void ModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(!mpParentContainerObject)
+    if(!mpParentSystemObject)
     {
         return;
     }
@@ -1193,7 +1192,7 @@ void ModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
     // If not locked then check for drag copy
     if (!isLocallyLocked() && (getModelLockLevel() == NotLocked))
     {
-        if(event->button() == Qt::RightButton && !mpParentContainerObject->mpModelWidget->getGraphicsView()->isCtrlKeyPressed())
+        if(event->button() == Qt::RightButton && !mpParentSystemObject->mpModelWidget->getGraphicsView()->isCtrlKeyPressed())
         {
             connect(&mDragCopyTimer, SIGNAL(timeout()), this, SLOT(setDragCopying()), Qt::UniqueConnection);
             mDragCopyTimer.setSingleShot(true);
@@ -1218,17 +1217,17 @@ void ModelObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
     //qDebug() << "mouseMoveEvent(), button = " << event->button();
 
-    if(mpParentContainerObject && mDragCopying)
+    if(mpParentSystemObject && mDragCopying)
     {
         //qDebug() << "Drag copying";
-        mpParentContainerObject->deselectAll();
+        mpParentSystemObject->deselectAll();
         this->select();
-        mpParentContainerObject->copySelected(mpParentContainerObject->getDragCopyStackPtr());
+        mpParentSystemObject->copySelected(mpParentSystemObject->getDragCopyStackPtr());
 
         QMimeData *mimeData = new QMimeData;
         mimeData->setText("HOPSANDRAGCOPY");
 
-        QDrag *drag = new QDrag(mpParentContainerObject->mpModelWidget->getGraphicsView());
+        QDrag *drag = new QDrag(mpParentSystemObject->mpModelWidget->getGraphicsView());
         drag->setMimeData(mimeData);
         drag->setPixmap(QIcon(QPixmap(this->mModelObjectAppearance.getIconPath(mIconType, Absolute))).pixmap(40,40));
         drag->setHotSpot(QPoint(20, 20));
@@ -1244,7 +1243,7 @@ void ModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     mDragCopyTimer.stop();
 
-    if(mpParentContainerObject == 0)
+    if(mpParentSystemObject == 0)
     {
         return;
     }
@@ -1256,7 +1255,7 @@ void ModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     //! @todo It would be better if this was handled in some other way,  one particular object should not be responsible for registering moves from other object
     // Loop through all selected objects and register changed positions in undo stack
     bool alreadyClearedRedo = false;
-    QList<ModelObject *> selectedObjects = mpParentContainerObject->getSelectedModelObjectPtrs();
+    QList<ModelObject *> selectedObjects = mpParentSystemObject->getSelectedModelObjectPtrs();
     QList<ModelObject *>::iterator it;
     for(it = selectedObjects.begin(); it != selectedObjects.end(); ++it)
     {
@@ -1266,18 +1265,18 @@ void ModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
             // This check makes sure that only one undo post is created when moving several objects at once
             if(!alreadyClearedRedo)
             {
-                if(mpParentContainerObject->getSelectedModelObjectPtrs().size() > 1)
+                if(mpParentSystemObject->getSelectedModelObjectPtrs().size() > 1)
                 {
-                    mpParentContainerObject->getUndoStackPtr()->newPost(UNDO_MOVEDMULTIPLE);
+                    mpParentSystemObject->getUndoStackPtr()->newPost(UNDO_MOVEDMULTIPLE);
                 }
                 else
                 {
-                    mpParentContainerObject->getUndoStackPtr()->newPost();
+                    mpParentSystemObject->getUndoStackPtr()->newPost();
                 }
-                mpParentContainerObject->mpModelWidget->hasChanged();
+                mpParentSystemObject->mpModelWidget->hasChanged();
                 alreadyClearedRedo = true;
             }
-            mpParentContainerObject->getUndoStackPtr()->registerMovedObject((*it)->mPreviousPos, (*it)->pos(), (*it)->getName());
+            mpParentSystemObject->getUndoStackPtr()->registerMovedObject((*it)->mPreviousPos, (*it)->pos(), (*it)->getName());
         }
     }
 
@@ -1288,7 +1287,7 @@ void ModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         test->setScenePos(event->scenePos());
         test->setScreenPos(event->screenPos());
         // This ugly hack avoids the context menue in the graphicsview from showing up after this event is processed (is only an issue on windows appearantly)
-        mpParentContainerObject->mpModelWidget->mpGraphicsView->setIgnoreNextContextMenuEvent();
+        mpParentSystemObject->mpModelWidget->mpGraphicsView->setIgnoreNextContextMenuEvent();
         this->contextMenuEvent(test);
     }
 
@@ -1376,33 +1375,33 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     }
     else if (selectedAction == pRotateRightAction)
     {
-        mpParentContainerObject->getUndoStackPtr()->newPost();
+        mpParentSystemObject->getUndoStackPtr()->newPost();
         this->rotate90cw();
     }
     else if (selectedAction == pRotateLeftAction)
     {
-        mpParentContainerObject->getUndoStackPtr()->newPost();
+        mpParentSystemObject->getUndoStackPtr()->newPost();
         this->rotate90ccw();
     }
     else if (selectedAction == pFlipVerticalAction)
     {
-        mpParentContainerObject->getUndoStackPtr()->newPost();
+        mpParentSystemObject->getUndoStackPtr()->newPost();
         this->flipVertical();
     }
     else if (selectedAction == pFlipHorizontalAction)
     {
-        mpParentContainerObject->getUndoStackPtr()->newPost();
+        mpParentSystemObject->getUndoStackPtr()->newPost();
         this->flipHorizontal();
     }
     else if (selectedAction == pShowNameAction)
     {
-        mpParentContainerObject->getUndoStackPtr()->newPost();
+        mpParentSystemObject->getUndoStackPtr()->newPost();
         setNameTextAlwaysVisible(pShowNameAction->isChecked());
     }
     else if(selectedAction == pLockedAction)
     {
         this->setIsLocked(pLockedAction->isChecked());
-        foreach(ModelObject *pObj, mpParentContainerObject->getSelectedModelObjectPtrs())
+        foreach(ModelObject *pObj, mpParentSystemObject->getSelectedModelObjectPtrs())
         {
             pObj->setIsLocked(pLockedAction->isChecked());
         }
@@ -1410,7 +1409,7 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     else if(selectedAction == pDisabledAction)
     {
       this->setDisabled(pDisabledAction->isChecked());
-      foreach(ModelObject *pObj, mpParentContainerObject->getSelectedModelObjectPtrs())
+      foreach(ModelObject *pObj, mpParentSystemObject->getSelectedModelObjectPtrs())
       {
           pObj->setDisabled(pDisabledAction->isChecked());
       }
@@ -1421,7 +1420,7 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
         {
             if(selectedAction == replaceActionList.at(i))
             {
-                mpParentContainerObject->replaceComponent(this->getName(), replacements.at(i));
+                mpParentSystemObject->replaceComponent(this->getName(), replacements.at(i));
                 return 0;
             }
         }
@@ -1441,28 +1440,28 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
 //! @param change Tells what it is that has changed
 QVariant ModelObject::itemChange(GraphicsItemChange change, const QVariant &value)
 {
-    if(mpParentContainerObject && !mpParentContainerObject->hasModelObject(this->getName()))
+    if(mpParentSystemObject && !mpParentSystemObject->hasModelObject(this->getName()))
         return value;
 
     WorkspaceObject::itemChange(change, value);   //This must be done BEFORE the snapping code to avoid an event loop. This is because snap uses "moveBy()", which triggers a new itemChange event.
 
     // Abort if we do not have a parent container object, the code below requires it
-    if (!mpParentContainerObject)
+    if (!mpParentSystemObject)
         return value;
 
     if (change == QGraphicsItem::ItemSelectedHasChanged)
     {
         if(this->isSelected())
         {
-            mpParentContainerObject->rememberSelectedModelObject(this);
-            connect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
-            connect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
+            mpParentSystemObject->rememberSelectedModelObject(this);
+            connect(mpParentSystemObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
+            connect(mpParentSystemObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
         }
         else
         {
-            mpParentContainerObject->forgetSelectedModelObject(this);
-            disconnect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
-            disconnect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
+            mpParentSystemObject->forgetSelectedModelObject(this);
+            disconnect(mpParentSystemObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
+            disconnect(mpParentSystemObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
         }
     }
 
@@ -1481,8 +1480,8 @@ QVariant ModelObject::itemChange(GraphicsItemChange change, const QVariant &valu
 
 
         // Snap component if it only has one connector and is dropped close enough (horizontal or vertical) to adjacent component
-        if( mEnableSnap && gpConfig->getSnapping() && !mpParentContainerObject->isCreatingConnector() &&
-                (mpParentContainerObject->getSelectedModelObjectPtrs().size() == 1) && (mConnectorPtrs.size() == 1))
+        if( mEnableSnap && gpConfig->getSnapping() && !mpParentSystemObject->isCreatingConnector() &&
+                (mpParentSystemObject->getSelectedModelObjectPtrs().size() == 1) && (mConnectorPtrs.size() == 1))
         {
             Connector *pFirstConnector = mConnectorPtrs.first();
             const int nl = pFirstConnector->getNumberOfLines();
@@ -1548,7 +1547,7 @@ void ModelObject::showPorts(bool visible)
         for (it=mPortListPtrs.begin(); it!=mPortListPtrs.end(); ++it)
         {
             // Only hide ports if they are connected, are not supposed to be shown or if the MO icon is already hidden (such as for hidden signal components)
-            if ((*it)->isConnected() || !mpParentContainerObject->areSubComponentPortsShown() || !mpIcon->isVisible())
+            if ((*it)->isConnected() || !mpParentSystemObject->areSubComponentPortsShown() || !mpIcon->isVisible())
             {
                 (*it)->hide();
             }
@@ -1562,7 +1561,7 @@ void ModelObject::rotate(double angle, UndoStatusEnumT undoSettings)
 {
     if (!isLocallyLocked() && (getModelLockLevel()==NotLocked))
     {
-        mpParentContainerObject->mpModelWidget->hasChanged();
+        mpParentSystemObject->mpModelWidget->hasChanged();
 
         if(mIsFlipped)
         {
@@ -1583,7 +1582,7 @@ void ModelObject::rotate(double angle, UndoStatusEnumT undoSettings)
 
         if(undoSettings == Undo)
         {
-            mpParentContainerObject->getUndoStackPtr()->registerRotatedObject(this->getName(), angle);
+            mpParentSystemObject->getUndoStackPtr()->registerRotatedObject(this->getName(), angle);
         }
 
         for(int i=0; i<mConnectorPtrs.size(); ++i)
@@ -1606,7 +1605,7 @@ void ModelObject::flipVertical(UndoStatusEnumT undoSettings)
         this->rotate(180,NoUndo);
         if(undoSettings == Undo)
         {
-            mpParentContainerObject->getUndoStackPtr()->registerVerticalFlip(this->getName());
+            mpParentSystemObject->getUndoStackPtr()->registerVerticalFlip(this->getName());
         }
     }
 }
@@ -1619,9 +1618,9 @@ void ModelObject::flipHorizontal(UndoStatusEnumT undoSettings)
 {
     if (!isLocallyLocked() && getModelLockLevel()==NotLocked)
     {
-        if(mpParentContainerObject)
+        if(mpParentSystemObject)
         {
-            mpParentContainerObject->mpModelWidget->hasChanged();
+            mpParentSystemObject->mpModelWidget->hasChanged();
         }
         QTransform transf;
         transf.scale(-1.0, 1.0);
@@ -1655,7 +1654,7 @@ void ModelObject::flipHorizontal(UndoStatusEnumT undoSettings)
 
         if(undoSettings == Undo)
         {
-            mpParentContainerObject->getUndoStackPtr()->registerHorizontalFlip(this->getName());
+            mpParentSystemObject->getUndoStackPtr()->registerHorizontalFlip(this->getName());
         }
     }
 }
@@ -1694,7 +1693,7 @@ void ModelObject::hideName(UndoStatusEnumT undoSettings)
         mNameTextVisible = false;
         if(undoSettings == Undo && previousStatus == true)
         {
-            mpParentContainerObject->getUndoStackPtr()->registerNameVisibilityChange(this->getName(), false);
+            mpParentSystemObject->getUndoStackPtr()->registerNameVisibilityChange(this->getName(), false);
         }
     }
 }
@@ -1712,7 +1711,7 @@ void ModelObject::showName(UndoStatusEnumT undoSettings)
     {
         if(undoSettings == Undo && previousStatus == false)
         {
-            mpParentContainerObject->getUndoStackPtr()->registerNameVisibilityChange(this->getName(), true);
+            mpParentSystemObject->getUndoStackPtr()->registerNameVisibilityChange(this->getName(), true);
         }
     }
 }
@@ -1750,7 +1749,7 @@ void ModelObject::deleteMe(UndoStatusEnumT undoSettings)
     if (isLocallyLocked() || (getModelLockLevel()!=NotLocked))
         return;
 
-    mpParentContainerObject->deleteModelObject(getName(), undoSettings);
+    mpParentSystemObject->deleteModelObject(getName(), undoSettings);
 }
 
 //! @brief Sets or updates the appearance data specific base path to which all icon paths should be relative
@@ -1828,7 +1827,7 @@ void ModelObject::setNameTextAlwaysVisible(const bool isVisible)
     {
         showName();
     }
-    else if (!isVisible && !mpParentContainerObject->areSubComponentNamesShown())
+    else if (!isVisible && !mpParentSystemObject->areSubComponentNamesShown())
     {
         hideName();
     }
@@ -1878,12 +1877,12 @@ QVariant ModelObjectDisplayName::itemChange(GraphicsItemChange change, const QVa
     {
         if (this->isSelected())
         {
-            mpParentModelObject->getParentContainerObject()->deselectSelectedNameText();
-            connect(mpParentModelObject->getParentContainerObject(), SIGNAL(deselectAllNameText()),this,SLOT(deselect()));
+            mpParentModelObject->getParentSystemObject()->deselectSelectedNameText();
+            connect(mpParentModelObject->getParentSystemObject(), SIGNAL(deselectAllNameText()),this,SLOT(deselect()));
         }
         else
         {
-            disconnect(mpParentModelObject->getParentContainerObject(), SIGNAL(deselectAllNameText()),this,SLOT(deselect()));
+            disconnect(mpParentModelObject->getParentSystemObject(), SIGNAL(deselectAllNameText()),this,SLOT(deselect()));
         }
     }
     return value;

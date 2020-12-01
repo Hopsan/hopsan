@@ -39,7 +39,7 @@
 #include <QProgressDialog>
 
 // Forward Declaration
-class SystemContainer;
+class SystemObject;
 class GUIMessageHandler;
 
 #include "CoreAccess.h"
@@ -110,9 +110,9 @@ class LocalSimulationWorkerObject : public SimulationWorkerObjectBase
 {
     Q_OBJECT
 private:
-    QVector<SystemContainer*> mvpSystems;
+    QVector<SystemObject*> mvpSystems;
 public:
-    LocalSimulationWorkerObject(QVector<SystemContainer*> vpSystems, const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples, const bool noChanges);
+    LocalSimulationWorkerObject(QVector<SystemObject*> vpSystems, const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples, const bool noChanges);
     int swoType() const {return LocalSWO;}
 
 public slots:
@@ -143,7 +143,7 @@ class ProgressBarWorkerObject : public QObject
     Q_OBJECT
 
 private:
-    QVector<SystemContainer*> mvSystems;
+    QVector<SystemObject*> mvSystems;
     QTimer *mpProgressDialogRefreshTimer;
 
 protected:
@@ -159,7 +159,7 @@ public slots:
     void stopRefreshTimer();
 
 public:
-    ProgressBarWorkerObject(const double startTime, const double stopTime, const QVector<SystemContainer*> &rvSystems);
+    ProgressBarWorkerObject(const double startTime, const double stopTime, const QVector<SystemObject*> &rvSystems);
 
 signals:
     void setProgressBarValue(int);
@@ -185,7 +185,7 @@ class SimulationThreadHandler  : public QObject
     Q_OBJECT
 
 private:
-    QVector<SystemContainer*> mvpSystems;
+    QVector<SystemObject*> mvpSystems;
 
     SimulationWorkerObjectBase *mpSimulationWorkerObject;
     QProgressDialog *mpProgressDialog;
@@ -213,12 +213,12 @@ public:
 
     void setSimulationTimeVariables(const double startTime, const double stopTime, const double logStartTime, const unsigned int nLogSamples);
     void setProgressDilaogBehaviour(bool enabled, bool modal);
-    void initSimulateFinalize(SystemContainer* pSystem, const bool noChanges=false);
+    void initSimulateFinalize(SystemObject* pSystem, const bool noChanges=false);
 #ifdef USEZMQ
     void initSimulateFinalizeRemote(SharedRemoteCoreSimulationHandlerT pRCSH, QVector<RemoteResultVariable> *pRemoteResultVariables, double *pProgress);
 #endif
-    void initSimulateFinalize(QVector<SystemContainer*> vpSystems, const bool noChanges=false);
-    void initSimulateFinalize_blocking(QVector<SystemContainer*> vpSystems, const bool noChanges=false);
+    void initSimulateFinalize(QVector<SystemObject*> vpSystems, const bool noChanges=false);
+    void initSimulateFinalize_blocking(QVector<SystemObject*> vpSystems, const bool noChanges=false);
     bool wasSuccessful();
     int getLastSimulationTime();
 

@@ -56,11 +56,11 @@ QuickNavigationWidget::QuickNavigationWidget(QWidget *parent) :
 
 //! @brief Append a new opened container to the navigation widget
 //! @param[in] pContainer A pointer to the Container Object
-void QuickNavigationWidget::addOpenContainer(ContainerObject* pContainer)
+void QuickNavigationWidget::addOpenContainer(SystemObject* pContainer)
 {
     //! @todo we can use the button group as button storage instead of having an extra Qvector
     mContainerObjectPtrs.append(pContainer);                              //Add the container object ptr from storage
-    QPushButton *pTmp = new QPushButton(pContainer->getParentContainerObject()->getName()+" ::", this);   //Create new button with parent name
+    QPushButton *pTmp = new QPushButton(pContainer->getParentSystemObject()->getName()+" ::", this);   //Create new button with parent name
     pTmp->setStyleSheet("padding:0px");
     pTmp->setFlat(true);
     layout()->addWidget(pTmp);                                             //Add the button to the graphics widget

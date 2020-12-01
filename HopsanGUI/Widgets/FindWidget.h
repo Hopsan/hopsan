@@ -36,7 +36,7 @@
 #include <QCheckBox>
 
 // Forward declaration
-class ContainerObject;
+class SystemObject;
 class TextEditorWidget;
 
 class FindWidget : public QWidget
@@ -44,7 +44,7 @@ class FindWidget : public QWidget
     Q_OBJECT
 public:
     explicit FindWidget(QWidget *parent = 0);
-    void setContainer(ContainerObject* pContainer);
+    void setContainer(SystemObject* pContainer);
     void setTextEditor(TextEditorWidget* pEditor);
 signals:
 
@@ -72,7 +72,7 @@ private:
     QPushButton *mpPreviousButton;
     QPushButton *mpNextButton;
 
-    QPointer<ContainerObject> mpContainer;
+    QPointer<SystemObject> mpContainer;
     QPointer<TextEditorWidget> mpTextEditor;
 
 };

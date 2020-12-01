@@ -41,7 +41,7 @@
 #include "GUIPort.h"
 #include "ModelHandler.h"
 #include "Widgets/ModelWidget.h"
-#include "GUIObjects/GUISystem.h"
+#include "GUIObjects/GUIContainerObject.h"
 
 
 

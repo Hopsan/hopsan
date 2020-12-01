@@ -46,7 +46,7 @@
 #include <QWizard>
 #include <QTreeWidgetItem>
 
-class SystemContainer;
+class SystemObject;
 class OptimizationScriptWizard;
 
 class OptimizationScriptWizardPage : public QWizardPage
@@ -69,7 +69,7 @@ class OptimizationScriptWizard : public QWizard
     friend class OptimizationScriptWizardPage;
 
 public:
-    OptimizationScriptWizard(SystemContainer *pSystem, QWidget* parent = 0);
+    OptimizationScriptWizard(SystemObject *pSystem, QWidget* parent = 0);
 
 protected:
     QTreeWidgetItem* findParameterTreeItem(QString componentName, QString parameterName);
@@ -113,7 +113,7 @@ private:
     void addObjectiveFunction(int idx, double weight, double norm, double exp, QList<QStringList> selectedVariables, QStringList objData, bool printWarning=true);
 
     //Original system
-    SystemContainer *mpSystem;
+    SystemObject *mpSystem;
 
     //Settings page
     QComboBox *mpAlgorithmBox;

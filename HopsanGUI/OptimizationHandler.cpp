@@ -53,7 +53,7 @@
 #include "PlotWindow.h"
 #include "PlotArea.h"
 #include "PlotCurve.h"
-#include "GUIObjects/GUISystem.h"
+#include "GUIObjects/GUIContainerObject.h"
 #include "GUIPort.h"
 #include "DesktopHandler.h"
 #include "Widgets/HcomWidget.h"
@@ -210,7 +210,7 @@ void OptimizationHandler::initModels(ModelWidget *pModel, int nModels, QString &
                     gpMessageHandler->addWarningMessage("portname has invalid space: "+portName, "bug");
                 }
                 bool enabled = pCore->isLoggingEnabled(compName, portName);
-                SystemContainer *pOptSystem = mModelPtrs.last()->getTopLevelSystemContainer();
+                SystemObject *pOptSystem = mModelPtrs.last()->getTopLevelSystemContainer();
                 CoreSystemAccess *pOptCore = pOptSystem->getCoreSystemAccessPtr();
                 pOptCore->setLoggingEnabled(compName, portName, enabled);
             }
@@ -1346,7 +1346,7 @@ void OptimizationHandler::reInitialize(int nModels)
             {
                 QString portName = port->getName();
                 bool enabled = pCore->isLoggingEnabled(compName, portName);
-                SystemContainer *pOptSystem = mModelPtrs.last()->getTopLevelSystemContainer();
+                SystemObject *pOptSystem = mModelPtrs.last()->getTopLevelSystemContainer();
                 CoreSystemAccess *pOptCore = pOptSystem->getCoreSystemAccessPtr();
                 pOptCore->setLoggingEnabled(compName, portName, enabled);
             }

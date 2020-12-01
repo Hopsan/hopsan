@@ -202,7 +202,6 @@ SOURCES += main.cpp \
     Widgets/SystemParametersWidget.cpp \
     PlotWindow.cpp \
     GUIObjects/GUIWidgets.cpp \
-    GUIObjects/GUISystem.cpp \
     GUIObjects/GUIObject.cpp \
     GUIObjects/GUIModelObjectAppearance.cpp \
     GUIObjects/GUIModelObject.cpp \
@@ -291,7 +290,6 @@ HEADERS += MainWindow.h \
     Widgets/SystemParametersWidget.h \
     PlotWindow.h \
     GUIObjects/GUIWidgets.h \
-    GUIObjects/GUISystem.h \
     GUIObjects/GUIObject.h \
     GUIObjects/GUIModelObjectAppearance.h \
     GUIObjects/GUIModelObject.h \

@@ -48,7 +48,6 @@
 #include "Utilities/GUIUtilities.h"
 #include "ModelHandler.h"
 #include "GUIObjects/GUIContainerObject.h"
-#include "GUIObjects/GUISystem.h"
 #include "PlotWindow.h"
 #include "MessageHandler.h"
 #include "Widgets/TimeOffsetWidget.h"
@@ -1052,7 +1051,7 @@ void PlotArea::dropEvent(QDropEvent *event)
                     }
 
                     //! @todo what about subsystems here
-                    ContainerObject *pContainer = gpModelHandler->getTopLevelSystem(model);
+                    SystemObject *pContainer = gpModelHandler->getTopLevelSystem(model);
                     // If we failed to find by modelpath (like for imported vars), then try the current view
                     if (!pContainer)
                     {

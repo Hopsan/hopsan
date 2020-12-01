@@ -52,11 +52,11 @@
 #include "LibraryHandler.h"
 
 
-Component::Component(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
+Component::Component(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, SystemObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
     : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
 {
     // Create the object in core, and get its default core name
-    mName = mpParentContainerObject->getCoreSystemAccessPtr()->createComponent(mModelObjectAppearance.getTypeName(), mModelObjectAppearance.getDisplayName());
+    mName = mpParentSystemObject->getCoreSystemAccessPtr()->createComponent(mModelObjectAppearance.getTypeName(), mModelObjectAppearance.getDisplayName());
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 
     // Sets the ports
@@ -66,7 +66,7 @@ Component::Component(QPointF position, double rotation, ModelObjectAppearance* p
     //! @todo not hardcoded Sensor check for typename
     if(getTypeCQS() == "S")
     {
-        connect(mpParentContainerObject, SIGNAL(showOrHideSignals(bool)), this, SLOT(setVisible(bool)));
+        connect(mpParentSystemObject, SIGNAL(showOrHideSignals(bool)), this, SLOT(setVisible(bool)));
     }
 
     //! @todo maybe set default param values for ALL ModelObjects
@@ -93,7 +93,7 @@ void Component::deleteInHopsanCore()
 {
     //Remove in core
     //! @todo maybe change to delte instead of remove with dodelete yes
-    mpParentContainerObject->getCoreSystemAccessPtr()->removeSubComponent(this->getName(), true);
+    mpParentSystemObject->getCoreSystemAccessPtr()->removeSubComponent(this->getName(), true);
 }
 
 
@@ -116,7 +116,7 @@ bool Component::hasPowerPorts()
 void Component::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsWidget::mouseDoubleClickEvent(event);
-    if(!mpParentContainerObject->mpModelWidget->getGraphicsView()->isCtrlKeyPressed())
+    if(!mpParentSystemObject->mpModelWidget->getGraphicsView()->isCtrlKeyPressed())
     {
         openPropertiesDialog();
     }
@@ -130,16 +130,16 @@ QString Component::getTypeName() const
 }
 
 //! @brief Returns the component CQS type
-QString Component::getTypeCQS()
+QString Component::getTypeCQS() const
 {
-    return mpParentContainerObject->getCoreSystemAccessPtr()->getSubComponentTypeCQS(this->getName());
+    return mpParentSystemObject->getCoreSystemAccessPtr()->getSubComponentTypeCQS(this->getName());
 }
 
 
 //! @brief Set a parameter value to be mapped to a System parameter
 bool Component::setParameterValue(QString name, QString value, bool force)
 {
-    bool retval =  mpParentContainerObject->getCoreSystemAccessPtr()->setParameterValue(this->getName(), name, value, force);
+    bool retval =  mpParentSystemObject->getCoreSystemAccessPtr()->setParameterValue(this->getName(), name, value, force);
 
     return retval;
 }
@@ -151,7 +151,7 @@ bool Component::setStartValue(QString portName, QString variable, QString sysPar
     Q_UNUSED(variable)
     QString dataName;
     dataName = portName + QString("::Value");
-    return mpParentContainerObject->getCoreSystemAccessPtr()->setParameterValue(this->getName(), dataName, sysParName);
+    return mpParentSystemObject->getCoreSystemAccessPtr()->setParameterValue(this->getName(), dataName, sysParName);
 }
 
 void Component::loadParameterValuesFromFile(QString parameterFile)
@@ -164,19 +164,19 @@ void Component::loadParameterValuesFromFile(QString parameterFile)
 
     if(!parameterFile.isEmpty()) {
         size_t numChanged = 0;
-        auto pCore = mpParentContainerObject->getCoreSystemAccessPtr();
+        auto pCore = mpParentSystemObject->getCoreSystemAccessPtr();
         if (pCore) {
             numChanged = pCore->loadParameterFile(getName(), parameterFile);
         }
         if (numChanged > 0) {
-            mpParentContainerObject->mpModelWidget->hasChanged();
+            mpParentSystemObject->mpModelWidget->hasChanged();
         }
         gpConfig->setStringSetting(CFG_LOADMODELDIR,  QFileInfo(parameterFile).absolutePath());
     }
 #if QT_VERSION_MAJOR < 5
     QMetaObject::invokeMethod(mpParentContainerObject,"checkMessages");
 #else
-    emit mpParentContainerObject->checkMessages();
+    emit mpParentSystemObject->checkMessages();
 #endif
 }
 
@@ -226,7 +226,7 @@ void Component::setVisible(bool visible)
 
     for(int i=0; i<mPortListPtrs.size(); ++i)
     {
-        mPortListPtrs.at(i)->showIfNotConnected(mpParentContainerObject->areSubComponentPortsShown());
+        mPortListPtrs.at(i)->showIfNotConnected(mpParentSystemObject->areSubComponentPortsShown());
     }
 }
 
@@ -351,12 +351,12 @@ void ScopeComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsWidget::mouseDoubleClickEvent(event);
 
-    if(mpParentContainerObject->mpModelWidget->getGraphicsView()->isCtrlKeyPressed())
+    if(mpParentSystemObject->mpModelWidget->getGraphicsView()->isCtrlKeyPressed())
         return;
 
     // If this is a sink component that has plot data, plot it instead of showing the dialog
     // Not very nice code, but a nice feature...
-    if( !mpParentContainerObject->getLogDataHandler()->isEmpty() && !mpParentContainerObject->isCreatingConnector() &&
+    if( !mpParentSystemObject->getLogDataHandler()->isEmpty() && !mpParentSystemObject->isCreatingConnector() &&
             (getPort("in")->isConnected() || getPort("in_right")->isConnected()) )
     {
         // If we don't have valid plotwindow then create one
@@ -368,20 +368,20 @@ void ScopeComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
             {
                 QString fullName = makeFullVariableName(getParentSystemNameHieararchy(), getPort("in")->getConnectedPorts().at(i)->getParentModelObjectName(),
                                                         getPort("in")->getConnectedPorts().at(i)->getName(),"Value");
-                getParentContainerObject()->getLogDataHandler()->plotVariable(mpPlotWindow, fullName, -1, 0);
+                getParentSystemObject()->getLogDataHandler()->plotVariable(mpPlotWindow, fullName, -1, 0);
             }
             for(int i=0; i<getPort("in_right")->getConnectedPorts().size(); ++i)
             {
                 QString fullName = makeFullVariableName(getParentSystemNameHieararchy(), getPort("in_right")->getConnectedPorts().at(i)->getParentModelObjectName(),
                                                         getPort("in_right")->getConnectedPorts().at(i)->getName(),"Value");
-                getParentContainerObject()->getLogDataHandler()->plotVariable(mpPlotWindow, fullName, -1, 1);
+                getParentSystemObject()->getLogDataHandler()->plotVariable(mpPlotWindow, fullName, -1, 1);
             }
 
             if(this->getPort("in_bottom")->isConnected() && mpPlotWindow && mpPlotWindow->getCurrentPlotTab())
             {
                 QString fullName = makeFullVariableName(getParentSystemNameHieararchy(), getPort("in_bottom")->getConnectedPorts().at(0)->getParentModelObjectName(),
                                                         getPort("in_bottom")->getConnectedPorts().at(0)->getName(),"Value");
-                mpPlotWindow->getCurrentPlotTab()->setCustomXVectorForAll(getParentContainerObject()->getLogDataHandler()->getVectorVariable(fullName, -1));
+                mpPlotWindow->getCurrentPlotTab()->setCustomXVectorForAll(getParentSystemObject()->getLogDataHandler()->getVectorVariable(fullName, -1));
             }
         }
         mpPlotWindow->showNormal();
@@ -415,7 +415,7 @@ void ScopeComponent::flipHorizontal(UndoStatusEnumT undoSettings)
 
 
 
-ScopeComponent::ScopeComponent(QPointF position, double rotation, ModelObjectAppearance *pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
+ScopeComponent::ScopeComponent(QPointF position, double rotation, ModelObjectAppearance *pAppearanceData, SystemObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
     : Component(position, rotation, pAppearanceData, pParentContainer, startSelected, gfxType)
 {
     // Nothing special

@@ -42,8 +42,8 @@
 
 class ModelWidget;
 class CentralTabWidget;
-class SystemContainer;
-class ContainerObject;
+class SystemObject;
+class SystemObject;
 class LogDataHandler2;
 class SimulationThreadHandler;
 class DebuggerWidget;
@@ -84,11 +84,11 @@ public:
     ModelWidget *getModel(const QString &rModelFilePath);
     ModelWidget *getModel(int idx);
     ModelWidget *getCurrentModel();
-    SystemContainer *getTopLevelSystem(const QString &rModelFilePath);
-    SystemContainer *getTopLevelSystem(int idx);
-    SystemContainer *getCurrentTopLevelSystem();
-    ContainerObject *getViewContainerObject(int idx);
-    ContainerObject *getCurrentViewContainerObject();
+    SystemObject *getTopLevelSystem(const QString &rModelFilePath);
+    SystemObject *getTopLevelSystem(int idx);
+    SystemObject *getCurrentTopLevelSystem();
+    SystemObject *getViewContainerObject(int idx);
+    SystemObject *getCurrentViewContainerObject();
     QSharedPointer<LogDataHandler2> getCurrentLogDataHandler();
 
     int count() const;

@@ -43,7 +43,7 @@
 //Forward declarations
 class Connector;
 class Port;
-class ContainerObject;
+class SystemObject;
 class PlotWindow;
 
 class Component : public ModelObject
@@ -51,7 +51,7 @@ class Component : public ModelObject
     Q_OBJECT
 
 public:
-    Component(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics);
+    Component(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, SystemObject *pParentContainer, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics);
     void deleteInHopsanCore() override;
 
     bool hasPowerPorts();
@@ -62,7 +62,7 @@ public:
     void loadParameterValuesFromFile(QString parameterFile = {}) override;
 
     QString getTypeName() const override;
-    QString getTypeCQS() override;
+    QString getTypeCQS() const override;
 
     // Type info
     enum { Type = ComponentType };
@@ -85,16 +85,16 @@ class ScopeComponent final : public Component
 {
     Q_OBJECT
 public:
-    ScopeComponent(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics);
+    ScopeComponent(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, SystemObject *pParentContainer, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics);
 
     enum { Type = ScopeComponentType };
-    int type() const;
+    int type() const override;
 
 protected:
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    void rotate(double angle, UndoStatusEnumT undoSettings = Undo);
-    void flipVertical(UndoStatusEnumT undoSettings = Undo);
-    void flipHorizontal(UndoStatusEnumT undoSettings = Undo);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
+    void rotate(double angle, UndoStatusEnumT undoSettings = Undo) override;
+    void flipVertical(UndoStatusEnumT undoSettings = Undo) override;
+    void flipHorizontal(UndoStatusEnumT undoSettings = Undo) override;
 
     QPointer<PlotWindow> mpPlotWindow;
 };

@@ -1229,10 +1229,10 @@ bool saveXmlFile(QString xmlFilePath, GUIMessageHandler *pMessageHandler, std::f
 }
 
 //! @brief Get all system parameter names for provided system its parent and grand parents
-QStringList getAllAccessibleSystemParameterNames(ContainerObject *pSystem) {
+QStringList getAllAccessibleSystemParameterNames(SystemObject *pSystem) {
     QStringList parameterNames = pSystem->getParameterNames();
     if ( !pSystem->isTopLevelContainer() ) {
-        parameterNames += getAllAccessibleSystemParameterNames(pSystem->getParentContainerObject());
+        parameterNames += getAllAccessibleSystemParameterNames(pSystem->getParentSystemObject());
     }
     return parameterNames;
 }
