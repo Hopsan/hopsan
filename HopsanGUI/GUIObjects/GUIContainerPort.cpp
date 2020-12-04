@@ -105,14 +105,6 @@ void ContainerPort::refreshDisplayName(QString overrideName)
     mPortListPtrs[0]->setDisplayName(mName);
 }
 
-//! @brief ContainerPorts shall only save their port name if they are systemports, if they are group ports no core data should be saved
-void ContainerPort::saveCoreDataToDomElement(QDomElement &rDomElement)
-{
-    if (isSystemPort())
-    {
-        rDomElement.setAttribute(HMF_NAMETAG, getName());
-    }
-}
 
 //! @brief Opens the properties dialog
 void ContainerPort::openPropertiesDialog()
@@ -133,7 +125,7 @@ void ContainerPort::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 int ContainerPort::type() const
 {
-    return Type;
+    return ContainerPortType;
 }
 
 QString ContainerPort::getHmfTagName() const

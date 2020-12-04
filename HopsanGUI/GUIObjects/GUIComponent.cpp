@@ -196,7 +196,7 @@ void Component::createPorts()
 
 int Component::type() const
 {
-    return Type;
+    return ComponentType;
 }
 
 QString Component::getHmfTagName() const
@@ -423,5 +423,5 @@ ScopeComponent::ScopeComponent(QPointF position, double rotation, ModelObjectApp
 
 int ScopeComponent::type() const
 {
-    return Type;
+    return ScopeComponentType;
 }

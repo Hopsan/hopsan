@@ -40,23 +40,22 @@ class ContainerPort : public ModelObject
 {
     Q_OBJECT
 public:
-    ContainerPort(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, SystemObject *pParentContainer, SelectionStatusEnumT startSelected = Selected, GraphicsTypeEnumT gfxType = UserGraphics);
-    void deleteInHopsanCore();
+    ContainerPort(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, SystemObject *pParentContainer,
+                  SelectionStatusEnumT startSelected = Selected, GraphicsTypeEnumT gfxType = UserGraphics);
+    void deleteInHopsanCore() override;
     QString getTypeName() const override;
-    void refreshDisplayName(QString overrideName="");
+    void refreshDisplayName(QString overrideName="") override;
 
     // Type info
-    enum { Type = ContainerPortType };
-    int type() const;
-    virtual QString getHmfTagName() const;
+    virtual int type() const override;
+    virtual QString getHmfTagName() const override;
     bool isSystemPort() const;
 
-    void openPropertiesDialog();
+    void openPropertiesDialog() override;
 
 protected:
     void createPorts();
-    void saveCoreDataToDomElement(QDomElement &rDomElement);
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
 
 private:
     Port *mpPort;

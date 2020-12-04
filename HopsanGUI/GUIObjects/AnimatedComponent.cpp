@@ -876,7 +876,7 @@ void AnimatedIcon::saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT 
 //! @brief Returns the type of the object (object, component, systemport, group etc)
 int AnimatedIcon::type() const
 {
-    return Type;
+    return AnimatedObjectType;
 }
 
 QString AnimatedIcon::getHmfTagName() const

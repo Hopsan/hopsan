@@ -58,18 +58,17 @@ class Widget : public WorkspaceObject
 
 public:
     Widget(QPointF pos, double rot, SelectionStatusEnumT startSelected, SystemObject *pSystem, QGraphicsItem *pParent=0);
-    virtual WidgetTypesEnumT getWidgetType() const = 0;
     int getWidgetIndex();
 
     // Type info
-    enum { Type = WidgetType };
-    int type() const;
+    virtual WidgetTypesEnumT getWidgetType() const = 0;
+    int type() const override;
 
 protected:
-    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
 public slots:
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
 protected:
     int mWidgetIndex;

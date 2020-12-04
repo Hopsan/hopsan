@@ -144,8 +144,7 @@ public:
     virtual void removeExternalPort(QString portName);
 
     // Type info
-    enum { Type = ModelObjectType };
-    virtual int type()  const override;
+    virtual int type() const override = 0;
     virtual QString getHmfTagName() const override;
 
     void getLosses(double &total, QMap<QString, double> domainSpecificLosses);

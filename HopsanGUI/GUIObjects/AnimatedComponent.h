@@ -137,31 +137,30 @@ class AnimatedIcon : public WorkspaceObject
 public:
     AnimatedIcon(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, AnimatedComponent *pAnimatedComponent=0, SystemObject *pParentContainer=0, int idx=-1, QGraphicsItem *pParent=0);
 
-    virtual void loadFromDomElement(QDomElement domElement);
-    virtual void saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel);
+    virtual void loadFromDomElement(QDomElement domElement) override;
+    virtual void saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel) override;
 
     AnimatedComponent *mpAnimatedComponent;
     int mIdx;
 
     // Type info
-    enum { Type = AnimatedObjectType };
-    int type() const;
-    virtual QString getHmfTagName() const;
+    virtual int type() const override;
+    virtual QString getHmfTagName() const override;
 
 public slots:
-    virtual void deleteMe(UndoStatusEnumT undoSettings=Undo);
-    virtual void rotate(double angle, UndoStatusEnumT undoSettings=Undo);
-    virtual void flipVertical(UndoStatusEnumT undoSettings=Undo);
-    virtual void flipHorizontal(UndoStatusEnumT undoSettings=Undo);
+    virtual void deleteMe(UndoStatusEnumT undoSettings=Undo) override;
+    virtual void rotate(double angle, UndoStatusEnumT undoSettings=Undo) override;
+    virtual void flipVertical(UndoStatusEnumT undoSettings=Undo) override;
+    virtual void flipHorizontal(UndoStatusEnumT undoSettings=Undo) override;
     void refreshIconPosition();
 
 protected:
-    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
-    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
+    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
+    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
 
     //Protected members
     ModelObjectAppearance mModelObjectAppearance;

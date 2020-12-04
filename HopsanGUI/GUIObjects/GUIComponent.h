@@ -65,8 +65,7 @@ public:
     QString getTypeCQS() const override;
 
     // Type info
-    enum { Type = ComponentType };
-    int type() const override;
+    virtual int type() const override;
     virtual QString getHmfTagName() const override;
 
 private slots:
@@ -87,8 +86,7 @@ class ScopeComponent final : public Component
 public:
     ScopeComponent(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, SystemObject *pParentContainer, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics);
 
-    enum { Type = ScopeComponentType };
-    int type() const override;
+    virtual int type() const override;
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;

@@ -3624,7 +3624,7 @@ void SystemObject::exportToExecutableModel(QString savePath, ArchitectureEnumT a
 
 int SystemObject::type() const
 {
-    return Type;
+    return SystemObjectType;
 }
 
 QString SystemObject::getHmfTagName() const

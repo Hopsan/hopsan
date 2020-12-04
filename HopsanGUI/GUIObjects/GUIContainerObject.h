@@ -298,8 +298,7 @@ public:
     void exportToExecutableModel(QString savePath, ArchitectureEnumT arch);
 
     // Type info
-    enum { Type = SystemObjectType };
-    int type() const override;
+    virtual int type() const override;
     virtual QString getHmfTagName() const override;
 
     void getSensitivityAnalysisSettings(SensitivityAnalysisSettings &sensSettings);

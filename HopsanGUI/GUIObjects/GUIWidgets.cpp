@@ -71,7 +71,7 @@ int Widget::getWidgetIndex()
 
 int Widget::type() const
 {
-    return Type;
+    return WidgetType;
 }
 
 QVariant Widget::itemChange(GraphicsItemChange change, const QVariant &value)

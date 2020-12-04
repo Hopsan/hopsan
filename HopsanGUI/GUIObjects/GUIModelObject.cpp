@@ -174,12 +174,6 @@ QStringList ModelObject::getSystemNameHieararchy() const
 }
 
 
-//! @brief Returns the type of the object (object, component, systemport, group etc)
-int ModelObject::type() const
-{
-    return Type;
-}
-
 QString ModelObject::getHmfTagName() const
 {
     return HMF_OBJECTTAG; //!< @todo change this

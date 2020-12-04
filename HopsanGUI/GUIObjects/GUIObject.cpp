@@ -82,12 +82,6 @@ void WorkspaceObject::setParentSystemObject(SystemObject *pParentSystem)
 }
 
 
-//! @brief Returns the type of the object (object, component, systemport, group etc)
-int WorkspaceObject::type() const
-{
-    return Type;
-}
-
 //! @brief Returns the position of the  WorkspaceObject center in scene coordinates
 QPointF WorkspaceObject::getCenterPos()
 {

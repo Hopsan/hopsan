@@ -44,7 +44,8 @@ class QDomElement;
 class WorkspaceObjectSelectionBox;
 class SystemObject;
 
-enum GUIObjectEnumT {WorkspaceObjectType=QGraphicsItem::UserType+1, WidgetType, ModelObjectType, SystemObjectType, ComponentType, ScopeComponentType, ContainerPortType, AnimatedObjectType};
+enum WorkspaceObjectEnumT {WorkspaceObjectType=QGraphicsItem::UserType+1, WidgetType, ModelObjectType, SystemObjectType, ComponentType, ScopeComponentType,
+                           ContainerPortType, AnimatedObjectType};
 
 class WorkspaceObject : public QGraphicsWidget
 {
@@ -71,8 +72,7 @@ public:
     bool isLocallyLocked() const;
 
     // Type info
-    enum { Type = WorkspaceObjectType };
-    int type() const;
+    virtual int type() const override = 0;
     virtual QString getHmfTagName() const = 0;
 
 public slots:
@@ -101,11 +101,11 @@ signals:
 
 protected:
     // Reimplemented Qt methods
-    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
-    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
+    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
 
     virtual void refreshSelectionBoxSize();
 
