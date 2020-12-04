@@ -67,7 +67,7 @@ void WorkerGenetic::run()
     distributePoints();
 
     //Evaluate initial objective values
-    mpEvaluator->evaluateAllPoints();
+    mpEvaluator->evaluateAllPointsWithSurrogateModel();
     mpMessageHandler->objectivesChanged();
 
 
@@ -76,7 +76,7 @@ void WorkerGenetic::run()
     {
         mCandidatePoints.clear();
         std::vector<size_t> ids = getIdsSortedFromWorstToBest();
-        for(int i=0; i<mNumElites; ++i) {
+        for(size_t i=0; i<mNumElites; ++i) {
             mCandidatePoints.push_back(mPoints[ids.back()]);
             ids.pop_back();
         }
@@ -90,7 +90,19 @@ void WorkerGenetic::run()
         mpMessageHandler->pointsChanged();
 
         //Evaluate objective values
-        mpEvaluator->evaluateAllPoints();
+        mpEvaluator->evaluateAllCandidatesWithSurrogateModel();
+
+
+        for(size_t i=0; i<mNumPoints; ++i)
+        {
+            calculateBestAndWorstId();
+            int worst = getWorstId();
+            if(mCandidateObjectives[i] < mObjectives[worst])
+            {
+                mObjectives[worst] = mCandidateObjectives[i];
+                mPoints[worst] = mCandidatePoints[i];
+            }
+        }
 
         mpMessageHandler->objectivesChanged();
 

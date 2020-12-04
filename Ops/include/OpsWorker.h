@@ -116,6 +116,7 @@ public:
     void setMaxNumberOfIterations(size_t value);
     void setTolerance(double value);
     void setSamplingMethod(SamplingT dist);
+    void setUseSurrogateModel(size_t interval);
 
     size_t getNumberOfCandidates();
     size_t getNumberOfPoints();
@@ -145,6 +146,8 @@ protected:
     Evaluator *mpEvaluator;
     MessageHandler *mpMessageHandler;
     std::vector<std::pair<size_t,size_t>> mIgnoredWhenSampling;
+    bool mUseSurrogateModel;
+    size_t mNumSurrogateModelUpdateInterval;
 };
 
 }

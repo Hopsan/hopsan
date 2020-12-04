@@ -93,7 +93,7 @@ void WorkerDifferentialEvolution::run()
     distributePoints();
 
     //Evaluate initial objective values
-    mpEvaluator->evaluateAllPoints();
+    mpEvaluator->evaluateAllPointsWithSurrogateModel();
     mpMessageHandler->objectivesChanged();
 
     mIterationCounter=0;
@@ -123,7 +123,7 @@ void WorkerDifferentialEvolution::run()
             }
         }
 
-        mpEvaluator->evaluateAllCandidates();
+        mpEvaluator->evaluateAllCandidatesWithSurrogateModel();
         mpMessageHandler->candidatesChanged();
 
         for(size_t p=0; p<mNumPoints; ++p)

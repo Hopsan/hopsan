@@ -496,6 +496,10 @@ void OptimizationHandler::setOptVar(const QString &var, const QString &value, bo
             mpWorker->setSamplingMethod(Ops::SamplingLatinHypercube);
         }
     }
+    else if(var == "surrogatemodel")
+    {
+        mpWorker->setUseSurrogateModel(value.toUInt());
+    }
 
     if(!mpWorker)
     {
