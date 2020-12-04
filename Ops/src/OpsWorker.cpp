@@ -51,7 +51,6 @@ using namespace Ops;
 Worker::Worker(Evaluator *pEvaluator, MessageHandler *pMessageHandler)
 {
     mpEvaluator = pEvaluator;
-    mpEvaluator->setWorker(this);
 
     mpMessageHandler = pMessageHandler;
 
@@ -64,6 +63,10 @@ Worker::Worker(Evaluator *pEvaluator, MessageHandler *pMessageHandler)
     mObjectives.resize(1);
     mPoints.resize(1);
     mDistribution = SamplingRandom;
+    mUseSurrogateModel = false;
+    mNumSurrogateModelUpdateInterval = 20;
+
+    mpEvaluator->setWorker(this);
 }
 
 Worker::~Worker()
@@ -335,6 +338,12 @@ void Worker::setTolerance(double value)
 void Worker::setSamplingMethod(SamplingT dist)
 {
     mDistribution = dist;
+}
+
+void Worker::setUseSurrogateModel(size_t interval)
+{
+    mUseSurrogateModel = true;
+    mNumSurrogateModelUpdateInterval = interval;
 }
 
 size_t Worker::getNumberOfCandidates()

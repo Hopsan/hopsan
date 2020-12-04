@@ -92,7 +92,7 @@ void WorkerComplexRF::run()
         //std::vector<double> newPoint = mCandidatePoints[0]; //Remember the new point, in case we need to iterate below
 
         //Evaluate new point
-        mpEvaluator->evaluateCandidate(0);
+        mpEvaluator->evaluateCandidateWithSurrogateModel(0);
         mPoints[mWorstId] = mCandidatePoints[0];
         mObjectives[mWorstId] = mCandidateObjectives[0];
 
@@ -183,7 +183,7 @@ bool WorkerComplexRF::retract()
     ++mIterationCounter;
 
     //Evaluate new point
-    mpEvaluator->evaluateCandidate(0);
+    mpEvaluator->evaluateCandidateWithSurrogateModel(0);
     mPoints[mWorstId] = mCandidatePoints[0];
     mObjectives[mWorstId] = mCandidateObjectives[0];
 

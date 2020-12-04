@@ -85,7 +85,7 @@ void WorkerParticleSwarm::run()
     distributePoints();
 
     //Evaluate initial objective values
-    mpEvaluator->evaluateAllPoints();
+    mpEvaluator->evaluateAllPointsWithSurrogateModel();
     mpMessageHandler->objectivesChanged();
 
     //Initialize best known point for each point
@@ -124,25 +124,27 @@ void WorkerParticleSwarm::run()
         mpMessageHandler->pointsChanged();
 
         //Evaluate objective values
-        mpEvaluator->evaluateAllCandidates();
+        bool usedSurrogateModel = mpEvaluator->evaluateAllCandidatesWithSurrogateModel();
         mpMessageHandler->objectivesChanged();
 
-        //Calculate best known positions
-        for(size_t p=0; p<mNumPoints; ++p)
-        {
-            if(mCandidateObjectives[p] < mObjectives[p])
+        if(!usedSurrogateModel) {
+            //Calculate best known positions
+            for(size_t p=0; p<mNumPoints; ++p)
             {
-                mPoints[p] = mCandidatePoints[p];
-                mObjectives[p] = mCandidateObjectives[p];
+                if(mCandidateObjectives[p] < mObjectives[p])
+                {
+                    mPoints[p] = mCandidatePoints[p];
+                    mObjectives[p] = mCandidateObjectives[p];
+                }
             }
-        }
 
-        //Calculate best known global position
-        calculateBestAndWorstId();
-        if(mObjectives[mBestId] < mBestObjective)
-        {
-            mBestObjective = mObjectives[mBestId];
-            mBestPoint = mPoints[mBestId];
+            //Calculate best known global position
+            calculateBestAndWorstId();
+            if(mObjectives[mBestId] < mBestObjective)
+            {
+                mBestObjective = mObjectives[mBestId];
+                mBestPoint = mPoints[mBestId];
+            }
         }
 
         //Check convergence
