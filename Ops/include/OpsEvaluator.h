@@ -35,8 +35,11 @@
 #define OPSEVALUATOR_H
 
 #include <stdlib.h>
+#include <vector>
+#include <deque>
 
 #include "OpsWin32DLL.h"
+#include "matrix.h"
 
 namespace Ops {
 
@@ -46,15 +49,38 @@ class OPS_DLLAPI Evaluator
 {
 public:
     Evaluator();
+    ~Evaluator();
 
     void setWorker(Worker *pWorker);
 
     virtual void evaluateAllPoints();               //Can be re-implemented
     virtual void evaluateCandidate(size_t idx);        //Must be re-implemented
     virtual void evaluateAllCandidates();           //Can be re-implemented
+    void evaluateAllPointsWithSurrogateModel();
+    bool evaluateAllCandidatesWithSurrogateModel();
+    void evaluateCandidateWithSurrogateModel(size_t idx);
 
 protected:
     Worker *mpWorker;
+
+private:
+    void updateSurrogateModel();
+    void storeValuesForMetaModel(size_t idx);
+
+    size_t mStorageSize;
+    Vec* mpSurrogateModelCoefficients = nullptr;
+    std::deque< std::vector<double> > mStoredParameters;
+
+    Vec *mpStoredObjectives = nullptr;
+    Matrix *mpMatrix = nullptr;
+
+    double mPercDiff;
+    int mCountMax;
+
+    bool mUseMetaModel;
+    bool mSurrogateModelExist;
+    size_t mSurrogateModelEvaluations;
+    bool mSurrogateModelInitialized;
 };
 
 }
