@@ -133,7 +133,7 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
             if(selectedAction == addTextBoxAction)
             {
                 mpContainerObject->getUndoStackPtr()->newPost();
-                this->mpContainerObject->addTextBoxWidget(this->mapToScene(event->pos()).toPoint());
+                mpContainerObject->addTextBoxWidget(this->mapToScene(event->pos()).toPoint());
             }
         }
     }
@@ -436,26 +436,24 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 {
     emit unHighlightAll();
 
-    bool doNotForwardEvent = false;
-    bool ctrlPressed = event->modifiers().testFlag(Qt::ControlModifier);
-    bool shiftPressed = event->modifiers().testFlag(Qt::ShiftModifier);
-    bool altPressed = event->modifiers().testFlag(Qt::AltModifier);
+    bool doForwardEvent = true;
+    const bool ctrlPressed = event->modifiers().testFlag(Qt::ControlModifier);
+    const bool shiftPressed = event->modifiers().testFlag(Qt::ShiftModifier);
+    const bool altPressed = event->modifiers().testFlag(Qt::AltModifier);
 
     //qDebug() << "shiftPressed = " << shiftPressed;
     //qDebug() << "event->key() = " << event->key();
 
     if (event->key() == Qt::Key_Delete)
     {
-        bool allLocked=true;
-        for(ModelObject* pObj : mpContainerObject->getSelectedModelObjectPtrs())
-        {
-            if(!pObj->isLocallyLocked())
-            {
-                allLocked=false;
+        bool allSelectedLocked = true;
+        for(ModelObject* pObj : mpContainerObject->getSelectedModelObjectPtrs()) {
+            if(!pObj->isLocallyLocked()) {
+                allSelectedLocked = false;
                 break;
             }
         }
-        if((mpContainerObject->isSubObjectSelected() && !allLocked) || mpContainerObject->isConnectorSelected())
+        if((mpContainerObject->isSubObjectSelected() && !allSelectedLocked) || mpContainerObject->isConnectorSelected())
         {
             mpContainerObject->getUndoStackPtr()->newPost();
             mpParentModelWidget->hasChanged();
@@ -559,7 +557,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             mpContainerObject->getUndoStackPtr()->newPost();
         }
         emit keyPressCtrlUp();
-        doNotForwardEvent = true;
+        doForwardEvent = false;
     }
     else if(ctrlPressed && event->key() == Qt::Key_Down)
     {
@@ -569,7 +567,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             mpParentModelWidget->hasChanged();
         }
         emit keyPressCtrlDown();
-        doNotForwardEvent = true;
+        doForwardEvent = false;
     }
     else if(ctrlPressed && event->key() == Qt::Key_Left)
     {
@@ -578,7 +576,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             mpContainerObject->getUndoStackPtr()->newPost();
         }
         emit keyPressCtrlLeft();
-        doNotForwardEvent = true;
+        doForwardEvent = false;
     }
     else if(ctrlPressed && event->key() == Qt::Key_Right)
     {
@@ -588,7 +586,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             mpParentModelWidget->hasChanged();
         }
         emit keyPressCtrlRight();
-        doNotForwardEvent = true;
+        doForwardEvent = false;
     }
     else if (ctrlPressed && event->key() == Qt::Key_A)
     {
@@ -608,31 +606,25 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     }
     else if(shiftPressed && altPressed && event->key() == Qt::Key_C)
     {
-        foreach(QString comp, mpContainerObject->getModelObjectNames())
-        {
-            if(mpContainerObject->getModelObject(comp)->getTypeCQS() == "C")
-            {
-                mpContainerObject->getModelObject(comp)->highlight();
+        for(const auto pMO : mpContainerObject->getModelObjects()) {
+            if(pMO->getTypeCQS() == "C") {
+                pMO->highlight();
             }
         }
     }
     else if(shiftPressed && altPressed && event->key() == Qt::Key_Q)
     {
-        foreach(QString comp, mpContainerObject->getModelObjectNames())
-        {
-            if(mpContainerObject->getModelObject(comp)->getTypeCQS() == "Q")
-            {
-                mpContainerObject->getModelObject(comp)->highlight();
+        for(const auto pMO : mpContainerObject->getModelObjects()) {
+            if(pMO->getTypeCQS() == "Q") {
+                pMO->highlight();
             }
         }
     }
     else if(shiftPressed && altPressed && event->key() == Qt::Key_S)
     {
-        foreach(QString comp, mpContainerObject->getModelObjectNames())
-        {
-            if(mpContainerObject->getModelObject(comp)->getTypeCQS() == "S")
-            {
-                mpContainerObject->getModelObject(comp)->highlight();
+        for(const auto pMO : mpContainerObject->getModelObjects()) {
+            if(pMO->getTypeCQS() == "S") {
+                pMO->highlight();
             }
         }
     }
@@ -641,8 +633,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         mShiftKeyPressed = true;
     }
 
-    if(!doNotForwardEvent)
-    {
+    if(doForwardEvent) {
         QGraphicsView::keyPressEvent ( event );
     }
 }
@@ -695,13 +686,6 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 //! @param event contains information of the mouse click operation.
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
-    if(!this->mpContainerObject->getSelectedModelObjectPtrs().isEmpty() ||
-       !this->mpContainerObject->getSelectedGUIWidgetPtrs().isEmpty() ||
-        this->mpContainerObject->isConnectorSelected())
-    {
-        mIgnoreNextMouseReleaseEvent = true;
-    }
-
     emit unHighlightAll();
 
     if(!(mpParentModelWidget->isEditingLimited() || mpContainerObject->isLocallyLocked()))
@@ -719,7 +703,6 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         {
             hideAddComponentLineEdit();
             this->setDragMode(ScrollHandDrag);
-            mIgnoreNextMouseReleaseEvent = true;
         }
         else
         {
@@ -755,10 +738,10 @@ void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
 
     bool createdUndoPost=false;
 
-    Q_FOREACH(ModelObject* object, mpContainerObject->getSelectedModelObjectPtrs())
+    for(ModelObject* pSelectedMO : mpContainerObject->getSelectedModelObjectPtrs())
     {
-        QPointF pos = object->pos();
-        if(object->getPreviousPos() != pos)
+        QPointF currentMOPosition = pSelectedMO->pos();
+        if(pSelectedMO->getPreviousPos() != currentMOPosition)
         {
             mpParentModelWidget->hasChanged();
             if(!createdUndoPost)
@@ -766,8 +749,8 @@ void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
                 mpContainerObject->getUndoStackPtr()->newPost(UNDO_MOVEDMULTIPLE);
                 createdUndoPost = true;
             }
-            mpContainerObject->getUndoStackPtr()->registerMovedObject(object->getPreviousPos(), object->pos(), object->getName());
-            object->rememberPos();
+            mpContainerObject->getUndoStackPtr()->registerMovedObject(pSelectedMO->getPreviousPos(), pSelectedMO->pos(), pSelectedMO->getName());
+            pSelectedMO->rememberPos();
         }
     }
     mLeftMouseButtonPressed = false;

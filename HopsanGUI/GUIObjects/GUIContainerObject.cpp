@@ -1500,13 +1500,11 @@ void SystemObject::copySelected(CopyStack *xmlStack)
     }
 
     QDomElement *copyRoot;
-    if(xmlStack == 0)
-    {
+    if(xmlStack == nullptr) {
         gpCopyStack->clear();
         copyRoot = gpCopyStack->getCopyRoot();
     }
-    else
-    {
+    else {
         xmlStack->clear();
         copyRoot = xmlStack->getCopyRoot();
     }
@@ -1576,29 +1574,20 @@ void SystemObject::copySelected(CopyStack *xmlStack)
     }
 
     // Copy connectors
-    for(int i = 0; i != mSubConnectorList.size(); ++i)
-    {
-        if (mSubConnectorList[i]->isActive() && !mSubConnectorList[i]->isBroken())
-        {
-            Port *pStartPort = mSubConnectorList[i]->getStartPort();
-            Port *pEndPort =  mSubConnectorList[i]->getEndPort();
-            if (pStartPort && pEndPort)
-            {
-                if(pStartPort->getParentModelObject()->isSelected() && pEndPort->getParentModelObject()->isSelected())
-                {
-                    mSubConnectorList[i]->saveToDomElement(*copyRoot);
-                }
+    for(const auto pConnector : mSubConnectorList) {
+        if (pConnector->isActive() && !pConnector->isBroken()) {
+            Port *pStartPort = pConnector->getStartPort();
+            Port *pEndPort = pConnector->getEndPort();
+            if (pStartPort && pEndPort && pStartPort->getParentModelObject()->isSelected() && pEndPort->getParentModelObject()->isSelected()) {
+                pConnector->saveToDomElement(*copyRoot);
             }
         }
     }
 
     // Copy widgets
-    QMap<size_t, Widget *>::iterator itw;
-    for(itw = mWidgetMap.begin(); itw!=mWidgetMap.end(); ++itw)
-    {
-        if((*itw)->isSelected())
-        {
-            (*itw)->saveToDomElement(*copyRoot);
+    for (const auto pSelectedWidget : mSelectedWidgetsList) {
+        if(pSelectedWidget->isSelected()) {
+            pSelectedWidget->saveToDomElement(*copyRoot);
         }
     }
 }
@@ -1616,135 +1605,109 @@ void SystemObject::paste(CopyStack *xmlStack)
         return;
     }
 
+    bool didPaste = false;
     mpUndoStack->newPost(UNDO_PASTE);
-    mpModelWidget->hasChanged();
 
     QDomElement *copyRoot;
-    if(xmlStack == 0)
-    {
+    if(xmlStack == nullptr) {
         copyRoot = gpCopyStack->getCopyRoot();
     }
-    else
-    {
+    else {
         copyRoot = xmlStack->getCopyRoot();
     }
 
-        //Deselect all components & connectors
+    // Deselect all components & connectors
     emit deselectAllGUIObjects();
     emit deselectAllConnectors();
 
-    QHash<QString, QString> renameMap;       //Used to track name changes, so that connectors will know what components are called
+    // Used a map to track name changes, so that connectors will know what components are called
+    QHash<QString, QString> renameMap;
 
-        //Determine paste offset (will paste components at mouse position
+    // Determine paste offset (will paste components at mouse position
     QDomElement coordTag = copyRoot->firstChildElement(HMF_COORDINATETAG);
     double x, y;
     parseCoordinateTag(coordTag, x, y);
-    QPointF oldCenter = QPointF(x, y);
+    QPointF oldCenter(x, y);
 
     QCursor cursor;
     QPointF newCenter = mpModelWidget->getGraphicsView()->mapToScene(mpModelWidget->getGraphicsView()->mapFromGlobal(cursor.pos()));
 
-    qDebug() << "Pasting at " << newCenter;
+    const QPointF offset = newCenter - oldCenter;
 
-    double xOffset = newCenter.x() - oldCenter.x();
-    double yOffset = newCenter.y() - oldCenter.y();
+    qDebug() << "Pasting at: " << newCenter;
+    qDebug() << "Paste with offset: " << offset;
+    QString str;
+    QTextStream out(&str);
+    copyRoot->ownerDocument().save(out, XMLINDENTATION);
+    qDebug() << str;
 
-        //Paste components
-    QDomElement objectElement = copyRoot->firstChildElement(HMF_COMPONENTTAG);
-    while(!objectElement.isNull())
-    {
-        ModelObject *pObj = loadModelObject(objectElement, this);
-        if (pObj)
-        {
-            //Apply offset to pasted object
-            QPointF oldPos = pObj->pos();
-            pObj->moveBy(xOffset, yOffset);
-            mpUndoStack->registerMovedObject(oldPos, pObj->pos(), pObj->getName());
-
-            renameMap.insert(objectElement.attribute(HMF_NAMETAG), pObj->getName());
-            //objectElement.setAttribute("name", renameMap.find(objectElement.attribute(HMF_NAMETAG)).value());
-            objectElement = objectElement.nextSiblingElement("component");
+    // Help function to load and paste Component or System type model objects
+    auto pasteComponentOrSystem = [this, copyRoot, offset, &renameMap, &didPaste](const QString& tagName) {
+        // Paste components
+        QDomElement objectElement = copyRoot->firstChildElement(tagName);
+        while(!objectElement.isNull()) {
+            ModelObject *pObj = loadModelObject(objectElement, this, Undo);
+            if (pObj) {
+                // Apply offset to pasted object
+                pObj->moveBy(offset.x(), offset.y());
+                renameMap.insert(objectElement.attribute(HMF_NAMETAG), pObj->getName());
+                didPaste = true;
+            }
+            objectElement = objectElement.nextSiblingElement(tagName);
         }
-    }
+    };
 
-        // Paste subsystems
-    //! @todo maybe this subsystem loop can be merged with components above somehow. Basically the same code is used now after some cleanup, That way we could  have one loop for guimodelobjects, one for connector and after some cleanup one for widgets
-    QDomElement systemElement = copyRoot->firstChildElement(HMF_SYSTEMTAG);
-    while (!systemElement.isNull())
-    {
-        ModelObject* pObj = loadModelObject(systemElement, this, Undo);
-        if (pObj)
-        {
-            renameMap.insert(systemElement.attribute(HMF_NAMETAG), pObj->getName());
+    // Paste Components and Systems
+    pasteComponentOrSystem(HMF_COMPONENTTAG);
+    pasteComponentOrSystem(HMF_SYSTEMTAG);
 
-            //Apply offset to pasted object
-            QPointF oldPos = pObj->pos();
-            pObj->moveBy(xOffset, yOffset);
-            mpUndoStack->registerMovedObject(oldPos, pObj->pos(), pObj->getName());
-        }
-        systemElement = systemElement.nextSiblingElement(HMF_SYSTEMTAG);
-    }
-
-        // Paste container ports
+    // Paste container ports
     QDomElement systemPortElement = copyRoot->firstChildElement(HMF_SYSTEMPORTTAG);
-    while (!systemPortElement.isNull())
-    {
+    while (!systemPortElement.isNull()) {
         ModelObject* pObj = loadContainerPortObject(systemPortElement, this, Undo);
-        if (pObj)
-        {
+        if (pObj) {
+            // Apply offset to pasted object
+            pObj->moveBy(offset.x(), offset.y());
             renameMap.insert(systemPortElement.attribute(HMF_NAMETAG), pObj->getName());
-
-            //Apply offset to pasted object
-            QPointF oldPos = pObj->pos();
-            pObj->moveBy(xOffset, yOffset);
-            mpUndoStack->registerMovedObject(oldPos, pObj->pos(), pObj->getName());
+            didPaste = true;
         }
         systemPortElement = systemPortElement.nextSiblingElement(HMF_SYSTEMPORTTAG);
     }
 
-        //Paste connectors
+    // Paste connectors
     QDomElement connectorElement = copyRoot->firstChildElement(HMF_CONNECTORTAG);
-    while(!connectorElement.isNull())
-    {
+    while(!connectorElement.isNull()) {
         QDomElement tempConnectorElement = connectorElement.cloneNode(true).toElement();
         tempConnectorElement.setAttribute("startcomponent", renameMap.find(connectorElement.attribute("startcomponent")).value());
         tempConnectorElement.setAttribute("endcomponent", renameMap.find(connectorElement.attribute("endcomponent")).value());
 
         bool sucess = loadConnector(tempConnectorElement, this, Undo);
-        if (sucess)
-        {
-            //qDebug() << ",,,,,,,,,: " << tempConnectorElement.attribute("startcomponent") << " " << tempConnectorElement.attribute("startport") << " " << tempConnectorElement.attribute("endcomponent") << " " << tempConnectorElement.attribute("endport");
+        if (sucess) {
             Connector *tempConnector = this->findConnector(tempConnectorElement.attribute("startcomponent"), tempConnectorElement.attribute("startport"),
-                                                              tempConnectorElement.attribute("endcomponent"), tempConnectorElement.attribute("endport"));
-
-                //Apply offset to connector and register it in undo stack
-            tempConnector->moveAllPoints(xOffset, yOffset);
+                                                           tempConnectorElement.attribute("endcomponent"), tempConnectorElement.attribute("endport"));
+            // Apply offset to connector
+            tempConnector->moveAllPoints(offset.x(), offset.y());
             tempConnector->drawConnector(true);
-            for(int i=0; i<(tempConnector->getNumberOfLines()-2); ++i)
-            {
-                mpUndoStack->registerModifiedConnector(QPointF(tempConnector->getLine(i)->pos().x(), tempConnector->getLine(i)->pos().y()),
-                                                      tempConnector->getLine(i+1)->pos(), tempConnector, i+1);
-            }
+            didPaste = true;
         }
 
-        connectorElement = connectorElement.nextSiblingElement("connect");
+        connectorElement = connectorElement.nextSiblingElement(HMF_CONNECTORTAG);
     }
 
-        //Paste widgets
+    // Paste widgets
     QDomElement textBoxElement = copyRoot->firstChildElement(HMF_TEXTBOXWIDGETTAG);
     while(!textBoxElement.isNull())
     {
-        TextBoxWidget *pWidget = loadTextBoxWidget(textBoxElement, this, NoUndo);
-        if (pWidget)
-        {
+        TextBoxWidget *pWidget = loadTextBoxWidget(textBoxElement, this, Undo);
+        if (pWidget) {
             pWidget->setSelected(true);
-            pWidget->moveBy(xOffset, yOffset);
-            mpUndoStack->registerAddedWidget(pWidget);
+            pWidget->moveBy(offset.x(), offset.y());
+            didPaste = true;
         }
         textBoxElement = textBoxElement.nextSiblingElement(HMF_TEXTBOXWIDGETTAG);
     }
 
-        //Paste system parameters
+    // Paste system parameters
     QDomElement parElement = copyRoot->firstChildElement(HMF_PARAMETERTAG);
     while(!parElement.isNull())
     {
@@ -1758,19 +1721,19 @@ void SystemObject::paste(CopyStack *xmlStack)
 
             CoreParameterData parData = CoreParameterData(name, value, type, quantityORunit, "", description);
             setOrAddParameter(parData);
+            didPaste = true;
         }
-        parElement = parElement.nextSiblingElement("parameter");
+        parElement = parElement.nextSiblingElement(HMF_PARAMETERTAG);
     }
 
-
-        //Select all pasted components
-    QHash<QString, QString>::iterator itn;
-    for(itn = renameMap.begin(); itn != renameMap.end(); ++itn)
-    {
-        mModelObjectMap.find(itn.value()).value()->setSelected(true);
+    if (didPaste) {
+        // Select all pasted components
+        for(auto itn = renameMap.begin(); itn != renameMap.end(); ++itn) {
+            mModelObjectMap.find(itn.value()).value()->setSelected(true);
+        }
+        mpModelWidget->hasChanged();
+        mpModelWidget->getGraphicsView()->updateViewPort();
     }
-
-    mpModelWidget->getGraphicsView()->updateViewPort();
 }
 
 
@@ -1946,23 +1909,15 @@ void SystemObject::distributeY()
 //! @brief Calculates the geometrical center position of the selected objects.
 QPointF SystemObject::getCenterPointFromSelection()
 {
-    double sumX = 0;
-    double sumY = 0;
-    int nSelected = 0;
-    for(int i=0; i<mSelectedModelObjectsList.size(); ++i)
-    {
-        sumX += mSelectedModelObjectsList.at(i)->getCenterPos().x();
-        sumY += mSelectedModelObjectsList.at(i)->getCenterPos().y();
-        ++nSelected;
+    QPointF sum;
+    for(const auto& pSelectedMO : mSelectedModelObjectsList){
+        sum += pSelectedMO->getCenterPos();
     }
-    for(int i=0; i<mSelectedWidgetsList.size(); ++i)
-    {
-        sumX += mSelectedWidgetsList.at(i)->getCenterPos().x();
-        sumY += mSelectedWidgetsList.at(i)->getCenterPos().y();
-        ++nSelected;
+    for(const auto& pSelectedWidget : mSelectedWidgetsList){
+        sum += pSelectedWidget->getCenterPos();
     }
 
-    return QPointF(sumX/nSelected, sumY/nSelected);
+    return sum / (mSelectedModelObjectsList.size()+mSelectedWidgetsList.size());
 }
 
 
