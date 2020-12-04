@@ -730,6 +730,7 @@ def copyFiles():
     mkdirs(gTemporaryBuildDir+'/componentLibraries')
     mkdirs(gTemporaryBuildDir+'/doc')
     mkdirs(gTemporaryBuildDir+'/dependencies/tools')
+    mkdirs(gTemporaryBuildDir+'/hopsanc')
 
     # Copy "bin" folder to temporary directory
     copyDirTo(r'bin', gTemporaryBuildDir)
@@ -741,6 +742,7 @@ def copyFiles():
 
     # Export "HopsanCore" SVN directory to "include" in temporary directory
     git_export('HopsanCore', gTemporaryBuildDir)
+    git_export('hopsanc/include', gTemporaryBuildDir+r'/hopsanc')
 
     # Export needed core code dependencies
     copyDirTo(r'dependencies/katex',                gTemporaryBuildDir+r'/dependencies')

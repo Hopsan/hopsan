@@ -21,3 +21,10 @@ target_include_directories(hopsanc PUBLIC
 
 # Set link dependency to hopsancore
 target_link_libraries(hopsanc hopsancore)
+
+# Install
+install(TARGETS hopsanc
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ DESTINATION hopsanc/include)

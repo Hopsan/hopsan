@@ -44,6 +44,8 @@ echo "Installing Hopsan from $srcDir to $dstDir"
 
 # Copy whole directories
 # ======================
+install_dir  $srcDir/hopsanc/include                           $dstDir/hopsanc
+
 install_dir  $srcDir/HopsanCore/include                        $dstDir/HopsanCore
 install_dir  $srcDir/HopsanCore/src                            $dstDir/HopsanCore
 install_dir  $srcDir/HopsanCore/dependencies                   $dstDir/HopsanCore
