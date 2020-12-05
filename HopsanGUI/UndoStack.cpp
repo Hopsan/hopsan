@@ -412,12 +412,13 @@ void UndoStack::undoOneStep()
         QString startPort = (*it).attribute("startport");
         QString endComponent = (*it).attribute("endcomponent");
         QString endPort = (*it).attribute("endport");
-        if(!mpParentContainerObject->hasConnector(startComponent, startPort, endComponent, endPort))
-        {
-            this->clear("Undo stack attempted to access non-existing connector. Stack was cleared to ensure stability.");
-            return;
+        auto pConnectorToRemove = mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort);
+        if(pConnectorToRemove) {
+            mpParentContainerObject->removeSubConnector(pConnectorToRemove, NoUndo);
         }
-        mpParentContainerObject->removeSubConnector(mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort), NoUndo);
+        else {
+            gpMessageHandler->addErrorMessage("Undo stack attempted to access non-existing connector.");
+        }
     }
 
     // Remove objects after removing connectors, to make sure connectors don't lose their start and end components
@@ -854,15 +855,15 @@ void UndoStack::registerAddedObject(ModelObject *item)
 
 //! @brief Register function for added connectors
 //! @param item Pointer to the added connector
-void UndoStack::registerAddedConnector(Connector *item)
+void UndoStack::registerAddedConnector(Connector *pConnector)
 {
-    if(!mpParentContainerObject->isUndoEnabled())
-        return;
-    QDomElement currentPostElement = getCurrentPost();
-    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", UNDO_ADDEDCONNECTOR);
-    item->saveToDomElement(stuffElement);
-    gpUndoWidget->refreshList();
+    if(mpParentContainerObject->isUndoEnabled()) {
+        QDomElement currentPostElement = getCurrentPost();
+        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        stuffElement.setAttribute("what", UNDO_ADDEDCONNECTOR);
+        pConnector->saveToDomElement(stuffElement);
+        gpUndoWidget->refreshList();
+    }
 }
 
 

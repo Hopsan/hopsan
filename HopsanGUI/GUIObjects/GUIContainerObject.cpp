@@ -1177,54 +1177,35 @@ Port *SystemObject::getModelObjectPort(const QString modelObjectName, const QStr
 //! @brief Find a connector in the connector vector
 Connector* SystemObject::findConnector(QString startComp, QString startPort, QString endComp, QString endPort)
 {
-    Connector *item = nullptr;
-    for(int i = 0; i < mSubConnectorList.size(); ++i)
+    Connector *pFoundConnector = nullptr;
+    for(auto& pConnector : mSubConnectorList)
     {
-        if((mSubConnectorList[i]->getStartComponentName() == startComp) &&
-           (mSubConnectorList[i]->getStartPortName() == startPort) &&
-           (mSubConnectorList[i]->getEndComponentName() == endComp) &&
-           (mSubConnectorList[i]->getEndPortName() == endPort))
+        if((pConnector->getStartComponentName() == startComp) &&
+           (pConnector->getStartPortName() == startPort) &&
+           (pConnector->getEndComponentName() == endComp) &&
+           (pConnector->getEndPortName() == endPort))
         {
-            item = mSubConnectorList[i];
+            pFoundConnector = pConnector;
             break;
         }
         //Find even if the caller mixed up start and stop
-        else if((mSubConnectorList[i]->getStartComponentName() == endComp) &&
-                (mSubConnectorList[i]->getStartPortName() == endPort) &&
-                (mSubConnectorList[i]->getEndComponentName() == startComp) &&
-                (mSubConnectorList[i]->getEndPortName() == startPort))
+        else if((pConnector->getStartComponentName() == endComp) &&
+                (pConnector->getStartPortName() == endPort) &&
+                (pConnector->getEndComponentName() == startComp) &&
+                (pConnector->getEndPortName() == startPort))
         {
-            item = mSubConnectorList[i];
+            pFoundConnector = pConnector;
             break;
         }
     }
-    assert(item != nullptr);
-    return item;
+    return pFoundConnector;
 }
 
 
 //! @brief Tells whether or not there is a connector between two specified ports
 bool SystemObject::hasConnector(QString startComp, QString startPort, QString endComp, QString endPort)
 {
-    for(int i = 0; i < mSubConnectorList.size(); ++i)
-    {
-        if((mSubConnectorList[i]->getStartComponentName() == startComp) &&
-           (mSubConnectorList[i]->getStartPortName() == startPort) &&
-           (mSubConnectorList[i]->getEndComponentName() == endComp) &&
-           (mSubConnectorList[i]->getEndPortName() == endPort))
-        {
-            return true;
-        }
-        //Find even if the caller mixed up start and stop
-        else if((mSubConnectorList[i]->getStartComponentName() == endComp) &&
-                (mSubConnectorList[i]->getStartPortName() == endPort) &&
-                (mSubConnectorList[i]->getEndComponentName() == startComp) &&
-                (mSubConnectorList[i]->getEndPortName() == startPort))
-        {
-            return true;
-        }
-    }
-    return false;
+    return (findConnector(startComp, startPort, endComp, endPort) != nullptr);
 }
 
 

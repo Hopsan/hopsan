@@ -109,7 +109,7 @@ public:
     void registerDeletedObject(ModelObject *item);
     void registerDeletedConnector(Connector *item);
     void registerAddedObject(ModelObject *item);
-    void registerAddedConnector(Connector *item);
+    void registerAddedConnector(Connector *pConnector);
     void registerRenameObject(QString oldName, QString newName);
     void registerModifiedConnector(QPointF oldPos, QPointF newPos, Connector *item, int lineNumber);
     void registerMovedObject(QPointF oldPos, QPointF newPos, QString objectName);
