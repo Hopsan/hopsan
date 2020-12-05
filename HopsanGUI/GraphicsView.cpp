@@ -692,7 +692,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     {
         mLeftMouseButtonPressed = (event->button() == Qt::LeftButton);
 
-        qDebug() << "GraphicsView::mousePressEvent(), pos: " << this->mapToScene(this->mapFromGlobal(QCursor::pos()));
+        QPointF viewPos = mapFromGlobal(QCursor::pos());
 
         // No rubber band during connecting:
         if (mpContainerObject->isCreatingConnector())
@@ -702,7 +702,13 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         else if(mCtrlKeyPressed)
         {
             hideAddComponentLineEdit();
-            this->setDragMode(ScrollHandDrag);
+            // Only enable drag mode when left clicking and not clicking on a workspace object
+            if (mLeftMouseButtonPressed && (itemAt(viewPos.toPoint()) == nullptr)) {
+                this->setDragMode(ScrollHandDrag);
+            }
+            else {
+                this->setDragMode(NoDrag);
+            }
         }
         else
         {
