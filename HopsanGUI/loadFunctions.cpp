@@ -255,26 +255,28 @@ void loadStartValue(QDomElement &rDomElement, ModelObject* pObject, UndoStatusEn
 }
 
 
-//! @brief Loads a ModelObject from the supplied load data
-//! @param[in] rData The ModelObjectLoadData to load from
-//! @param[in] pLibrary a pointer to the library widget which holds appearance data
-//! @param[in] pContainer The Container Object to load into
+//! @brief Loads a ModelObject from the supplied XML DOM element
+//! @param[in] domElement The ModelObjectLoadData to load from
+//! @param[in] pSystem The System object to load into
 //! @param[in] undoSettings Whether or not to register undo for the operation
-ModelObject* loadModelObject(QDomElement &rDomElement, SystemObject* pContainer, UndoStatusEnumT undoSettings)
+ModelObject* loadModelObject(const QDomElement &domElement, SystemObject* pSystem, UndoStatusEnumT undoSettings)
 {
+    // Clone the data since local modifications will be made
+    QDomElement loadDomElement = domElement.cloneNode().toElement();
+
     //Read core specific data
-    QString type = rDomElement.attribute(HMF_TYPENAME);
-    QString subtype = rDomElement.attribute(HMF_SUBTYPENAME);
-    QString name = rDomElement.attribute(HMF_NAMETAG);
-    bool locked = parseAttributeBool(rDomElement, HMF_LOCKEDTAG, false);
-    bool disabled = parseAttributeBool(rDomElement, HMF_DISABLEDTAG, false);
+    QString type = loadDomElement.attribute(HMF_TYPENAME);
+    QString subtype = loadDomElement.attribute(HMF_SUBTYPENAME);
+    QString name = loadDomElement.attribute(HMF_NAMETAG);
+    bool locked = parseAttributeBool(loadDomElement, HMF_LOCKEDTAG, false);
+    bool disabled = parseAttributeBool(loadDomElement, HMF_DISABLEDTAG, false);
 
 
     //Read gui specific data
     double posX, posY, target_rotation;
     bool isFlipped;
 
-    QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
+    QDomElement guiData = loadDomElement.firstChildElement(HMF_HOPSANGUITAG);
     parsePoseTag(guiData.firstChildElement(HMF_POSETAG), posX, posY, target_rotation, isFlipped);
     target_rotation = normDeg360(target_rotation); //Make sure target rotation between 0 and 359.999
 
@@ -295,7 +297,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, SystemObject* pContainer,
         appearanceData.setDisplayName(name);
 
         NameVisibilityEnumT nameStatus;
-        if(pContainer->areSubComponentNamesShown())
+        if(pSystem->areSubComponentNamesShown())
         {
             nameStatus = NameVisible;
         }
@@ -304,10 +306,11 @@ ModelObject* loadModelObject(QDomElement &rDomElement, SystemObject* pContainer,
             nameStatus = NameNotVisible;
         }
 
-        ModelObject* pObj = pContainer->addModelObject(&appearanceData, QPointF(posX, posY), 0, Deselected, nameStatus, undoSettings);
+        ModelObject* pObj = pSystem->addModelObject(&appearanceData, QPointF(posX, posY), 0, Deselected, nameStatus, undoSettings);
         pObj->setNameTextPos(nameTextPos);
         pObj->setNameTextAlwaysVisible(nameTextVisible);
         pObj->setSubTypeName(subtype); //!< @todo is this really needed
+        loadDomElement.setAttribute(HMF_NAMETAG, pObj->getName()); // Update name in load data to avoid additional rename
 
         //First set flip (before rotate, Important!)
         //! @todo For now If flipped than we need to rotate in wrong direction also, saving saves flipped rotation angle i think but changing save and load would cause old models to load incorrectly
@@ -322,19 +325,19 @@ ModelObject* loadModelObject(QDomElement &rDomElement, SystemObject* pContainer,
         }
 
         //Read system specific core and gui data
-        if (rDomElement.tagName() == HMF_SYSTEMTAG)
+        if (loadDomElement.tagName() == HMF_SYSTEMTAG)
         {
             //Check if we should load an embedded or external system
             QString externalFilePath = appearanceData.getBasePath()+"/"+appearanceData.getHmfFile();
             if(!QFile::exists(externalFilePath) || appearanceData.getSubTypeName().isEmpty())
             {
-                externalFilePath = rDomElement.attribute(HMF_EXTERNALPATHTAG);
+                externalFilePath = loadDomElement.attribute(HMF_EXTERNALPATHTAG);
             }
             if (externalFilePath.isEmpty())
             {
                 //Load embedded system
-                pObj->getAppearanceData()->setBasePath(pContainer->getAppearanceData()->getBasePath()); // Set the basepath for relative icon paths
-                pObj->loadFromDomElement(rDomElement);
+                pObj->getAppearanceData()->setBasePath(pSystem->getAppearanceData()->getBasePath()); // Set the basepath for relative icon paths
+                pObj->loadFromDomElement(loadDomElement);
             }
             else
             {
@@ -342,9 +345,9 @@ ModelObject* loadModelObject(QDomElement &rDomElement, SystemObject* pContainer,
                 QFileInfo extFileInfo(externalFilePath);
                 if(!extFileInfo.exists())
                 {
-                    if (!extFileInfo.isAbsolute() && !pContainer->getModelPath().isEmpty())
+                    if (!extFileInfo.isAbsolute() && !pSystem->getModelPath().isEmpty())
                     {
-                        externalFilePath = pContainer->getModelPath() + "/" + externalFilePath;
+                        externalFilePath = pSystem->getModelPath() + "/" + externalFilePath;
                         // Update extFileInfo with full path
                         extFileInfo.setFile(externalFilePath);
                     }
@@ -362,7 +365,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, SystemObject* pContainer,
                     QDomElement externalRoot = loadXMLDomDocument(externalModelFile, domDocument, HMF_ROOTTAG);
                     QDomElement externalSystemRoot = externalRoot.firstChildElement(HMF_SYSTEMTAG);
                     //! @todo set the modefile info, maybe we should have built in helpfunction for loading directly from file in System
-                    pObj->setModelFileInfo(externalModelFile, rDomElement.attribute(HMF_EXTERNALPATHTAG));
+                    pObj->setModelFileInfo(externalModelFile, loadDomElement.attribute(HMF_EXTERNALPATHTAG));
                     pObj->getAppearanceData()->setBasePath(extFileInfo.absolutePath()); // Set the basepath for relative icon paths
                     pObj->loadFromDomElement(externalSystemRoot);
                     //! @todo this code is duplicated with the one in system->loadfromdomelement (external code) that code will never run, as this will take care of it. When we have embedded subsystems will will need to fix this
@@ -374,7 +377,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, SystemObject* pContainer,
                     }
 
                     // Now load all overwritten parameters
-                    QDomElement xmlParameters = rDomElement.firstChildElement(HMF_PARAMETERS);
+                    QDomElement xmlParameters = loadDomElement.firstChildElement(HMF_PARAMETERS);
                     QDomElement xmlParameter = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
                     while (!xmlParameter.isNull())
                     {
@@ -394,7 +397,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, SystemObject* pContainer,
         {
             //! @todo maybe this parameter load code and the one for external systems above could be the same
             //Load parameter values
-            QDomElement xmlParameters = rDomElement.firstChildElement(HMF_PARAMETERS);
+            QDomElement xmlParameters = loadDomElement.firstChildElement(HMF_PARAMETERS);
             QDomElement xmlParameter = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
             while (!xmlParameter.isNull())
             {
@@ -403,7 +406,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, SystemObject* pContainer,
             }
 
             // Load any custom signal quantities
-            QDomElement portTag = rDomElement.firstChildElement(HMF_PORTSTAG).firstChildElement(HMF_PORTTAG);
+            QDomElement portTag = loadDomElement.firstChildElement(HMF_PORTSTAG).firstChildElement(HMF_PORTTAG);
             while (!portTag.isNull())
             {
                 QString q = portTag.attribute("signalquantity");
@@ -416,7 +419,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, SystemObject* pContainer,
 
 
             // Load component specific override port data, and dynamic parameter port positions
-            QDomElement cafMoStuff = rDomElement.firstChildElement(HMF_HOPSANGUITAG).firstChildElement(CAF_ROOT).firstChildElement(CAF_MODELOBJECT);
+            QDomElement cafMoStuff = loadDomElement.firstChildElement(HMF_HOPSANGUITAG).firstChildElement(CAF_ROOT).firstChildElement(CAF_MODELOBJECT);
             if (!cafMoStuff.isNull())
             {
                 //We read all model object appearance data in the hmf to get the ports
@@ -443,7 +446,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, SystemObject* pContainer,
             }
 
             // Load any custom set parameter scales
-            QDomElement paramscale = rDomElement.firstChildElement(HMF_HOPSANGUITAG).firstChildElement(HMF_PARAMETERSCALES).firstChildElement(HMF_PARAMETERSCALE);
+            QDomElement paramscale = loadDomElement.firstChildElement(HMF_HOPSANGUITAG).firstChildElement(HMF_PARAMETERSCALES).firstChildElement(HMF_PARAMETERSCALE);
             while (!paramscale.isNull())
             {
                 QString quantity = paramscale.attribute(HMF_PARAMETERSCALEQUANTITY);
@@ -472,7 +475,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, SystemObject* pContainer,
             }
 
             // Load any custom variable plot settings
-            QDomElement plotsetting = rDomElement.firstChildElement(HMF_HOPSANGUITAG).firstChildElement(HMF_VARIABLEPLOTSETTINGS).firstChildElement(HMF_VARIABLEPLOTSETTING);
+            QDomElement plotsetting = loadDomElement.firstChildElement(HMF_HOPSANGUITAG).firstChildElement(HMF_VARIABLEPLOTSETTINGS).firstChildElement(HMF_VARIABLEPLOTSETTING);
             while (!plotsetting.isNull())
             {
                 QString name = plotsetting.attribute("name");

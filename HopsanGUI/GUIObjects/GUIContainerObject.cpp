@@ -1631,7 +1631,10 @@ void SystemObject::paste(CopyStack *xmlStack)
             if (pObj) {
                 // Apply offset to pasted object
                 pObj->moveBy(offset.x(), offset.y());
-                renameMap.insert(objectElement.attribute(HMF_NAMETAG), pObj->getName());
+                // Map renamed components
+                const QString desiredName = objectElement.attribute(HMF_NAMETAG);
+                const QString actualNameAfterLoad = pObj->getName();
+                renameMap.insert(desiredName, actualNameAfterLoad);
                 didPaste = true;
             }
             objectElement = objectElement.nextSiblingElement(tagName);
@@ -1649,7 +1652,10 @@ void SystemObject::paste(CopyStack *xmlStack)
         if (pObj) {
             // Apply offset to pasted object
             pObj->moveBy(offset.x(), offset.y());
-            renameMap.insert(systemPortElement.attribute(HMF_NAMETAG), pObj->getName());
+            // Map renamed components
+            const QString desiredName = systemPortElement.attribute(HMF_NAMETAG);
+            const QString actualNameAfterLoad = pObj->getName();
+            renameMap.insert(desiredName, actualNameAfterLoad);
             didPaste = true;
         }
         systemPortElement = systemPortElement.nextSiblingElement(HMF_SYSTEMPORTTAG);
