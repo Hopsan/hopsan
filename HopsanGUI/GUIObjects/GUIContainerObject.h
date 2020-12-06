@@ -150,7 +150,7 @@ public:
     QStringList getSystemNameHieararchy() const override;
 
     void hasChanged();
-    ModelWidget *mpModelWidget;  //!< @todo not public
+    ModelWidget *mpModelWidget = nullptr;  //!< @todo not public
 
     //Signal/slot connection methods
     virtual void makeMainWindowConnectionsAndRefresh();

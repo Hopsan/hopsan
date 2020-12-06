@@ -413,10 +413,15 @@ bool WorkspaceObject::isLocallyLocked() const
 
 LocklevelEnumT WorkspaceObject::getModelLockLevel() const
 {
-    if (mpParentSystemObject && mpParentSystemObject->mpModelWidget)
-    {
-        return mpParentSystemObject->mpModelWidget->getCurrentLockLevel();
+    auto* pSystem = qobject_cast<const SystemObject*>(this);
+    if((pSystem == nullptr) && mpParentSystemObject) {
+        pSystem = mpParentSystemObject;
     }
+
+    if (pSystem && pSystem->mpModelWidget) {
+        return pSystem->mpModelWidget->getCurrentLockLevel();
+    }
+
     return NotLocked;
 }
 
