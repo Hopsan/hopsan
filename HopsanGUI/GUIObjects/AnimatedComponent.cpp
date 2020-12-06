@@ -800,10 +800,10 @@ void AnimatedComponent::limitMovables()
 //! @param [in] rotation Initial rotation of icon
 //! @param [in] pAppearanceData Pointer to appearance data object
 //! @param [in] pAnimatedComponent Pointer to animated component icon belongs to
-//! @param [in] pParentContainer Pointer to container object animation is showing
+//! @param [in] pParentSystem Pointer to container object animation is showing
 //! @param [in] pParent Parent object (QGraphicsItem), used for the coordinate system
-AnimatedIcon::AnimatedIcon(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, AnimatedComponent *pAnimatedComponent, SystemObject *pParentContainer, int idx, QGraphicsItem *pParent)
-        : WorkspaceObject(position, rotation, Deselected, pParentContainer, pParent)
+AnimatedIcon::AnimatedIcon(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, AnimatedComponent *pAnimatedComponent, SystemObject *pParentSystem, int idx, QGraphicsItem *pParent)
+        : WorkspaceObject(position, rotation, Deselected, pParentSystem, pParent)
 {
     //Store original position
     mPreviousPos = position;

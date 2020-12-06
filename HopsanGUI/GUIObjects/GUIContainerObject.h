@@ -133,7 +133,7 @@ class SystemObject : public ModelObject
     Q_OBJECT
 public:
     enum ContainerEdgeEnumT {RightEdge, BottomEdge, LeftEdge, TopEdge};
-    SystemObject(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics, SystemObject *pParentContainer=0, QGraphicsItem *pParent=0);
+    SystemObject(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics, SystemObject *pParentSystem=0, QGraphicsItem *pParent=0);
     SystemObject(ModelWidget *parentModelWidget, QGraphicsItem *pParentGraphicsItem);
     virtual ~SystemObject();
 
@@ -432,10 +432,10 @@ protected:
     //virtual void openPropertiesDialog();
     void clearContents();
     void forgetSubConnector(Connector *pConnector);
-    void refreshInternalContainerPortGraphics();
+    void refreshInternalSystemPortGraphics();
 
-    //Help function for creating container ports
-    virtual void addExternalContainerPortObject(ModelObject *pModelObject);
+    //Help function for creating system ports
+    virtual void addExternalSystemPortObject(ModelObject *pModelObject);
 
     QDomElement saveGuiDataToDomElement(QDomElement &rDomElement) override;
     void saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel) override;

@@ -52,8 +52,8 @@
 #include "LibraryHandler.h"
 
 
-Component::Component(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, SystemObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
-    : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
+Component::Component(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, SystemObject *pParentSystem, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
+    : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentSystem, pParentSystem)
 {
     // Create the object in core, and get its default core name
     mName = mpParentSystemObject->getCoreSystemAccessPtr()->createComponent(mModelObjectAppearance.getTypeName(), mModelObjectAppearance.getDisplayName());
@@ -174,7 +174,7 @@ void Component::loadParameterValuesFromFile(QString parameterFile)
         gpConfig->setStringSetting(CFG_LOADMODELDIR,  QFileInfo(parameterFile).absolutePath());
     }
 #if QT_VERSION_MAJOR < 5
-    QMetaObject::invokeMethod(mpParentContainerObject,"checkMessages");
+    QMetaObject::invokeMethod(mpParentSystemObject,"checkMessages");
 #else
     emit mpParentSystemObject->checkMessages();
 #endif
@@ -415,8 +415,8 @@ void ScopeComponent::flipHorizontal(UndoStatusEnumT undoSettings)
 
 
 
-ScopeComponent::ScopeComponent(QPointF position, double rotation, ModelObjectAppearance *pAppearanceData, SystemObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
-    : Component(position, rotation, pAppearanceData, pParentContainer, startSelected, gfxType)
+ScopeComponent::ScopeComponent(QPointF position, double rotation, ModelObjectAppearance *pAppearanceData, SystemObject *pParentSystem, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
+    : Component(position, rotation, pAppearanceData, pParentSystem, startSelected, gfxType)
 {
     // Nothing special
 }

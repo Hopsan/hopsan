@@ -1399,7 +1399,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                     bool existsInCore = true;
                     const QString typeName = pAppearanceData->getTypeName();
                     // Do not check in case it is a Subsystem or SystemPort
-                    if( !((typeName==HOPSANGUISYSTEMTYPENAME) || (typeName==HOPSANGUICONDITIONALSYSTEMTYPENAME) || (typeName==HOPSANGUICONTAINERPORTTYPENAME)) ) {
+                    if( !((typeName==HOPSANGUISYSTEMTYPENAME) || (typeName==HOPSANGUICONDITIONALSYSTEMTYPENAME) || (typeName==HOPSANGUISYSTEMPORTTYPENAME)) ) {
                         //! @todo maybe they should be reserved in hopsan core instead, then we could aske the core if the exist
                         // Check so that there is such a component available in the Core, or if the component points to an external model file
                         existsInCore = coreAccess.hasComponent(typeName) || !pAppearanceData->getHmfFile().isEmpty();

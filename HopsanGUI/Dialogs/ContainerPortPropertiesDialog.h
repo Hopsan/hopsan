@@ -39,17 +39,17 @@
 #include <QLineEdit>
 
 //Forward Declaration
-class ContainerPort;
+class SystemPortObject;
 
-class ContainerPortPropertiesDialog : public QDialog
+class SystemPortPropertiesDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    ContainerPortPropertiesDialog(ContainerPort *pContainerPort, QWidget *pParentWidget=0);
+    SystemPortPropertiesDialog(SystemPortObject *pSystemPort, QWidget *pParentWidget=0);
 
 private:
-    ContainerPort *mpContainerPort;
+    SystemPortObject *mpSystemPort;
     QLineEdit *mpNameEdit;
 
 private slots:

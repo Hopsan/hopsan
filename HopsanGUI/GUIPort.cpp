@@ -609,11 +609,11 @@ void Port::refreshPortGraphics()
         QString cqsType;
         if (getPortType() == "SystemPortType")
         {
-            if (getParentModelObject()->getTypeName() == HOPSANGUICONTAINERPORTTYPENAME)
+            if (getParentModelObject()->getTypeName() == HOPSANGUISYSTEMPORTTYPENAME)
             {
                 int_ext_act = CoreSystemAccess::ExternalPortType;
 
-                //If we are port in containerport model object then ask our parent system model object about cqs-type
+                //If we are port in systemport model object then ask our parent system model object about cqs-type
                 cqsType = getParentContainerObject()->getTypeCQS();
 
                 //Don't show cqs type internally, it will become confusing, only show question marks if undefined

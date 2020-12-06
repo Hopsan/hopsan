@@ -1214,7 +1214,7 @@ bool LogDataHandler2::collectLogDataFromSystem(SystemObject *pCurrentSystem, con
     foreach(ModelObject* pModelObject, currentLevelModelObjects)
     {
         // Ignore "system port model objects" they are not actually a component and will be listed anyway
-        if (pModelObject->getTypeName() == HOPSANGUICONTAINERPORTTYPENAME)
+        if (pModelObject->getTypeName() == HOPSANGUISYSTEMPORTTYPENAME)
         {
             continue;
         }

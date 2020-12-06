@@ -47,7 +47,7 @@ class TextBoxWidget;
 
 ModelObject* loadModelObject(const QDomElement &domElement, SystemObject* pSystem, UndoStatusEnumT undoSettings=Undo);
 
-ModelObject* loadContainerPortObject(QDomElement &rDomElement, SystemObject* pContainer, UndoStatusEnumT undoSettings=Undo);
+ModelObject* loadSystemPortObject(QDomElement &rDomElement, SystemObject* pSystem, UndoStatusEnumT undoSettings=Undo);
 
 bool loadConnector(QDomElement &rDomElement, SystemObject* pContainer, UndoStatusEnumT undoSettings=Undo);
 

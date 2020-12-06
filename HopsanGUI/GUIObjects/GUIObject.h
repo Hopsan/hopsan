@@ -45,14 +45,14 @@ class WorkspaceObjectSelectionBox;
 class SystemObject;
 
 enum WorkspaceObjectEnumT {WorkspaceObjectType=QGraphicsItem::UserType+1, WidgetType, ModelObjectType, SystemObjectType, ComponentType, ScopeComponentType,
-                           ContainerPortType, AnimatedObjectType};
+                           SystemPortObjectType, AnimatedObjectType};
 
 class WorkspaceObject : public QGraphicsWidget
 {
     Q_OBJECT
 
 public:
-    WorkspaceObject(QPointF pos, double rot, SelectionStatusEnumT=Deselected, SystemObject *pParentContainer=0, QGraphicsItem *pParent=0);
+    WorkspaceObject(QPointF pos, double rot, SelectionStatusEnumT=Deselected, SystemObject *pParentSystem=0, QGraphicsItem *pParent=0);
 
     virtual void setParentSystemObject(SystemObject *pParentSystem);
     virtual SystemObject *getParentSystemObject();

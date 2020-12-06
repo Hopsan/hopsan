@@ -240,11 +240,11 @@ QString UndoWidget::translateTag(QString tag)
     tagMap.insert(UNDO_MOVEDMULTIPLEWIDGETS,    "Moved Widgets");
     tagMap.insert(UNDO_ALIGNX,                  "Align Vertical");
     tagMap.insert(UNDO_ALIGNY,                  "Align Horizontal");
-    tagMap.insert(UNDO_DISTRIBUTEX,             "Disribute Horizontally");
-    tagMap.insert(UNDO_DISTRIBUTEY,             "Disribute Vertically");
-    tagMap.insert(UNDO_DELETEDCONTAINERPORT,    "Deleted Container Port");
+    tagMap.insert(UNDO_DISTRIBUTEX,             "Distribute Horizontally");
+    tagMap.insert(UNDO_DISTRIBUTEY,             "Distribute Vertically");
+    tagMap.insert(UNDO_DELETEDSYSTEMPORT,       "Deleted System Port");
     tagMap.insert(UNDO_DELETEDSUBSYSTEM,        "Deleted Subsystem");
-    tagMap.insert(UNDO_ADDEDCONTAINERPORT,      "Added Containerport");
+    tagMap.insert(UNDO_ADDEDSYSTEMPORT,         "Added System Port");
     tagMap.insert(UNDO_ADDEDSUBSYSTEM,          "Added Subsystem");
     tagMap.insert(UNDO_MOVEDCONNECTOR,          "Moved Connector");
     tagMap.insert(UNDO_CHANGEDPARAMETER,        "Changed Parameter");

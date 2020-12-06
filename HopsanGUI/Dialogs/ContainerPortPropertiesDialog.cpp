@@ -48,10 +48,10 @@
 //! @brief Constructor for the container properties dialog
 //! @param[in] pContainerObject Pointer to the container
 //! @param[in] pParentWidget Pointer to the parent widget
-ContainerPortPropertiesDialog::ContainerPortPropertiesDialog(ContainerPort *pContainerPort, QWidget *pParentWidget)
+SystemPortPropertiesDialog::SystemPortPropertiesDialog(SystemPortObject *pSystemPort, QWidget *pParentWidget)
     : QDialog(pParentWidget)
 {
-    mpContainerPort = pContainerPort;
+    mpSystemPort = pSystemPort;
 
         //Set the name and size of the main window
     this->resize(10,10);        //Make very small initially, so it can expand when contents are added
@@ -65,7 +65,7 @@ ContainerPortPropertiesDialog::ContainerPortPropertiesDialog(ContainerPort *pCon
         //Name edit
     QHBoxLayout *pNameLayout = new QHBoxLayout();
     QLabel *pNameLabel = new QLabel("Name: ", this);
-    mpNameEdit = new QLineEdit(mpContainerPort->getName(), this);
+    mpNameEdit = new QLineEdit(mpSystemPort->getName(), this);
     pNameLayout->addWidget(pNameLabel);
     pNameLayout->addWidget(mpNameEdit);
     pMainLayout->addLayout(pNameLayout);
@@ -90,8 +90,8 @@ ContainerPortPropertiesDialog::ContainerPortPropertiesDialog(ContainerPort *pCon
 
 
 //! @brief Updates settings according to the selected values
-void ContainerPortPropertiesDialog::setValues()
+void SystemPortPropertiesDialog::setValues()
 {
-    mpContainerPort->getParentSystemObject()->renameModelObject(mpContainerPort->getName(), mpNameEdit->text());
+    mpSystemPort->getParentSystemObject()->renameModelObject(mpSystemPort->getName(), mpNameEdit->text());
     this->accept();
 }

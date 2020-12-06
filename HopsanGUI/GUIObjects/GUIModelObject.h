@@ -56,7 +56,7 @@ public:
     virtual ~ModelObject();
     virtual void deleteInHopsanCore();
 
-    virtual void setParentSystemObject(SystemObject *pParentContainer) override;
+    virtual void setParentSystemObject(SystemObject *pParentSystem) override;
 
     QStringList getParentSystemNameHieararchy() const;
     virtual QStringList getSystemNameHieararchy() const;

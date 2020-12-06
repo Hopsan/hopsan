@@ -36,12 +36,12 @@
 
 #include "GUIModelObject.h"
 
-class ContainerPort : public ModelObject
+class SystemPortObject : public ModelObject
 {
     Q_OBJECT
 public:
-    ContainerPort(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, SystemObject *pParentContainer,
-                  SelectionStatusEnumT startSelected = Selected, GraphicsTypeEnumT gfxType = UserGraphics);
+    SystemPortObject(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, SystemObject *pParentSystem,
+                     SelectionStatusEnumT startSelected = Selected, GraphicsTypeEnumT gfxType = UserGraphics);
     void deleteInHopsanCore() override;
     QString getTypeName() const override;
     void refreshDisplayName(QString overrideName="") override;

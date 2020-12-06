@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="HopsanGUIContainerPort" displayname="SystemPort">
+    <modelobject typename="HopsanGUISystemPort" displayname="SystemPort">
         <icons>
-            <icon scale="1" path="containerport.svg" iconrotation="ON" type="defaultmissing"/>
+            <icon scale="1" path="systemportobject.svg" iconrotation="ON" type="defaultmissing"/>
         </icons>
         <ports>
             <port x="0.5" y="0.5" a="0" name="sysp"/>

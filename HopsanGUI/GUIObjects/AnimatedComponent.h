@@ -135,7 +135,7 @@ class AnimatedIcon : public WorkspaceObject
     friend class AnimatedComponent;
 
 public:
-    AnimatedIcon(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, AnimatedComponent *pAnimatedComponent=0, SystemObject *pParentContainer=0, int idx=-1, QGraphicsItem *pParent=0);
+    AnimatedIcon(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, AnimatedComponent *pAnimatedComponent=0, SystemObject *pParentSystem=0, int idx=-1, QGraphicsItem *pParent=0);
 
     virtual void loadFromDomElement(QDomElement domElement) override;
     virtual void saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel) override;

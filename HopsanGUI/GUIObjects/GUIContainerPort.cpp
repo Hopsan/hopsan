@@ -37,15 +37,15 @@
 #include "GUIPort.h"
 #include "Dialogs/ContainerPortPropertiesDialog.h"
 
-ContainerPort::ContainerPort(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, SystemObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
-        : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
+SystemPortObject::SystemPortObject(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, SystemObject *pParentSystem, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
+        : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentSystem, pParentSystem)
 {
     // Sets the ports
     createPorts();
     refreshDisplayName();
 }
 
-void ContainerPort::deleteInHopsanCore()
+void SystemPortObject::deleteInHopsanCore()
 {
     if (isSystemPort())
     {
@@ -58,7 +58,7 @@ void ContainerPort::deleteInHopsanCore()
 }
 
 //! @brief Help function to create ports in the SystemPort Object when it is created
-void ContainerPort::createPorts()
+void SystemPortObject::createPorts()
 {
     //A system port only contains one port, which should be first in the map, ignore any others (should not be any more)
     PortAppearanceMapT::iterator i = mModelObjectAppearance.getPortAppearanceMap().begin();
@@ -92,14 +92,14 @@ void ContainerPort::createPorts()
 
 
 //! Returns a string with the GUIObject type.
-QString ContainerPort::getTypeName() const
+QString SystemPortObject::getTypeName() const
 {
-    return HOPSANGUICONTAINERPORTTYPENAME;
+    return HOPSANGUISYSTEMPORTTYPENAME;
 }
 
 //! @brief Refreshes the displayed name from the actual name
 //! @param [in] overrideName If this is non empty the name of the component in the gui will be forced to a specific value. DONT USE THIS UNLESS YOU HAVE TO
-void ContainerPort::refreshDisplayName(QString overrideName)
+void SystemPortObject::refreshDisplayName(QString overrideName)
 {
     ModelObject::refreshDisplayName(overrideName);
     mPortListPtrs[0]->setDisplayName(mName);
@@ -107,34 +107,34 @@ void ContainerPort::refreshDisplayName(QString overrideName)
 
 
 //! @brief Opens the properties dialog
-void ContainerPort::openPropertiesDialog()
+void SystemPortObject::openPropertiesDialog()
 {
-    ContainerPortPropertiesDialog *pDialog = new ContainerPortPropertiesDialog(this, gpMainWindowWidget);
+    SystemPortPropertiesDialog *pDialog = new SystemPortPropertiesDialog(this, gpMainWindowWidget);
     pDialog->exec();
     pDialog->deleteLater();
 }
 
 
 //! @brief Event when double clicking on container port icon.
-void ContainerPort::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+void SystemPortObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsWidget::mouseDoubleClickEvent(event);
     openPropertiesDialog();
 }
 
 
-int ContainerPort::type() const
+int SystemPortObject::type() const
 {
-    return ContainerPortType;
+    return SystemPortObjectType;
 }
 
-QString ContainerPort::getHmfTagName() const
+QString SystemPortObject::getHmfTagName() const
 {
     return HMF_SYSTEMPORTTAG;
 }
 
 //! @brief Check if this is a system port (a container port belonging to a system)
-bool ContainerPort::isSystemPort() const
+bool SystemPortObject::isSystemPort() const
 {
     return (mpParentSystemObject->type() == SystemObjectType);
 }

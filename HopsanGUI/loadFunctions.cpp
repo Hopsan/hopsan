@@ -512,12 +512,12 @@ ModelObject* loadModelObject(const QDomElement &domElement, SystemObject* pSyste
 
 
 
-//! @brief Loads a containerport object from a xml dom element
-ModelObject* loadContainerPortObject(QDomElement &rDomElement, SystemObject* pContainer, UndoStatusEnumT undoSettings)
+//! @brief Loads a systemport object from a xml dom element
+ModelObject* loadSystemPortObject(QDomElement &rDomElement, SystemObject* pSystem, UndoStatusEnumT undoSettings)
 {
     //! @todo this does not feel right should try to avoid it maybe
-    rDomElement.setAttribute(HMF_TYPENAME, HOPSANGUICONTAINERPORTTYPENAME); //Set the typename for the gui, or overwrite if anything was actually given in the HMF file (should not be)
-    return loadModelObject(rDomElement, pContainer, undoSettings); //We use the loadGUIModelObject function as it does what is needed
+    rDomElement.setAttribute(HMF_TYPENAME, HOPSANGUISYSTEMPORTTYPENAME); //Set the typename for the gui, or overwrite if anything was actually given in the HMF file
+    return loadModelObject(rDomElement, pSystem, undoSettings); //We use the loadGUIModelObject function as it does what is needed
 }
 
 //! @brief Loads a SystemParameter from the supplied load data

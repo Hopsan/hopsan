@@ -53,12 +53,12 @@ class UndoStack;
 
 //! @brief Constructor for creation of empty non connected connector
 //! @param [in] startPort The initial port the connector
-//! @param [in] pParentContainer The parent container object who ones this connector
-Connector::Connector(SystemObject *pParentContainer)
+//! @param [in] pParentSystem The parent container object who ones this connector
+Connector::Connector(SystemObject *pParentSystem)
         : QGraphicsWidget()
 {
     // Init members
-    mpParentContainerObject = 0;
+    mpParentSystemObject = 0;
     mpStartPort = 0;
     mpEndPort = 0;
 
@@ -70,13 +70,13 @@ Connector::Connector(SystemObject *pParentContainer)
     mIsActive = false;
 
     // Set parent
-    this->setParentContainer(pParentContainer);
+    this->setParentContainer(pParentSystem);
 
     // Add this item to the correct scene, which should also set the QtParent, the scene own the qt object
-    mpParentContainerObject->getContainedScenePtr()->addItem(this);
+    mpParentSystemObject->getContainedScenePtr()->addItem(this);
 
     // Determine initial appearance
-    mpConnectorAppearance = new ConnectorAppearance("Undefined", mpParentContainerObject->getGfxType());
+    mpConnectorAppearance = new ConnectorAppearance("Undefined", mpParentSystemObject->getGfxType());
 }
 
 
@@ -101,12 +101,12 @@ Connector::~Connector()
 
 //Connector *Connector::createDummyCopy()
 //{
-//    Connector* pTempConnector = new Connector(mpParentContainerObject);
+//    Connector* pTempConnector = new Connector(mpParentSystemObject);
 
 //    pTempConnector->setStartPort(mpStartPort);
 //    pTempConnector->setEndPort(mpEndPort);
-//    pTempConnector->setParentContainer(mpParentContainerObject);
-//    mpParentContainerObject->rememberSubConnector(pTempConnector);
+//    pTempConnector->setParentContainer(mpParentSystemObject);
+//    mpParentSystemObject->rememberSubConnector(pTempConnector);
 //    //pTempConnector->setConnected();
 
 //    //Convert geometry vector to string list (because setPointAndGeometries wants strings)
@@ -145,25 +145,25 @@ void Connector::connectPortSigSlots(Port* pPort)
     }
 }
 
-void Connector::setParentContainer(SystemObject *pParentContainer)
+void Connector::setParentContainer(SystemObject *pParentSystem)
 {
-    if (mpParentContainerObject)
+    if (mpParentSystemObject)
     {
         //Disconnect all old sigslot connections
-        disconnect(mpParentContainerObject, SIGNAL(selectAllConnectors()),          this, SLOT(select()));
-        disconnect(mpParentContainerObject, SIGNAL(setAllGfxType(GraphicsTypeEnumT)),    this, SLOT(setIsoStyle(GraphicsTypeEnumT)));
+        disconnect(mpParentSystemObject, SIGNAL(selectAllConnectors()),          this, SLOT(select()));
+        disconnect(mpParentSystemObject, SIGNAL(setAllGfxType(GraphicsTypeEnumT)),    this, SLOT(setIsoStyle(GraphicsTypeEnumT)));
     }
 
-    mpParentContainerObject = pParentContainer;
+    mpParentSystemObject = pParentSystem;
 
     //Establish new connections
-    connect(mpParentContainerObject, SIGNAL(selectAllConnectors()),      this, SLOT(select()),                   Qt::UniqueConnection);
-    connect(mpParentContainerObject, SIGNAL(setAllGfxType(GraphicsTypeEnumT)),   this, SLOT(setIsoStyle(GraphicsTypeEnumT)),  Qt::UniqueConnection);
+    connect(mpParentSystemObject, SIGNAL(selectAllConnectors()),      this, SLOT(select()),                   Qt::UniqueConnection);
+    connect(mpParentSystemObject, SIGNAL(setAllGfxType(GraphicsTypeEnumT)),   this, SLOT(setIsoStyle(GraphicsTypeEnumT)),  Qt::UniqueConnection);
 }
 
 SystemObject *Connector::getParentContainer()
 {
-    return mpParentContainerObject;
+    return mpParentSystemObject;
 }
 
 
@@ -329,7 +329,7 @@ void Connector::finishCreation()
             }
             this->determineAppearance();    //Figure out which connector appearance to use
             this->drawConnector();
-            mpParentContainerObject->mpModelWidget->getGraphicsView()->updateViewPort();
+            mpParentSystemObject->mpModelWidget->getGraphicsView()->updateViewPort();
         }
 
         // Make sure the end point of the connector is the center position of the end port
@@ -373,7 +373,7 @@ void Connector::finishCreation()
         // Connect show/hide signal-stuff signalto the connector if any of the components are signal components
         if(mpStartPort->getParentModelObject()->getTypeCQS() == "S" || mpEndPort->getParentModelObject()->getTypeCQS() == "S")
         {
-            connect(mpParentContainerObject, SIGNAL(showOrHideSignals(bool)), this, SLOT(setVisible(bool)), Qt::UniqueConnection);
+            connect(mpParentSystemObject, SIGNAL(showOrHideSignals(bool)), this, SLOT(setVisible(bool)), Qt::UniqueConnection);
         }
 
         // Hide ports; connected ports shall not be visible
@@ -585,13 +585,13 @@ void Connector::makeVolunector()
     ModelObjectAppearance *pAppearance = gpLibraryHandler->getModelObjectAppearancePtr("HydraulicVolume").data();
     if (pAppearance)
     {
-        mpVolunectorComponent = new Component(mpStartPort->pos(), 0, pAppearance, mpParentContainerObject);
+        mpVolunectorComponent = new Component(mpStartPort->pos(), 0, pAppearance, mpParentSystemObject);
 
         //Let parent container object take ownership of the hidden component
         //    QList<ModelObject*> modelObjectsList;
         //    QList<Widget*> widgetsList;
         //    modelObjectsList << mpVolunectorComponent;
-        //    mpParentContainerObject->takeOwnershipOf(modelObjectsList, widgetsList);
+        //    mpParentSystemObject->takeOwnershipOf(modelObjectsList, widgetsList);
 
         //Hide the hidden component
         mpVolunectorComponent->hide();
@@ -716,7 +716,7 @@ void Connector::drawConnector(bool alignOperation)
                 mpLines[i]->setLine(mapFromScene(mPoints[i]), mapFromScene(mPoints[i+1]));
         }
 
-        mpParentContainerObject->mpModelWidget->getGraphicsView()->updateViewPort();
+        mpParentSystemObject->mpModelWidget->getGraphicsView()->updateViewPort();
     }
 }
 
@@ -807,7 +807,7 @@ void Connector::makeDiagonal(bool enable)
         mMakingDiagonal = true;
         removePoint();
         mGeometries.back() = Diagonal;
-        mPoints.back() = mpParentContainerObject->mpModelWidget->getGraphicsView()->mapToScene(mpParentContainerObject->mpModelWidget->getGraphicsView()->mapFromGlobal(cursor.pos()));
+        mPoints.back() = mpParentSystemObject->mpModelWidget->getGraphicsView()->mapToScene(mpParentSystemObject->mpModelWidget->getGraphicsView()->mapFromGlobal(cursor.pos()));
         drawConnector();
     }
     else
@@ -838,11 +838,11 @@ void Connector::makeDiagonal(bool enable)
                 }
 
             }
-            addPoint(mpParentContainerObject->mpModelWidget->getGraphicsView()->mapToScene(mpParentContainerObject->mpModelWidget->getGraphicsView()->mapFromGlobal(cursor.pos())));
+            addPoint(mpParentSystemObject->mpModelWidget->getGraphicsView()->mapToScene(mpParentSystemObject->mpModelWidget->getGraphicsView()->mapFromGlobal(cursor.pos())));
         }
         else    //Only one (diagonal) line exist, so special solution is required
         {
-            addPoint(mpParentContainerObject->mapToScene(mpParentContainerObject->mpModelWidget->getGraphicsView()->mapFromGlobal(cursor.pos())));
+            addPoint(mpParentSystemObject->mapToScene(mpParentSystemObject->mpModelWidget->getGraphicsView()->mapFromGlobal(cursor.pos())));
             if(getStartPort()->getPortDirection() == LeftRightDirectionType)
             {
                 mGeometries[0] = Vertical;
@@ -875,10 +875,10 @@ void Connector::doSelect(bool lineSelected, int lineNumber)
     {
         if(lineSelected)
         {
-            mpParentContainerObject->rememberSelectedSubConnector(this);
-            connect(mpParentContainerObject, SIGNAL(deselectAllConnectors()), this, SLOT(deselect()));
-            disconnect(mpParentContainerObject, SIGNAL(selectAllConnectors()), this, SLOT(select()));
-            connect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+            mpParentSystemObject->rememberSelectedSubConnector(this);
+            connect(mpParentSystemObject, SIGNAL(deselectAllConnectors()), this, SLOT(deselect()));
+            disconnect(mpParentSystemObject, SIGNAL(selectAllConnectors()), this, SLOT(select()));
+            connect(mpParentSystemObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             this->setActive();
             for (int i=0; i != mpLines.size(); ++i)
             {
@@ -905,10 +905,10 @@ void Connector::doSelect(bool lineSelected, int lineNumber)
             if(noneSelected)
             {
                 this->setPassive();
-                mpParentContainerObject->forgetSelectedSubConnector(this);
-                disconnect(mpParentContainerObject, SIGNAL(deselectAllConnectors()), this, SLOT(deselect()));
-                connect(mpParentContainerObject, SIGNAL(selectAllConnectors()), this, SLOT(select()));
-                disconnect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+                mpParentSystemObject->forgetSelectedSubConnector(this);
+                disconnect(mpParentSystemObject, SIGNAL(deselectAllConnectors()), this, SLOT(deselect()));
+                connect(mpParentSystemObject, SIGNAL(selectAllConnectors()), this, SLOT(select()));
+                disconnect(mpParentSystemObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             }
         }
     }
@@ -941,7 +941,7 @@ void Connector::setColor(const QColor &rColor)
 //! @see setPassive()
 void Connector::setActive()
 {
-    connect(mpParentContainerObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
+    connect(mpParentSystemObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
     if( !isDangling() || isBroken() )
     {
         refreshPen("Active");
@@ -959,7 +959,7 @@ void Connector::setActive()
 //! @see setActive()
 void Connector::setPassive()
 {
-    disconnect(mpParentContainerObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
+    disconnect(mpParentSystemObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
     if(!isDangling() || isBroken())
     {
         mIsActive = false;
@@ -1004,9 +1004,9 @@ void Connector::setUnHovered()
 //! @brief Asks the parent system to delete the connector
 void Connector::deleteMe(UndoStatusEnumT undo)
 {
-    if (mpParentContainerObject->getModelLockLevel()==NotLocked)
+    if (mpParentSystemObject->getModelLockLevel()==NotLocked)
     {
-        mpParentContainerObject->removeSubConnector(this, undo);
+        mpParentSystemObject->removeSubConnector(this, undo);
     }
 }
 
@@ -1184,7 +1184,7 @@ void Connector::setDashed(bool value)
 
     mIsDashed=value;
     refreshPen();
-    mpParentContainerObject->mpModelWidget->hasChanged();
+    mpParentSystemObject->mpModelWidget->hasChanged();
 }
 
 
@@ -1346,16 +1346,16 @@ void ConnectorLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     if((this->pos() != mOldPos) && (event->button() == Qt::LeftButton))
     {
-        mpParentConnector->mpParentContainerObject->getUndoStackPtr()->newPost();
-        mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
-        mpParentConnector->mpParentContainerObject->getUndoStackPtr()->registerModifiedConnector(mOldPos, this->pos(), mpParentConnector, getLineNumber());
+        mpParentConnector->mpParentSystemObject->getUndoStackPtr()->newPost();
+        mpParentConnector->mpParentSystemObject->mpModelWidget->hasChanged();
+        mpParentConnector->mpParentSystemObject->getUndoStackPtr()->registerModifiedConnector(mOldPos, this->pos(), mpParentConnector, getLineNumber());
     }
     QGraphicsLineItem::mouseReleaseEvent(event);
 }
 
 void ConnectorLine::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (mpParentConnector->mpParentContainerObject->mpModelWidget->getCurrentLockLevel() == NotLocked) {
+    if (mpParentConnector->mpParentSystemObject->mpModelWidget->getCurrentLockLevel() == NotLocked) {
         QGraphicsLineItem::mouseMoveEvent(event);
     }
 }
@@ -1482,62 +1482,62 @@ void ConnectorLine::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     {
         mpParentConnector->setColor(QColor());
         mpParentConnector->setPassive();
-        mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
+        mpParentConnector->mpParentSystemObject->mpModelWidget->hasChanged();
     }
     QColor newConnectorColor = QColor();
     if(selectedAction == pBlueAction)
     {
         newConnectorColor = QColor("Blue");
         mpParentConnector->setPassive();
-        mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
+        mpParentConnector->mpParentSystemObject->mpModelWidget->hasChanged();
     }
     if(selectedAction == pRedAction)
     {
         newConnectorColor = QColor("Red");
         mpParentConnector->setPassive();
-        mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
+        mpParentConnector->mpParentSystemObject->mpModelWidget->hasChanged();
     }
     if(selectedAction == pGreenAction)
     {
         newConnectorColor = QColor("Green");
         mpParentConnector->setPassive();
-        mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
+        mpParentConnector->mpParentSystemObject->mpModelWidget->hasChanged();
     }
     if(selectedAction == pYellowAction)
     {
         newConnectorColor = QColor("Yellow");
         mpParentConnector->setPassive();
-        mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
+        mpParentConnector->mpParentSystemObject->mpModelWidget->hasChanged();
     }
     if(selectedAction == pPurpleAction)
     {
         newConnectorColor = QColor("Purple");
         mpParentConnector->setPassive();
-        mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
+        mpParentConnector->mpParentSystemObject->mpModelWidget->hasChanged();
     }
     if(selectedAction == pBrownAction)
     {
         newConnectorColor = QColor("Brown");
         mpParentConnector->setPassive();
-        mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
+        mpParentConnector->mpParentSystemObject->mpModelWidget->hasChanged();
     }
     if(selectedAction == pOrangeAction)
     {
         newConnectorColor = QColor("Orange");
         mpParentConnector->setPassive();
-        mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
+        mpParentConnector->mpParentSystemObject->mpModelWidget->hasChanged();
     }
     if(selectedAction == pPinkAction)
     {
         newConnectorColor = QColor("Pink");
         mpParentConnector->setPassive();
-        mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
+        mpParentConnector->mpParentSystemObject->mpModelWidget->hasChanged();
     }
 
     //
     if(newConnectorColor != QColor())
     {
-        QList<ModelObject*> selectedModelObjectPtrs = mpParentConnector->mpParentContainerObject->getSelectedModelObjectPtrs();
+        QList<ModelObject*> selectedModelObjectPtrs = mpParentConnector->mpParentSystemObject->getSelectedModelObjectPtrs();
         for(int i=0; i<selectedModelObjectPtrs.size(); ++i)
         {
             QList<Connector*> connectorPtrs = selectedModelObjectPtrs[i]->getConnectorPtrs();
@@ -1569,8 +1569,8 @@ void ConnectorLine::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         pOldComponent->deleteInHopsanCore();
         pOldComponent->deleteLater();
 
-        mpParentConnector->mpParentContainerObject->getCoreSystemAccessPtr()->connect(startComponent, startPort, pNewComponent->getName(), "P1");
-        mpParentConnector->mpParentContainerObject->getCoreSystemAccessPtr()->connect(pNewComponent->getName(), "P2", endComponent, endPort);
+        mpParentConnector->mpParentSystemObject->getCoreSystemAccessPtr()->connect(startComponent, startPort, pNewComponent->getName(), "P1");
+        mpParentConnector->mpParentSystemObject->getCoreSystemAccessPtr()->connect(pNewComponent->getName(), "P2", endComponent, endPort);
 
         mpParentConnector->makeVolunector(pNewComponent);
         pNewComponent->hide();
@@ -1732,10 +1732,10 @@ void ConnectorLine::setPen (const QPen &pen)
 }
 
 
-Volunector::Volunector(SystemObject *pParentContainer)
-    : Connector(pParentContainer)
+Volunector::Volunector(SystemObject *pParentSystem)
+    : Connector(pParentSystem)
 {
     //ModelObjectAppearance *pAppearance = gpLibraryHandler->getModelObjectAppearancePtr("HydraulicVolume");
-    //mpVolunectorComponent = new Component(this->center(), 0, pAppearance, pParentContainer);
+    //mpVolunectorComponent = new Component(this->center(), 0, pAppearance, pParentSystem);
     //mpVolunectorComponent->hide();
 }

@@ -42,16 +42,16 @@
 #include "Utilities/GUIUtilities.h"
 
 
-WorkspaceObject::WorkspaceObject(QPointF pos, double rot, SelectionStatusEnumT, SystemObject *pParentContainer, QGraphicsItem *pParent)
+WorkspaceObject::WorkspaceObject(QPointF pos, double rot, SelectionStatusEnumT, SystemObject *pParentSystem, QGraphicsItem *pParent)
     : QGraphicsWidget(pParent)
 {
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
     setAcceptHoverEvents(true);
 
-    setParentSystemObject(pParentContainer);
+    setParentSystemObject(pParentSystem);
     if (mpParentSystemObject)
     {
-        pParentContainer->getContainedScenePtr()->addItem(this);
+        pParentSystem->getContainedScenePtr()->addItem(this);
     }
 
     // Set position orientation and other appearance stuff

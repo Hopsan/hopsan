@@ -117,7 +117,7 @@ ModelObject::ModelObject(QPointF position, double rotation, const ModelObjectApp
     if(mpParentSystemObject != nullptr)
     {
         connect(mpParentSystemObject->mpModelWidget->getGraphicsView(), SIGNAL(zoomChange(double)), this, SLOT(setNameTextScale(double)));
-//        connect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
+//        connect(mpParentSystemObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
         connect(mpParentSystemObject, SIGNAL(hideAllNameText()), this, SLOT(hideName()));
         connect(mpParentSystemObject, SIGNAL(showAllNameText()), this, SLOT(showName()));
         connect(mpParentSystemObject, SIGNAL(setAllGfxType(GraphicsTypeEnumT)), this, SLOT(setIcon(GraphicsTypeEnumT)));
@@ -148,9 +148,9 @@ void ModelObject::deleteInHopsanCore()
     //Needs to be overloaded
 }
 
-void ModelObject::setParentSystemObject(SystemObject *pParentContainer)
+void ModelObject::setParentSystemObject(SystemObject *pParentSystem)
 {
-    WorkspaceObject::setParentSystemObject(pParentContainer);
+    WorkspaceObject::setParentSystemObject(pParentSystem);
 
     //Refresh the port signals and slots connections
     for (int i=0; i<mPortListPtrs.size(); ++i)
@@ -829,13 +829,13 @@ QMap<QString, QString> ModelObject::getVariableAliases(const QString &rPortName)
 //void ModelObject::getVariableDataDescriptions(QVector<CoreVariableData> &rVarDataDescriptions)
 //{
 //    rVarDataDescriptions.clear();
-//    if (mpParentContainerObject)
+//    if (mpParentSystemObject)
 //    {
 //        QList<Port*>::iterator pit;
 //        for (pit=mPortListPtrs.begin(); pit!=mPortListPtrs.end(); ++pit)
 //        {
 //            QVector<CoreVariableData> varDescs;
-//            mpParentContainerObject->getCoreSystemAccessPtr()->getVariableDescriptions(this->getName(), (*pit)->getName(), varDescs);
+//            mpParentSystemObject->getCoreSystemAccessPtr()->getVariableDescriptions(this->getName(), (*pit)->getName(), varDescs);
 //            for (int i=0; i<varDescs.size(); ++i)
 //            {
 //                rVarDataDescriptions.push_back(varDescs[i]);
@@ -1716,10 +1716,10 @@ void ModelObject::showName(UndoStatusEnumT undoSettings)
 //! @todo maybe we should overload this in systems so that the parent can ask itself (useful in root systems)
 QString ModelObject::getSubTypeName() const
 {
-//    if (mpParentContainerObject)
+//    if (mpParentSystemObject)
 //    {
 //        //! @todo should we really sync this info with core, core do not really care right now
-//        return mpParentContainerObject->getCoreSystemAccessPtr()->getSubComponentSubTypeName(mName);
+//        return mpParentSystemObject->getCoreSystemAccessPtr()->getSubComponentSubTypeName(mName);
 //    }
 //    return QString();
     return mModelObjectAppearance.getSubTypeName();
@@ -1729,10 +1729,10 @@ QString ModelObject::getSubTypeName() const
 //! @todo maybe we should overload this in systems so that the parent can set itself (useful in root systems)
 void ModelObject::setSubTypeName(const QString subTypeName)
 {
-//    if (mpParentContainerObject)
+//    if (mpParentSystemObject)
 //    {
 //        //! @todo should we really sync this info with core, core do not really care right now
-//        mpParentContainerObject->getCoreSystemAccessPtr()->setSubComponentSubTypeName(mName, subTypeName);
+//        mpParentSystemObject->getCoreSystemAccessPtr()->setSubComponentSubTypeName(mName, subTypeName);
 //    }
     mModelObjectAppearance.setSubTypeName(subTypeName);
 }

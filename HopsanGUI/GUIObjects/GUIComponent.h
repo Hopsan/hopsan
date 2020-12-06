@@ -51,7 +51,7 @@ class Component : public ModelObject
     Q_OBJECT
 
 public:
-    Component(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, SystemObject *pParentContainer, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics);
+    Component(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, SystemObject *pParentSystem, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics);
     void deleteInHopsanCore() override;
 
     bool hasPowerPorts();
@@ -84,7 +84,7 @@ class ScopeComponent final : public Component
 {
     Q_OBJECT
 public:
-    ScopeComponent(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, SystemObject *pParentContainer, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics);
+    ScopeComponent(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, SystemObject *pParentSystem, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics);
 
     virtual int type() const override;
 

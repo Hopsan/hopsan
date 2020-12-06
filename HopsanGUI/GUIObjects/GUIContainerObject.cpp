@@ -88,7 +88,7 @@
 //! @param pAppearanceData Pointer to the appearance data object
 //! @param startSelected Tells whether or not the object is initially selected
 //! @param gfxType Tells whether the initial graphics shall be user or ISO
-//! @param pParentContainer Pointer to the parent container object (leave empty if not a sub container)
+//! @param pParentSystem Pointer to the parent container object (leave empty if not a sub container)
 //! @param pParent Pointer to parent object
 SystemObject::SystemObject(QPointF position, double rotation, const ModelObjectAppearance* pAppearanceData, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType, SystemObject *pParentSystem, QGraphicsItem *pParent)
         : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentSystem, pParent)
@@ -332,17 +332,14 @@ void SystemObject::refreshExternalPortsAppearanceAndPosition()
     double xMin=std::numeric_limits<double>::max(), xMax=-xMin, yMin=xMin, yMax=xMax;
     for(moit = mModelObjectMap.begin(); moit != mModelObjectMap.end(); ++moit)
     {
-        //if(moit.value()->type() == GUICONTAINERPORT)
-        //{
-            //check x max and min
-            val = moit.value()->getCenterPos().x();
-            xMin = std::min(xMin,val);
-            xMax = std::max(xMax,val);
-            //check y max and min
-            val = moit.value()->getCenterPos().y();
-            yMin = std::min(yMin,val);
-            yMax = std::max(yMax,val);
-        //}
+        //check x max and min
+        val = moit.value()->getCenterPos().x();
+        xMin = std::min(xMin,val);
+        xMax = std::max(xMax,val);
+        //check y max and min
+        val = moit.value()->getCenterPos().y();
+        yMin = std::min(yMin,val);
+        yMax = std::max(yMax,val);
     }
     //! @todo Find out if it is possible to ask the scene or view for this information instead of calculating it ourselves
     QPointF center = QPointF((xMax+xMin)/2.0, (yMax+yMin)/2.0);
@@ -351,7 +348,7 @@ void SystemObject::refreshExternalPortsAppearanceAndPosition()
     QMap<double, Port*> leftEdge, rightEdge, topEdge, bottomEdge;
     for(moit = mModelObjectMap.begin(); moit != mModelObjectMap.end(); ++moit)
     {
-        if(moit.value()->type() == ContainerPortType)
+        if(moit.value()->type() == SystemPortObjectType)
         {
             //            QLineF line = QLineF(center, moit.value()->getCenterPos());
             //            this->getContainedScenePtr()->addLine(line); //debug-grej
@@ -657,11 +654,11 @@ ModelObject* SystemObject::addModelObject(ModelObjectAppearance *pAppearanceData
     {
         pNewModelObject = new SystemObject(position, rotation, pAppearanceData, startSelected, mGfxType, this);
     }
-    else if (componentTypeName == HOPSANGUICONTAINERPORTTYPENAME)
+    else if (componentTypeName == HOPSANGUISYSTEMPORTTYPENAME)
     {
         // We must create internal port FIRST before external one
-        pNewModelObject = new ContainerPort(position, rotation, pAppearanceData, this, startSelected, mGfxType);
-        this->addExternalContainerPortObject(pNewModelObject);
+        pNewModelObject = new SystemPortObject(position, rotation, pAppearanceData, this, startSelected, mGfxType);
+        this->addExternalSystemPortObject(pNewModelObject);
         this->refreshExternalPortsAppearanceAndPosition();
     }
     else if (componentTypeName == HOPSANGUISCOPECOMPONENTTYPENAME)
@@ -808,7 +805,7 @@ void SystemObject::deleteModelObject(const QString &rObjectName, UndoStatusEnumT
         }
 
         //! @todo maybe this should be handled somewhere else (not sure maybe this is the best place)
-        if (pModelObject->type() == ContainerPortType )
+        if (pModelObject->type() == SystemPortObjectType )
         {
             removeExternalPort(pModelObject->getName());
         }
@@ -846,7 +843,7 @@ void SystemObject::renameModelObject(QString oldName, QString newName, UndoStatu
             // Set new name, first in core then in gui object
             switch (pModelObject->type())
             {
-            case ContainerPortType : //!< @todo What will happen when we try to rename a groupport
+            case SystemPortObjectType : //!< @todo What will happen when we try to rename a groupport
                 modNewName = this->getCoreSystemAccessPtr()->renameSystemPort(oldName, newName);
                 renameExternalPort(oldName, modNewName);
                 break;
@@ -889,15 +886,15 @@ void SystemObject::takeOwnershipOf(QList<ModelObject*> &rModelObjectList, QList<
 {
     for (int i=0; i<rModelObjectList.size(); ++i)
     {
-        //! @todo if a containerport is received we must update the external port list also, we cant handle such objects right now
-        if (rModelObjectList[i]->type() != ContainerPortType)
+        //! @todo if a systemport is received we must update the external port list also, we cant handle such objects right now
+        if (rModelObjectList[i]->type() != SystemPortObjectType)
         {
             this->getContainedScenePtr()->addItem(rModelObjectList[i]);
             rModelObjectList[i]->setParentSystemObject(this);
             mModelObjectMap.insert(rModelObjectList[i]->getName(), rModelObjectList[i]);
             //! @todo what if name already taken, don't care for now as we shall only move into groups when they are created
 
-            //rModelObjectList[i]->refreshParentContainerSigSlotConnections();
+            //rModelObjectList[i]->refreshParentSystemSigSlotConnections();
         }
         else
         {
@@ -987,7 +984,7 @@ void SystemObject::takeOwnershipOf(QList<ModelObject*> &rModelObjectList, QList<
         }
 
         //Create the "transit port"
-        ModelObject *pTransPort = this->addModelObject(HOPSANGUICONTAINERPORTTYPENAME, portpos.toPoint(),0);
+        ModelObject *pTransPort = this->addModelObject(HOPSANGUISYSTEMPORTTYPENAME, portpos.toPoint(),0);
 
         //Make previous parent container forget about the connector
         transitConnectors[i]->getParentContainer()->forgetSubConnector(transitConnectors[i]);
@@ -1651,7 +1648,7 @@ void SystemObject::paste(CopyStack *xmlStack)
     // Paste system ports
     QDomElement systemPortElement = copyRoot->firstChildElement(HMF_SYSTEMPORTTAG);
     while (!systemPortElement.isNull()) {
-        ModelObject* pObj = loadContainerPortObject(systemPortElement, this, Undo);
+        ModelObject* pObj = loadSystemPortObject(systemPortElement, this, Undo);
         if (pObj) {
             // Apply offset to pasted object
             const auto prevPos = pObj->pos();
@@ -2330,12 +2327,12 @@ void SystemObject::forgetSubConnector(Connector *pConnector)
 }
 
 //! @brief Refresh the graphics of all internal container ports
-void SystemObject::refreshInternalContainerPortGraphics()
+void SystemObject::refreshInternalSystemPortGraphics()
 {
     ModelObjectMapT::iterator moit;
     for(moit = mModelObjectMap.begin(); moit != mModelObjectMap.end(); ++moit)
     {
-        if(moit.value()->type() == ContainerPortType)
+        if(moit.value()->type() == SystemPortObjectType)
         {
             //We assume that a container port only have ONE gui port
             moit.value()->getPortListPtrs().first()->refreshPortGraphics();
@@ -2344,7 +2341,7 @@ void SystemObject::refreshInternalContainerPortGraphics()
 }
 
 
-void SystemObject::addExternalContainerPortObject(ModelObject* pModelObject)
+void SystemObject::addExternalSystemPortObject(ModelObject* pModelObject)
 {
     this->createRefreshExternalPort(pModelObject->getName());
 }
@@ -2605,7 +2602,7 @@ void SystemObject::enterContainer()
     mpParentSystemObject->unmakeMainWindowConnectionsAndRefresh();
     this->makeMainWindowConnectionsAndRefresh();
 
-    refreshInternalContainerPortGraphics();
+    refreshInternalSystemPortGraphics();
 
     mpModelWidget->handleSystemLock((this->isExternal() && this != mpModelWidget->getTopLevelSystemContainer()) || this->isAncestorOfExternalSubsystem(),
                                     isLocallyLocked());
@@ -4708,7 +4705,7 @@ void SystemObject::loadFromDomElement(QDomElement domElement)
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_SYSTEMPORTTAG);
         while (!xmlSubObject.isNull())
         {
-            loadContainerPortObject(xmlSubObject, this, NoUndo);
+            loadSystemPortObject(xmlSubObject, this, NoUndo);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_SYSTEMPORTTAG);
         }
 

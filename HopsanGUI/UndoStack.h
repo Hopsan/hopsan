@@ -71,9 +71,9 @@
 #define UNDO_ALIGNY "aligny"
 #define UNDO_DISTRIBUTEX "distributex"
 #define UNDO_DISTRIBUTEY "distributey"
-#define UNDO_DELETEDCONTAINERPORT "deletedcontainerport"
+#define UNDO_DELETEDSYSTEMPORT "deletedsystemport"
 #define UNDO_DELETEDSUBSYSTEM "deletedsubsystem"
-#define UNDO_ADDEDCONTAINERPORT "addedcontainerport"
+#define UNDO_ADDEDSYSTEMPORT "addedsystemport"
 #define UNDO_ADDEDSUBSYSTEM "addedsubsystem"
 #define UNDO_MOVEDCONNECTOR "movedconnector"
 #define UNDO_CHANGEDPARAMETER "changedparameter"
@@ -129,7 +129,7 @@ public:
     void registerModifiedTextBoxWidget(Widget *pItem);
 
 private:
-    SystemObject *mpParentContainerObject;
+    SystemObject *mpParentSystemObject;
     int mCurrentStackPosition;
     bool mEnabled;
 

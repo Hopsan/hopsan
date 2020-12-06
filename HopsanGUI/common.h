@@ -57,7 +57,7 @@ namespace hopsanweblinks {
 // Gui TypeName defines
 #define HOPSANGUISYSTEMTYPENAME "Subsystem"
 #define HOPSANGUICONDITIONALSYSTEMTYPENAME "ConditionalSubsystem"
-#define HOPSANGUICONTAINERPORTTYPENAME "HopsanGUIContainerPort"
+#define HOPSANGUISYSTEMPORTTYPENAME "HopsanGUISystemPort"
 #define HOPSANGUISCOPECOMPONENTTYPENAME "SignalSink"
 
 #ifdef _WIN32

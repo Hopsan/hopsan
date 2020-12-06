@@ -54,7 +54,7 @@
 //! @param parentSystem Pointer to the current system
 UndoStack::UndoStack(SystemObject *parentSystem)
 {
-    mpParentContainerObject = parentSystem;
+    mpParentSystemObject = parentSystem;
     mCurrentStackPosition = -1;
     mEnabled = true;
     clear();
@@ -132,7 +132,7 @@ void UndoStack::undoOneStep()
     QList<QDomElement> deletedConnectorList;
     QList<QDomElement> addedConnectorList;
     QList<QDomElement> addedObjectList;
-    QList<QDomElement> addedcontainerportsList;
+    QList<QDomElement> addedsystemportsList;
     QList<QDomElement> addedsubsystemsList;
     QStringList movedObjects;
     int dx=0, dy=0;
@@ -143,7 +143,7 @@ void UndoStack::undoOneStep()
         if(stuffElement.attribute("what") == UNDO_DELETEDOBJECT)
         {
             QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENTTAG);
-            ModelObject* pObj = loadModelObject(componentElement, mpParentContainerObject, NoUndo);
+            ModelObject* pObj = loadModelObject(componentElement, mpParentSystemObject, NoUndo);
 
             //Load parameter values
             QDomElement xmlParameters = componentElement.firstChildElement(HMF_PARAMETERS);
@@ -154,25 +154,25 @@ void UndoStack::undoOneStep()
                 xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
             }
         }
-        else if(stuffElement.attribute("what") == UNDO_DELETEDCONTAINERPORT)
+        else if(stuffElement.attribute("what") == UNDO_DELETEDSYSTEMPORT)
         {
             QDomElement systemPortElement = stuffElement.firstChildElement(HMF_SYSTEMPORTTAG);
-            loadContainerPortObject(systemPortElement, mpParentContainerObject, NoUndo);
+            loadSystemPortObject(systemPortElement, mpParentSystemObject, NoUndo);
         }
         else if(stuffElement.attribute("what") == UNDO_DELETEDSUBSYSTEM)
         {
             QDomElement systemElement = stuffElement.firstChildElement(HMF_SYSTEMTAG);
-            loadModelObject(systemElement, mpParentContainerObject, NoUndo);
+            loadModelObject(systemElement, mpParentSystemObject, NoUndo);
         }
         else if(stuffElement.attribute("what") == UNDO_ADDEDOBJECT)
         {
             QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENTTAG);
             addedObjectList.append(componentElement);
         }
-        else if(stuffElement.attribute("what") == UNDO_ADDEDCONTAINERPORT)
+        else if(stuffElement.attribute("what") == UNDO_ADDEDSYSTEMPORT)
         {
             QDomElement systemPortElement = stuffElement.firstChildElement(HMF_SYSTEMPORTTAG);
-            addedcontainerportsList.append(systemPortElement);
+            addedsystemportsList.append(systemPortElement);
         }
         else if(stuffElement.attribute("what") == UNDO_ADDEDSUBSYSTEM)
         {
@@ -193,12 +193,12 @@ void UndoStack::undoOneStep()
         {
             QString newName = stuffElement.attribute("newname");
             QString oldName = stuffElement.attribute("oldname");
-            if(!mpParentContainerObject->hasModelObject(newName))
+            if(!mpParentSystemObject->hasModelObject(newName))
             {
                 this->clear("Undo stack attempted to access non-existing conmponent. Stack was cleared to ensure stability.");
                 return;
             }
-            mpParentContainerObject->renameModelObject(newName, oldName, NoUndo);
+            mpParentSystemObject->renameModelObject(newName, oldName, NoUndo);
         }
         else if(stuffElement.attribute("what") == UNDO_MODIFIEDCONNECTOR)
         {
@@ -215,12 +215,12 @@ void UndoStack::undoOneStep()
             QString startPort = connectorElement.attribute("startport");
             QString endComponent = connectorElement.attribute("endcomponent");
             QString endPort = connectorElement.attribute("endport");
-            if(!mpParentContainerObject->hasConnector(startComponent, startPort, endComponent, endPort))
+            if(!mpParentSystemObject->hasConnector(startComponent, startPort, endComponent, endPort))
             {
                 this->clear("Undo stack attempted to access non-existing connector. Stack was cleared to ensure stability.");
                 return;
             }
-            Connector *item = mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort);
+            Connector *item = mpParentSystemObject->findConnector(startComponent, startPort, endComponent, endPort);
             QPointF dXY = newPos - oldPos;
             item->getLine(lineNumber)->setPos(item->getLine(lineNumber)->pos()-dXY);
             item->updateLine(lineNumber);
@@ -233,13 +233,13 @@ void UndoStack::undoOneStep()
             parseDomValueNode2(newPosElement, x_new, y_new);
             parseDomValueNode2(oldPosElement, x, y);
             QString name = stuffElement.attribute(HMF_NAMETAG);
-            if(!mpParentContainerObject->hasModelObject(name))
+            if(!mpParentSystemObject->hasModelObject(name))
             {
                 this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
                 return;
             }
-            mpParentContainerObject->getModelObject(name)->setPos(x, y);
-            mpParentContainerObject->getModelObject(name)->rememberPos();
+            mpParentSystemObject->getModelObject(name)->setPos(x, y);
+            mpParentSystemObject->getModelObject(name)->rememberPos();
             movedObjects.append(name);
             dx = x_new - x;
             dy = y_new - y;
@@ -255,59 +255,59 @@ void UndoStack::undoOneStep()
             QString endComponent = connectorElement.attribute("endcomponent");
             QString endPort = connectorElement.attribute("endport");
 
-            if(!mpParentContainerObject->hasConnector(startComponent, startPort, endComponent, endPort))
+            if(!mpParentSystemObject->hasConnector(startComponent, startPort, endComponent, endPort))
             {
                 this->clear("Undo stack attempted to access non-existing connector. Stack was cleared to ensure stability.");
                 return;
             }
-            mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort)->moveAllPoints(-dx, -dy);
+            mpParentSystemObject->findConnector(startComponent, startPort, endComponent, endPort)->moveAllPoints(-dx, -dy);
         }
         else if(stuffElement.attribute("what") == UNDO_ROTATE)
         {
             QString name = stuffElement.attribute("objectname");
             double angle = stuffElement.attribute("angle").toDouble();
-            if(!mpParentContainerObject->hasModelObject(name))
+            if(!mpParentSystemObject->hasModelObject(name))
             {
                 this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
                 return;
             }
-            //double targetAngle = mpParentContainerObject->getGUIModelObject(name)->rotation()-angle;
+            //double targetAngle = mpParentSystemObject->getGUIModelObject(name)->rotation()-angle;
             //if(targetAngle >= 360) { targetAngle = 0; }
             //if(targetAngle < 0) { targetAngle = 270; }
-            mpParentContainerObject->getModelObject(name)->rotate(-angle, NoUndo);
+            mpParentSystemObject->getModelObject(name)->rotate(-angle, NoUndo);
 
         }
         else if(stuffElement.attribute("what") == UNDO_VERTICALFLIP)
         {
             QString name = stuffElement.attribute("objectname");
-            if(!mpParentContainerObject->hasModelObject(name))
+            if(!mpParentSystemObject->hasModelObject(name))
             {
                 this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
                 return;
             }
-            mpParentContainerObject->getModelObject(name)->flipVertical(NoUndo);
+            mpParentSystemObject->getModelObject(name)->flipVertical(NoUndo);
         }
         else if(stuffElement.attribute("what") == UNDO_HORIZONTALFLIP)
         {
             QString name = stuffElement.attribute("objectname");
-            if(!mpParentContainerObject->hasModelObject(name))
+            if(!mpParentSystemObject->hasModelObject(name))
             {
                 this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
                 return;
             }
-            mpParentContainerObject->getModelObject(name)->flipHorizontal(NoUndo);
+            mpParentSystemObject->getModelObject(name)->flipHorizontal(NoUndo);
         }
         else if(stuffElement.attribute("what") == UNDO_CHANGEDPARAMETER)
         {
             QString objectName = stuffElement.attribute("objectname");
             QString parameterName = stuffElement.attribute("parametername");
             QString oldValue = stuffElement.attribute("oldvalue");
-            if(!mpParentContainerObject->hasModelObject(objectName))
+            if(!mpParentSystemObject->hasModelObject(objectName))
             {
                 this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
                 return;
             }
-            mpParentContainerObject->getModelObject(objectName)->setParameterValue(parameterName, oldValue);
+            mpParentSystemObject->getModelObject(objectName)->setParameterValue(parameterName, oldValue);
         }
         else if(stuffElement.attribute("what") == UNDO_NAMEVISIBILITYCHANGE)
         {
@@ -315,11 +315,11 @@ void UndoStack::undoOneStep()
             bool isVisible = (stuffElement.attribute("isvisible").toInt() == 1);
             if(isVisible)
             {
-                mpParentContainerObject->getModelObject(objectName)->hideName(NoUndo);
+                mpParentSystemObject->getModelObject(objectName)->hideName(NoUndo);
             }
             else
             {
-                mpParentContainerObject->getModelObject(objectName)->showName(NoUndo);
+                mpParentSystemObject->getModelObject(objectName)->showName(NoUndo);
             }
         }
         else if(stuffElement.attribute("what") == UNDO_ADDEDTEXTBOXWIDGET)
@@ -338,7 +338,7 @@ void UndoStack::undoOneStep()
             double x_old, y_old;
             QDomElement oldPosElement = stuffElement.firstChildElement("oldpos");
             parseDomValueNode2(oldPosElement, x_old, y_old);
-            TextBoxWidget *pTempWidget = qobject_cast<TextBoxWidget *>(mpParentContainerObject->getWidget(index));
+            TextBoxWidget *pTempWidget = qobject_cast<TextBoxWidget *>(mpParentSystemObject->getWidget(index));
             if (pTempWidget)
             {
                 pTempWidget->setSize(w_old, h_old);
@@ -356,7 +356,7 @@ void UndoStack::undoOneStep()
             QDomElement oldPosElement = stuffElement.firstChildElement("oldpos");
             parseDomValueNode2(oldPosElement, x_old, y_old);
             int id = stuffElement.attribute("index").toInt();
-            Widget *pWidget = mpParentContainerObject->getWidget(id);
+            Widget *pWidget = mpParentSystemObject->getWidget(id);
             if(pWidget)
             {
                 pWidget->setPos(x_old, y_old);
@@ -373,7 +373,7 @@ void UndoStack::undoOneStep()
             QDomElement xmlAlias = stuffElement.firstChildElement(HMF_ALIAS);
             while (!xmlAlias.isNull())
             {
-                loadPlotAlias(xmlAlias, mpParentContainerObject);
+                loadPlotAlias(xmlAlias, mpParentSystemObject);
                 xmlAlias = xmlAlias.nextSiblingElement(HMF_ALIAS);
             }
         }
@@ -386,12 +386,12 @@ void UndoStack::undoOneStep()
     {
         QString startComponent = (*it).attribute("startcomponent");
         QString endComponent = (*it).attribute("endcomponent");
-        if(!mpParentContainerObject->hasModelObject(startComponent) || !mpParentContainerObject->hasModelObject(endComponent))
+        if(!mpParentSystemObject->hasModelObject(startComponent) || !mpParentSystemObject->hasModelObject(endComponent))
         {
             this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
             return;
         }
-        loadConnector(*it, mpParentContainerObject, NoUndo);
+        loadConnector(*it, mpParentSystemObject, NoUndo);
     }
 
     // Remove connectors after modified connector action
@@ -401,9 +401,9 @@ void UndoStack::undoOneStep()
         QString startPort = (*it).attribute("startport");
         QString endComponent = (*it).attribute("endcomponent");
         QString endPort = (*it).attribute("endport");
-        auto pConnectorToRemove = mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort);
+        auto pConnectorToRemove = mpParentSystemObject->findConnector(startComponent, startPort, endComponent, endPort);
         if(pConnectorToRemove) {
-            mpParentContainerObject->removeSubConnector(pConnectorToRemove, NoUndo);
+            mpParentSystemObject->removeSubConnector(pConnectorToRemove, NoUndo);
         }
         else {
             gpMessageHandler->addErrorMessage("Undo stack attempted to access non-existing connector.");
@@ -414,31 +414,31 @@ void UndoStack::undoOneStep()
     for(it = addedObjectList.begin(); it!=addedObjectList.end(); ++it)
     {
         QString name = (*it).attribute(HMF_NAMETAG);
-        if(!mpParentContainerObject->hasModelObject(name))
+        if(!mpParentSystemObject->hasModelObject(name))
         {
             this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
             return;
         }
-        this->mpParentContainerObject->deleteModelObject(name, NoUndo);
+        this->mpParentSystemObject->deleteModelObject(name, NoUndo);
     }
 
     // Remove system ports
-    for(it = addedcontainerportsList.begin(); it!=addedcontainerportsList.end(); ++it)
+    for(it = addedsystemportsList.begin(); it!=addedsystemportsList.end(); ++it)
     {
         QString name = (*it).attribute(HMF_NAMETAG);
-        if(!mpParentContainerObject->hasModelObject(name))
+        if(!mpParentSystemObject->hasModelObject(name))
         {
             this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
             return;
         }
-        this->mpParentContainerObject->deleteModelObject(name, NoUndo);
+        this->mpParentSystemObject->deleteModelObject(name, NoUndo);
     }
 
     // Remove subsystems
     for(it = addedsubsystemsList.begin(); it!=addedsubsystemsList.end(); ++it)
     {
         QString name = (*it).attribute(HMF_NAMETAG);
-        SystemObject *pSystemToRemove = qobject_cast<SystemObject *>(mpParentContainerObject->getModelObject(name));
+        SystemObject *pSystemToRemove = qobject_cast<SystemObject *>(mpParentSystemObject->getModelObject(name));
 
         // Update information about Subsystem in DOM tree, in case it has changed inside since registered in the undo stack
         QDomElement oldElement = (*it).parentNode().toElement();
@@ -449,17 +449,17 @@ void UndoStack::undoOneStep()
         pSystemToRemove->saveToDomElement(newStuffElement);
         parentElement.removeChild(oldElement);
 
-        if(!mpParentContainerObject->hasModelObject(name))
+        if(!mpParentSystemObject->hasModelObject(name))
         {
             this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
             return;
         }
-        this->mpParentContainerObject->deleteModelObject(name, NoUndo);
+        this->mpParentSystemObject->deleteModelObject(name, NoUndo);
     }
 
     // Move all connectors that are connected between two components that has moved (must be done after components have been moved)
     QList<Connector *>::iterator itc;
-    for(itc=mpParentContainerObject->mSubConnectorList.begin(); itc!=mpParentContainerObject->mSubConnectorList.end(); ++itc)
+    for(itc=mpParentSystemObject->mSubConnectorList.begin(); itc!=mpParentSystemObject->mSubConnectorList.end(); ++itc)
     {
         //Error check should not be necessary for this action, because it was already done when moving the objects
         if(movedObjects.contains((*itc)->getStartComponentName()) && movedObjects.contains((*itc)->getEndComponentName()))
@@ -497,19 +497,19 @@ void UndoStack::redoOneStep()
         {
             QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENTTAG);
             QString name = componentElement.attribute(HMF_NAMETAG);
-            if(mpParentContainerObject->hasModelObject(name)) {
-                mpParentContainerObject->deleteModelObject(name, NoUndo);
+            if(mpParentSystemObject->hasModelObject(name)) {
+                mpParentSystemObject->deleteModelObject(name, NoUndo);
             }
             else{
                 gpMessageHandler->addErrorMessage("Undo stack (redo) attempted to access non-existing component: "+name);
             }
         }
-        else if(stuffElement.attribute("what") == UNDO_DELETEDCONTAINERPORT)
+        else if(stuffElement.attribute("what") == UNDO_DELETEDSYSTEMPORT)
         {
             QDomElement systemPortElement = stuffElement.firstChildElement(HMF_SYSTEMPORTTAG);
             QString name = systemPortElement.attribute(HMF_NAMETAG);
-            if(mpParentContainerObject->hasModelObject(name)) {
-                mpParentContainerObject->deleteModelObject(name, NoUndo);
+            if(mpParentSystemObject->hasModelObject(name)) {
+                mpParentSystemObject->deleteModelObject(name, NoUndo);
             }
             else{
                 gpMessageHandler->addErrorMessage("Undo stack (redo) attempted to access non-existing component: "+name);
@@ -520,8 +520,8 @@ void UndoStack::redoOneStep()
         {
             QDomElement systemElement = stuffElement.firstChildElement(HMF_SYSTEMTAG);
             QString name = systemElement.attribute(HMF_NAMETAG);
-            if(mpParentContainerObject->hasModelObject(name)) {
-                mpParentContainerObject->deleteModelObject(name, NoUndo);
+            if(mpParentSystemObject->hasModelObject(name)) {
+                mpParentSystemObject->deleteModelObject(name, NoUndo);
             }
             else{
                 gpMessageHandler->addErrorMessage("Undo stack (redo) attempted to access non-existing component: "+name);
@@ -530,17 +530,17 @@ void UndoStack::redoOneStep()
         else if(stuffElement.attribute("what") == UNDO_ADDEDOBJECT)
         {
             QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENTTAG);
-            loadModelObject(componentElement, mpParentContainerObject, NoUndo);
+            loadModelObject(componentElement, mpParentSystemObject, NoUndo);
         }
-        else if(stuffElement.attribute("what") == UNDO_ADDEDCONTAINERPORT)
+        else if(stuffElement.attribute("what") == UNDO_ADDEDSYSTEMPORT)
         {
             QDomElement systemPortElement = stuffElement.firstChildElement(HMF_SYSTEMPORTTAG);
-            loadContainerPortObject(systemPortElement, mpParentContainerObject, NoUndo);
+            loadSystemPortObject(systemPortElement, mpParentSystemObject, NoUndo);
         }
         else if(stuffElement.attribute("what") == UNDO_ADDEDSUBSYSTEM)
         {
             QDomElement systemElement = stuffElement.firstChildElement(HMF_SYSTEMTAG);
-            loadModelObject(systemElement, mpParentContainerObject, NoUndo);
+            loadModelObject(systemElement, mpParentSystemObject, NoUndo);
         }
         else if(stuffElement.attribute("what") == UNDO_DELETEDCONNECTOR)
         {
@@ -549,12 +549,12 @@ void UndoStack::redoOneStep()
             QString startPort = connectorElement.attribute("startport");
             QString endComponent = connectorElement.attribute("endcomponent");
             QString endPort = connectorElement.attribute("endport");
-            if(!mpParentContainerObject->hasConnector(startComponent, startPort, endComponent, endPort))
+            if(!mpParentSystemObject->hasConnector(startComponent, startPort, endComponent, endPort))
             {
                 this->clear("Undo stack attempted to access non-existing connector. Stack was cleared to ensure stability.");
                 return;
             }
-            mpParentContainerObject->removeSubConnector(mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort), NoUndo);
+            mpParentSystemObject->removeSubConnector(mpParentSystemObject->findConnector(startComponent, startPort, endComponent, endPort), NoUndo);
         }
         else if(stuffElement.attribute("what") == UNDO_ADDEDCONNECTOR)
         {
@@ -565,8 +565,8 @@ void UndoStack::redoOneStep()
         {
             QString newName = stuffElement.attribute("newname");
             QString oldName = stuffElement.attribute("oldname");
-            if(mpParentContainerObject->hasModelObject(oldName)) {
-                mpParentContainerObject->renameModelObject(oldName, newName, NoUndo);
+            if(mpParentSystemObject->hasModelObject(oldName)) {
+                mpParentSystemObject->renameModelObject(oldName, newName, NoUndo);
             }
             else{
                 gpMessageHandler->addErrorMessage("Undo stack (redo) attempted to access non-existing component: "+oldName);
@@ -586,9 +586,9 @@ void UndoStack::redoOneStep()
             parseDomValueNode2(newPosElement, x, y);
             parseDomValueNode2(oldPosElement, x_old, y_old);
             QString name = stuffElement.attribute(HMF_NAMETAG);
-            if(mpParentContainerObject->hasModelObject(name)) {
-                mpParentContainerObject->getModelObject(name)->setPos(x, y);
-                mpParentContainerObject->getModelObject(name)->rememberPos();
+            if(mpParentSystemObject->hasModelObject(name)) {
+                mpParentSystemObject->getModelObject(name)->setPos(x, y);
+                mpParentSystemObject->getModelObject(name)->rememberPos();
                 movedObjects.append(name);
                 dx = x - x_old;
                 dy = y - y_old;
@@ -601,8 +601,8 @@ void UndoStack::redoOneStep()
         {
             QString name = stuffElement.attribute("objectname");
             double angle = stuffElement.attribute("angle").toDouble();
-            if(mpParentContainerObject->hasModelObject(name)) {
-                mpParentContainerObject->getModelObject(name)->rotate(angle, NoUndo);
+            if(mpParentSystemObject->hasModelObject(name)) {
+                mpParentSystemObject->getModelObject(name)->rotate(angle, NoUndo);
             }
             else{
                 gpMessageHandler->addErrorMessage("Undo stack (redo) attempted to access non-existing component: "+name);
@@ -612,8 +612,8 @@ void UndoStack::redoOneStep()
         else if(stuffElement.attribute("what") == UNDO_VERTICALFLIP)
         {
             QString name = stuffElement.attribute("objectname");
-            if(mpParentContainerObject->hasModelObject(name)) {
-                mpParentContainerObject->getModelObject(name)->flipVertical(NoUndo);
+            if(mpParentSystemObject->hasModelObject(name)) {
+                mpParentSystemObject->getModelObject(name)->flipVertical(NoUndo);
             }
             else{
                 gpMessageHandler->addErrorMessage("Undo stack (redo) attempted to access non-existing component: "+name);
@@ -623,8 +623,8 @@ void UndoStack::redoOneStep()
         else if(stuffElement.attribute("what") == UNDO_HORIZONTALFLIP)
         {
             QString name = stuffElement.attribute("objectname");
-            if(mpParentContainerObject->hasModelObject(name)) {
-                mpParentContainerObject->getModelObject(name)->flipHorizontal(NoUndo);
+            if(mpParentSystemObject->hasModelObject(name)) {
+                mpParentSystemObject->getModelObject(name)->flipHorizontal(NoUndo);
             }
             else{
                 gpMessageHandler->addErrorMessage("Undo stack (redo) attempted to access non-existing component: "+name);
@@ -636,8 +636,8 @@ void UndoStack::redoOneStep()
             QString objectName = stuffElement.attribute("objectname");
             QString parameterName = stuffElement.attribute("parametername");
             QString newValue = stuffElement.attribute("newvalue");
-            if(mpParentContainerObject->hasModelObject(objectName)) {
-                mpParentContainerObject->getModelObject(objectName)->setParameterValue(parameterName, newValue);
+            if(mpParentSystemObject->hasModelObject(objectName)) {
+                mpParentSystemObject->getModelObject(objectName)->setParameterValue(parameterName, newValue);
             }
             else{
                 gpMessageHandler->addErrorMessage("Undo stack (redo) attempted to access non-existing component: "+objectName);
@@ -650,11 +650,11 @@ void UndoStack::redoOneStep()
             bool isVisible = (stuffElement.attribute("isvisible").toInt() == 1);
             if(isVisible)
             {
-                mpParentContainerObject->getModelObject(objectName)->showName(NoUndo);
+                mpParentSystemObject->getModelObject(objectName)->showName(NoUndo);
             }
             else
             {
-                mpParentContainerObject->getModelObject(objectName)->hideName(NoUndo);
+                mpParentSystemObject->getModelObject(objectName)->hideName(NoUndo);
             }
         }
         else if(stuffElement.attribute("what") == UNDO_ADDEDTEXTBOXWIDGET)
@@ -673,7 +673,7 @@ void UndoStack::redoOneStep()
             double x_new, y_new;
             QDomElement newPosElement = stuffElement.firstChildElement("newpos");
             parseDomValueNode2(newPosElement, x_new, y_new);
-            TextBoxWidget *tempWidget = qobject_cast<TextBoxWidget *>(mpParentContainerObject->mWidgetMap.find(index).value());
+            TextBoxWidget *tempWidget = qobject_cast<TextBoxWidget *>(mpParentSystemObject->mWidgetMap.find(index).value());
             tempWidget->setSize(w_new, h_new);
             tempWidget->setPos(x_new, y_new);
         }
@@ -687,12 +687,12 @@ void UndoStack::redoOneStep()
             QDomElement newPosElement = stuffElement.firstChildElement("newpos");
             parseDomValueNode2(newPosElement, x_new, y_new);
             size_t index = stuffElement.attribute("index").toInt();
-            if(!mpParentContainerObject->mWidgetMap.contains(index))
+            if(!mpParentSystemObject->mWidgetMap.contains(index))
             {
                 this->clear("Undo stack attempted to access non-existing widget. Stack was cleared to ensure stability.");
                 return;
             }
-            mpParentContainerObject->mWidgetMap.find(index).value()->setPos(x_new, y_new);
+            mpParentSystemObject->mWidgetMap.find(index).value()->setPos(x_new, y_new);
         }
         stuffElement = stuffElement.nextSiblingElement("stuff");
     }
@@ -701,7 +701,7 @@ void UndoStack::redoOneStep()
     QList<QDomElement>::iterator it;
     for(it=addedConnectorList.begin(); it!=addedConnectorList.end(); ++it)
     {
-        loadConnector(*it, mpParentContainerObject, NoUndo);
+        loadConnector(*it, mpParentSystemObject, NoUndo);
     }
 
     for(it=modifiedConnectorList.begin(); it!=modifiedConnectorList.end(); ++it)
@@ -722,12 +722,12 @@ void UndoStack::redoOneStep()
         QString endComponent = connectorElement.attribute("endcomponent");
         QString endPort = connectorElement.attribute("endport");
         QPointF dXY = oldPos-newPos;
-        if(!mpParentContainerObject->hasConnector(startComponent, startPort, endComponent, endPort))
+        if(!mpParentSystemObject->hasConnector(startComponent, startPort, endComponent, endPort))
         {
             this->clear("Undo stack attempted to access non-existing connector. Stack was cleared to ensure stability.");
             return;
         }
-        Connector *item = mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort);
+        Connector *item = mpParentSystemObject->findConnector(startComponent, startPort, endComponent, endPort);
 
         item->getLine(lineNumber)->setPos(item->getLine(lineNumber)->pos()-dXY);
         item->updateLine(lineNumber);
@@ -735,7 +735,7 @@ void UndoStack::redoOneStep()
 
         //Move all connectors that are connected between two components that has moved
     QList<Connector *>::iterator itc;
-    for(itc=mpParentContainerObject->mSubConnectorList.begin(); itc!=mpParentContainerObject->mSubConnectorList.end(); ++itc)
+    for(itc=mpParentSystemObject->mSubConnectorList.begin(); itc!=mpParentSystemObject->mSubConnectorList.end(); ++itc)
     {
         //No error checking necessary
         if(movedObjects.contains((*itc)->getStartComponentName()) && movedObjects.contains((*itc)->getEndComponentName()))
@@ -765,9 +765,9 @@ void UndoStack::registerDeletedObject(ModelObject *item)
         if (currentPostElement.isNull())
             return;
         QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-        if(item->getTypeName() == "HopsanGUIContainerPort")
+        if(item->getTypeName() == HOPSANGUISYSTEMPORTTYPENAME)
         {
-            stuffElement.setAttribute("what", UNDO_DELETEDCONTAINERPORT);
+            stuffElement.setAttribute("what", UNDO_DELETEDSYSTEMPORT);
         }
         else if(item->getTypeName() == HOPSANGUISYSTEMTYPENAME || item->getTypeName() == HOPSANGUICONDITIONALSYSTEMTYPENAME)
         {
@@ -807,9 +807,9 @@ void UndoStack::registerAddedObject(ModelObject *item)
     if(mEnabled) {
         QDomElement currentPostElement = getCurrentPost();
         QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-        if(item->getTypeName() == HOPSANGUICONTAINERPORTTYPENAME)
+        if(item->getTypeName() == HOPSANGUISYSTEMPORTTYPENAME)
         {
-            stuffElement.setAttribute("what", UNDO_ADDEDCONTAINERPORT);
+            stuffElement.setAttribute("what", UNDO_ADDEDSYSTEMPORT);
         }
         else if(item->getTypeName() == HOPSANGUISYSTEMTYPENAME || item->getTypeName() == HOPSANGUICONDITIONALSYSTEMTYPENAME)
         {
@@ -987,7 +987,7 @@ void UndoStack::registerRemovedAliases(QStringList &aliases)
             QDomElement alias = appendDomElement(stuffElement, HMF_ALIAS);
             alias.setAttribute(HMF_TYPE, "variable"); //!< @todo not manual type
             alias.setAttribute(HMF_NAMETAG, aliases[i]);
-            QString fullName = mpParentContainerObject->getFullNameFromAlias(aliases[i]);
+            QString fullName = mpParentSystemObject->getFullNameFromAlias(aliases[i]);
             appendDomTextNode(alias, "fullname",fullName );
         }
     }
@@ -1092,20 +1092,20 @@ void UndoStack::addTextboxwidget(const QDomElement &rStuffElement)
 {
     QDomElement textBoxElement = rStuffElement.firstChildElement(HMF_TEXTBOXWIDGETTAG);
     int id = parseAttributeInt(textBoxElement, "index", 0);
-    TextBoxWidget *pWidget = mpParentContainerObject->addTextBoxWidget(QPointF(1,1), id, NoUndo);
+    TextBoxWidget *pWidget = mpParentSystemObject->addTextBoxWidget(QPointF(1,1), id, NoUndo);
     pWidget->loadFromDomElement(textBoxElement);
 }
 
 void UndoStack::removeTextboxWidget(const QDomElement &rStuffElement)
 {
     size_t id = rStuffElement.attribute("index").toInt();
-    mpParentContainerObject->deleteWidget(id, NoUndo);
+    mpParentSystemObject->deleteWidget(id, NoUndo);
 }
 
 void UndoStack::modifyTextboxWidget(QDomElement &rStuffElement)
 {
     size_t index = rStuffElement.attribute("index").toInt();
-    TextBoxWidget *pWidget = qobject_cast<TextBoxWidget *>(mpParentContainerObject->getWidget(index));
+    TextBoxWidget *pWidget = qobject_cast<TextBoxWidget *>(mpParentSystemObject->getWidget(index));
     if (pWidget)
     {
         pWidget->saveToDomElement(rStuffElement);
