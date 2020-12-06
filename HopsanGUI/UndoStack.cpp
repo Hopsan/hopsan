@@ -52,10 +52,12 @@
 
 //! @brief Constructor for the undo stack
 //! @param parentSystem Pointer to the current system
-UndoStack::UndoStack(SystemObject *parentSystem) : QObject()
+UndoStack::UndoStack(SystemObject *parentSystem)
 {
     mpParentContainerObject = parentSystem;
     mCurrentStackPosition = -1;
+    mEnabled = true;
+    clear();
 }
 
 
@@ -99,25 +101,26 @@ void UndoStack::clear(QString errorMsg)
 //! @param type String used to specify a post type. This tells the undo widget to display the entire post as one item. For example UNDO_PASTE is used for paste operations, so that every added object, connector and widget is not shown in the undo widget list.
 void UndoStack::newPost(QString type)
 {
-    ++mCurrentStackPosition;
-    QDomElement maybeDeletePost = mUndoRoot.firstChildElement("post");
-    while(!maybeDeletePost.isNull())
-    {
-        QDomElement tempPost = maybeDeletePost;
-        maybeDeletePost = maybeDeletePost.nextSiblingElement("post");
-        if(tempPost.attribute("number").toInt() > mCurrentStackPosition-1)
+    if (mEnabled) {
+        ++mCurrentStackPosition;
+        QDomElement maybeDeletePost = mUndoRoot.firstChildElement("post");
+        while(!maybeDeletePost.isNull())
         {
-            mUndoRoot.removeChild(tempPost);
+            QDomElement tempPost = maybeDeletePost;
+            maybeDeletePost = maybeDeletePost.nextSiblingElement("post");
+            if(tempPost.attribute("number").toInt() > mCurrentStackPosition-1)
+            {
+                mUndoRoot.removeChild(tempPost);
+            }
         }
+        QDomElement newPost = appendDomElement(mUndoRoot, "post");
+        newPost.setAttribute("number", mCurrentStackPosition);
+        if(!type.isEmpty())
+        {
+            newPost.setAttribute("type", type);
+        }
+        gpUndoWidget->refreshList();
     }
-    QDomElement newPost = appendDomElement(mUndoRoot, "post");
-    newPost.setAttribute("number", mCurrentStackPosition);
-    if(!type.isEmpty())
-    {
-        newPost.setAttribute("type", type);
-    }
-
-    gpUndoWidget->refreshList();
 }
 
 
@@ -307,19 +310,6 @@ void UndoStack::undoOneStep()
             }
             mpParentContainerObject->getModelObject(objectName)->setParameterValue(parameterName, oldValue);
         }
-//        else if(stuffElement.attribute("what") == "changedstartvalue")
-//        {
-//            QString objectName = stuffElement.attribute("objectname");
-//            QString portName = stuffElement.attribute("portname");
-//            QString parameterName = stuffElement.attribute("parametername");
-//            QString oldValue = stuffElement.attribute("oldvalue");
-//            if(!mpParentContainerObject->hasGUIModelObject(objectName))
-//            {
-//                this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
-//                return;
-//            }
-//            mpParentContainerObject->getGUIModelObject(objectName)->setStartValue(portName, parameterName, oldValue);
-//        }
         else if(stuffElement.attribute("what") == UNDO_NAMEVISIBILITYCHANGE)
         {
             QString objectName = stuffElement.attribute("objectname");
@@ -498,8 +488,6 @@ void UndoStack::undoOneStep()
 //! @see undoOneStep()
 void UndoStack::redoOneStep()
 {
-    //gpMainWindow->mpHcomWidget->mpConsole->printDebugMessage(mDomDocument.toString(2));
-
     bool didSomething = false;
     ++mCurrentStackPosition;
     QList<QDomElement> addedConnectorList;
@@ -658,19 +646,6 @@ void UndoStack::redoOneStep()
             }
             mpParentContainerObject->getModelObject(objectName)->setParameterValue(parameterName, newValue);
         }
-//        else if(stuffElement.attribute("what") == "changedstartvalue")
-//        {
-//            QString objectName = stuffElement.attribute("objectname");
-//            QString portName = stuffElement.attribute("portname");
-//            QString parameterName = stuffElement.attribute("parametername");
-//            QString newValue = stuffElement.attribute("newvalue");
-//            if(!mpParentContainerObject->hasGUIModelObject(objectName))
-//            {
-//                this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
-//                return;
-//            }
-//            mpParentContainerObject->getGUIModelObject(objectName)->setStartValue(portName, parameterName, newValue);
-//        }
         else if(stuffElement.attribute("what") == UNDO_NAMEVISIBILITYCHANGE)
         {
             QString objectName = stuffElement.attribute("objectname");
@@ -787,26 +762,26 @@ void UndoStack::redoOneStep()
 //! @param item Pointer to the component about to be deleted
 void UndoStack::registerDeletedObject(ModelObject *item)
 {
-    if(!mpParentContainerObject->isUndoEnabled())
-        return;
-    QDomElement currentPostElement = getCurrentPost();
-    if (currentPostElement.isNull())
-        return;
-    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    if(item->getTypeName() == "HopsanGUIContainerPort")
-    {
-        stuffElement.setAttribute("what", UNDO_DELETEDCONTAINERPORT);
+    if(mEnabled) {
+        QDomElement currentPostElement = getCurrentPost();
+        if (currentPostElement.isNull())
+            return;
+        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        if(item->getTypeName() == "HopsanGUIContainerPort")
+        {
+            stuffElement.setAttribute("what", UNDO_DELETEDCONTAINERPORT);
+        }
+        else if(item->getTypeName() == HOPSANGUISYSTEMTYPENAME || item->getTypeName() == HOPSANGUICONDITIONALSYSTEMTYPENAME)
+        {
+            stuffElement.setAttribute("what", UNDO_DELETEDSUBSYSTEM);
+        }
+        else
+        {
+            stuffElement.setAttribute("what", UNDO_DELETEDOBJECT);
+        }
+        item->saveToDomElement(stuffElement);
+        gpUndoWidget->refreshList();
     }
-    else if(item->getTypeName() == HOPSANGUISYSTEMTYPENAME || item->getTypeName() == HOPSANGUICONDITIONALSYSTEMTYPENAME)
-    {
-        stuffElement.setAttribute("what", UNDO_DELETEDSUBSYSTEM);
-    }
-    else
-    {
-        stuffElement.setAttribute("what", UNDO_DELETEDOBJECT);
-    }
-    item->saveToDomElement(stuffElement);
-    gpUndoWidget->refreshList();
 }
 
 
@@ -814,16 +789,16 @@ void UndoStack::registerDeletedObject(ModelObject *item)
 //! @param item Pointer to the connector about to be deleted
 void UndoStack::registerDeletedConnector(Connector *item)
 {
-    if(!mpParentContainerObject->isUndoEnabled())
-        return;
-    QDomElement currentPostElement = getCurrentPost();
-    //! @todo this check below is needed elsewhere also, to prevent crash under rare circumstances
-    if (currentPostElement.isNull())
-        return;
-    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", UNDO_DELETEDCONNECTOR);
-    item->saveToDomElement(stuffElement);
-    gpUndoWidget->refreshList();
+    if(mEnabled) {
+        QDomElement currentPostElement = getCurrentPost();
+        //! @todo this check below is needed elsewhere also, to prevent crash under rare circumstances
+        if (currentPostElement.isNull())
+            return;
+        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        stuffElement.setAttribute("what", UNDO_DELETEDCONNECTOR);
+        item->saveToDomElement(stuffElement);
+        gpUndoWidget->refreshList();
+    }
 }
 
 
@@ -831,25 +806,25 @@ void UndoStack::registerDeletedConnector(Connector *item)
 //! @param itemName Name of the added object
 void UndoStack::registerAddedObject(ModelObject *item)
 {
-    if(!mpParentContainerObject->isUndoEnabled())
-        return;
-    QDomElement currentPostElement = getCurrentPost();
-    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    if(item->getTypeName() == HOPSANGUICONTAINERPORTTYPENAME)
-    {
-        stuffElement.setAttribute("what", UNDO_ADDEDCONTAINERPORT);
-    }
-    else if(item->getTypeName() == HOPSANGUISYSTEMTYPENAME || item->getTypeName() == HOPSANGUICONDITIONALSYSTEMTYPENAME)
-    {
-        stuffElement.setAttribute("what", UNDO_ADDEDSUBSYSTEM);
-    }
-    else
-    {
-        stuffElement.setAttribute("what", UNDO_ADDEDOBJECT);
-    }
-    item->saveToDomElement(stuffElement);
+    if(mEnabled) {
+        QDomElement currentPostElement = getCurrentPost();
+        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        if(item->getTypeName() == HOPSANGUICONTAINERPORTTYPENAME)
+        {
+            stuffElement.setAttribute("what", UNDO_ADDEDCONTAINERPORT);
+        }
+        else if(item->getTypeName() == HOPSANGUISYSTEMTYPENAME || item->getTypeName() == HOPSANGUICONDITIONALSYSTEMTYPENAME)
+        {
+            stuffElement.setAttribute("what", UNDO_ADDEDSUBSYSTEM);
+        }
+        else
+        {
+            stuffElement.setAttribute("what", UNDO_ADDEDOBJECT);
+        }
+        item->saveToDomElement(stuffElement);
 
-    gpUndoWidget->refreshList();
+        gpUndoWidget->refreshList();
+    }
 }
 
 
@@ -857,7 +832,7 @@ void UndoStack::registerAddedObject(ModelObject *item)
 //! @param item Pointer to the added connector
 void UndoStack::registerAddedConnector(Connector *pConnector)
 {
-    if(mpParentContainerObject->isUndoEnabled()) {
+    if(mEnabled) {
         QDomElement currentPostElement = getCurrentPost();
         QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
         stuffElement.setAttribute("what", UNDO_ADDEDCONNECTOR);
@@ -872,14 +847,14 @@ void UndoStack::registerAddedConnector(Connector *pConnector)
 //! @param newName New object name
 void UndoStack::registerRenameObject(QString oldName, QString newName)
 {
-    if(!mpParentContainerObject->isUndoEnabled())
-        return;
-    QDomElement currentPostElement = getCurrentPost();
-    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", UNDO_RENAME);
-    stuffElement.setAttribute("oldname", oldName);
-    stuffElement.setAttribute("newname", newName);
-    gpUndoWidget->refreshList();
+    if(mEnabled) {
+        QDomElement currentPostElement = getCurrentPost();
+        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        stuffElement.setAttribute("what", UNDO_RENAME);
+        stuffElement.setAttribute("oldname", oldName);
+        stuffElement.setAttribute("newname", newName);
+        gpUndoWidget->refreshList();
+    }
 }
 
 
@@ -889,17 +864,19 @@ void UndoStack::registerRenameObject(QString oldName, QString newName)
 //! @param lineNumber Number of the line that was moved
 void UndoStack::registerModifiedConnector(QPointF oldPos, QPointF newPos, Connector *item, int lineNumber)
 {
-    //! @todo This if statement is a very very very ugly hack...
-    if(!(getCurrentPost().attribute("type") == UNDO_PASTE))    //Connectors are modified when undoing paste operations, but this will modify them twice, so don't register it
-    {
-        QDomElement currentPostElement = getCurrentPost();
-        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-        stuffElement.setAttribute("what", UNDO_MODIFIEDCONNECTOR);
-        stuffElement.setAttribute("linenumber", lineNumber);
-        appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
-        appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
-        item->saveToDomElement(stuffElement);
-        gpUndoWidget->refreshList();
+    if(mEnabled) {
+        //! @todo This if statement is a very very very ugly hack...
+        if(!(getCurrentPost().attribute("type") == UNDO_PASTE))    //Connectors are modified when undoing paste operations, but this will modify them twice, so don't register it
+        {
+            QDomElement currentPostElement = getCurrentPost();
+            QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+            stuffElement.setAttribute("what", UNDO_MODIFIEDCONNECTOR);
+            stuffElement.setAttribute("linenumber", lineNumber);
+            appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
+            appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
+            item->saveToDomElement(stuffElement);
+            gpUndoWidget->refreshList();
+        }
     }
 }
 
@@ -909,15 +886,15 @@ void UndoStack::registerModifiedConnector(QPointF oldPos, QPointF newPos, Connec
 //! @param objectName Name of the object
 void UndoStack::registerMovedObject(QPointF oldPos, QPointF newPos, QString objectName)
 {
-    if(!mpParentContainerObject->isUndoEnabled())
-        return;
-    QDomElement currentPostElement = getCurrentPost();
-    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", UNDO_MOVEDOBJECT);
-    stuffElement.setAttribute(HMF_NAMETAG, objectName);
-    appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
-    appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
-    gpUndoWidget->refreshList();
+    if(mEnabled) {
+        QDomElement currentPostElement = getCurrentPost();
+        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        stuffElement.setAttribute("what", UNDO_MOVEDOBJECT);
+        stuffElement.setAttribute(HMF_NAMETAG, objectName);
+        appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
+        appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
+        gpUndoWidget->refreshList();
+    }
 }
 
 
@@ -925,14 +902,14 @@ void UndoStack::registerMovedObject(QPointF oldPos, QPointF newPos, QString obje
 //! @param item Pointer to the object
 void UndoStack::registerRotatedObject(const QString objectName, const double angle)
 {
-    if(!mpParentContainerObject->isUndoEnabled())
-        return;
-    QDomElement currentPostElement = getCurrentPost();
-    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", UNDO_ROTATE);
-    stuffElement.setAttribute("objectname", objectName);
-    setQrealAttribute(stuffElement, "angle", angle);
-    gpUndoWidget->refreshList();
+    if(mEnabled) {
+        QDomElement currentPostElement = getCurrentPost();
+        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        stuffElement.setAttribute("what", UNDO_ROTATE);
+        stuffElement.setAttribute("objectname", objectName);
+        setQrealAttribute(stuffElement, "angle", angle);
+        gpUndoWidget->refreshList();
+    }
 }
 
 
@@ -940,13 +917,13 @@ void UndoStack::registerRotatedObject(const QString objectName, const double ang
 //! @param item Pointer to the object
 void UndoStack::registerVerticalFlip(QString objectName)
 {
-    if(!mpParentContainerObject->isUndoEnabled())
-        return;
-    QDomElement currentPostElement = getCurrentPost();
-    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", UNDO_VERTICALFLIP);
-    stuffElement.setAttribute("objectname", objectName);
-    gpUndoWidget->refreshList();
+    if(mEnabled) {
+        QDomElement currentPostElement = getCurrentPost();
+        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        stuffElement.setAttribute("what", UNDO_VERTICALFLIP);
+        stuffElement.setAttribute("objectname", objectName);
+        gpUndoWidget->refreshList();
+    }
 }
 
 
@@ -954,13 +931,13 @@ void UndoStack::registerVerticalFlip(QString objectName)
 //! @param item Pointer to the object
 void UndoStack::registerHorizontalFlip(QString objectName)
 {
-    if(!mpParentContainerObject->isUndoEnabled())
-        return;
-    QDomElement currentPostElement = getCurrentPost();
-    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", UNDO_HORIZONTALFLIP);
-    stuffElement.setAttribute("objectname", objectName);
-    gpUndoWidget->refreshList();
+    if(mEnabled) {
+        QDomElement currentPostElement = getCurrentPost();
+        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        stuffElement.setAttribute("what", UNDO_HORIZONTALFLIP);
+        stuffElement.setAttribute("objectname", objectName);
+        gpUndoWidget->refreshList();
+    }
 }
 
 
@@ -971,40 +948,17 @@ void UndoStack::registerHorizontalFlip(QString objectName)
 //! @param newValueTxt Text string with new parameter value
 void UndoStack::registerChangedParameter(QString objectName, QString parameterName, QString oldValueTxt, QString newValueTxt)
 {
-    if(!mpParentContainerObject->isUndoEnabled())
-        return;
-    QDomElement currentPostElement = getCurrentPost();
-    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", UNDO_CHANGEDPARAMETER);
-    stuffElement.setAttribute("parametername", parameterName);
-    stuffElement.setAttribute("oldvalue", oldValueTxt);
-    stuffElement.setAttribute("newvalue", newValueTxt);
-    stuffElement.setAttribute("objectname", objectName);
-    gpUndoWidget->refreshList();
+    if(mEnabled) {
+        QDomElement currentPostElement = getCurrentPost();
+        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        stuffElement.setAttribute("what", UNDO_CHANGEDPARAMETER);
+        stuffElement.setAttribute("parametername", parameterName);
+        stuffElement.setAttribute("oldvalue", oldValueTxt);
+        stuffElement.setAttribute("newvalue", newValueTxt);
+        stuffElement.setAttribute("objectname", objectName);
+        gpUndoWidget->refreshList();
+    }
 }
-
-
-////! @brief Register function for changing the start values of an object
-////! @param objectName Name of the object
-////! @param portName Name of the port where start value has changed
-////! @param parameterName Name of the changed start value
-////! @param oldValueTxt Text string with old start value
-////! @param newValueTxt Text string with new start value
-//void UndoStack::registerChangedStartValue(QString objectName, QString portName, QString parameterName, QString oldValueTxt, QString newValueTxt)
-//{
-//    if(!mpParentContainerObject->isUndoEnabled())
-//        return;
-//    QDomElement currentPostElement = getCurrentPost();
-//    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-//    stuffElement.setAttribute("what", "changedstartvalue");
-//    stuffElement.setAttribute("parametername", parameterName);
-//    stuffElement.setAttribute("oldvalue", oldValueTxt);
-//    stuffElement.setAttribute("newvalue", newValueTxt);
-//    stuffElement.setAttribute("objectname", objectName);
-//    stuffElement.setAttribute("portname", portName);
-//    gpUndoWidget->refreshList();
-//}
-
 
 
 //! @brief Register function for changing name visibility of an object
@@ -1012,59 +966,61 @@ void UndoStack::registerChangedParameter(QString objectName, QString parameterNa
 //! @param isVisible Boolean that tells whether the object has become visible (true) or invisible (false)
 void UndoStack::registerNameVisibilityChange(QString objectName, bool isVisible)
 {
-    if(!mpParentContainerObject->isUndoEnabled())
-        return;
-    QDomElement currentPostElement = getCurrentPost();
-    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", UNDO_NAMEVISIBILITYCHANGE);
-    stuffElement.setAttribute("objectname", objectName);
-    stuffElement.setAttribute("isvisible", isVisible);
-    gpUndoWidget->refreshList();
+    if(mEnabled) {
+        QDomElement currentPostElement = getCurrentPost();
+        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        stuffElement.setAttribute("what", UNDO_NAMEVISIBILITYCHANGE);
+        stuffElement.setAttribute("objectname", objectName);
+        stuffElement.setAttribute("isvisible", isVisible);
+        gpUndoWidget->refreshList();
+    }
 }
 
 void UndoStack::registerRemovedAliases(QStringList &aliases)
 {
-    QDomElement currentPostElement = getCurrentPost();
-    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", UNDO_REMOVEDALIASES);
+    if(mEnabled) {
+        QDomElement currentPostElement = getCurrentPost();
+        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        stuffElement.setAttribute("what", UNDO_REMOVEDALIASES);
 
-    //! @todo need one function that gets both alias and full maybe
-    for (int i=0; i<aliases.size(); ++i)
-    {
-        QDomElement alias = appendDomElement(stuffElement, HMF_ALIAS);
-        alias.setAttribute(HMF_TYPE, "variable"); //!< @todo not manual type
-        alias.setAttribute(HMF_NAMETAG, aliases[i]);
-        QString fullName = mpParentContainerObject->getFullNameFromAlias(aliases[i]);
-        appendDomTextNode(alias, "fullname",fullName );
+        //! @todo need one function that gets both alias and full maybe
+        for (int i=0; i<aliases.size(); ++i)
+        {
+            QDomElement alias = appendDomElement(stuffElement, HMF_ALIAS);
+            alias.setAttribute(HMF_TYPE, "variable"); //!< @todo not manual type
+            alias.setAttribute(HMF_NAMETAG, aliases[i]);
+            QString fullName = mpParentContainerObject->getFullNameFromAlias(aliases[i]);
+            appendDomTextNode(alias, "fullname",fullName );
+        }
     }
 }
 
 
 void UndoStack::registerAddedWidget(Widget *item)
 {
-    if(!mpParentContainerObject->isUndoEnabled())
-        return;
-    QDomElement currentPostElement = getCurrentPost();
-    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    if(item->getWidgetType() == TextBoxWidgetType)
-        stuffElement.setAttribute("what", UNDO_ADDEDTEXTBOXWIDGET);
-    stuffElement.setAttribute("index", item->getWidgetIndex());
-    item->saveToDomElement(stuffElement);
-    gpUndoWidget->refreshList();
+    if(mEnabled) {
+        QDomElement currentPostElement = getCurrentPost();
+        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        if(item->getWidgetType() == TextBoxWidgetType)
+            stuffElement.setAttribute("what", UNDO_ADDEDTEXTBOXWIDGET);
+        stuffElement.setAttribute("index", item->getWidgetIndex());
+        item->saveToDomElement(stuffElement);
+        gpUndoWidget->refreshList();
+    }
 }
 
 
 void UndoStack::registerDeletedWidget(Widget *item)
 {
-    if(!mpParentContainerObject->isUndoEnabled())
-        return;
-    QDomElement currentPostElement = getCurrentPost();
-    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    if(item->getWidgetType() == TextBoxWidgetType)
-        stuffElement.setAttribute("what", UNDO_DELETEDTEXTBOXWIDGET);
-    stuffElement.setAttribute("index", item->getWidgetIndex());
-    item->saveToDomElement(stuffElement);
-    gpUndoWidget->refreshList();
+    if(mEnabled) {
+        QDomElement currentPostElement = getCurrentPost();
+        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        if(item->getWidgetType() == TextBoxWidgetType)
+            stuffElement.setAttribute("what", UNDO_DELETEDTEXTBOXWIDGET);
+        stuffElement.setAttribute("index", item->getWidgetIndex());
+        item->saveToDomElement(stuffElement);
+        gpUndoWidget->refreshList();
+    }
 }
 
 
@@ -1076,15 +1032,15 @@ void UndoStack::registerMovedWidget(Widget *item, QPointF oldPos, QPointF newPos
 {
     qDebug() << "registerMovedWidget(), index = " << item->getWidgetIndex();
 
-    if(!mpParentContainerObject->isUndoEnabled())
-        return;
-    QDomElement currentPostElement = getCurrentPost();
-    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", UNDO_MOVEDWIDGET);
-    stuffElement.setAttribute("index", item->getWidgetIndex());
-    appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
-    appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
-    gpUndoWidget->refreshList();
+    if(mEnabled) {
+        QDomElement currentPostElement = getCurrentPost();
+        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        stuffElement.setAttribute("what", UNDO_MOVEDWIDGET);
+        stuffElement.setAttribute("index", item->getWidgetIndex());
+        appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
+        appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
+        gpUndoWidget->refreshList();
+    }
 }
 
 
@@ -1099,35 +1055,39 @@ void UndoStack::registerMovedWidget(Widget *item, QPointF oldPos, QPointF newPos
 //! @param newPos New position of the box widget
 void UndoStack::registerResizedTextBoxWidget(const int index, const double w_old, const double h_old, const double w_new, const double h_new, const QPointF oldPos, const QPointF newPos)
 {
-    if(!mpParentContainerObject->isUndoEnabled())
-        return;
-    QDomElement currentPostElement = getCurrentPost();
-    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", UNDO_RESIZEDTEXTBOXWIDGET);
-    stuffElement.setAttribute("index", index);
-    setQrealAttribute(stuffElement, "w_old", w_old);
-    setQrealAttribute(stuffElement, "h_old", h_old);
-    setQrealAttribute(stuffElement, "w_new", w_new);
-    setQrealAttribute(stuffElement, "h_new", h_new);
-    appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
-    appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
-    gpUndoWidget->refreshList();
+    if(mEnabled) {
+        QDomElement currentPostElement = getCurrentPost();
+        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        stuffElement.setAttribute("what", UNDO_RESIZEDTEXTBOXWIDGET);
+        stuffElement.setAttribute("index", index);
+        setQrealAttribute(stuffElement, "w_old", w_old);
+        setQrealAttribute(stuffElement, "h_old", h_old);
+        setQrealAttribute(stuffElement, "w_new", w_new);
+        setQrealAttribute(stuffElement, "h_new", h_new);
+        appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
+        appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
+        gpUndoWidget->refreshList();
+    }
 }
 
 void UndoStack::registerModifiedTextBoxWidget(Widget *pItem)
 {
-    if(!mpParentContainerObject->isUndoEnabled())
-        return;
+    if(mEnabled) {
+        QDomElement currentPostElement = getCurrentPost();
+        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        stuffElement.setAttribute("what", UNDO_MODIFIEDTEXTBOXWIDGET);
+        stuffElement.setAttribute("index", pItem->getWidgetIndex());
 
-    QDomElement currentPostElement = getCurrentPost();
-    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", UNDO_MODIFIEDTEXTBOXWIDGET);
-    stuffElement.setAttribute("index", pItem->getWidgetIndex());
+        // Save the old text box widget
+        pItem->saveToDomElement(stuffElement);
 
-    // Save the old text box widget
-    pItem->saveToDomElement(stuffElement);
+        gpUndoWidget->refreshList();
+    }
+}
 
-    gpUndoWidget->refreshList();
+void UndoStack::setEnabled(bool enabled)
+{
+    mEnabled = enabled;
 }
 
 void UndoStack::addTextboxwidget(const QDomElement &rStuffElement)

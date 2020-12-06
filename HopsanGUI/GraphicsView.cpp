@@ -190,6 +190,7 @@ void GraphicsView::insertComponentFromLineEdit()
     }
     QString typeName = mTypeNames[mDisplayNames.indexOf(displayName)];
     gpMessageHandler->addInfoMessage("Adding: "+typeName);
+    mpContainerObject->getUndoStackPtr()->newPost();
     mpContainerObject->addModelObject(typeName, mapToScene(mpAddComponentLineEdit->pos()));
     hideAddComponentLineEdit();
 }

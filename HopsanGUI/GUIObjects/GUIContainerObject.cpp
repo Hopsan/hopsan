@@ -129,9 +129,8 @@ void SystemObject::commonConstructorCode()
     mpScene = new QGraphicsScene(this);
     mGraphicsViewPort = GraphicsViewPort(2500, 2500, 1.0); // Default should be centered
 
-    // Create the undostack
+    // Create the undo stack
     mpUndoStack = new UndoStack(this);
-    mpUndoStack->clear();
 
     mpDragCopyStack = new CopyStack();
 
@@ -2140,7 +2139,6 @@ void SystemObject::redo()
 //! @see redo()
 void SystemObject::clearUndo()
 {
-    qDebug() << "before mUndoStack->clear(); in GUIContainerObject: " << this->getName();
     mpUndoStack->clear();
 }
 
@@ -2446,28 +2444,27 @@ void SystemObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
 
         if (doIt)
         {
-            this->clearUndo();
+            mpUndoStack->setEnabled(false);
+            mpUndoStack->clear();
             mUndoEnabled = false;
-            if(gpModelHandler->getCurrentViewContainerObject() == this)      //Only modify main window actions if this is current container
-            {
-                gpMainWindow->mpUndoAction->setEnabled(false);
-                gpMainWindow->mpRedoAction->setEnabled(false);
-            }
         }
     }
     else
     {
+        mpUndoStack->setEnabled(true);
         mUndoEnabled = true;
-        if(gpModelHandler->getCurrentViewContainerObject() == this)      //Only modify main window actions if this is current container
-        {
-            gpMainWindow->mpUndoAction->setEnabled(true);
-            gpMainWindow->mpRedoAction->setEnabled(true);
+    }
+
+    // Only modify main window actions if this is current container
+    if(gpModelHandler->getCurrentViewContainerObject() == this)
+    {
+        gpMainWindow->mpUndoAction->setEnabled(mUndoEnabled);
+        gpMainWindow->mpRedoAction->setEnabled(mUndoEnabled);
+        if(gpMainWindow->mpEnableUndoAction->isChecked() != mUndoEnabled) {
+            gpMainWindow->mpEnableUndoAction->setChecked(mUndoEnabled);
         }
     }
 
-    if(gpMainWindow->mpEnableUndoAction->isChecked() != mUndoEnabled) {
-        gpMainWindow->mpEnableUndoAction->setChecked(mUndoEnabled);
-    }
 }
 
 

@@ -91,7 +91,7 @@ class SystemObject;
 class Widget;
 class UndoWidget;
 
-class UndoStack : public QObject
+class UndoStack
 {
 friend class UndoWidget;
 
@@ -100,6 +100,7 @@ public:
 
     QDomElement toXml();
     void fromXml(QDomElement &undoElement);
+    void setEnabled(bool enabled);
     void clear(QString errorMsg = "");
     void newPost(QString type = "");
     void insertPost(QString str);
@@ -130,6 +131,7 @@ public:
 private:
     SystemObject *mpParentContainerObject;
     int mCurrentStackPosition;
+    bool mEnabled;
 
     void addTextboxwidget(const QDomElement &rStuffElement);
     void removeTextboxWidget(const QDomElement &rStuffElement);
