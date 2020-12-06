@@ -159,7 +159,7 @@ private:
 };
 
 
-class ConnectorLine : public QObject, public QGraphicsLineItem
+class ConnectorLine final : public QObject, public QGraphicsLineItem
 {
     friend class Connector;
     friend class AnimatedConnector;
@@ -168,7 +168,7 @@ public:
     ConnectorLine(double x1, double y1, double x2, double y2, int lineNumber, Connector *pParentConnector);
     ~ConnectorLine();
 
-    void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w);
+    void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w) override;
     void addEndArrow();
     void addStartArrow();
     void setLine(QPointF pos1, QPointF pos2);
@@ -185,13 +185,14 @@ signals:
     void lineSelected(bool isSelected, int lineNumber);
 
 protected:
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
-    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
-    virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
 private:
     void clearArrows();

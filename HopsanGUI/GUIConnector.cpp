@@ -1334,8 +1334,7 @@ void ConnectorLine::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidge
 //! @brief Defines what happens if a mouse key is pressed while hovering a connector line
 void ConnectorLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(event->button() == Qt::LeftButton)
-    {
+    if(event->button() == Qt::LeftButton) {
         mOldPos = this->pos();
     }
     QGraphicsLineItem::mousePressEvent(event);
@@ -1352,6 +1351,13 @@ void ConnectorLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         mpParentConnector->mpParentContainerObject->getUndoStackPtr()->registerModifiedConnector(mOldPos, this->pos(), mpParentConnector, getLineNumber());
     }
     QGraphicsLineItem::mouseReleaseEvent(event);
+}
+
+void ConnectorLine::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    if (mpParentConnector->mpParentContainerObject->mpModelWidget->getCurrentLockLevel() == NotLocked) {
+        QGraphicsLineItem::mouseMoveEvent(event);
+    }
 }
 
 //! @brief Defines what happens if the mouse cursor enters the line (changes cursor if the line is movable)
