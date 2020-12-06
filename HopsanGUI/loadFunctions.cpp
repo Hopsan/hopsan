@@ -587,8 +587,12 @@ void loadPlotAlias(QDomElement &rDomElement, SystemObject* pContainer)
 //! @todo this function should not be needed, figure out the stupid stuff below then code this function away
 TextBoxWidget *loadTextBoxWidget(QDomElement &rDomElement, SystemObject *pContainer, UndoStatusEnumT undoSettings)
 {
-    TextBoxWidget *pWidget = pContainer->addTextBoxWidget(QPointF(1,1), undoSettings);
+    TextBoxWidget *pWidget = pContainer->addTextBoxWidget(QPointF(1,1), NoUndo);
     pWidget->loadFromDomElement(rDomElement);
+
+    if(undoSettings == Undo) {
+        pContainer->getUndoStackPtr()->registerAddedWidget(pWidget);
+    }
 
     pWidget->setSelected(true);     //!< @todo Stupid!
     pWidget->setSelected(false);    //For some reason this is needed...

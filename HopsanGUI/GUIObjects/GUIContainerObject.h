@@ -195,7 +195,7 @@ public:
 
     //GUIWidgets methods
     TextBoxWidget *addTextBoxWidget(QPointF position, UndoStatusEnumT undoSettings=Undo);
-    TextBoxWidget *addTextBoxWidget(QPointF position, const int desiredWidgetId, UndoStatusEnumT undoSettings=Undo);
+    TextBoxWidget *addTextBoxWidget(QPointF position, int desiredWidgetId, UndoStatusEnumT undoSettings=Undo);
     void deleteWidget(Widget *pWidget, UndoStatusEnumT undoSettings=Undo);
     void deleteWidget(const int id, UndoStatusEnumT undoSettings=Undo);
 

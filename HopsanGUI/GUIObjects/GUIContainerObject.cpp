@@ -720,21 +720,17 @@ TextBoxWidget *SystemObject::addTextBoxWidget(QPointF position, UndoStatusEnumT 
     return addTextBoxWidget(position, 0, undoSettings);
 }
 
-TextBoxWidget *SystemObject::addTextBoxWidget(QPointF position, const int desiredWidgetId, UndoStatusEnumT undoSettings)
+TextBoxWidget *SystemObject::addTextBoxWidget(QPointF position, int desiredWidgetId, UndoStatusEnumT undoSettings)
 {
     TextBoxWidget *pNewTextBoxWidget;
-    if (mWidgetMap.contains(desiredWidgetId))
-    {
-        pNewTextBoxWidget = new TextBoxWidget("Text", position, 0, Deselected, this, mWidgetMap.keys().last()+1);
+    if (mWidgetMap.contains(desiredWidgetId)) {
+        desiredWidgetId = mWidgetMap.keys().last()+1;
     }
-    else
-    {
-        pNewTextBoxWidget = new TextBoxWidget("Text", position, 0, Deselected, this, desiredWidgetId);
-    }
+    constexpr double angle = 0;
+    pNewTextBoxWidget = new TextBoxWidget("Text", position, angle, Deselected, this, desiredWidgetId);
     mWidgetMap.insert(pNewTextBoxWidget->getWidgetIndex(), pNewTextBoxWidget);
 
-    if(undoSettings == Undo)
-    {
+    if(undoSettings == Undo) {
         mpUndoStack->registerAddedWidget(pNewTextBoxWidget);
     }
     mpModelWidget->hasChanged();

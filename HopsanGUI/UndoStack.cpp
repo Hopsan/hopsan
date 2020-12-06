@@ -135,7 +135,6 @@ void UndoStack::undoOneStep()
     QList<QDomElement> addedcontainerportsList;
     QList<QDomElement> addedsubsystemsList;
     QStringList movedObjects;
-    QList<int> addedWidgetList;
     int dx=0, dy=0;
     QDomElement stuffElement = getCurrentPost().lastChildElement("stuff");
     while(!stuffElement.isNull())
@@ -468,11 +467,6 @@ void UndoStack::undoOneStep()
             (*itc)->moveAllPoints(-dx, -dy);
             (*itc)->drawConnector();
         }
-    }
-
-    for(int i=0; i<addedWidgetList.size(); ++i)
-    {
-        mpParentContainerObject->mWidgetMap.find(addedWidgetList.at(i)).value()->deleteMe(NoUndo);
     }
 
     // Reduce stack position if something was done (otherwise stack is empty)
