@@ -547,10 +547,10 @@ void MainWindow::createActions()
     connect(mpOpenUndoAction,SIGNAL(triggered()),this,SLOT(openUndoWidget()));
     mpOpenUndoAction->setShortcut(QKeySequence("Ctrl+Shift+u"));
 
-    mpDisableUndoAction = new QAction(tr("&Disable Undo"), this);
-    mpDisableUndoAction->setText("Disable Undo");
-    mpDisableUndoAction->setCheckable(true);
-    mpDisableUndoAction->setChecked(false);
+    mpEnableUndoAction = new QAction(tr("&Enable Undo"), this);
+    mpEnableUndoAction->setText("Enable Undo");
+    mpEnableUndoAction->setCheckable(true);
+    mpEnableUndoAction->setChecked(true);
 
     mpOpenSystemParametersAction = new QAction(QIcon(QString(ICONPATH) + "svg/Hopsan-SystemParameters.svg"), tr("&System Parameters"), this);
     mpOpenSystemParametersAction->setToolTip("System Parameters (Ctrl+Shift+Y)");
@@ -1002,7 +1002,7 @@ void MainWindow::createMenus()
     mpEditMenu->addAction(mpUndoAction);
     mpEditMenu->addAction(mpRedoAction);
     mpEditMenu->addAction(mpOpenUndoAction);
-    mpEditMenu->addAction(mpDisableUndoAction);
+    mpEditMenu->addAction(mpEnableUndoAction);
     mpEditMenu->addSeparator();
     mpEditMenu->addAction(mpCopyAction);
     mpEditMenu->addAction(mpCutAction);

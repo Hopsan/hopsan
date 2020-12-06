@@ -155,7 +155,7 @@ private:
     QPushButton *mpIsoIconBrowseButton;
     QPushButton *mpUserIconBrowseButton;
     QCheckBox *mpIsoCheckBox;
-    QCheckBox *mpDisableUndoCheckBox;
+    QCheckBox *mpEnableUndoCheckBox;
     QCheckBox *mpSaveUndoCheckBox;
 
     QCheckBox *mpDisableAnimationCheckBox;

@@ -173,7 +173,7 @@ public:
     QAction *mpOpenFindWidgetAction;
     QAction *mpRevertModelAction;
     QAction *mpNumHopAction;
-    QAction *mpDisableUndoAction;
+    QAction *mpEnableUndoAction;
     QAction *mpCutAction;
     QAction *mpCopyAction;
     QAction *mpPasteAction;

@@ -117,7 +117,7 @@ void SystemObject::commonConstructorCode()
     mShowSubComponentNames = gpMainWindow->mpToggleNamesAction->isChecked();
     mSignalsHidden = gpMainWindow->mpToggleSignalsAction->isChecked();
     mLossesVisible = false;
-    mUndoDisabled = false;
+    mUndoEnabled = true;
     mGfxType = UserGraphics;
     mLoadType = "EMBEDED";
     mNumberOfLogSamples = 2048;
@@ -223,7 +223,7 @@ void SystemObject::makeMainWindowConnectionsAndRefresh()
     connect(gpMainWindow->mpTogglePortsAction,    SIGNAL(triggered(bool)),    this,     SLOT(showSubcomponentPorts(bool)), Qt::UniqueConnection);
     connect(gpMainWindow->mpToggleNamesAction,    SIGNAL(triggered(bool)),    this,     SLOT(toggleNames(bool)), Qt::UniqueConnection);
     connect(gpMainWindow->mpToggleSignalsAction,  SIGNAL(triggered(bool)),    this,     SLOT(toggleSignals(bool)), Qt::UniqueConnection);
-    connect(gpMainWindow->mpDisableUndoAction,    SIGNAL(triggered(bool)),    this,     SLOT(setUndoDisabled(bool)), Qt::UniqueConnection);
+    connect(gpMainWindow->mpEnableUndoAction,     SIGNAL(triggered(bool)),    this,     SLOT(setUndoEnabled(bool)), Qt::UniqueConnection);
     connect(gpMainWindow->mpCutAction,            SIGNAL(triggered()),        this,     SLOT(cutSelected()), Qt::UniqueConnection);
     connect(gpMainWindow->mpCopyAction,           SIGNAL(triggered()),        this,     SLOT(copySelected()), Qt::UniqueConnection);
     connect(gpMainWindow->mpPasteAction,          SIGNAL(triggered()),        this,     SLOT(paste()), Qt::UniqueConnection);
@@ -237,18 +237,19 @@ void SystemObject::makeMainWindowConnectionsAndRefresh()
     connect(gpMainWindow->mpFlipVerticalAction,   SIGNAL(triggered()),        this,     SLOT(flipSubObjectsVertical()), Qt::UniqueConnection);
     connect(gpMainWindow->mpPropertiesAction,     SIGNAL(triggered()),        this,     SLOT(openPropertiesDialogSlot()), Qt::UniqueConnection);
 
-    // Update the main window toolbar action buttons that are system specific
+    // Update the main window menu and toolbar actions that are system specific
     gpMainWindow->mpTogglePortsAction->setChecked(mShowSubComponentPorts);
     gpMainWindow->mpToggleNamesAction->setChecked(mShowSubComponentNames);
     gpMainWindow->mpToggleSignalsAction->setChecked(!mSignalsHidden);
+    gpMainWindow->mpEnableUndoAction->setChecked(mUndoEnabled);
+    gpMainWindow->mpUndoAction->setEnabled(mUndoEnabled);
+    gpMainWindow->mpRedoAction->setEnabled(mUndoEnabled);
+    gpMainWindow->mpAnimateAction->setDisabled(mAnimationDisabled);
 
     // Update main window widgets with data from this container
     gpFindWidget->setContainer(this);
     gpMainWindow->mpSystemParametersWidget->update(this);
     gpUndoWidget->refreshList();
-    gpMainWindow->mpUndoAction->setDisabled(this->mUndoDisabled);
-    gpMainWindow->mpRedoAction->setDisabled(this->mUndoDisabled);
-    gpMainWindow->mpAnimateAction->setDisabled(this->mAnimationDisabled);
 }
 
 //! @brief Disconnects all SignalAndSlot connections to the mainwindow buttons from this container
@@ -270,7 +271,7 @@ void SystemObject::unmakeMainWindowConnectionsAndRefresh()
     disconnect(gpMainWindow->mpToggleNamesAction,     SIGNAL(triggered(bool)),    this,    SLOT(toggleNames(bool)));
     disconnect(gpMainWindow->mpTogglePortsAction,     SIGNAL(triggered(bool)),    this,    SLOT(showSubcomponentPorts(bool)));
     disconnect(gpMainWindow->mpToggleSignalsAction,   SIGNAL(triggered(bool)),    this,    SLOT(toggleSignals(bool)));
-    disconnect(gpMainWindow->mpDisableUndoAction,     SIGNAL(triggered(bool)),    this,    SLOT(setUndoDisabled(bool)));
+    disconnect(gpMainWindow->mpEnableUndoAction,      SIGNAL(triggered(bool)),    this,    SLOT(setUndoEnabled(bool)));
     disconnect(gpMainWindow->mpCutAction,             SIGNAL(triggered()),        this,    SLOT(cutSelected()));
     disconnect(gpMainWindow->mpCopyAction,            SIGNAL(triggered()),        this,    SLOT(copySelected()));
     disconnect(gpMainWindow->mpPasteAction,           SIGNAL(triggered()),        this,    SLOT(paste()));
@@ -786,7 +787,7 @@ void SystemObject::deleteModelObject(const QString &rObjectName, UndoStatusEnumT
             removeSubConnector(pConn, undoSettings);
         }
 
-        if (undoSettings == Undo && !mUndoDisabled)
+        if ( (undoSettings == Undo) && mUndoEnabled)
         {
             //First save aliases for component to remove (if any)
             QStringList aliasesToSave;
@@ -2425,12 +2426,6 @@ void SystemObject::removeOneConnectorLine(QPointF pos)
 }
 
 
-void SystemObject::setUndoDisabled(bool disabled, bool dontAskJustDoIt)
-{
-    setUndoEnabled(!disabled, dontAskJustDoIt);
-}
-
-
 //! @brief Disables the undo function for the current model.
 //! @param enabled Tells whether or not to enable the undo stack
 //! @param dontAskJustDoIt If true, the warning box will not appear
@@ -2452,26 +2447,27 @@ void SystemObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
         if (doIt)
         {
             this->clearUndo();
-            mUndoDisabled = true;
+            mUndoEnabled = false;
             if(gpModelHandler->getCurrentViewContainerObject() == this)      //Only modify main window actions if this is current container
             {
-                gpMainWindow->mpUndoAction->setDisabled(true);
-                gpMainWindow->mpRedoAction->setDisabled(true);
+                gpMainWindow->mpUndoAction->setEnabled(false);
+                gpMainWindow->mpRedoAction->setEnabled(false);
             }
         }
     }
     else
     {
-        mUndoDisabled = false;
+        mUndoEnabled = true;
         if(gpModelHandler->getCurrentViewContainerObject() == this)      //Only modify main window actions if this is current container
         {
-            gpMainWindow->mpUndoAction->setDisabled(false);
-            gpMainWindow->mpRedoAction->setDisabled(false);
+            gpMainWindow->mpUndoAction->setEnabled(true);
+            gpMainWindow->mpRedoAction->setEnabled(true);
         }
     }
 
-    if(gpMainWindow->mpDisableUndoAction->isChecked() != mUndoDisabled)
-        gpMainWindow->mpDisableUndoAction->setChecked(mUndoDisabled);
+    if(gpMainWindow->mpEnableUndoAction->isChecked() != mUndoEnabled) {
+        gpMainWindow->mpEnableUndoAction->setChecked(mUndoEnabled);
+    }
 }
 
 
@@ -2505,7 +2501,7 @@ bool SystemObject::areSignalsHidden()
 //! @brief Tells whether or not undo/redo is enabled
 bool SystemObject::isUndoEnabled()
 {
-    return !mUndoDisabled;
+    return mUndoEnabled;
 }
 
 
@@ -2519,8 +2515,8 @@ bool SystemObject::getSaveUndo()
 //! @brief Enables or disables the undo buttons depending on whether or not undo is disabled in current tab
 void SystemObject::updateMainWindowButtons()
 {
-    gpMainWindow->mpUndoAction->setDisabled(mUndoDisabled);
-    gpMainWindow->mpRedoAction->setDisabled(mUndoDisabled);
+    gpMainWindow->mpUndoAction->setEnabled(mUndoEnabled);
+    gpMainWindow->mpRedoAction->setEnabled(mUndoEnabled);
     gpMainWindow->mpAnimateAction->setDisabled(mAnimationDisabled);
 
     //gpMainWindow->mpPlotAction->setDisabled(mpLogDataHandler->isEmpty());

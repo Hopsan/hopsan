@@ -347,7 +347,6 @@ public slots:
     void undo();
     void redo();
     void clearUndo();
-    void setUndoDisabled(bool disabled, bool dontAskJustDoIt=false);
     void setUndoEnabled(bool enabled, bool dontAskJustDoIt=false);
     void setSaveUndo(bool save);
     bool isUndoEnabled();
@@ -476,7 +475,7 @@ protected:
 
     //Undo-redo members
     UndoStack *mpUndoStack;
-    bool mUndoDisabled;
+    bool mUndoEnabled;
     bool mSaveUndoStack;
 
     //Copy-paste members

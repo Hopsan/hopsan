@@ -604,9 +604,9 @@ QWidget *SystemProperties::createSystemSettings()
     mpKeepValuesAsStartValues->setChecked(mpSystemObject->getCoreSystemAccessPtr()->doesKeepStartValues());
 
     // Disable undo check box
-    mpDisableUndoCheckBox = new QCheckBox(tr("Disable Undo Function"), pSettingsWidget);
-    mpDisableUndoCheckBox->setCheckable(true);
-    mpDisableUndoCheckBox->setChecked(!mpSystemObject->isUndoEnabled());
+    mpEnableUndoCheckBox = new QCheckBox(tr("Enable Undo Function"), pSettingsWidget);
+    mpEnableUndoCheckBox->setCheckable(true);
+    mpEnableUndoCheckBox->setChecked(mpSystemObject->isUndoEnabled());
 
     // Save undo check box
     mpSaveUndoCheckBox = new QCheckBox(tr("Save Undo Function In Model File"), pSettingsWidget);
@@ -621,7 +621,7 @@ QWidget *SystemProperties::createSystemSettings()
     QGridLayout *pSettingsLayout = new QGridLayout(pSettingsWidget);
     int row = 0;
     pSettingsLayout->addWidget(mpKeepValuesAsStartValues,      row, 0, 1, 2);
-    pSettingsLayout->addWidget(mpDisableUndoCheckBox,        ++row, 0, 1, 2);
+    pSettingsLayout->addWidget(mpEnableUndoCheckBox,         ++row, 0, 1, 2);
     pSettingsLayout->addWidget(mpSaveUndoCheckBox,           ++row, 0, 1, 2);
     pSettingsLayout->addWidget(mpDisableAnimationCheckBox,   ++row, 0, 1, 2);
     pSettingsLayout->addWidget(new QWidget(pSettingsWidget), ++row, 0, 1, 2);
@@ -2219,9 +2219,9 @@ void SystemProperties::setValues()
 
     mpSystemObject->getCoreSystemAccessPtr()->setKeepValuesAsStartValues(mpKeepValuesAsStartValues->isChecked());
 
-    if(mpSystemObject->isUndoEnabled() == mpDisableUndoCheckBox->isChecked())
+    if(mpSystemObject->isUndoEnabled() != mpEnableUndoCheckBox->isChecked())
     {
-        mpSystemObject->setUndoEnabled(!mpDisableUndoCheckBox->isChecked());
+        mpSystemObject->setUndoEnabled(mpEnableUndoCheckBox->isChecked());
     }
 
     mpSystemObject->setSaveUndo(mpSaveUndoCheckBox->isChecked());
