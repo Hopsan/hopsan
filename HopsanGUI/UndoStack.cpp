@@ -439,15 +439,16 @@ void UndoStack::undoOneStep()
     for(it = addedsubsystemsList.begin(); it!=addedsubsystemsList.end(); ++it)
     {
         QString name = (*it).attribute(HMF_NAMETAG);
-        SystemObject *pItem = qobject_cast<SystemObject *>(mpParentContainerObject->getModelObject(name));
+        SystemObject *pSystemToRemove = qobject_cast<SystemObject *>(mpParentContainerObject->getModelObject(name));
 
-        //Update information about Subsystem in dom thread, in case it has changed since registered
-        QDomElement whatElement = (*it).parentNode().toElement();
+        // Update information about Subsystem in DOM tree, in case it has changed inside since registered in the undo stack
+        QDomElement oldElement = (*it).parentNode().toElement();
         QDomElement parentElement = (*it).parentNode().parentNode().toElement();
-        QDomElement stuffElement = appendDomElement(parentElement, "stuff");
-        stuffElement.setAttribute("what", UNDO_ADDEDSUBSYSTEM);
-        pItem->saveToDomElement(stuffElement);
-        parentElement.removeChild(whatElement);
+        QDomElement newStuffElement = oldElement.ownerDocument().createElement("stuff");
+        parentElement.insertAfter(newStuffElement, oldElement); //Note! cant use append, because then order will be changed and redo will fail some operations
+        newStuffElement.setAttribute("what", UNDO_ADDEDSUBSYSTEM);
+        pSystemToRemove->saveToDomElement(newStuffElement);
+        parentElement.removeChild(oldElement);
 
         if(!mpParentContainerObject->hasModelObject(name))
         {
@@ -502,34 +503,35 @@ void UndoStack::redoOneStep()
         {
             QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENTTAG);
             QString name = componentElement.attribute(HMF_NAMETAG);
-            if(!mpParentContainerObject->hasModelObject(name))
-            {
-                this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
-                return;
+            if(mpParentContainerObject->hasModelObject(name)) {
+                mpParentContainerObject->deleteModelObject(name, NoUndo);
             }
-            this->mpParentContainerObject->deleteModelObject(name, NoUndo);
+            else{
+                gpMessageHandler->addErrorMessage("Undo stack (redo) attempted to access non-existing component: "+name);
+            }
         }
         else if(stuffElement.attribute("what") == UNDO_DELETEDCONTAINERPORT)
         {
             QDomElement systemPortElement = stuffElement.firstChildElement(HMF_SYSTEMPORTTAG);
             QString name = systemPortElement.attribute(HMF_NAMETAG);
-            if(!mpParentContainerObject->hasModelObject(name))
-            {
-                this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
-                return;
+            if(mpParentContainerObject->hasModelObject(name)) {
+                mpParentContainerObject->deleteModelObject(name, NoUndo);
             }
-            this->mpParentContainerObject->deleteModelObject(name, NoUndo);
+            else{
+                gpMessageHandler->addErrorMessage("Undo stack (redo) attempted to access non-existing component: "+name);
+            }
+
         }
         else if(stuffElement.attribute("what") == UNDO_DELETEDSUBSYSTEM)
         {
             QDomElement systemElement = stuffElement.firstChildElement(HMF_SYSTEMTAG);
             QString name = systemElement.attribute(HMF_NAMETAG);
-            if(!mpParentContainerObject->hasModelObject(name))
-            {
-                this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
-                return;
+            if(mpParentContainerObject->hasModelObject(name)) {
+                mpParentContainerObject->deleteModelObject(name, NoUndo);
             }
-            this->mpParentContainerObject->deleteModelObject(name, NoUndo);
+            else{
+                gpMessageHandler->addErrorMessage("Undo stack (redo) attempted to access non-existing component: "+name);
+            }
         }
         else if(stuffElement.attribute("what") == UNDO_ADDEDOBJECT)
         {
@@ -569,12 +571,13 @@ void UndoStack::redoOneStep()
         {
             QString newName = stuffElement.attribute("newname");
             QString oldName = stuffElement.attribute("oldname");
-            if(!mpParentContainerObject->hasModelObject(oldName))
-            {
-                this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
-                return;
+            if(mpParentContainerObject->hasModelObject(oldName)) {
+                mpParentContainerObject->renameModelObject(oldName, newName, NoUndo);
             }
-            mpParentContainerObject->renameModelObject(oldName, newName, NoUndo);
+            else{
+                gpMessageHandler->addErrorMessage("Undo stack (redo) attempted to access non-existing component: "+oldName);
+            }
+
         }
         else if(stuffElement.attribute("what") == UNDO_MODIFIEDCONNECTOR)
         {
@@ -589,62 +592,63 @@ void UndoStack::redoOneStep()
             parseDomValueNode2(newPosElement, x, y);
             parseDomValueNode2(oldPosElement, x_old, y_old);
             QString name = stuffElement.attribute(HMF_NAMETAG);
-            if(!mpParentContainerObject->hasModelObject(name))
-            {
-                this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
-                return;
+            if(mpParentContainerObject->hasModelObject(name)) {
+                mpParentContainerObject->getModelObject(name)->setPos(x, y);
+                mpParentContainerObject->getModelObject(name)->rememberPos();
+                movedObjects.append(name);
+                dx = x - x_old;
+                dy = y - y_old;
             }
-            mpParentContainerObject->getModelObject(name)->setPos(x, y);
-            mpParentContainerObject->getModelObject(name)->rememberPos();
-            movedObjects.append(name);
-            dx = x - x_old;
-            dy = y - y_old;
+            else{
+                gpMessageHandler->addErrorMessage("Undo stack (redo) attempted to access non-existing component: "+name);
+            }
         }
         else if(stuffElement.attribute("what") == UNDO_ROTATE)
         {
             QString name = stuffElement.attribute("objectname");
             double angle = stuffElement.attribute("angle").toDouble();
-            if(!mpParentContainerObject->hasModelObject(name))
-            {
-                this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
-                return;
+            if(mpParentContainerObject->hasModelObject(name)) {
+                mpParentContainerObject->getModelObject(name)->rotate(angle, NoUndo);
             }
-            //double targetAngle = mpParentContainerObject->getGUIModelObject(name)->rotation()+angle;
-            //if(targetAngle >= 360) { targetAngle = 0; }
-            //if(targetAngle < 0) { targetAngle = 270; }
-            mpParentContainerObject->getModelObject(name)->rotate(angle, NoUndo);
+            else{
+                gpMessageHandler->addErrorMessage("Undo stack (redo) attempted to access non-existing component: "+name);
+            }
+
         }
         else if(stuffElement.attribute("what") == UNDO_VERTICALFLIP)
         {
             QString name = stuffElement.attribute("objectname");
-            if(!mpParentContainerObject->hasModelObject(name))
-            {
-                this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
-                return;
+            if(mpParentContainerObject->hasModelObject(name)) {
+                mpParentContainerObject->getModelObject(name)->flipVertical(NoUndo);
             }
-            mpParentContainerObject->getModelObject(name)->flipVertical(NoUndo);
+            else{
+                gpMessageHandler->addErrorMessage("Undo stack (redo) attempted to access non-existing component: "+name);
+            }
+
         }
         else if(stuffElement.attribute("what") == UNDO_HORIZONTALFLIP)
         {
             QString name = stuffElement.attribute("objectname");
-            if(!mpParentContainerObject->hasModelObject(name))
-            {
-                this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
-                return;
+            if(mpParentContainerObject->hasModelObject(name)) {
+                mpParentContainerObject->getModelObject(name)->flipHorizontal(NoUndo);
             }
-            mpParentContainerObject->getModelObject(name)->flipHorizontal(NoUndo);
+            else{
+                gpMessageHandler->addErrorMessage("Undo stack (redo) attempted to access non-existing component: "+name);
+            }
+
         }
         else if(stuffElement.attribute("what") == UNDO_CHANGEDPARAMETER)
         {
             QString objectName = stuffElement.attribute("objectname");
             QString parameterName = stuffElement.attribute("parametername");
             QString newValue = stuffElement.attribute("newvalue");
-            if(!mpParentContainerObject->hasModelObject(objectName))
-            {
-                this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
-                return;
+            if(mpParentContainerObject->hasModelObject(objectName)) {
+                mpParentContainerObject->getModelObject(objectName)->setParameterValue(parameterName, newValue);
             }
-            mpParentContainerObject->getModelObject(objectName)->setParameterValue(parameterName, newValue);
+            else{
+                gpMessageHandler->addErrorMessage("Undo stack (redo) attempted to access non-existing component: "+objectName);
+            }
+
         }
         else if(stuffElement.attribute("what") == UNDO_NAMEVISIBILITYCHANGE)
         {

@@ -1635,12 +1635,14 @@ void SystemObject::paste(CopyStack *xmlStack)
             ModelObject *pObj = loadModelObject(objectElement, this, Undo);
             if (pObj) {
                 // Apply offset to pasted object
+                const auto prevPos = pObj->pos();
                 pObj->moveBy(offset.x(), offset.y());
                 // Map renamed components
                 const QString desiredName = objectElement.attribute(HMF_NAMETAG);
                 const QString actualNameAfterLoad = pObj->getName();
                 renamedMap.insert(desiredName, {actualNameAfterLoad, false});
                 didPaste = true;
+                mpUndoStack->registerMovedObject(prevPos, pObj->pos(), actualNameAfterLoad);
             }
             objectElement = objectElement.nextSiblingElement(tagName);
         }
@@ -1656,12 +1658,14 @@ void SystemObject::paste(CopyStack *xmlStack)
         ModelObject* pObj = loadContainerPortObject(systemPortElement, this, Undo);
         if (pObj) {
             // Apply offset to pasted object
+            const auto prevPos = pObj->pos();
             pObj->moveBy(offset.x(), offset.y());
             // Map renamed components
             const QString desiredName = systemPortElement.attribute(HMF_NAMETAG);
             const QString actualNameAfterLoad = pObj->getName();
             renamedMap.insert(desiredName, {actualNameAfterLoad, true});
             didPaste = true;
+            mpUndoStack->registerMovedObject(prevPos, pObj->pos(), actualNameAfterLoad);
         }
         systemPortElement = systemPortElement.nextSiblingElement(HMF_SYSTEMPORTTAG);
     }
@@ -1704,8 +1708,10 @@ void SystemObject::paste(CopyStack *xmlStack)
         TextBoxWidget *pWidget = loadTextBoxWidget(textBoxElement, this, Undo);
         if (pWidget) {
             pWidget->setSelected(true);
+            const auto prevPos = pWidget->pos();
             pWidget->moveBy(offset.x(), offset.y());
             didPaste = true;
+            mpUndoStack->registerMovedWidget(pWidget, prevPos, pWidget->pos());
         }
         textBoxElement = textBoxElement.nextSiblingElement(HMF_TEXTBOXWIDGETTAG);
     }
