@@ -137,7 +137,7 @@ void UndoStack::undoOneStep()
     QStringList movedObjects;
     QList<int> addedWidgetList;
     int dx=0, dy=0;
-    QDomElement stuffElement = getCurrentPost().firstChildElement("stuff");
+    QDomElement stuffElement = getCurrentPost().lastChildElement("stuff");
     while(!stuffElement.isNull())
     {
         didSomething = true;
@@ -378,7 +378,7 @@ void UndoStack::undoOneStep()
                 xmlAlias = xmlAlias.nextSiblingElement(HMF_ALIAS);
             }
         }
-        stuffElement = stuffElement.nextSiblingElement("stuff");
+        stuffElement = stuffElement.previousSiblingElement("stuff");
     }
 
     // Re-add connectors after components, to make sure start and end component exist
