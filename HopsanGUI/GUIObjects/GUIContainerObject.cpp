@@ -1601,8 +1601,13 @@ void SystemObject::paste(CopyStack *xmlStack)
     emit deselectAllGUIObjects();
     emit deselectAllConnectors();
 
-    // Used a map to track name changes, so that connectors will know what components are called
-    QHash<QString, QString> renameMap;
+    // Used a map to track name changes, so that connectors will know what components and ports are actually named
+    struct RenamedCompOrSysport {
+        QString actualName;
+        bool isSystemPort = false;
+    };
+
+    QHash<QString, RenamedCompOrSysport> renamedMap;
 
     // Determine paste offset (will paste components at mouse position
     QDomElement coordTag = copyRoot->firstChildElement(HMF_COORDINATETAG);
@@ -1623,7 +1628,7 @@ void SystemObject::paste(CopyStack *xmlStack)
     qDebug() << str;
 
     // Help function to load and paste Component or System type model objects
-    auto pasteComponentOrSystem = [this, copyRoot, offset, &renameMap, &didPaste](const QString& tagName) {
+    auto pasteComponentOrSystem = [this, copyRoot, offset, &renamedMap, &didPaste](const QString& tagName) {
         // Paste components
         QDomElement objectElement = copyRoot->firstChildElement(tagName);
         while(!objectElement.isNull()) {
@@ -1634,7 +1639,7 @@ void SystemObject::paste(CopyStack *xmlStack)
                 // Map renamed components
                 const QString desiredName = objectElement.attribute(HMF_NAMETAG);
                 const QString actualNameAfterLoad = pObj->getName();
-                renameMap.insert(desiredName, actualNameAfterLoad);
+                renamedMap.insert(desiredName, {actualNameAfterLoad, false});
                 didPaste = true;
             }
             objectElement = objectElement.nextSiblingElement(tagName);
@@ -1645,7 +1650,7 @@ void SystemObject::paste(CopyStack *xmlStack)
     pasteComponentOrSystem(HMF_COMPONENTTAG);
     pasteComponentOrSystem(HMF_SYSTEMTAG);
 
-    // Paste container ports
+    // Paste system ports
     QDomElement systemPortElement = copyRoot->firstChildElement(HMF_SYSTEMPORTTAG);
     while (!systemPortElement.isNull()) {
         ModelObject* pObj = loadContainerPortObject(systemPortElement, this, Undo);
@@ -1655,7 +1660,7 @@ void SystemObject::paste(CopyStack *xmlStack)
             // Map renamed components
             const QString desiredName = systemPortElement.attribute(HMF_NAMETAG);
             const QString actualNameAfterLoad = pObj->getName();
-            renameMap.insert(desiredName, actualNameAfterLoad);
+            renamedMap.insert(desiredName, {actualNameAfterLoad, true});
             didPaste = true;
         }
         systemPortElement = systemPortElement.nextSiblingElement(HMF_SYSTEMPORTTAG);
@@ -1665,13 +1670,24 @@ void SystemObject::paste(CopyStack *xmlStack)
     QDomElement connectorElement = copyRoot->firstChildElement(HMF_CONNECTORTAG);
     while(!connectorElement.isNull()) {
         QDomElement tempConnectorElement = connectorElement.cloneNode(true).toElement();
-        tempConnectorElement.setAttribute("startcomponent", renameMap.find(connectorElement.attribute("startcomponent")).value());
-        tempConnectorElement.setAttribute("endcomponent", renameMap.find(connectorElement.attribute("endcomponent")).value());
+        const RenamedCompOrSysport actualStartComp = renamedMap.value(connectorElement.attribute(HMF_CONNECTORSTARTCOMPONENTTAG));
+        const RenamedCompOrSysport actualEndComp = renamedMap.value(connectorElement.attribute(HMF_CONNECTORENDCOMPONENTTAG));
+
+        // Replace component names with actual names
+        tempConnectorElement.setAttribute(HMF_CONNECTORSTARTCOMPONENTTAG, actualStartComp.actualName);
+        tempConnectorElement.setAttribute(HMF_CONNECTORENDCOMPONENTTAG, actualEndComp.actualName);
+        // Replace system port port names with actual names
+        if (actualStartComp.isSystemPort) {
+            tempConnectorElement.setAttribute(HMF_CONNECTORSTARTPORTTAG, actualStartComp.actualName);
+        }
+        if (actualEndComp.isSystemPort) {
+            tempConnectorElement.setAttribute(HMF_CONNECTORENDPORTTAG, actualStartComp.actualName);
+        }
 
         bool sucess = loadConnector(tempConnectorElement, this, Undo);
         if (sucess) {
-            Connector *tempConnector = this->findConnector(tempConnectorElement.attribute("startcomponent"), tempConnectorElement.attribute("startport"),
-                                                           tempConnectorElement.attribute("endcomponent"), tempConnectorElement.attribute("endport"));
+            Connector *tempConnector = this->findConnector(tempConnectorElement.attribute(HMF_CONNECTORSTARTCOMPONENTTAG), tempConnectorElement.attribute(HMF_CONNECTORSTARTPORTTAG),
+                                                           tempConnectorElement.attribute(HMF_CONNECTORENDCOMPONENTTAG), tempConnectorElement.attribute(HMF_CONNECTORENDPORTTAG));
             // Apply offset to connector
             tempConnector->moveAllPoints(offset.x(), offset.y());
             tempConnector->drawConnector(true);
@@ -1715,8 +1731,8 @@ void SystemObject::paste(CopyStack *xmlStack)
 
     if (didPaste) {
         // Select all pasted components
-        for(auto itn = renameMap.begin(); itn != renameMap.end(); ++itn) {
-            mModelObjectMap.find(itn.value()).value()->setSelected(true);
+        for(auto itn = renamedMap.begin(); itn != renamedMap.end(); ++itn) {
+            mModelObjectMap.find(itn.value().actualName).value()->setSelected(true);
         }
         mpModelWidget->hasChanged();
         mpModelWidget->getGraphicsView()->updateViewPort();
