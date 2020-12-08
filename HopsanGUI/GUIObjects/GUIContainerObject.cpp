@@ -1574,8 +1574,9 @@ void SystemObject::paste(CopyStack *xmlStack)
 {
     // Do not allow past if model or container is locked
     // Do not paste if some other widget has focus (eg. terminal)
-    if (!getContainedScenePtr()->hasFocus() || isLocallyLocked() || getModelLockLevel()>NotLocked)
-    {
+    // Do not paste if left mouse button is pressed, it will mess with the positions of the components
+    if (!getContainedScenePtr()->hasFocus() || isLocallyLocked() || (getModelLockLevel() > NotLocked) ||
+         mpModelWidget->getGraphicsView()->isLeftMouseButtonPressed()) {
         return;
     }
 
