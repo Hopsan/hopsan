@@ -59,7 +59,7 @@ void WorkerNelderMead::run()
     calculateBestAndWorstId();
 
     //Evaluate initial objective values
-    mpEvaluator->evaluateAllPoints();
+    mpEvaluator->evaluateAllPointsWithSurrogateModel();
     mpMessageHandler->objectivesChanged();
 
 
@@ -77,7 +77,7 @@ void WorkerNelderMead::run()
         mCandidatePoints[0] = reflect(mPoints[mWorstId], mCentroidPoint, mAlpha);   //Reflect
         mpMessageHandler->candidateChanged(0);
 
-        mpEvaluator->evaluateCandidate(0);
+        mpEvaluator->evaluateCandidateWithSurrogateModel(0);
 
         std::vector<double> reflectedPoint = mCandidatePoints[0];
         double reflectedObj = mCandidateObjectives[0];
@@ -99,7 +99,7 @@ void WorkerNelderMead::run()
         {
             mCandidatePoints[0] = reflect(mPoints[worstId], mCentroidPoint, mGamma);   //Expand
             mpMessageHandler->candidateChanged(0);
-            mpEvaluator->evaluateCandidate(0);
+            mpEvaluator->evaluateCandidateWithSurrogateModel(0);
             ++mIterationCounter;
 
             if(mCandidateObjectives[0] < reflectedObj)
@@ -121,7 +121,7 @@ void WorkerNelderMead::run()
         {
             mCandidatePoints[0] = reflect(mPoints[mWorstId], mCentroidPoint, mRho);   //Contract
             mpMessageHandler->candidateChanged(0);
-            mpEvaluator->evaluateCandidate(0);
+            mpEvaluator->evaluateCandidateWithSurrogateModel(0);
             ++mIterationCounter;
 
             if(mCandidateObjectives[0] < mObjectives[mWorstId])

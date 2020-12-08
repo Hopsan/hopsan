@@ -64,7 +64,7 @@ void WorkerGenetic::run()
     distributePoints();
 
     //Evaluate initial objective values
-    mpEvaluator->evaluateAllPoints();
+    mpEvaluator->evaluateAllPointsWithSurrogateModel();
     mpMessageHandler->objectivesChanged();
 
 
@@ -80,7 +80,7 @@ void WorkerGenetic::run()
         mpMessageHandler->candidatesChanged();
 
         //Evaluate objective values
-        mpEvaluator->evaluateAllCandidates();
+        mpEvaluator->evaluateAllCandidatesWithSurrogateModel();
 
 
         for(size_t i=0; i<mNumPoints; ++i)
