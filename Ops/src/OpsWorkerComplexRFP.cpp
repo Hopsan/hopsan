@@ -81,7 +81,7 @@ void WorkerComplexRFP::run()
     distributePoints();
     mpMessageHandler->pointsChanged();
 
-    mpEvaluator->evaluateAllPoints();
+    mpEvaluator->evaluateAllPointsWithSurrogateModel();
     mpMessageHandler->objectivesChanged();
 
     calculateBestAndWorstId();
@@ -106,7 +106,7 @@ void WorkerComplexRFP::run()
         pickCandidateParticles();
 
         //Evaluate candidates
-        mpEvaluator->evaluateAllCandidates();
+        mpEvaluator->evaluateAllCandidatesWithSurrogateModel();
 
         //Examine outcome of evaluation (depending on algorithm)
         examineCandidateParticles();
@@ -458,7 +458,7 @@ bool WorkerComplexRFP::multiRetract()
     }
     mpMessageHandler->candidatesChanged();
 
-    mpEvaluator->evaluateAllCandidates();
+    mpEvaluator->evaluateAllCandidatesWithSurrogateModel();
     mpMessageHandler->objectivesChanged();
 
     //Replace worst point with first candidate point that is better, if any
