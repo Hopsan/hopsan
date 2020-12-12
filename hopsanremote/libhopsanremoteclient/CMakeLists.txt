@@ -5,6 +5,7 @@ set(CMAKE_DEBUG_POSTFIX _d)
 if(WIN32)
   set(CMAKE_SHARED_LIBRARY_PREFIX "")
 endif()
+find_package(Threads REQUIRED)
 
 set(target_name libhopsanremoteclient)
 
@@ -17,7 +18,7 @@ target_include_directories(${target_name} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
-target_link_libraries(${target_name} libhopsanremotecommon)
+target_link_libraries(${target_name} libhopsanremotecommon Threads::Threads)
 
 set_target_properties(${target_name} PROPERTIES INSTALL_RPATH "\$ORIGIN")
 
