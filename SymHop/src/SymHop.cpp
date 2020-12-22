@@ -3096,6 +3096,14 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
         }
     }
 
+    if(this->isFunction()) {
+        if(mFunction == "ifElse" && mArguments.size() == 3) {
+            if(mArguments.at(1) == mArguments.at(2)) {
+                this->replaceBy(mArguments.at(1));
+            }
+        }
+    }
+
     if(mFactors.isEmpty() && !mDivisors.isEmpty())
     {
         mFactors.append(Expression(1));
