@@ -1,4 +1,4 @@
-/*-----------------------------------------------------------------------------
+﻿/*-----------------------------------------------------------------------------
 
  Copyright 2017 Hopsan Group
 
@@ -172,10 +172,15 @@ bool HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
     bool foundInitialAlgorithms = false;
     for(int l=0; l<lines.size(); ++l)
     {
-        if(lines[l].trimmed().startsWith("//")) continue;
+        qDebug() << "Line: " << l;
+        if(lines[l].trimmed().startsWith("//")) continue;   //Skip comments
+        if(lines[l].trimmed().isEmpty()) continue;          //Skip blank lines
         QStringList words = lines.at(l).trimmed().split(" ");
         if(section == UndefinedPart)
         {
+            if(!verifyModelicaLine(lines[l], ModelDeclaration)) {
+                return false;
+            }
             if(words.at(0) == "model")              //"model" keyword
             {
                 section = HeaderSection;
@@ -192,90 +197,6 @@ bool HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                         displayName.append(" " + words.at(j));
                     }
                     displayName.chop(1);
-                }
-            }
-        }
-        else if(section == HeaderSection && words.at(0).startsWith("annotation("))        //"annotation" keyword
-        {
-            QString tempLine = lines[l];
-            tempLine.remove(" ");
-            int idx = tempLine.indexOf("hopsanCqsType=");
-            cqsType = tempLine.at(idx+15);
-            if(tempLine.contains("linearTransform=")) {
-                transform = tempLine.section("linearTransform=",1,1).section("\"",1,1);
-            }
-        }
-        else if(section == HeaderSection && words.at(0) == "parameter")         //"parameter" keyword
-        {
-            QString name = words.at(2).section("(",0,0).section("=",0,0);
-            QString unit = lines.at(l).section("unit=",1,1).section("\"",1,1);
-            QString init;
-            //Default value can be written with white spaces in different way, test them all
-            if(words.size() == 3)
-                init = words.at(2).section("=", -1,-1);             //...blabla)=x
-            else if(words.size() == 4 && !words.at(3).startsWith("="))
-                init = words.at(3);                                             //...blabla)= x
-            else if(words.size() == 4 && words.at(3).startsWith("="))
-                init = words.at(3).section("=", 1);                             //...blabla) =x
-            else if(words.size() == 5)
-                init = words.at(4);                                             // ...blabla) = x
-            init.remove(";");
-
-            QString parDisplayName = lines.at(l).section("\"", -2, -2);
-
-            ParameterSpecification par(name, name, parDisplayName, unit, init);
-            parametersList.append(par);
-        }
-        else if(section == HeaderSection && words.at(0) == "Real")              //"Real" keyword (local variable)
-        {
-            for(int i=0; i<lines.at(l).count(",")+1; ++i)
-            {
-                QString var = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
-                QString name, init;
-                if(var.contains("("))
-                {
-                    name = var.section("(",0,0);
-                    init = var.section("=",1,1).section(")",0,0);
-                }
-                else
-                {
-                    name = var;
-                    init = "";
-                }
-                VariableSpecification varSpec(name, init);
-                variablesList.append(varSpec);
-            }
-        }
-        else if(section == HeaderSection && words.at(0) == "output" && words.at(1) == "Real")                //Signal connector (output)
-        {
-            for(int i=0; i<lines.at(l).count(",")+1; ++i)
-            {
-                QString name = lines.at(l).trimmed().section(" ", 2).section(",",i,i).section(";",0,0).trimmed();
-                PortSpecification port("WritePort", "NodeSignal", name);
-                portList.append(port);
-                portNames << name;
-            }
-        }
-        else if(section == HeaderSection && words.at(0) == "input" && words.at(1) == "Real")                //Signal connector (input)
-        {
-            for(int i=0; i<lines.at(l).count(",")+1; ++i)
-            {
-                QString name = lines.at(l).trimmed().section(" ", 2).section(",",i,i).section(";",0,0).trimmed();
-                PortSpecification port("ReadPort", "NodeSignal", name);
-                portList.append(port);
-                portNames << name;
-            }
-        }
-        else if(section == HeaderSection && nodeTypes.contains(words[0]))                                            //Power connector
-        {
-            for(const auto &type : nodeTypes) {
-                if(words.at(0) == type) {
-                    for(int i=0; i<lines.at(l).count(",")+1; ++i) {
-                        QString name = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
-                        PortSpecification port("PowerPort", type, name);
-                        portList.append(port);
-                        portNames << name;
-                    }
                 }
             }
         }
@@ -299,8 +220,101 @@ bool HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
         {
             break;
         }
-        else if(section == InitialAlgorithmSection)
+        else if(section == HeaderSection) {
+            if(!verifyModelicaLine(lines[l], Annotation | VariableDeclaration)) {
+                return false;
+            }
+            if(words.at(0).startsWith("annotation("))        //"annotation" keyword
+            {
+                QString tempLine = lines[l];
+                tempLine.remove(" ");
+                int idx = tempLine.indexOf("hopsanCqsType=");
+                cqsType = tempLine.at(idx+15);
+                if(tempLine.contains("linearTransform=")) {
+                    transform = tempLine.section("linearTransform=",1,1).section("\"",1,1);
+                }
+            }
+            else if(words.at(0) == "parameter")         //"parameter" keyword
+            {
+                QString name = words.at(2).section("(",0,0).section("=",0,0);
+                QString unit = lines.at(l).section("unit=",1,1).section("\"",1,1);
+                QString init;
+                //Default value can be written with white spaces in different way, test them all
+                if(words.size() == 3)
+                    init = words.at(2).section("=", -1,-1);             //...blabla)=x
+                else if(words.size() == 4 && !words.at(3).startsWith("="))
+                    init = words.at(3);                                             //...blabla)= x
+                else if(words.size() == 4 && words.at(3).startsWith("="))
+                    init = words.at(3).section("=", 1);                             //...blabla) =x
+                else if(words.size() == 5)
+                    init = words.at(4);                                             // ...blabla) = x
+                init.remove(";");
+
+                QString parDisplayName = lines.at(l).section("\"", -2, -2);
+
+                ParameterSpecification par(name, name, parDisplayName, unit, init);
+                parametersList.append(par);
+            }
+            else if(words.at(0) == "Real")              //"Real" keyword (local variable)
+            {
+                for(int i=0; i<lines.at(l).count(",")+1; ++i)
+                {
+                    QString var = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
+                    QString name, init;
+                    if(var.contains("("))
+                    {
+                        name = var.section("(",0,0);
+                        init = var.section("=",1,1).section(")",0,0);
+                    }
+                    else
+                    {
+                        name = var;
+                        init = "";
+                    }
+                    VariableSpecification varSpec(name, init);
+                    variablesList.append(varSpec);
+                }
+            }
+            else if(words.at(0) == "output" && words.at(1) == "Real")                //Signal connector (output)
+            {
+                for(int i=0; i<lines.at(l).count(",")+1; ++i)
+                {
+                    QString name = lines.at(l).trimmed().section(" ", 2).section(",",i,i).section(";",0,0).trimmed();
+                    PortSpecification port("WritePort", "NodeSignal", name);
+                    portList.append(port);
+                    portNames << name;
+                }
+            }
+            else if(words.at(0) == "input" && words.at(1) == "Real")                //Signal connector (input)
+            {
+                for(int i=0; i<lines.at(l).count(",")+1; ++i)
+                {
+                    QString name = lines.at(l).trimmed().section(" ", 2).section(",",i,i).section(";",0,0).trimmed();
+                    PortSpecification port("ReadPort", "NodeSignal", name);
+                    portList.append(port);
+                    portNames << name;
+                }
+            }
+            else if(nodeTypes.contains(words[0]))                                            //Power connector
+            {
+                for(const auto &type : nodeTypes) {
+                    if(words.at(0) == type) {
+                        for(int i=0; i<lines.at(l).count(",")+1; ++i) {
+                            QString name = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
+                            PortSpecification port("PowerPort", type, name);
+                            portList.append(port);
+                            portNames << name;
+                        }
+                    }
+                }
+            }
+        }
+        else if(section == InitialAlgorithmSection || section == HeaderSection)
         {
+            if(!verifyModelicaLine(lines[l], Assignment)) {
+                return false;
+            }
+
             foundInitialAlgorithms = true;
             QStringList words = lines.at(l).trimmed().split(" ");
             if(words.at(0) == "end")       //We are finished
@@ -352,6 +366,10 @@ bool HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
         }
         else if(section == AlgorithmSection)
         {
+            if(!verifyModelicaLine(lines[l], Assignment)) {
+                return false;
+            }
+
             QStringList words = lines.at(l).trimmed().split(" ");
             if(words.at(0) == "end")       //We are finished
             {
@@ -416,6 +434,10 @@ bool HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
         }
         else if(section == EquationSection)
         {
+            if(!verifyModelicaLine(lines[l], Equation)) {
+                return false;
+            }
+
            // qDebug() << l << " - in equations";
             QStringList words = lines.at(l).trimmed().split(" ");
             if(words.at(0) == "end")       //We are finished
@@ -1220,4 +1242,105 @@ bool HopsanModelicaGenerator::sortEquationByVariables(QList<Expression> &equatio
     variables = resolvedVariables;
 
     return true;
+}
+
+bool HopsanModelicaGenerator::verifyModelicaLine(const QString &line, int flags)
+{
+    //Split line at spaces unless space is within quotation marks
+    QStringList split = line.split(QRegExp("\\s(?=(?:[^'\"`]*(['\"`])[^'\"`]*\\1)*[^'\"`]*$)"), QString::SkipEmptyParts);
+
+    if(flags & ModelDeclaration) {
+        if(split.size() == 2 &&
+                split.at(0) == "model") {
+            return true;
+        }
+        if(split.size() == 3 &&
+                split.at(0) == "model" &&
+                split.at(2).startsWith("\"") &&
+                split.at(2).endsWith("\"")) {
+            return true;
+        }
+    }
+    if(flags & VariableDeclaration) {
+        QStringList split = line.trimmed().split(" ");
+
+        QStringList dataTypes;
+        GeneratorNodeInfo::getNodeTypes(dataTypes);
+        dataTypes.append("Real");
+
+        QStringList specifiers = {"parameter", "input", "output"};
+
+        if(split.size() > 1 && dataTypes.contains(split.at(0))) {
+            return true;
+        }
+        if(split.size() > 2 && specifiers.contains(split.at(0)) && dataTypes.contains(split.at(1))) {
+            return true;
+        }
+    }
+    if(flags & Annotation) {
+        //! @todo Handle multi-line annotations?
+        if(line.trimmed().startsWith("annotation(") && line.endsWith(")")) {
+            return true;
+        }
+    }
+    if(flags & Assignment) {
+        QString temp = line.trimmed();
+        temp.replace(":=","=");
+        if(SymHop::Expression(line).isAssignment()) {
+            return true;
+        }
+        if(split.size() == 3 && split.at(0) == "if" && split.at(2) == "then") {
+            return true;
+        }
+        if(line.trimmed() == "else") {
+            return true;
+        }
+        if(line.trimmed() == "end if" || line.trimmed() == "end if;") {
+            return true;
+        }
+    }
+    if(flags & Equation) {
+        QString temp = line.trimmed();
+        if(!line.contains(":=") && SymHop::Expression(line).isEquation()) {
+            return true;
+        }
+        SymHop::Expression expr(line.trimmed().remove(";"));
+        if(expr.getFunctionName() == "limitVariable") {
+            return true;
+        }
+        if(split.size() == 3 && split.at(0) == "if" && split.at(2) == "then") {
+            return true;
+        }
+        if(line.trimmed() == "else") {
+            return true;
+        }
+        if(line.trimmed() == "end if" || line.trimmed() == "end if;") {
+            return true;
+        }
+    }
+    //! @todo Add more checks
+
+    //All checks failed, print error and return false
+    QString errorMessage = "Verification of line failed:\n-> "+ line.trimmed()+"\n(expected ";
+    if(flags & ModelDeclaration) {
+        errorMessage.append("model declaration/");
+    }
+    if(flags & VariableDeclaration) {
+        errorMessage.append("variable declaration/");
+    }
+    if(flags & Annotation) {
+        errorMessage.append("annotation");
+    }
+    if(flags & Assignment) {
+        errorMessage.append("assignment");
+    }
+    if(flags & Equation) {
+        errorMessage.append("equation");
+    }
+    if(errorMessage.endsWith("/")) {
+        errorMessage.chop(1);
+    }
+    errorMessage.append(")");
+    printErrorMessage(errorMessage);
+    return false;
 }

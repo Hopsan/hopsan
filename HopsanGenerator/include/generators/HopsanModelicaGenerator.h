@@ -29,6 +29,7 @@
 #include "SymHop.h"
 
 
+
 class HopsanModelicaGenerator : public HopsanGeneratorBase
 {
 public:
@@ -36,10 +37,23 @@ public:
     bool generateFromModelica(QString code);
 
 private:
+    enum ModelicaLineType { ModelDeclaration = 1,
+                            VariableDeclaration = 2,
+                            NewSection = 4,
+                            Assignment = 8,
+                            Equation = 16,
+                            BeginIf = 32,
+                            Else = 64,
+                            EndIf = 128,
+                            EndModel = 256,
+                            Annotation = 512
+                          };
+
     bool replaceCustomFunctions(SymHop::Expression &expr);
     bool parseModelicaModel(QString code, QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &algorithms, QStringList &equations, QList<PortSpecification> &portList, QList<ParameterSpecification> &parametersList, QList<VariableSpecification> &variablesList, QString &transform);
     bool generateComponentObject(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QString &transform, QStringList &initAlgorithms, QStringList &algorithms, QStringList &plainEquations, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables, QTextStream &logStream);
     bool sortEquationByVariables(QList<SymHop::Expression> &equations, QList<SymHop::Expression> &variables, QList<SymHop::Expression> &knowns);
+    bool verifyModelicaLine(const QString &line, int flags);
 };
 
 #endif // HOPSANMODELICAGENERATOR_H
