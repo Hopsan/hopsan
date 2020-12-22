@@ -5566,7 +5566,15 @@ void HcomHandler::executeEditCommand(const QString cmd)
     QString path = args[0];
     path.remove("\"");
     path.prepend(mPwd+"/");
-    QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+
+    QString suffix = QFileInfo(path).suffix();
+    QStringList textFileSuffixes = QStringList() << "hcom" << "hpp" << "cpp" << "h" << "c" << "cc" << "cci" << "xml" << "plo" << "csv" << "txt";
+    if(textFileSuffixes.contains(suffix)) {
+        gpModelHandler->loadTextFile(path);
+    }
+    else {
+        QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+    }
 }
 
 
