@@ -26,7 +26,7 @@ gIncludeCompiler = False
 gTemporaryBuildDir = r'C:\temp_release'
 
 # External programs
-inkscapeDirList = [r'C:\Program Files\Inkscape\bin', r'C:\Program Files (x86)\Inkscape\bin', r'C:\Program Files\Inkscape', r'C:\Program Files (x86)\Inkscape']
+inkscapeDirList = [r'C:\Program Files\Inkscape\bin', r'C:\Program Files (x86)\Inkscape\bin']
 innoDirList = [r'C:\Program Files\Inno Setup 6', r'C:\Program Files (x86)\Inno Setup 6', r'C:\Program Files\Inno Setup 5', r'C:\Program Files (x86)\Inno Setup 5']
 doxygenDirList = [r'C:\Program Files\doxygen\bin', r'C:\Program Files (x86)\doxygen\bin']
 gsDirList = [r'C:\Program Files\gs\gs9.27\bin', r'C:\Program Files (x86)\gs\gs9.27\bin', r'C:\Program Files\gs\gs9.22\bin', r'C:\Program Files (x86)\gs\gs9.22\bin', r'C:\Program Files\gs\gs9.21\bin', r'C:\Program Files (x86)\gs\gs9.21\bin', r'C:\Program Files\gs\gs9.19\bin', r'C:\Program Files (x86)\gs\gs9.19\bin', r'C:\Program Files\gs\gs9.18\bin', r'C:\Program Files (x86)\gs\gs9.18\bin', ]
@@ -628,10 +628,10 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
     replace_pattern(r'HopsanGUI/version_gui.h', r'#define HOPSANRELEASEVERSION .*', r'#define HOPSANRELEASEVERSION "{}"'.format(fullversion))
 
     # Set splash screen version and revision number
-    replace_pattern(r'HopsanGUI/graphics/tempdummysplash.svg', r'0\.0\.0', versionnumber)
+    replace_pattern(r'HopsanGUI/graphics/tempdummysplash.svg', r'0\.00\.0', versionnumber)
     replace_pattern(r'HopsanGUI/graphics/tempdummysplash.svg', r'20170000\.0000', revisionnumber)
     # Regenerate splash screen
-    callEXE(inkscapeDir+r'\inkscape.exe', r'HopsanGUI\graphics\tempdummysplash.svg --export-background="#ffffff" --export-dpi=90 --export-png HopsanGUI/graphics/splash.png')
+    callEXE(inkscapeDir+r'\inkscape.com', r'HopsanGUI\graphics\tempdummysplash.svg --export-background="#ffffff" --export-dpi=90 --export-type=png --export-filename=HopsanGUI/graphics/splash.png')
     callDel(r'HopsanGUI\graphics\tempdummysplash.svg')
 
     # Make sure we compile defaultLibrary into core

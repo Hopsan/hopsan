@@ -64,10 +64,14 @@ if [[ $doDevRelease == false ]]; then
 fi
 
 # Set splash screen version number
-sed "s|0\.0\.0|$base_version|g" -i HopsanGUI/graphics/splash.svg
+sed "s|0\.00\.0|$base_version|g" -i HopsanGUI/graphics/splash.svg
 sed "s|20170000\.0000|$release_revision|g" -i HopsanGUI/graphics/splash.svg
 if [[ $(command -v ${inkscape_cmd} > /dev/null) -eq 0 ]]; then
-  ${inkscape_cmd} ./HopsanGUI/graphics/splash.svg --export-background=rgb\(255,255,255\) --export-dpi=90 --export-png ./HopsanGUI/graphics/splash.png
+  if [[ $(inkscape --version | cut -d' ' -f2 | cut -d. -f1) -lt 1 ]]; then
+    ${inkscape_cmd} ./HopsanGUI/graphics/splash.svg --export-background=rgb\(255,255,255\) --export-dpi=90 --export-png ./HopsanGUI/graphics/splash.png
+  else
+    ${inkscape_cmd} ./HopsanGUI/graphics/splash.svg --export-background=rgb\(255,255,255\) --export-dpi=90 --export-type=png --export-filename=./HopsanGUI/graphics/splash.png
+  fi
 elif [[ $(command -v convert > /dev/null) -eq 0 ]]; then
   echo Warning: Inkscape is not available, falling back to convert
   convert -background white ./HopsanGUI/graphics/splash.svg ./HopsanGUI/graphics/splash.png
