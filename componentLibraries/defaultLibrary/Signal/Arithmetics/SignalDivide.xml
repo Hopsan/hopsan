@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject sourcecode="SignalDivide.hpp" typename="SignalDivide" displayname="Divide">
         <icons>
-            <icon scale="1" path="SignalDivide.svg" iconrotation="ON" type="iso"/>
+            <icon scale="1" path="SignalDivide.svg" iconrotation="OFF" type="iso"/>
         </icons>
         <replacables>
             <replacable typename="SignalAdd"/>

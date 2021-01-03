@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject sourcecode="SignalCos.hpp" typename="SignalCos" displayname="Cos">
         <icons>
-            <icon scale="1" path="SignalCos.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="SignalCos.svg" iconrotation="OFF" type="user"/>
         </icons>
         <replacables>
             <replacable typename="SignalAcos"/>

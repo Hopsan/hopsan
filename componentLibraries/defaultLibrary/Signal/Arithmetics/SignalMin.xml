@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject sourcecode="SignalMin.hpp" typename="SignalMin" displayname="Min">
         <icons>
-            <icon scale="1" path="SignalMin.svg" iconrotation="ON" type="iso"/>
+            <icon scale="1" path="SignalMin.svg" iconrotation="OFF" type="iso"/>
         </icons>
         <replacables>
             <replacable typename="SignalMax"/>

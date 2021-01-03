@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject sourcecode="SignalMultiply.hpp" typename="SignalMultiply" displayname="Multiply">
         <icons>
-            <icon scale="1" path="SignalMultiply.svg" iconrotation="ON" type="iso"/>
+            <icon scale="1" path="SignalMultiply.svg" iconrotation="OFF" type="iso"/>
         </icons>
        <replacables>
             <replacable typename="SignalDivide"/>

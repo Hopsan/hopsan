@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject sourcecode="SignalHP1Filter.hpp" typename="SignalHP1Filter" displayname="First order high pass filter">
         <icons>
-            <icon scale="1" path="hp1filter.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="hp1filter.svg" iconrotation="OFF" type="user"/>
         </icons>
         <help>
             <text>First order high pass filter using bilinear transform.</text>

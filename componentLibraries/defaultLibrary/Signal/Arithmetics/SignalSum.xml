@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject sourcecode="SignalSum.hpp" typename="SignalSum" displayname="Sum">
         <icons>
-            <icon scale="1" path="SignalSum.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="SignalSum.svg" iconrotation="OFF" type="user"/>
         </icons>
         <replacables>
             <replacable typename="SignalMin"/>

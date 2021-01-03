@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject sourcecode="SignalSign.hpp" typename="SignalSign" displayname="Sign">
         <icons>
-            <icon scale="1" path="SignalSign.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="SignalSign.svg" iconrotation="OFF" type="user"/>
         </icons>
        <replacables>
             <replacable typename="SignalAbsoluteValue"/>

@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject sourcecode="SignalFirstOrderTransferFunction.hpp" typename="SignalFirstOrderTransferFunction" displayname="General first order transfer function">
         <icons>
-            <icon scale="1" path="firstordertf.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="firstordertf.svg" iconrotation="OFF" type="user"/>
         </icons>
         <help>
             <text>First order transfer function using bilinear transform. Parameters are continuous, and will be discretized automatically by the component. Start value on output port is used as initial value.</text>
