@@ -80,7 +80,7 @@ namespace hopsan {
             addInputVariable("in", "Desired spool position", "m", 0.0, &mpXvIn);
 
             addInputVariable("C_q", "Flow Coefficient", "-", 0.67, &mpCq);
-            addInputVariable("rho", "Oil Density", "kg/m^3", 890, &mpRho);
+            addInputVariable("rho", "Oil density", "kg/m^3", 870, &mpRho);
             addInputVariable("d", "Spool Diameter", "m", 0.01, &mpD);
             addInputVariable("x_vmax", "Maximum Spool Displacement", "m", 0.01, &mpXvmax);
             addInputVariable("p_c",  "Fraction of displacement when central position is open", "-", 0.02, &mpP_c);

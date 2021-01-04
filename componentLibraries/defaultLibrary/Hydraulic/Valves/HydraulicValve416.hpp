@@ -211,7 +211,7 @@ public:
             addInputVariable("xvtb","Spool position","m",0.,&mpxvtb);
 
         //Add inputParammeters to the component
-            addInputVariable("rho", "oil density", "kg/m3", 860.,&mprho);
+            addInputVariable("rho", "Oil density", "kg/m3", 870, &mprho);
             addInputVariable("Cq", "Flow coefficient.", "", 0.67,&mpCq);
             addInputVariable("Sd", "spool diameter", "m", 0.001,&mpSd);
             addInputVariable("Frpa", "Spool cricle fraction(P-A)", "", \

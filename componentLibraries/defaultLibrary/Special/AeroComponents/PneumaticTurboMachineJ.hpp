@@ -185,7 +185,7 @@ public:
 1.59,&mpbeta2);
             addInputVariable("A1", "inlet flow area", "m2", 0.0004,&mpA1);
             addInputVariable("A2", "outlet flow area", "m2", 0.0004,&mpA2);
-            addInputVariable("rho", "Fluid density", "kg/m2", 860,&mprho);
+            addInputVariable("rho", "Fluid density", "kg/m2", 870, &mprho);
             addInputVariable("Kcp", "Leakage coeff", "m3/s/Pa", \
 1.e-9,&mpKcp);
             addInputVariable("Bm", "Visc friction coeff", "N/m/s", 1.,&mpBm);

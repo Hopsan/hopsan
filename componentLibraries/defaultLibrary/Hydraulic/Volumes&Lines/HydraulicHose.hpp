@@ -82,7 +82,7 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeHydraulic");
 
             //Register changeable parameters to the HOPSAN++ core
-            addInputVariable("rho",    "Density",                   "kg/m^3", 870.0, &mpRho);
+            addInputVariable("rho",    "Oil density",               "kg/m^3", 870.0, &mpRho);
             addInputVariable("eta",    "Dynamic oil viscosity",     "Ns/m^2", 0.03, &mpVisc);
             addInputVariable("d",      "Line diameter",             "m",      0.03, &mpD);
             addInputVariable("l",      "Line length",               "m",      1.0, &mpL);

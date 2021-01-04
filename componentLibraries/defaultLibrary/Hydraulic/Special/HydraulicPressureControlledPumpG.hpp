@@ -198,7 +198,7 @@ public:
             addInputVariable("speed","Pump speed","rad/sec",157,&mpspeed);
 
         //Add inputParammeters to the component
-            addInputVariable("rho", "oil density", "kg/m3", 860.,&mprho);
+            addInputVariable("rho", "Oil density", "kg/m3", 870, &mprho);
             addInputVariable("qmin", "Min flow at nom speed", "m3/s", \
 0.,&mpqmin);
             addInputVariable("Dp", "Max pump displacement", "m3", \

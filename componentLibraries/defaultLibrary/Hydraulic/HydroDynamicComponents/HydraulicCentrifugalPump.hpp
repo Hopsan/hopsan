@@ -163,7 +163,7 @@ public:
             addInputVariable("beta2", "Outlet flow angle", "rad", \
 1.57,&mpbeta2);
             addInputVariable("Ap", "outlet flow area", "m2", 0.001,&mpAp);
-            addInputVariable("rho", "Fluid density", "kg/m2", 860,&mprho);
+            addInputVariable("rho", "Fluid density", "kg/m2", 870, &mprho);
             addInputVariable("Kcp", "Leakage coeff", "m3/s/Pa", \
 1.e-11,&mpKcp);
             addInputVariable("Bp", "Visc friction coeff", "Nm/rad/s", \
