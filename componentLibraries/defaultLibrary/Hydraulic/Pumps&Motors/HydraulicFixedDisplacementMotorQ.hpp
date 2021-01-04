@@ -66,9 +66,9 @@ namespace hopsan {
         void configure()
         {
             addInputVariable("D_m", "Displacement", "m^3/rev", 0.00005, &mpDm);
-            addInputVariable("B_m", "Viscous Friction", "Nm/rad", 0.0, &mpBm);
-            addInputVariable("C_lm", "Leakage Coefficient", "", 0.0, &mpClm);
-            addInputVariable("J_m", "Inertia Load", "kg*m^2", 0.1, &mpJ);
+            addInputVariable("B_m", "Viscous friction", "Nm/rad", 0.0, &mpBm);
+            addInputVariable("C_lm", "Leakage coefficient", "(m^3/s)/Pa", 1e-12, &mpClm);
+            addInputVariable("J_m", "Inertia load", "kg*m^2", 0.1, &mpJ);
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
