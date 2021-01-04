@@ -202,7 +202,7 @@ public:
             addInputVariable("pref","Reference pressure","Pa",1.e6,&mppref);
 
         //Add inputParammeters to the component
-            addInputVariable("rho", "oil density", "kg/m3", 860.,&mprho);
+            addInputVariable("rho", "Oil density", "kg/m3", 870, &mprho);
             addInputVariable("Cq", "Flow coefficient.", "", 0.67,&mpCq);
             addInputVariable("Sd", "spool diameter", "m", 0.01,&mpSd);
             addInputVariable("Frap", "Spool cricle fraction(P-A)", "", \

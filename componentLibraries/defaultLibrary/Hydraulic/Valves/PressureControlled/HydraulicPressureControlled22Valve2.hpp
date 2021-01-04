@@ -83,7 +83,7 @@ namespace hopsan {
             addInputVariable("Fs_min", "Minimum pressure for opening the valve", "Pa", 100000, &mpFs_min);
             addInputVariable("Fs_max", "Pressure for fully opening the valve", "Pa", 1000000, &mpFs_max);
             addInputVariable("C_q", "Flow coefficient", "-", 0.67, &mpC_q);
-            addInputVariable("rho", "Oil density", "kg/m^3", 890, &mpRho);
+            addInputVariable("rho", "Oil density", "kg/m^3", 870, &mpRho);
             addInputVariable("d", "Spool diameter", "m", 0.01, &mpD);
             addInputVariable("f_pa", "Fraction of spool diameter that is opening P-A ", "", 1, &mpF_pa);
             addInputVariable("f_bt", "Fraction of spool diameter that is opening B-T", "", 1, &mpF_bt);

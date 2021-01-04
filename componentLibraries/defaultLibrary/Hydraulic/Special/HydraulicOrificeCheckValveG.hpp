@@ -157,7 +157,7 @@ diameter","m",0.3,&mpdh);
             addInputVariable("lo","Length","m",0.001,&mplo);
 
         //Add inputParammeters to the component
-            addInputVariable("rho", "oil density", "kg/m3", 860.,&mprho);
+            addInputVariable("rho", "Oil density", "kg/m3", 870, &mprho);
             addInputVariable("visc", "Dynamic viscosity ", "m", \
 0.12,&mpvisc);
             addInputVariable("Cdt", "Turbulent flow coefficient.", "", \

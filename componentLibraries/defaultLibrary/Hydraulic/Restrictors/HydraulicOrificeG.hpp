@@ -151,7 +151,7 @@ public:
         //Add inputVariables to the component
 
         //Add inputParammeters to the component
-            addInputVariable("rho", "oil density", "kg/m3", 860.,&mprho);
+            addInputVariable("rho", "Oil density", "kg/m3", 870, &mprho);
             addInputVariable("visc", "Dynamic viscosity ", "m", \
 0.12,&mpvisc);
             addInputVariable("Ao", "Orifice area", "m2", 1.e-7,&mpAo);

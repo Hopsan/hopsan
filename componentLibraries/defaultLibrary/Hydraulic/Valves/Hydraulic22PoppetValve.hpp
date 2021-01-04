@@ -77,7 +77,7 @@ namespace hopsan {
             addOutputVariable("xv_out", "Spool position", "", 0.0, &mpXvout);
 
             addInputVariable("C_q", "Flow Coefficient", "-", 0.67, &mpCq);
-            addInputVariable("rho", "Oil Density", "kg/m^3", 890, &mpRho);
+            addInputVariable("rho", "Oil density", "kg/m^3", 870, &mpRho);
             addInputVariable("d_1", "Small diameter", "m", 10e-3, &mpD1);
             addInputVariable("d_2", "Big diameter", "m", 10e-3, &mpD2);
             addInputVariable("k", "Spring constant", "N/m", 1e4, &mpK);
