@@ -115,7 +115,7 @@ protected:
 private slots:
     void insertCompletion(const QString& completion);
     void updateAutoCompleteList();
-    void updateBackgroundColor();
+    void resetBackgroundColor();
 
 private:
     //Output
@@ -156,8 +156,7 @@ private:
 
     QCompleter *mpCompleter;
 
-    QTimer mColorTimer;
-    int mColor=0;
+    QTimer mBackgroundColorTimer;
 };
 
 #endif // HCOMWIDGET_H
