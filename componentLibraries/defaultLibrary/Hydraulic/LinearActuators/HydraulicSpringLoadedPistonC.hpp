@@ -83,15 +83,15 @@ class HydraulicSpringLoadedPistonC : public ComponentC
 
 
             //Register changeable parameters to the HOPSAN++ core
-            addInputVariable("A_1", "Piston Area 1", "m^2", 0.001, &mpA1);
-            addInputVariable("A_2", "Piston Area 2", "m^2", 0.001, &mpA2);
+            addInputVariable("A_1", "Piston area 1", "m^2", 0.001, &mpA1);
+            addInputVariable("A_2", "Piston area 2", "m^2", 0.001, &mpA2);
             addInputVariable("s_l", "Stroke", "m", 1.0, &mpSl);
-            addInputVariable("F_s", "Spring Force", "N", 1000.0, &mpFs);
-            addInputVariable("V_1", "Dead Volume in Chamber 1", "m^3", 0.0003, &mpV01);
-            addInputVariable("V_2", "Dead Volume in Chamber 2", "m^3", 0.0003, &mpV02);
-            addInputVariable("B_p", "Viscous Friction", "Ns/m", 1000.0, &mpBp);
-            addInputVariable("Beta_e", "Bulk Modulus", "Pa", 1000000000.0, &mpBetae);
-            addInputVariable("c_leak", "Leakage Coefficient", "", 0.00000000001, &mpCLeak);
+            addInputVariable("F_s", "Spring force", "N", 1000.0, &mpFs);
+            addInputVariable("V_1", "Dead volume in chamber 1", "m^3", 0.0003, &mpV01);
+            addInputVariable("V_2", "Dead volume in chamber 2", "m^3", 0.0003, &mpV02);
+            addInputVariable("B_p", "Viscous friction", "Ns/m", 1000.0, &mpBp);
+            addInputVariable("Beta_e", "Bulk modulus", "Pa", 1000000000.0, &mpBetae);
+            addInputVariable("c_leak", "Leakage coefficient", "(m^3/s)/Pa", 0.00000000001, &mpCLeak);
         }
 
 

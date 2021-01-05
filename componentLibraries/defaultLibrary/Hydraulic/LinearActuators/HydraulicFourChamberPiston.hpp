@@ -82,23 +82,23 @@ class HydraulicFourChamberPiston : public ComponentC
             mpP5 = addPowerPort("P5", "NodeMechanic");
 
             //Register changeable parameters to the HOPSAN++ core
-            addInputVariable("A_1", "Piston Area 1", "m^2", 0.001, &mpA1);
-            addInputVariable("A_2", "Piston Area 2", "m^2", 0.001, &mpA2);
-            addInputVariable("A_3", "Piston Area 3", "m^2", 0.001, &mpA3);
-            addInputVariable("A_4", "Piston Area 4", "m^2", 0.001, &mpA4);
+            addInputVariable("A_1", "Piston area 1", "m^2", 0.001, &mpA1);
+            addInputVariable("A_2", "Piston area 2", "m^2", 0.001, &mpA2);
+            addInputVariable("A_3", "Piston area 3", "m^2", 0.001, &mpA3);
+            addInputVariable("A_4", "Piston area 4", "m^2", 0.001, &mpA4);
             addInputVariable("s_l", "Stroke", "m", 1.0, &mpSl);
-            addInputVariable("V_1", "Dead Volume in Chamber 1", "m^3", 0.0003, &mpV01);
-            addInputVariable("V_2", "Dead Volume in Chamber 2", "m^3", 0.0003, &mpV02);
-            addInputVariable("V_3", "Dead Volume in Chamber 3", "m^3", 0.0003, &mpV03);
-            addInputVariable("V_4", "Dead Volume in Chamber 4", "m^3", 0.0003, &mpV04);
-            addInputVariable("B_p", "Viscous Friction", "Ns/m", 1000.0, &mpBp);
-            addInputVariable("Beta_e", "Bulk Modulus", "Pa", 1000000000.0, &mpBetae);
-            addInputVariable("c_leak12", "Leakage Coefficient Between Chamber 1 and 2", "", 0.00000000001, &mpCLeak12);
-            addInputVariable("c_leak13", "Leakage Coefficient Between Chamber 1 and 3", "", 0, &mpCLeak13);
-            addInputVariable("c_leak14", "Leakage Coefficient Between Chamber 1 and 4", "", 0.00000000001, &mpCLeak14);
-            addInputVariable("c_leak23", "Leakage Coefficient Between Chamber 2 and 3", "", 0, &mpCLeak23);
-            addInputVariable("c_leak24", "Leakage Coefficient Between Chamber 2 and 4", "", 0, &mpCLeak24);
-            addInputVariable("c_leak34", "Leakage Coefficient Between Chamber 3 and 4", "", 0.00000000001, &mpCLeak34);
+            addInputVariable("V_1", "Dead volume in chamber 1", "m^3", 0.0003, &mpV01);
+            addInputVariable("V_2", "Dead volume in chamber 2", "m^3", 0.0003, &mpV02);
+            addInputVariable("V_3", "Dead volume in chamber 3", "m^3", 0.0003, &mpV03);
+            addInputVariable("V_4", "Dead volume in chamber 4", "m^3", 0.0003, &mpV04);
+            addInputVariable("B_p", "Viscous friction", "Ns/m", 1000.0, &mpBp);
+            addInputVariable("Beta_e", "Bulk modulus", "Pa", 1000000000.0, &mpBetae);
+            addInputVariable("c_leak12", "Leakage coefficient between chamber 1 and 2", "(m^3/s)/Pa", 0.00000000001, &mpCLeak12);
+            addInputVariable("c_leak13", "Leakage coefficient between chamber 1 and 3", "(m^3/s)/Pa", 0, &mpCLeak13);
+            addInputVariable("c_leak14", "Leakage coefficient between chamber 1 and 4", "(m^3/s)/Pa", 0.00000000001, &mpCLeak14);
+            addInputVariable("c_leak23", "Leakage coefficient between chamber 2 and 3", "(m^3/s)/Pa", 0, &mpCLeak23);
+            addInputVariable("c_leak24", "Leakage coefficient between chamber 2 and 4", "(m^3/s)/Pa", 0, &mpCLeak24);
+            addInputVariable("c_leak34", "Leakage coefficient between chamber 3 and 4", "(m^3/s)/Pa", 0.00000000001, &mpCLeak34);
         }
 
         void initialize()
