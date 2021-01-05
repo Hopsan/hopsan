@@ -84,6 +84,10 @@ void WorkerDifferentialEvolution::run()
         mpMessageHandler->printMessage("Error: Differential evolution algorithm requires same number of candidates and points.");
         return;
     }
+    if(mNumCandidates < 5) {
+        mpMessageHandler->printMessage("Error: Differential evolution algorithm requires more than 4 candidates.");
+        return;
+    }
     mpMessageHandler->printMessage("Running optimization with differential evolution algorithm.");
 
     distributePoints();
