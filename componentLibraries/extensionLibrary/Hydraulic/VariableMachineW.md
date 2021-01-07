@@ -1,5 +1,5 @@
 ### Description
-![Illustration of flow paths within the component](ExternalLeakageDescription.svg)
+![Illustration of flow paths within the component](leakageDescription.svg)
 
 Hydraulic pump/motor with internal and external laminar leakage. The displacement setting is variable, but the setting includes no dynamics.
 
