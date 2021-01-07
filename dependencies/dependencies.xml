@@ -93,6 +93,12 @@
     </releasefile>
   </dependency>
 
+  <dependency name="xerces">
+    <releasefile sha256="3943c18b45f72ab44dd12e6c0310db092573af3001d66e27357d25970855b0e9">
+      <url>https://github.com/apache/xerces-c/archive/v3.2.2.zip</url>
+    </releasefile>
+  </dependency>
+
   <dependency name="mingw-w64" version="5.4.0" type="toolchain">
     <releasefile sha1="608c72d6d2fcd91920fc49aa7fd295134bff3010" platform="windows">
       <url>https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/5.4.0/threads-posix/seh/x86_64-5.4.0-release-posix-seh-rt_v5-rev0.7z</url>
