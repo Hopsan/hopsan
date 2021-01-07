@@ -2,7 +2,7 @@
 
 //! @file   VariableMachine.hpp
 //! @author Samuel Kärnell <samuel.karnell@liu.se>
-//! @date   2020-11-26
+//! @date   2021-01-07
 
 -----------------------------------------------------------------------------*/
 // Header guard to avoid inclusion of the same code twice
@@ -39,13 +39,13 @@ public:
         mpP1 = addPowerPort("P1", "NodeHydraulic");
         mpP2 = addPowerPort("P2", "NodeHydraulic");
 		mpP3 = addPowerPort("P3", "NodeHydraulic");
-        addOutputVariable("torque", "Torque", "", 0.0, &mpT);
+        addOutputVariable("torque", "Torque (inertia is neglected)", "", 0.0, &mpT);
         addInputVariable("n_p", "Angular Velocity", "rpm", 1500.0, &mpN);
 		addInputVariable("eps", "Displacement setting", "-", 1, &mpEps);
         addConstant("D_p", "Displacement", "m^3/rev", 60e-6, mDp);
-		addConstant("viscFric", "Viscous friction", "Nms/rad", 0, mViscFric);
-		addConstant("intLeak", "Internal leakage coefficient", "m^5/Ns", 0, mIntLeak);
-		addConstant("extLeak", "External leakage coefficient", "m^5/Ns", 0, mExtLeak);
+		addConstant("viscFric", "Viscous friction", "Nms/rad", 0.1, mViscFric);
+		addConstant("intLeak", "Internal leakage coefficient", "m^5/Ns", 1e-012, mIntLeak);
+		addConstant("extLeak", "External leakage coefficient", "m^5/Ns", 1e-012, mExtLeak);
     }
     // The initialize function is called before simulation begins.
     // It may be called multiple times
@@ -112,6 +112,11 @@ public:
 					// torque calculations
 					tIdeal = -dp*(p2 - p1)/(2*pi)*sign(n); //inertia is neglected
 					t = tIdeal - mViscFric*n*2*pi/60;
+					
+					// pressure calculations
+					p1 = c1 + Zc1 * q1;
+					p2 = c2 + Zc2 * q2;
+					p3 = c3 + Zc3 * q3;
 								   
 					/* Cavitation Check */
 					if (p1 < 0.0)
