@@ -10,3 +10,4 @@
 ./setupHDF5.sh
 ./setupAsio.sh
 ./setupXerces.sh
+./setupLibzip.sh
