@@ -87,6 +87,12 @@
     </releasefile>
   </dependency>
 
+  <dependency name="asio">
+    <releasefile sha1="bac61183b633a6d91ef7ae31836434bdf4f2b0d0">
+      <url>https://sourceforge.net/projects/asio/files/asio/1.12.1 (Stable)/asio-1.12.1.zip</url>
+    </releasefile>
+  </dependency>
+
   <dependency name="mingw-w64" version="5.4.0" type="toolchain">
     <releasefile sha1="608c72d6d2fcd91920fc49aa7fd295134bff3010" platform="windows">
       <url>https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/5.4.0/threads-posix/seh/x86_64-5.4.0-release-posix-seh-rt_v5-rev0.7z</url>
