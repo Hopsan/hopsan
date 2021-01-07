@@ -9,6 +9,7 @@ CONFIG += shared
 DESTDIR = $${PWD}/../bin
 TARGET = $${TARGET}$${DEBUG_EXT}
 DEFINES += DEBUG
+QMAKE_CXXFLAGS = -Wno-comment -Wno-switch -Wno-ignored-qualifiers -Wno-sign-compare
 
 QT -= core gui
 
@@ -61,6 +62,11 @@ INCLUDEPATH *= $${PWD}/dependencies/DCPLib/include/xml
 INCLUDEPATH *= $${PWD}/dependencies/DCPLib/include/zip
 #--------------------------------------------------
 
+#--------------------------------------------------------
+# Set the tclap include path
+INCLUDEPATH *= $${PWD}/../dependencies/tclap/include
+#--------------------------------------------------------
+
 # -------------------------------------------------
 # Platform specific additional project options
 # -------------------------------------------------
@@ -79,4 +85,7 @@ unix {
 # -------------------------------------------------
 SOURCES = \
         main.cpp
+
+HEADERS += \
+    include/hopsandcp.h
 
