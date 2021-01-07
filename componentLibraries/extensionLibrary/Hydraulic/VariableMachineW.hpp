@@ -48,8 +48,8 @@ public:
         addConstant("D_p", "Displacement", "m^3/rev", 60e-6, mDp);
 		addConstant("J_m", "Inertia Load", "kgm^2", 0.1, mJ);
 		addConstant("viscFric", "Viscous friction", "Nms/rad", 0.1, mViscFric);
-		addConstant("intLeak", "Internal leakage coefficient", "m^5/Ns", 1e-12, mIntLeak);
-		addConstant("extLeak", "External leakage coefficient", "m^5/Ns", 1e-12, mExtLeak);
+		addConstant("intLeak", "Internal leakage coefficient", "(m^3/s)/Pa", 1e-12, mIntLeak);
+		addConstant("extLeak", "External leakage coefficient", "(m^3/s)/Pa", 1e-12, mExtLeak);
     }
     // The initialize function is called before simulation begins.
     // It may be called multiple times
