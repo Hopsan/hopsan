@@ -1,6 +1,6 @@
 TEMPLATE = subdirs
 
-SUBDIRS = HopsanCore componentLibraries SymHop Ops HopsanGenerator hopsangeneratorgui hopsanremote hopsanhdf5exporter HopsanGUI HopsanCLI UnitTests hopsanc
+SUBDIRS = HopsanCore componentLibraries SymHop Ops HopsanGenerator hopsangeneratorgui hopsanremote hopsanhdf5exporter HopsanGUI HopsanCLI UnitTests hopsanc hopsandcp
 
 componentLibraries.depends = HopsanCore
 HopsanGenerator.depends = HopsanCore SymHop
@@ -10,3 +10,4 @@ hopsanc.depends = HopsanCore
 hopsanhdf5exporter.depends = HopsanCore
 hopsanremote.depends = HopsanCore
 UnitTests.depends = HopsanCore HopsanGenerator componentLibraries
+hopsandcp.depends = HopsanCore
