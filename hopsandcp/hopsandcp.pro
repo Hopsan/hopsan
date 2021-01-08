@@ -84,8 +84,10 @@ unix {
 # Project files
 # -------------------------------------------------
 SOURCES = \
+        dcpslave.cpp \
         main.cpp
 
 HEADERS += \
+    dcpslave.h \
     include/hopsandcp.h
 

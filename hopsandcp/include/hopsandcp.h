@@ -11,8 +11,4 @@ namespace hopsan {
     class HString;
 }
 
-extern hopsan::HopsanEssentials gHopsanCore;
-extern std::string gHost;
-extern int gPort;
-
 #endif // HOPSANDCP_H
