@@ -371,10 +371,10 @@ int main(int argc, char* argv[])
 
                         std::string appName("hopsanserverworker.exe");
                         std::string cmdLine("hopsanserverworker "+uidstr+" "+scport+" "+swport+" "+nthreads);
-                        TCHAR tempCmdLine[cmdLine.size()*2];
-                        strcpy_s(tempCmdLine, cmdLine.size()*2, cmdLine.c_str());
+                        TCHAR* pTCharCmdLineBuff = new TCHAR[cmdLine.size()+1];
+                        strcpy_s(pTCharCmdLineBuff, cmdLine.size()+1, cmdLine.c_str());
 
-                        BOOL result = CreateProcess(appName.c_str(), tempCmdLine, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, NULL, &startupInfo, &processInformation);
+                        BOOL result = CreateProcess(appName.c_str(), pTCharCmdLineBuff, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, NULL, &startupInfo, &processInformation);
                         if (result == 0)
                         {
                             std::cout << PRINTSERVER << "Error: Failed to launch worker process!"<<endl;
@@ -389,6 +389,7 @@ int main(int argc, char* argv[])
                             sendMessage<ReplymsgReplyServerSlots>(socket, ReplyServerSlots, msg);
                             gNumTakenSlots++;
                         }
+                        delete pTCharCmdLineBuff;
 
 #else
                         char name_buff[64], sport_buff[64], wport_buff[64], thread_buff[64], uid_buff[64];

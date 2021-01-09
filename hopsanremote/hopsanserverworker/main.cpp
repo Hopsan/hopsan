@@ -48,6 +48,9 @@
 
 #ifdef _WIN32
 #include "windows.h"
+#ifdef _MSC_VER
+using pid_t=int;
+#endif
 #else
 #include <spawn.h>
 #include <sys/wait.h>
