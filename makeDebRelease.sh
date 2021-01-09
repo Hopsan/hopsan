@@ -59,38 +59,18 @@ function ask_question {
   fi
 }
 
-# Export git directory including submodules
-function git_export_all {
-  set -e
-  local -r src=$1
-  local -r dst=$2
-  local -r tarfile=hopsan_git_export.tar
-  echo "Exporting from git: ${src} to ${dst}"
-  mkdir -p ${dst}
-  pushd ${src}
-  ${hopsancode_root}/dependencies/git-archive-all/git_archive_all.py ${tarfile}
-  popd
-  mv ${src}/${tarfile} ${dst}
-  pushd ${dst}
-  tar -xf ${tarfile} --strip-components=1
-  rm ${tarfile}
-  popd
-  set +e
-}
-
-
 dscFile="NoFile"
 function builDSCFile {
   local -r confdir="$1"
   local -r packagedir="$2"
-  local -r packageorigsrcfile="$3"
+  local -r packagepreparedsrcfile="$3"
   local -r config="$4"
   local -r outputbasename="$5"
 
   echo ---------------------------------
   echo Build dsc package:
   echo ---------------------------------
-  echo Source file: $packageorigsrcfile
+  echo Source file: $packagepreparedsrcfile
   echo Packagedir : $packagedir
   echo Output name: $outputbasename
   echo Confdir    : $confdir
@@ -112,14 +92,14 @@ function builDSCFile {
   fi
 
   # Copy "unpack" prepared source files to this dir
-  tar -xzf ${packageorigsrcfile} -C ${packagedir}
+  tar -xzf ${packagepreparedsrcfile} -C ${packagedir}
 
   # Generate NEW change log file for this release version with no content in particular
-  pushd ${packagedir}
+  pushd ${packagedir} > /dev/null
   rm debian/changelog
   dch -p -M -d --create "See Hopsan-release-notes.txt for changes"
   dch -p -m --release ""
-  popd
+  popd > /dev/null
 
   # Generate dsc source file
   dpkg-source --before-build ${packagedir}
@@ -140,14 +120,27 @@ if [[ -z "$baseversion_or_tag" ]]; then
   doDevRelease=true
   baseversion_or_tag=${devversion}
 fi
-readonly releaserevision=$(./getGitInfo.sh date.time .)
-readonly baseversion=$(echo ${baseversion_or_tag} | sed 's/[^0-9\.]//g')
-readonly fullversionname=${baseversion}.${releaserevision}
 
-readonly tag_regex="^v.*"
-if [[ ${baseversion_or_tag} =~ ${tag_regex} ]]; then
-  ask_question "Enter git URL: " https://github.com/Hopsan/hopsan.git
-  readonly hopsancode_url=$questionAnswer
+readonly baseversion=$(echo ${baseversion_or_tag} | sed 's/[^0-9\.]//g')
+branch_or_tag_to_clone="master"
+if [[ ${baseversion_or_tag} =~ ^v ]]; then
+  branch_or_tag_to_clone=${baseversion_or_tag}
+fi
+
+echo "Choose remote to clone from:"
+select remote in file://${hopsancode_root} https://github.com/Hopsan/hopsan.git https://github.com/peterNordin/hopsan.git
+do
+  if [[ -z "$remote" ]]; then
+    echo Invalid choice
+    exit 1
+  fi
+  readonly hopsancode_url=${remote}
+  break
+done
+if [[ ${hopsancode_url} == file://${hopsancode_root} ]]; then
+  pushd ${hopsancode_root} > /dev/null
+  branch_or_tag_to_clone=$(git branch --show-current)
+  popd > /dev/null
 fi
 
 echo
@@ -166,14 +159,15 @@ for i in "${ubuntuDistArchArray[@]}"; do
 done
 
 echo
-echo ---------------------------------------
-echo This is a DEV release: $doDevRelease
-echo Release baseversion number: $baseversion
-echo Release revision number: $releaserevision
-echo Release version name: $fullversionname
-echo Built in components: $doBuildInComponents
+echo -------------------------------------------------
+echo This is a DEVELOPMENT release: ${doDevRelease}
+echo Release baseversion number: ${baseversion}
+echo Built in components: ${doBuildInComponents}
+echo URL to clone: ${hopsancode_url}
+echo Branch to clone: ${branch_or_tag_to_clone}
+echo
 printf "%s\n" "${distArchArrayDo[@]}"
-echo ---------------------------------------
+echo -------------------------------------------------
 boolAskYNQuestion "Is this OK?" n
 if [ "$boolYNQuestionAnswer" = false ]; then
   echo Aborting!
@@ -187,61 +181,64 @@ echo
 #
 outputDir=${hopsancode_root}/output_deb
 outputDebDir=${outputDir}/debs
-outputfile_basename=${name}_${fullversionname}
-packageorigsrcfile=${outputfile_basename}.orig.tar.gz
-package_dirname=${name}-${fullversionname}
-stage_directory=${outputDir}/hopsanStage_${fullversionname}
+readonly tmp_stage_directory=${outputDir}/hopsan-stage
 
-mkdir -p $outputDebDir
-mkdir -p $pbuilderWorkDir
-pushd ${outputDir}
-
+mkdir -p ${outputDebDir}
+mkdir -p ${pbuilderWorkDir}
+pushd ${outputDir} > /dev/null
 
 # -----------------------------------------------------------------------------
-# Clone or export source code for a clean build, unless src and dst directories are the same
+# Clone source code to ensure a clean build
 #
-if [[ ${baseversion_or_tag} =~ ${tag_regex} ]]; then
-  echo Cloning from ${hopsancode_url} into ${stage_directory}
-  rm -rf ${stage_directory}
-  git clone -b ${baseversion_or_tag} --depth 1 ${hopsancode_url} ${stage_directory}
-  if [[ $? -ne 0 ]]; then
-    echo Error: Failed to clone from git
+echo Cloning from ${hopsancode_url} into ${tmp_stage_directory}
+rm -rf ${tmp_stage_directory}
+git clone -b ${branch_or_tag_to_clone} --depth 1 ${hopsancode_url} ${tmp_stage_directory}
+if [[ $? -ne 0 ]]; then
+    echo Error: Failed to clone from ${hopsancode_url}
     exit 1
-  fi
-  pushd ${stage_directory}
-  git submodule update --init --recommend-shallow
-  if [[ $? -ne 0 ]]; then
+fi
+pushd ${tmp_stage_directory} > /dev/null
+git submodule update --init --recommend-shallow
+if [[ $? -ne 0 ]]; then
     echo Error: Failed to clone submodules from git
     exit 1
-  fi
-  popd
-  readonly hopsancode_gitdir=${stage_directory}
-elif [[ "${hopsancode_root}" == "${stage_directory}" ]]; then
-  echo Source code and stage directory are the same. Not exporting code! Building in source code directory!
-  readonly hopsancode_gitdir=${hopsancode_root}
-else
-  echo Exporting ${hopsancode_root} to ${stage_directory} for preparation
-  rm -rf ${stage_directory}
-  git_export_all ${hopsancode_root} ${stage_directory}
-  readonly hopsancode_gitdir=${hopsancode_root}
 fi
+popd > /dev/null
 
+# -----------------------------------------------------------------------------
+# Determine version number for output directory and file names
+#
+set -e
+pushd ${tmp_stage_directory} > /dev/null
+readonly releaserevision=$(./getGitInfo.sh date.time .)
+readonly fullversionname=${baseversion}.${releaserevision}
+echo Release revision number: $releaserevision
+echo Release version name: $fullversionname
+sleep 2
+popd > /dev/null
+
+readonly outputfile_basename=${name}_${fullversionname}
+readonly packageorigsrcfile=${outputfile_basename}.orig.tar.gz
+readonly package_dirname=${name}-${fullversionname}
+
+stage_directory=${tmp_stage_directory}-${fullversionname}
+mv ${tmp_stage_directory} ${stage_directory}
 
 # -----------------------------------------------------------------------------
 # Prepare source code inside stage directory and package it into original source package
 #
-set -e
-${stage_directory}/packaging/prepareSourceCode.sh ${hopsancode_gitdir} ${stage_directory} \
+readonly hopsancode_gitwc=${stage_directory}
+${stage_directory}/packaging/prepareSourceCode.sh ${hopsancode_gitwc} ${stage_directory} \
                                                   ${baseversion} ${releaserevision} ${fullversionname} \
                                                   ${doDevRelease} ${doBuildInComponents}
 # Download dependencies, since that can not be done inside a pbuilder environment
 # Unfortunately all dependencies must be downloaded since we can not know at this point which of them will be used
-pushd ${stage_directory}/dependencies
+pushd ${stage_directory}/dependencies > /dev/null
 ./download-dependencies.py --all
-popd
+popd > /dev/null
 set +e
 # Remove .git directory and submodule files (if present) before packaging source code
-find ${stage_directory} -name .git -exec rm -rf {} \;
+find ${stage_directory} -name .git | xargs rm -rf
 # Package source code
 tar -czf ${packageorigsrcfile} -C ${stage_directory} .
 
