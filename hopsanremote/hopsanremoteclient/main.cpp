@@ -24,8 +24,6 @@
 
 //$Id$
 
-#include <unistd.h>
-
 #include "hopsanremoteclient/RemoteHopsanClient.h"
 
 #include <tclap/CmdLine.h>
@@ -49,6 +47,7 @@ BOOL WINAPI consoleCtrlHandler( DWORD dwCtrlType )
     return TRUE;
 }
 #else
+#include <unistd.h>
 static void s_signal_handler(int signal_value)
 {
     s_interrupted = 1;
