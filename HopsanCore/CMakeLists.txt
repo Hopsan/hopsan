@@ -31,6 +31,11 @@ if(WIN32)
   target_compile_definitions(hopsancore PRIVATE HOPSANCORE_DLLEXPORT)
   target_compile_definitions(hopsancore INTERFACE HOPSANCORE_DLLIMPORT)
 endif()
+if (MSVC)
+  # Ensure that the __cplusplus macro is set to the appropriate value in MSVC
+  # otherwise it is stuck at 199711L
+  target_compile_options(hopsancore PUBLIC "/Zc:__cplusplus")
+endif()
 target_compile_definitions(hopsancore PRIVATE HOPSANCORE_WRITELOG)
 if(CMAKE_BUILD_TYPE MATCHES Debug)
   target_compile_definitions(hopsancore PUBLIC HOPSAN_BUILD_TYPE_DEBUG)

@@ -35,6 +35,7 @@
 #include <iostream>
 #include <vector>
 #include <cstddef>
+#include <algorithm>
 #include "win32dll.h"
 
 #if (__cplusplus >= 201103L) && !defined(HOPSANCORE_NOMULTITHREADING)
@@ -96,17 +97,17 @@ private:
 };
 
 
-void simMaster(ComponentSystem *pSystem, std::vector<Component *> &sVector, std::vector<Component *> &cVector,
-               std::vector<Component *> &qVector, std::vector<Node *> &nVector, std::vector<double *> &pSimTimes,
-               double startTime, double timeStep, size_t numSimSteps, BarrierLock *pBarrier_S,
-               BarrierLock *pBarrier_C, BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N);
+HOPSANCORE_DLLAPI void simMaster(ComponentSystem *pSystem, std::vector<Component *> &sVector, std::vector<Component *> &cVector,
+                                 std::vector<Component *> &qVector, std::vector<Node *> &nVector, std::vector<double *> &pSimTimes,
+                                 double startTime, double timeStep, size_t numSimSteps, BarrierLock *pBarrier_S,
+                                 BarrierLock *pBarrier_C, BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N);
 
-void simSlave(ComponentSystem *pSystem, std::vector<Component*> &sVector, std::vector<Component*> &cVector,
-              std::vector<Component*> &qVector, std::vector<Node*> &nVector, double startTime,
-              double timeStep, size_t numSimSteps, BarrierLock *pBarrier_S,
-              BarrierLock *pBarrier_C, BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N);
+HOPSANCORE_DLLAPI void simSlave(ComponentSystem *pSystem, std::vector<Component*> &sVector, std::vector<Component*> &cVector,
+                                std::vector<Component*> &qVector, std::vector<Node*> &nVector, double startTime,
+                                double timeStep, size_t numSimSteps, BarrierLock *pBarrier_S,
+                                BarrierLock *pBarrier_C, BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N);
 
-void simWholeSystems(std::vector<ComponentSystem *> systemPtrs, double stopTime);
+HOPSANCORE_DLLAPI void simWholeSystems(std::vector<ComponentSystem *> systemPtrs, double stopTime);
 
 
 //////////////////////////////
@@ -174,7 +175,7 @@ private:
 
 
 
-void simPoolSlave(TaskPool *pTaskPoolC, TaskPool *pTaskPoolQ, std::atomic<double> *pTime, std::atomic<bool> *pStop);
+HOPSANCORE_DLLAPI void simPoolSlave(TaskPool *pTaskPoolC, TaskPool *pTaskPoolQ, std::atomic<double> *pTime, std::atomic<bool> *pStop);
 
 
 
@@ -288,52 +289,52 @@ private:
 };
 
 
-void simStealingMaster(ComponentSystem *pSystem,
-                       std::vector<Component*> &sVector,
-                       std::vector<ThreadSafeVector*> *cVectors,
-                       std::vector<ThreadSafeVector*> *qVectors,
-                       std::vector<double *> &pSimTimes,
-                       double startTime,
-                       double timeStep,
-                       size_t numSimSteps,
-                       size_t nThreads,
-                       size_t threadID,
-                       BarrierLock *pBarrier_S,
-                       BarrierLock *pBarrier_C,
-                       BarrierLock *pBarrier_Q,
-                       BarrierLock *pBarrier_N,
-                       size_t maxSize);
+HOPSANCORE_DLLAPI void simStealingMaster(ComponentSystem *pSystem,
+                                         std::vector<Component*> &sVector,
+                                         std::vector<ThreadSafeVector*> *cVectors,
+                                         std::vector<ThreadSafeVector*> *qVectors,
+                                         std::vector<double *> &pSimTimes,
+                                         double startTime,
+                                         double timeStep,
+                                         size_t numSimSteps,
+                                         size_t nThreads,
+                                         size_t threadID,
+                                         BarrierLock *pBarrier_S,
+                                         BarrierLock *pBarrier_C,
+                                         BarrierLock *pBarrier_Q,
+                                         BarrierLock *pBarrier_N,
+                                         size_t maxSize);
 
 
 
 
-void simStealingSlave(ComponentSystem *pSystem,
-                      std::vector<ThreadSafeVector*> *cVectors,
-                      std::vector<ThreadSafeVector*> *qVectors,
-                      double startTime,
-                      double timeStep,
-                      size_t numSimSteps,
-                      size_t nThreads,
-                      size_t threadID,
-                      BarrierLock *pBarrier_S,
-                      BarrierLock *pBarrier_C,
-                      BarrierLock *pBarrier_Q,
-                      BarrierLock *pBarrier_N,
-                      size_t maxSize);
-
-
-/////////////////////////////////////////////
-// Parallel for loop algorithm using tasks //
-/////////////////////////////////////////////
-
-void simOneComponentOneStep(Component * pComp, double stopTime);
+HOPSANCORE_DLLAPI void simStealingSlave(ComponentSystem *pSystem,
+                                        std::vector<ThreadSafeVector*> *cVectors,
+                                        std::vector<ThreadSafeVector*> *qVectors,
+                                        double startTime,
+                                        double timeStep,
+                                        size_t numSimSteps,
+                                        size_t nThreads,
+                                        size_t threadID,
+                                        BarrierLock *pBarrier_S,
+                                        BarrierLock *pBarrier_C,
+                                        BarrierLock *pBarrier_Q,
+                                        BarrierLock *pBarrier_N,
+                                        size_t maxSize);
 
 
 /////////////////////////////////////////////
 // Parallel for loop algorithm using tasks //
 /////////////////////////////////////////////
 
-void simOneStep(std::vector<Component *> *pComponentPtrs, double stopTime);
+HOPSANCORE_DLLAPI void simOneComponentOneStep(Component * pComp, double stopTime);
+
+
+/////////////////////////////////////////////
+// Parallel for loop algorithm using tasks //
+/////////////////////////////////////////////
+
+HOPSANCORE_DLLAPI void simOneStep(std::vector<Component *> *pComponentPtrs, double stopTime);
 
 }
 
