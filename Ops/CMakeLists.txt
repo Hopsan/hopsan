@@ -13,6 +13,11 @@ target_include_directories(ops PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
+if(WIN32)
+  target_compile_definitions(ops PRIVATE OPS_DLLEXPORT)
+  target_compile_definitions(ops INTERFACE OPS_DLLIMPORT)
+endif()
+
 install(TARGETS ops
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
