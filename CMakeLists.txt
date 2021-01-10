@@ -37,12 +37,10 @@ install(DIRECTORY "Models/Benchmark Models"
         DESTINATION Models)
 
 # Install Qt and C++ runtime
-if (WIN32 AND MINGW)
+if (WIN32)
+
   file(TO_CMAKE_PATH "$ENV{qmake_path}" qt_home_bin)
   message(STATUS "Installing from QT directory: ${qt_home_bin}")
-  
-  file(TO_CMAKE_PATH "$ENV{mingw_path}" mingw_home_bin)
-  message(STATUS "Installing from MinGW directory: ${mingw_home_bin}")
 
   install(FILES ${qt_home_bin}/Qt5Core.dll
                 ${qt_home_bin}/Qt5Gui.dll
@@ -51,20 +49,10 @@ if (WIN32 AND MINGW)
                 ${qt_home_bin}/Qt5Widgets.dll
                 ${qt_home_bin}/Qt5Sql.dll
                 ${qt_home_bin}/Qt5Svg.dll
-                ${qt_home_bin}/Qt5WebKit.dll
-                ${qt_home_bin}/Qt5WebKitWidgets.dll
                 ${qt_home_bin}/Qt5Xml.dll
                 ${qt_home_bin}/Qt5Test.dll
                 ${qt_home_bin}/Qt5PrintSupport.dll
-                ${qt_home_bin}/libicuin56.dll
-                ${qt_home_bin}/libicuuc56.dll
-                ${qt_home_bin}/libicudt56.dll
-                ${qt_home_bin}/libeay32.dll
-                ${qt_home_bin}/ssleay32.dll
-                ${mingw_home_bin}/libgcc_s_seh-1.dll
-                ${mingw_home_bin}/libstdc++-6.dll
-                ${mingw_home_bin}/libwinpthread-1.dll
-         DESTINATION bin)
+          DESTINATION bin)
 
   install(FILES ${qt_home_bin}/../plugins/iconengines/qsvgicon.dll
           DESTINATION bin/iconengines)
@@ -73,4 +61,22 @@ if (WIN32 AND MINGW)
           DESTINATION bin/imageformats)
   install(FILES ${qt_home_bin}/../plugins/platforms/qwindows.dll
           DESTINATION bin/platforms)
+
+  if (MINGW)
+    file(TO_CMAKE_PATH "$ENV{mingw_path}" mingw_home_bin)
+    message(STATUS "Installing from MinGW directory: ${mingw_home_bin}")
+
+    install(FILES ${qt_home_bin}/Qt5WebKit.dll
+                  ${qt_home_bin}/Qt5WebKitWidgets.dll
+                  ${qt_home_bin}/libicuin56.dll
+                  ${qt_home_bin}/libicuuc56.dll
+                  ${qt_home_bin}/libicudt56.dll
+                  ${qt_home_bin}/libeay32.dll
+                  ${qt_home_bin}/ssleay32.dll
+                  ${mingw_home_bin}/libgcc_s_seh-1.dll
+                  ${mingw_home_bin}/libstdc++-6.dll
+                  ${mingw_home_bin}/libwinpthread-1.dll
+            DESTINATION bin)
+  endif()
+
 endif()
