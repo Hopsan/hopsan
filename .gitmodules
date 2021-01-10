@@ -7,9 +7,6 @@
 [submodule "dependencies/tools"]
 	path = dependencies/tools
 	url = https://github.com/Hopsan/hopsan_deps_tools.git
-[submodule "dependencies/git-archive-all"]
-	path = dependencies/git-archive-all
-	url = https://github.com/Kentzo/git-archive-all.git
 [submodule "HopsanCore/dependencies/sundials"]
 	path = HopsanCore/dependencies/sundials
 	url = https://github.com/LLNL/sundials
