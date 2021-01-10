@@ -88,6 +88,15 @@ if %HOPSAN_BUILD_CMAKE_GENERATOR%x == x (
 	set HOPSAN_BUILD_CMAKE_GENERATOR="MinGW Makefiles"
 )
 
+REM Assume mingw compiler
+if %HOPSAN_BUILD_COMPILER%x == x (
+	set HOPSAN_BUILD_COMPILER=mingw
+)
+REM If CMAKE_GENERATOR is "Visual Stuido ***" auto set compiler to MSVC
+if "%HOPSAN_BUILD_CMAKE_GENERATOR:~1,6%" == "Visual" (
+	set HOPSAN_BUILD_COMPILER=msvc
+)
+
 REM Echo expected paths and generator
 echo HOPSAN_BUILD_CMAKE_GENERATOR: %HOPSAN_BUILD_CMAKE_GENERATOR%
 echo cmake_path:   %cmake_path%

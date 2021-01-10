@@ -25,11 +25,24 @@ if exist %builddir% (
 )
 mkdir %builddir%
 cd %builddir%
-cmake -Wno-dev -DWITH_LIBSODIUM=OFF -G %HOPSAN_BUILD_CMAKE_GENERATOR% -DCMAKE_INSTALL_PREFIX=%installdir% %codedir%
-cmake --build . --parallel 8
-cmake --build . --target install
-if not "%HOPSAN_BUILD_DEPENDENCIES_TEST%" == "false" (
-  ctest --parallel 8
+
+if "%HOPSAN_BUILD_COMPILER%" == "msvc" (
+  cmake -Wno-dev -DWITH_LIBSODIUM=OFF -G %HOPSAN_BUILD_CMAKE_GENERATOR% -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=%installdir% %codedir%
+  cmake --build . --config Debug --parallel 8
+  cmake --build . --config Debug --target install
+  cmake -Wno-dev -DWITH_LIBSODIUM=OFF -G %HOPSAN_BUILD_CMAKE_GENERATOR% -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%installdir% %codedir%
+  cmake --build . --config Release --parallel 8
+  cmake --build . --config Release --target install
+  if not "%HOPSAN_BUILD_DEPENDENCIES_TEST%" == "false" (
+    ctest -C Release --parallel 8
+  )
+) else (
+  cmake -Wno-dev -DWITH_LIBSODIUM=OFF -G %HOPSAN_BUILD_CMAKE_GENERATOR% -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%installdir% %codedir%
+  cmake --build . --parallel 8
+  cmake --build . --target install
+  if not "%HOPSAN_BUILD_DEPENDENCIES_TEST%" == "false" (
+    ctest --parallel 8
+  )
 )
 
 REM Now "install" cppzmq (header only), to the zmq install dir

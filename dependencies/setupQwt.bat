@@ -24,8 +24,7 @@ set PATH=%PATH_WITHOUT_MSYS%
 mkdir %builddir%
 cd %builddir%
 
-REM Decide compiler to use from specified CMake generator
-if "%HOPSAN_BUILD_CMAKE_GENERATOR:~1,6%" == "Visual" (
+if "%HOPSAN_BUILD_COMPILER%" == "msvc" (
   echo "Building Qwt for MSVC"
   qmake %codedir%\qwt.pro -r -spec win32-msvc
   nmake
