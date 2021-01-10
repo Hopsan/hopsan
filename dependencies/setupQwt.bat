@@ -13,19 +13,29 @@ set installdir=%basedir%\%name%
 
 REM Setup paths
 call setHopsanBuildPaths.bat
-set PATH=%PATH_WITH_MSYS%
 
 REM Patch libQWT
+set PATH=%PATH_WITH_MSYS%
 cd %codedir%
 patch.exe --forward -p0 < ..\qwt-build.patch
 
 REM Build
+set PATH=%PATH_WITHOUT_MSYS%
 mkdir %builddir%
 cd %builddir%
 
-qmake %codedir%\qwt.pro -r -spec win32-g++
-mingw32-make -j8
-mingw32-make install
+REM Decide compiler to use from specified CMake generator
+if "%HOPSAN_BUILD_CMAKE_GENERATOR:~1,6%" == "Visual" (
+  echo "Building Qwt for MSVC"
+  qmake %codedir%\qwt.pro -r -spec win32-msvc
+  nmake
+  nmake install
+) else (
+  echo "Building Qwt for MinGW"
+  qmake %codedir%\qwt.pro -r -spec win32-g++
+  mingw32-make -j8
+  mingw32-make install
+)
 
 cd %basedir%
 echo.

@@ -3,11 +3,18 @@ set(local_qwt_dir ${CMAKE_CURRENT_LIST_DIR}/qwt)
 add_library(qwt SHARED IMPORTED)
 
 if (WIN32)
+
+  # Qwt build with mingw has import library suffix .a, not .dll.a as expected by CMAKE_IMPORT_LIBRARY_SUFFIX
+  set(ils ${CMAKE_IMPORT_LIBRARY_SUFFIX})
+  if (MINGW)
+    set(ils .a)
+  endif()
+
   set_target_properties(qwt PROPERTIES
     IMPORTED_LOCATION ${local_qwt_dir}/lib/qwt${CMAKE_SHARED_LIBRARY_SUFFIX}
     IMPORTED_LOCATION_DEBUG ${local_qwt_dir}/lib/qwtd${CMAKE_SHARED_LIBRARY_SUFFIX}
-    IMPORTED_IMPLIB ${local_qwt_dir}/lib/libqwt.a
-    IMPORTED_IMPLIB_DEBUG ${local_qwt_dir}/lib/libqwtd.a
+    IMPORTED_IMPLIB ${local_qwt_dir}/lib/${CMAKE_IMPORT_LIBRARY_PREFIX}qwt${ils}
+    IMPORTED_IMPLIB_DEBUG ${local_qwt_dir}/lib/${CMAKE_IMPORT_LIBRARY_PREFIX}qwtd${ils}
     INTERFACE_INCLUDE_DIRECTORIES ${local_qwt_dir}/include
     INTERFACE_COMPILE_DEFINITIONS QWT_DLL)
 
