@@ -1,7 +1,11 @@
 #include "dcpslave.h"
 
-#include "dcp/logic/DcpManagerSlave.hpp"
-#include "dcp/xml/DcpSlaveDescriptionWriter.hpp"
+#include <dcp/helper/Helper.hpp>
+#include <dcp/log/OstreamLog.hpp>
+#include <dcp/logic/DcpManagerSlave.hpp>
+#include <dcp/xml/DcpSlaveDescriptionWriter.hpp>
+#include <dcp/model/pdu/DcpPduFactory.hpp>
+#include <dcp/driver/ethernet/udp/UdpDriver.hpp>
 
 #include "HopsanEssentials.h"
 #include "HopsanCoreMacros.h"
@@ -17,6 +21,12 @@ const std::string default_library = DEFAULT_LIBRARY_ROOT "/" DEFAULTLIBFILE;
 #else
 const std::string default_library = "";
 #endif
+
+const LogTemplate SIM_LOG = LogTemplate(
+        1, 1, DcpLogLevel::LVL_INFORMATION,
+        "[Time = %float64]: output = %float64",
+        {DcpDataType::float64, DcpDataType::float64});
+
 
 using namespace hopsan;
 
@@ -61,6 +71,34 @@ DcpSlave::DcpSlave(const std::string modelfile, const std::string host, int port
     std::cout << "\n";
 
     printWaitingMessages();
+
+
+    //Create UDP driver
+    udpDriver = new UdpDriver(host, uint16_t(port));
+
+    //Create slave DCP manager
+    mManager = new DcpManagerSlave(*getSlaveDescription(), udpDriver->getDcpDriver());
+    mManager->setInitializeCallback<SYNC>(
+            std::bind(&DcpSlave::initialize, this));
+    mManager->setConfigureCallback<SYNC>(
+            std::bind(&DcpSlave::configure, this));
+    mManager->setSynchronizingStepCallback<SYNC>(
+            std::bind(&DcpSlave::doStep, this, std::placeholders::_1));
+    mManager->setSynchronizedStepCallback<SYNC>(
+            std::bind(&DcpSlave::doStep, this, std::placeholders::_1));
+    mManager->setRunningStepCallback<SYNC>(
+            std::bind(&DcpSlave::doStep, this, std::placeholders::_1));
+    mManager->setRunningNRTStepCallback<SYNC>(
+                std::bind(&DcpSlave::doStep, this, std::placeholders::_1));
+    mManager->setTimeResListener<SYNC>(std::bind(&DcpSlave::setTimeRes, this,
+                                                std::placeholders::_1,
+                                                std::placeholders::_2));
+
+    //Display log messages on console
+    stdLog = new OstreamLog(std::cout);
+    mManager->addLogListener(
+            std::bind(&OstreamLog::logOstream, *stdLog, std::placeholders::_1));
+    mManager->setGenerateLogString(true);
 }
 
 DcpSlave::~DcpSlave()
@@ -89,7 +127,7 @@ SlaveDescription_t *DcpSlave::getSlaveDescription() {
     slaveDescription->OpMode.NonRealTime = make_NonRealTime_ptr();
     Resolution_t resolution = make_Resolution();
     resolution.numerator = 1;
-    resolution.denominator = denominator_t(1/mpRootSystem->getTimestep());
+    resolution.denominator = denominator_t(1.0/mpRootSystem->getTimestep());
     slaveDescription->TimeRes.resolutions.push_back(resolution);
     slaveDescription->TransportProtocols.UDP_IPv4 = make_UDP_ptr();
     slaveDescription->TransportProtocols.UDP_IPv4->Control = make_Control_ptr(mHost.c_str(), port_t(mPort));
@@ -112,11 +150,13 @@ SlaveDescription_t *DcpSlave::getSlaveDescription() {
         std::shared_ptr<CommonCausality_t> causality = make_CommonCausality_ptr<float64_t>();
         causality->Float64->start = std::make_shared<std::vector<float64_t>>();
         causality->Float64->start->push_back(0.0);
-        slaveDescription->Variables.push_back(make_Variable_input(mInputs[i], valueReference_t(i), causality));
+        slaveDescription->Variables.push_back(make_Variable_input(mInputs[i], valueReference_t(mOutputs.size()+i), causality));
     }
 
     slaveDescription->Log = make_Log_ptr();
     slaveDescription->Log->categories.push_back(make_Category(1, "DCP_SLAVE"));
+    slaveDescription->Log->templates.push_back(make_Template(
+            1, 1, (uint8_t) DcpLogLevel::LVL_INFORMATION, "[Time = %float64]: output = %float64"));
 
     return slaveDescription;
 }
@@ -124,4 +164,71 @@ SlaveDescription_t *DcpSlave::getSlaveDescription() {
 
 void DcpSlave::generateDescriptionFile(std::string &targetFile) {
     writeDcpSlaveDescription(*getSlaveDescription(), targetFile.c_str());
+}
+
+void DcpSlave::start()
+{
+    mManager->start();
+}
+
+
+void DcpSlave::configure() {
+    std::cout << "Checking model... ";
+    if (mpRootSystem->checkModelBeforeSimulation()) {
+        std::cout << "Success!\n";
+    }
+    else {
+        std::cout << "Failed!\n";
+        printWaitingMessages();
+        exit(-1);
+    }
+
+    for(size_t o=0; o<mOutputs.size(); ++o) {
+        mOutputDataPtrs.push_back(mManager->getOutput<float64_t *>(o));
+        mOutputNodePtrs.push_back(mpRootSystem->getSubComponent(mOutputs[o].c_str())->getPort("in")->getNodeDataPtr(0));
+    }
+    for(size_t i=0; i<mInputs.size(); ++i) {
+        mInputDataPtrs.push_back(mManager->getInput<float64_t *>(mOutputs.size()+i));
+        mInputNodePtrs.push_back(mpRootSystem->getSubComponent(mInputs[i].c_str())->getPort("out")->getNodeDataPtr(0));
+    }
+
+    std::cout << "Initializing... ";
+    if(mpRootSystem->initialize(0,10)) {
+        std::cout << "Success!\n";
+        printWaitingMessages();
+    }
+    else {
+        std::cout << "Failed!\n";
+        printWaitingMessages();
+        exit(-1);
+    }
+}
+
+void DcpSlave::initialize() {
+
+
+}
+
+void DcpSlave::doStep(uint64_t steps) {
+
+    // Read inputs
+    for(size_t i=0; i<mInputs.size(); ++i) {
+        *(mInputNodePtrs[i]) = *(mInputDataPtrs[i]);
+    }
+
+    //Simulate
+    mSimulationTime += steps*mpRootSystem->getTimestep();
+    mpRootSystem->simulate(mSimulationTime);
+
+     // Write outputs
+    for(size_t o=0; o<mOutputs.size(); ++o) {
+        *(mOutputDataPtrs[o]) = *(mOutputNodePtrs[o]);
+        mManager->Log(SIM_LOG, mSimulationTime, *mOutputDataPtrs[o]);
+    }
+
+    printWaitingMessages();
+}
+
+void DcpSlave::setTimeRes(const uint32_t numerator, const uint32_t denominator) {
+    mpRootSystem->setDesiredTimestep(double(numerator)/double(denominator));
 }
