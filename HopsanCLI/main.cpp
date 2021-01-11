@@ -433,6 +433,7 @@ int main(int argc, char *argv[])
             double vmax = 2;
             double CP = 0.2;
             double MP = 0.1;
+            size_t elites = 0;
             std::string parallelMethod = "multidistance";
             double alphaMin = 0.0;
             double alphaMax = 2.0;
@@ -473,7 +474,7 @@ int main(int argc, char *argv[])
                 }
                 else if(words.size() == 2 && words[0] == "maxevals")
                 {
-                    maxEvals = std::stoi(words[1]);
+                    maxEvals = std::stoul(words[1]);
                 }
                 else if(words.size() == 1 && words[0] == "printdebugfile")
                 {
@@ -485,7 +486,7 @@ int main(int argc, char *argv[])
                 }
                 else if(words.size() == 2 && words[0] == "npoints")
                 {
-                    nPoints = std::stoi(words[1]);
+                    nPoints = std::stoul(words[1]);
                 }
                 else if(words.size() == 2 && words[0] == "tolerance")
                 {
@@ -493,7 +494,7 @@ int main(int argc, char *argv[])
                 }
                 else if(words.size() == 2 && words[0] == "nmodels")
                 {
-                    nModels = std::stoi(words[1]);
+                    nModels = std::stoul(words[1]);
                 }
                 else if(words.size() == 4 && words[0] == "objective")
                 {
@@ -552,6 +553,10 @@ int main(int argc, char *argv[])
                 {
                     MP = std::stod(words[1]);
                 }
+                else if(words.size() == 2 && words[0] == "elites")
+                {
+                    elites = std::stoul(words[1]);
+                }
                 else if(words.size() == 2 && words[0] == "sigma")
                 {
                     sigma = std::stod(words[1]);
@@ -570,11 +575,11 @@ int main(int argc, char *argv[])
                 }
                 else if(words.size() == 2 && words[0] == "npredictions")
                 {
-                    nPredictions = std::stoi(words[1]);
+                    nPredictions = std::stoul(words[1]);
                 }
                 else if(words.size() == 2 && words[0] == "nretractions")
                 {
-                    nRetractions = std::stoi(words[1]);
+                    nRetractions = std::stoul(words[1]);
                 }
                 else if(words.size() == 2 && words[0] == "F")
                 {
@@ -746,6 +751,7 @@ int main(int argc, char *argv[])
                         Ops::WorkerGenetic *pWorker = dynamic_cast<Ops::WorkerGenetic*>(pBaseWorker);
                         pWorker->setCrossoverProbability(CP);
                         pWorker->setMutationProbability(MP);
+                        pWorker->setNumberOfElites(elites);
                     }
 
                     //Error checking
