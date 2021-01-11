@@ -12,7 +12,8 @@ int main(int argc, char* argv[])
     TCLAP::CmdLine cmd("hopsandcp", ' ', "0.1");
 
     // Define a value argument and add it to the command line.
-    TCLAP::SwitchArg generateDescription("d","description","Generate DCP desciption file",cmd);
+    TCLAP::SwitchArg argMakeDescription("d","description","Generate DCP desciption file",cmd);
+    TCLAP::SwitchArg argSlave("s","slave","Run model in slave mode",cmd);
     TCLAP::ValueArg<std::string> argModelFile("m","model","Hopsan model file",false, "", "", cmd);
     TCLAP::ValueArg<std::string> argTargetDescriptionFile("t","target","Target file for DCP description",false, "", "", cmd);
     TCLAP::ValueArg<std::string> argHost("a","address","Host address",false,"127.0.0.1","",cmd);
@@ -20,7 +21,13 @@ int main(int argc, char* argv[])
     // Parse the argv array.
     cmd.parse( argc, argv );
 
-    if(generateDescription.isSet()) {
+    if(argMakeDescription.isSet() && argSlave.isSet()) {
+        cout << "Cannot both generate description and run as slave.\n";
+        return -1;
+    }
+
+    //GEnerate DCP description file
+    if(argMakeDescription.isSet()) {
         if(!argModelFile.isSet()) {
             cout << "Generating a DCP description requires a model file.\n";
             return -1;
@@ -33,9 +40,6 @@ int main(int argc, char* argv[])
             cout << "Generating a DCP description requires a port.\n";
             return -1;
         }
-        string modelFile = argModelFile.getValue();
-        std::string host = argHost.getValue();
-        int port = argPort.getValue();
         string targetFile;
         if(argTargetDescriptionFile.isSet()) {
             targetFile = argTargetDescriptionFile.getValue();
@@ -45,9 +49,28 @@ int main(int argc, char* argv[])
             targetFile = targetFile.substr(0,targetFile.find_last_of('.'))+".dcpx";
         }
 
-        DcpSlave *pSlave = new DcpSlave(modelFile,host,port);
+        DcpSlave *pSlave = new DcpSlave(argModelFile.getValue(),argHost.getValue(),argPort.getValue());
         pSlave->generateDescriptionFile(targetFile);
     }
+
+    //Run a simulation as slave
+    if(argSlave.isSet()) {
+        if(!argModelFile.isSet()) {
+            cout << "Generating a DCP description requires a model file.\n";
+            return -1;
+        }
+        if(!argHost.isSet()) {
+            cout << "Generating a DCP description requires a host address.\n";
+            return -1;
+        }
+        if(!argPort.isSet()) {
+            cout << "Generating a DCP description requires a port.\n";
+            return -1;
+        }
+        DcpSlave *pSlave = new DcpSlave(argModelFile.getValue(),argHost.getValue(),argPort.getValue());
+        pSlave->start();
+    }
+
 
     std::cout << "hopsandcp completed successfully!\n";
 
