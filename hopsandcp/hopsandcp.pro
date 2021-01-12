@@ -8,7 +8,8 @@ TEMPLATE = app
 CONFIG += shared
 DESTDIR = $${PWD}/../bin
 TARGET = $${TARGET}$${DEBUG_EXT}
-DEFINES += DEBUG
+DEFINES += LOGGING
+#DEFINES += DEBUG
 QMAKE_CXXFLAGS = -Wno-comment -Wno-switch -Wno-ignored-qualifiers -Wno-sign-compare
 
 QT -= core gui
@@ -84,10 +85,11 @@ unix {
 # Project files
 # -------------------------------------------------
 SOURCES = \
+        dcpmaster.cpp \
         dcpslave.cpp \
         main.cpp
 
 HEADERS += \
-    dcpslave.h \
-    include/hopsandcp.h
+    dcpmaster.h \
+    dcpslave.h
 
