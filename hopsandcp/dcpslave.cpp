@@ -1,4 +1,5 @@
 #include "dcpslave.h"
+#include "utilities.h"
 
 #include <dcp/helper/Helper.hpp>
 #include <dcp/log/OstreamLog.hpp>
@@ -30,8 +31,8 @@ const LogTemplate SIM_LOG = LogTemplate(
 
 using namespace hopsan;
 
-DcpSlave::DcpSlave(const std::string modelfile, const std::string host, int port)
-    : mHost(host), mPort(port)
+DcpSlave::DcpSlave(const std::string modelfile, const std::string host, int port, std::string resultFile)
+    : mHost(host), mPort(port), mResultFile(resultFile)
 {
     //Create Hopsan object
     mpHopsanCore = new HopsanEssentials();
@@ -93,6 +94,8 @@ DcpSlave::DcpSlave(const std::string modelfile, const std::string host, int port
     mManager->setTimeResListener<SYNC>(std::bind(&DcpSlave::setTimeRes, this,
                                                 std::placeholders::_1,
                                                 std::placeholders::_2));
+    mManager->setStopCallback<SYNC>(
+                std::bind(&DcpSlave::stop, this));
 
     //Display log messages on console
     stdLog = new OstreamLog(std::cout);
@@ -231,4 +234,11 @@ void DcpSlave::doStep(uint64_t steps) {
 
 void DcpSlave::setTimeRes(const uint32_t numerator, const uint32_t denominator) {
     mpRootSystem->setDesiredTimestep(double(numerator)/double(denominator));
+}
+
+void DcpSlave::stop()
+{
+    if(!mResultFile.empty()) {
+        saveResultsToCSV(mpRootSystem, mResultFile, SaveResults::Full, std::vector<std::string>());
+    }
 }
