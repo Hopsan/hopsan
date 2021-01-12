@@ -28,7 +28,7 @@ jobs:
       - name: Download dependencies
         shell: cmd
         working-directory: dependencies
-        run: python download-dependencies.py fmilibrary tclap
+        run: python download-dependencies.py fmilibrary tclap qwt
 
       - name: Build dependencies
         shell: cmd
@@ -36,6 +36,7 @@ jobs:
         run: |
             call setupTclap.bat
             call setupFMILibrary.bat
+            call setupQwt.bat
 
       - name: Configure
         working-directory: hopsan-build
