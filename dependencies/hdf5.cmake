@@ -33,6 +33,11 @@ elseif(HDF5_FOUND)
   endif()
 else()
   message(WARNING "Building without HDF5 support")
+  # Add dummy libraries
+  add_library(hdf5_dummy INTERFACE)
+  add_library(hdf5cpp_dummy INTERFACE)
+  add_library(hdf5::hdf5-shared ALIAS hdf5_dummy)
+  add_library(hdf5::hdf5_cpp-shared ALIAS hdf5cpp_dummy)
 endif()
 
 if (EXISTS ${local_hdf5_dir})

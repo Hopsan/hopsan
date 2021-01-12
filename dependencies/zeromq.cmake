@@ -14,7 +14,7 @@ if (ZeroMQ_FOUND)
   message(STATUS "Building with ZeroMQ support")
   target_compile_definitions(libzmq INTERFACE USEZMQ)
 elseif(zmq_FOUND)
-  message(STATUS "Building with ZeroMQ support")
+  message(STATUS "Building with ZeroMQ support (found by PkgConfig)")
   if (NOT TARGET libzmq)
     add_library(libzmq INTERFACE)
   endif()
@@ -22,9 +22,13 @@ elseif(zmq_FOUND)
   target_compile_definitions(libzmq INTERFACE USEZMQ)
 else()
   message(WARNING "Building without ZeroMQ support")
+  # Add dummy library
+  if (NOT TARGET libzmq)
+    add_library(libzmq INTERFACE)
+  endif()
 endif()
 
-# Add ZeroMQ to installtion if local variant found
+# Add ZeroMQ to installation if local variant found
 if (EXISTS ${local_zeromq_dir})
   # When building with mingw, zeromq uses the lib prefix on windows
   if (WIN32)

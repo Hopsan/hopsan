@@ -5,5 +5,10 @@ if (NOT msgpack_FOUND)
   find_package(msgpack CONFIG) # Search in system
   if (msgpack_FOUND)
     message(STATUS "  Found msgpack")
+  else()
+    # Add dummy library
+    if (NOT TARGET msgpackc-cxx)
+      add_library(msgpackc-cxx INTERFACE)
+    endif()
   endif()
 endif()
