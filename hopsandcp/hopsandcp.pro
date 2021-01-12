@@ -87,9 +87,11 @@ unix {
 SOURCES = \
         dcpmaster.cpp \
         dcpslave.cpp \
-        main.cpp
+        main.cpp \
+        utilities.cpp
 
 HEADERS += \
     dcpmaster.h \
-    dcpslave.h
+    dcpslave.h \
+    utilities.h
 

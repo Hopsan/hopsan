@@ -73,7 +73,9 @@ int main(int argc, char* argv[])
             cout << "Running in slave mode requires requires a port.\n";
             return -1;
         }
-        DcpSlave *pSlave = new DcpSlave(argModelFile.getValue(),argHost.getValue(),argPort.getValue());
+        std::string resultFile = argModelFile.getValue();
+        resultFile = resultFile.substr(0,resultFile.find_last_of('.'))+".csv";
+        DcpSlave *pSlave = new DcpSlave(argModelFile.getValue(),argHost.getValue(),argPort.getValue(),resultFile);
         pSlave->start();
     }
 
