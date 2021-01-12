@@ -17,7 +17,7 @@ class OstreamLog;
 class DcpSlave
 {
 public:
-    DcpSlave(const std::string modelfile, const std::string host, int port);
+    DcpSlave(const std::string modelfile, const std::string host, int port, std::string resultFile="");
     ~DcpSlave();
 
     void generateDescriptionFile(std::string &targetFile);
@@ -34,6 +34,7 @@ private:
     std::vector<double*> mInputDataPtrs, mOutputDataPtrs;
     std::string mHost = "127.0.0.1";
     int mPort = 8080;
+    std::string mResultFile;
     DcpManagerSlave *mManager;
     OstreamLog *stdLog;
     UdpDriver* udpDriver;
@@ -43,6 +44,7 @@ private:
     void initialize();
     void doStep(uint64_t steps);
     void setTimeRes(const uint32_t numerator, const uint32_t denominator);
+    void stop();
 };
 
 #endif // DCPSLAVE_H
