@@ -122,7 +122,7 @@ int getDataVector(const char* variable, double *data)
         printMessage("Alternatives:");
         for(const hopsan::HString &name : pSystem->getSubComponentNames()) {
             printMessage("  "+name);
-        };
+        }
         return -1;
     }
 
@@ -130,12 +130,20 @@ int getDataVector(const char* variable, double *data)
     hopsan::Port *pPort = pComp->getPort(splitVar[1]);
     if(!pPort) {
         printMessage("Error: No such port: "+splitVar[1]);
+        printMessage("Alternatives:");
+        for(const hopsan::HString &name : pComp->getPortNames()) {
+            printMessage("  "+name);
+        }
         return -1;
     }
 
     int varId = pPort->getNodeDataIdFromName(splitVar[2]);
     if(varId < 0) {
         printMessage("Error: No such variable: "+splitVar[2]);
+        printMessage("Alternatives:");
+        for(const auto &node : *pPort->getNodeDataDescriptions(0)) {
+            printMessage("  "+node.name);
+        }
         return -1;
     }
 
