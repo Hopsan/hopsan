@@ -27,3 +27,4 @@
 #include "HydraulicNodeSensor.hpp"
 #include "HydraulicPowerSensor.hpp"
 #include "HydraulicPressureSensor.hpp"
+#include "HydraulicDifferentialPressureSensor.hpp"

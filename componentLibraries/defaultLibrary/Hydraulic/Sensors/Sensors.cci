@@ -27,3 +27,4 @@ pComponentFactory->registerCreatorFunction("HydraulicFlowSensor",HydraulicFlowSe
 pComponentFactory->registerCreatorFunction("HydraulicNodeSensor",HydraulicNodeSensor::Creator);
 pComponentFactory->registerCreatorFunction("HydraulicPowerSensor",HydraulicPowerSensor::Creator);
 pComponentFactory->registerCreatorFunction("HydraulicPressureSensor",HydraulicPressureSensor::Creator);
+pComponentFactory->registerCreatorFunction("HydraulicDifferentialPressureSensor",HydraulicDifferentialPressureSensor::Creator);
