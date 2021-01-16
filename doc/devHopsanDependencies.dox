@@ -1,7 +1,6 @@
 /*!
 \page page_hopsandependencies Hopsan Dependencies and Licenses
-Hopsan depend on various third-party projects for some functionality.\n
-We would like to acknowledge these projects.\n
+Hopsan depends on various third-party projects for additional functionality. We would like to acknowledge these projects.\n
 Some rather lengthy license texts are given at the end of this page.
 
 \section sec_requiredhopsandependencies Required Hopsan Dependencies
@@ -12,9 +11,10 @@ http://www.qt.io/
 
 __License:__ \n
 \verbatim
-LGPL v2.1 and LGPL v3.0
+LGPL v2.1, LGPL v3.0 and GPL v3.0
 http://www.gnu.org/licenses/lgpl-2.1
 http://www.gnu.org/licenses/lgpl-3.0
+http://www.gnu.org/licenses/gpl-3.0
 \endverbatim
 
 \subsection sec_requiredhopsandependencies_qwt Qwt - Qt Widgets for Technical Applications
@@ -56,7 +56,7 @@ exceptions:
 \endverbatim
 
 \subsection sec_requiredhopsandependencies_fmilibrary FMI Library
-This library is used for FMI/FMU support \n
+This library is used for FMI/FMU support. \n
 http://www.jmodelica.org/FMILibrary
 
 __License:__ \n
@@ -87,10 +87,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \endverbatim
 
 \subsection sec_requiredhopsandependencies_tclap Templatized C++ Command Line Parser Library
-Used for command-line argument parsing in the HopsanCLI \n
+Used for command-line argument parsing in the Hopsan command line applications. \n
 http://tclap.sourceforge.net/
-
-Note! This library is a header only library and no compilation is required.
 
 __License:__ \n
 \verbatim
@@ -422,14 +420,50 @@ http://zeromq.org/
 
 __License:__ \n
 \verbatim
-GNU Lesser General Public License V3
-http://www.gnu.org/licenses/lgpl-3.0
+libzmq is free software; you can redistribute it and/or modify it under
+the terms of the GNU Lesser General Public License (LGPL) as published
+by the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
 
-libzmq is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License (LGPL) as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+As a special exception, the Contributors give you permission to link
+this library with independent modules to produce an executable,
+regardless of the license terms of these independent modules, and to
+copy and distribute the resulting executable under terms of your choice,
+provided that you also meet, for each linked independent module, the
+terms and conditions of the license of that module. An independent
+module is a module which is not derived from or based on this library.
+If you modify this library, you must extend this exception to your
+version of the library.
 
-As a special exception, the Contributors give you permission to link this library with independent modules to produce an executable, regardless of the license terms of these independent modules, and to copy and distribute the resulting executable under terms of your choice, provided that you also meet, for each linked independent module, the terms and conditions of the license of that module. An independent module is a module which is not derived from or based on this library. If you modify this library, you must extend this exception to your version of the library.
+libzmq is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+License for more details.
+\endverbatim
 
-libzmq is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+\subsection sec_optionalhopsandependencies_cppzeromq cppzmq
+C++ binding for ZeroMQ. \n
+https://github.com/zeromq/cppzmq
+
+__License:__ \n
+\verbatim
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to
+    deal in the Software without restriction, including without limitation the
+    rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+    sell copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+    IN THE SOFTWARE.
 \endverbatim
 
 \subsection sec_optionalhopsandependencies_msgpack MessagePack
