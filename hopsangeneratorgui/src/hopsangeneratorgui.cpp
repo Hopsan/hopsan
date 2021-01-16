@@ -305,7 +305,7 @@ bool HopsanGeneratorGUI::loadGeneratorLibrary()
             if (!loadok2)
             {
                 errorString2 = mPrivates->mGeneratorLibrary.errorString();
-                // Attemt to locate in lib (Linux cmake build)
+                // Attempt to locate in lib (Linux cmake build)
                 const auto absGeneratorLibPathLib = QString("%1/lib/%2").arg(mPrivates->hopsanRoot.c_str()).arg(generatorLibName);
                 mPrivates->mGeneratorLibrary.setFileName(absGeneratorLibPathLib);
                 loadok3 = mPrivates->mGeneratorLibrary.load();

@@ -14,10 +14,9 @@ set(target_name hopsangenerator)
 
 include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/fmilibrary.cmake)
 
-file(GLOB_RECURSE srcfiles src/*.cpp templates.qrc)
-file(GLOB_RECURSE headerfiles include/*.h include/*.hpp)
+file(GLOB_RECURSE srcfiles src/*.cpp include/*.h include/*.hpp templates.qrc)
 
-add_library(${target_name} SHARED ${srcfiles} ${headerfiles})
+add_library(${target_name} SHARED ${srcfiles})
 
 # Set compiler definitions
 if(WIN32)
@@ -30,6 +29,8 @@ target_include_directories(${target_name} PUBLIC
   $<INSTALL_INTERFACE:include>)
 
 target_link_libraries(${target_name} hopsancore fmilibrary symhop Qt5::Core Qt5::Xml)
+
+set_target_properties(${target_name} PROPERTIES INSTALL_RPATH "\$ORIGIN/../lib")
 
 install(TARGETS ${target_name}
   RUNTIME DESTINATION bin
