@@ -10,8 +10,7 @@ find_package(Qt5 COMPONENTS Core Gui Widgets Xml Svg Network Test PrintSupport R
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/zeromq.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/msgpack.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../helpers.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/qwt.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/discount.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/katex.cmake)
@@ -28,7 +27,8 @@ target_include_directories(${target_name} PRIVATE
 target_compile_definitions(${target_name} PRIVATE _USE_MATH_DEFINES)
 
 target_link_libraries(${target_name} Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Xml Qt5::Svg Qt5::Network Qt5::Test Qt5::PrintSupport
-  qwt libzmq discount hopsancore hopsanhdf5exporter hopsangeneratorgui libhopsanremoteclient symhop ops)
+                      qwt hopsancore hopsangeneratorgui symhop ops)
+target_link_optional_libraries(${target_name} libhopsanremoteclient hopsanhdf5exporter discount katex)
 
 set_target_properties(${target_name} PROPERTIES INSTALL_RPATH "\$ORIGIN/../lib")
 
