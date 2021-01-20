@@ -63,6 +63,8 @@ hopsan::QuantityRegister::QuantityRegister()
 
     registerQuantity("Resistance", "ohm");
 
+    registerQuantity("LeakageCoefficient", "(m^3/s)/Pa");
+
     // This is a fake quantity for scaling between absolute and dB values
     registerQuantity("Magnitude", "");
 

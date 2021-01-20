@@ -80,7 +80,7 @@ namespace hopsan {
             addInputVariable("l_p", "Regulator inductance at nominal pressure", "", 70000000, &mpLp);
             addInputVariable("r_p", "Static characteristic at nominal pressure", "", 1000000000, &mpRp);
             addInputVariable("omega_p1", "Lead frequency of regulator", "AngularVelocity", 200, &mpWp1);
-            addInputVariable("C_lp", "Leakage coefficient", "(m^3/s)/Pa", 1e-12, &mpClp);
+            addInputVariable("C_lp", "Leakage coefficient", "LeakageCoefficient", 1e-12, &mpClp);
             addInputVariable("tao_v", "Time constant of control valve", "s", 0.001, &mpTaov);
             addInputVariable("t_p", "Time from min to full displacement", "s", 0.15, &mpTp);
             addInputVariable("t_m", "Time from full to min displacement", "s", 0.12, &mpTm);

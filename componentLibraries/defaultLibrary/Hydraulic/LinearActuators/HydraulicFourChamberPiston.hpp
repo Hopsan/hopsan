@@ -93,12 +93,12 @@ class HydraulicFourChamberPiston : public ComponentC
             addInputVariable("V_4", "Dead volume in chamber 4", "m^3", 0.0003, &mpV04);
             addInputVariable("B_p", "Viscous friction", "Ns/m", 1000.0, &mpBp);
             addInputVariable("Beta_e", "Bulk modulus", "Pa", 1000000000.0, &mpBetae);
-            addInputVariable("c_leak12", "Leakage coefficient between chamber 1 and 2", "(m^3/s)/Pa", 0.00000000001, &mpCLeak12);
-            addInputVariable("c_leak13", "Leakage coefficient between chamber 1 and 3", "(m^3/s)/Pa", 0, &mpCLeak13);
-            addInputVariable("c_leak14", "Leakage coefficient between chamber 1 and 4", "(m^3/s)/Pa", 0.00000000001, &mpCLeak14);
-            addInputVariable("c_leak23", "Leakage coefficient between chamber 2 and 3", "(m^3/s)/Pa", 0, &mpCLeak23);
-            addInputVariable("c_leak24", "Leakage coefficient between chamber 2 and 4", "(m^3/s)/Pa", 0, &mpCLeak24);
-            addInputVariable("c_leak34", "Leakage coefficient between chamber 3 and 4", "(m^3/s)/Pa", 0.00000000001, &mpCLeak34);
+            addInputVariable("c_leak12", "Leakage coefficient between chamber 1 and 2", "LeakageCoefficient", 0.00000000001, &mpCLeak12);
+            addInputVariable("c_leak13", "Leakage coefficient between chamber 1 and 3", "LeakageCoefficient", 0, &mpCLeak13);
+            addInputVariable("c_leak14", "Leakage coefficient between chamber 1 and 4", "LeakageCoefficient", 0.00000000001, &mpCLeak14);
+            addInputVariable("c_leak23", "Leakage coefficient between chamber 2 and 3", "LeakageCoefficient", 0, &mpCLeak23);
+            addInputVariable("c_leak24", "Leakage coefficient between chamber 2 and 4", "LeakageCoefficient", 0, &mpCLeak24);
+            addInputVariable("c_leak34", "Leakage coefficient between chamber 3 and 4", "LeakageCoefficient", 0.00000000001, &mpCLeak34);
         }
 
         void initialize()

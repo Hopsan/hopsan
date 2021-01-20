@@ -82,7 +82,7 @@ class HydraulicPumpPiston : public ComponentC
             addInputVariable("V_1", "Dead volume in chamber 1", "m^3", 0.0003, &mpV01);
             addInputVariable("B_p", "Viscous friction", "Ns/m", 1000.0, &mpBp);
             addInputVariable("Beta_e", "Bulk modulus", "Pa", 1000000000.0, &mpBetae);
-            addInputVariable("c_leak", "Leakage coefficient", "(m^3/s)/Pa", 0.00000000001, &mpCLeak);
+            addInputVariable("c_leak", "Leakage coefficient", "LeakageCoefficient", 0.00000000001, &mpCLeak);
             addInputVariable("F_0", "Spring force", "N", 1000, &mpF0);
         }
 

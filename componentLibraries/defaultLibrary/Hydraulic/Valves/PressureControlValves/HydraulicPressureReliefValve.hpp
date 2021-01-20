@@ -79,8 +79,8 @@ namespace hopsan {
             addInputVariable("tao", "Time Constant of Spool", "s", 0.01, &mpTao);
             addInputVariable("p_h", "Hysteresis Width", "Pa", 500000.0, &mpPh);
 
-            addConstant("k_cs", "Steady State Characteristic due to Spring", "(m^3/s)/Pa", 0.00000001, mKcs);
-            addConstant("k_cf", "Steady State Characteristic due to Flow Forces", "(m^3/s)/Pa", 0.00000001, mKcf);
+            addConstant("k_cs", "Steady State Characteristic due to Spring", "LeakageCoefficient", 0.00000001, mKcs);
+            addConstant("k_cf", "Steady State Characteristic due to Flow Forces", "LeakageCoefficient", 0.00000001, mKcf);
             addConstant("q_nom", "Flow with Fully Open Valve and pressure drop Pnom", "m^3/s", 0.001, mQnom);
       }
 

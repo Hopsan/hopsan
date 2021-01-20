@@ -230,5 +230,9 @@
         <quantity name="Magnitude" baseunit="-">
           <unit name="dB" tobaseexpr="10^(x/20.0)" frombaseexpr="20.0*log10(x)"/>
         </quantity>
+        <quantity name="LeakageCoefficient" baseunit="(m^3/s)/Pa">
+          <unit name="m^5/(Ns)" scale="1.0"/>
+          <unit name="(l/min)/bar" tobaseexpr="0.001*(x)/60e5" frombaseexpr="60e5*(x)/0.001"/>
+        </quantity>
     </unitsettings>
 </hopsandefaults>

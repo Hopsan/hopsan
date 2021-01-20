@@ -102,7 +102,7 @@ class HydraulicCylinderC : public ComponentC
             addInputVariable("V_2", "Dead volume in chamber 2", "m^3", 0.0003, &mpV02);
             addInputVariable("B_p", "Viscous friction", "Ns/m", 1000.0, &mpBp);
             addInputVariable("Beta_e", "Bulk modulus", "Pa", 1000000000.0, &mpBetae);
-            addInputVariable("c_leak", "Leakage coefficient", "(m^3/s)/Pa", 0.00000000001, &mpCLeak);
+            addInputVariable("c_leak", "Leakage coefficient", "LeakageCoefficient", 0.00000000001, &mpCLeak);
 
             addOutputVariable("q_leak", "Internal Leakage Flow", "Flow", 0, &mpQLeak);
         }

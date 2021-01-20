@@ -62,7 +62,7 @@ namespace hopsan {
             addInputVariable("eps", "Displacement setting", "", 1.0, &mpEps);
             addInputVariable("omega_p", "Angular velocity", "AngularVelocity", 50.0, &mpN);
             addInputVariable("D_p", "Displacement", "m^3/rev", 0.00005, &mpDp);
-            addInputVariable("K_cp", "Leakage coefficient", "(m^3/s)/Pa", 1e-12, &mpKcp);
+            addInputVariable("K_cp", "Leakage coefficient", "LeakageCoefficient", 1e-12, &mpKcp);
         }
 
 
