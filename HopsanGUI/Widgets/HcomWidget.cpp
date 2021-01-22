@@ -546,18 +546,32 @@ void TerminalConsole::keyPressEvent(QKeyEvent *event)
             handleEnterKeyPress();
             return;
         }
-        else    //Always popup auto-completer when user is typing
+        else    // Always popup auto-completer when user is typing
         {
             cancelRecentHistory();
             cancelAutoComplete();
             QTextEdit::keyPressEvent(event);
 
-            updateAutoCompleteList();
-
-            //Compute prefix letters before cursor
+            // Compute prefix letters before cursor
             QTextCursor tc = textCursor();
+            auto curretPos = tc.position();
             tc.select(QTextCursor::WordUnderCursor);
             QString prefix = tc.selectedText();
+            // Restore cursor position and anchor
+            tc.setPosition(curretPos);
+
+            QString prevCharacter;
+            tc.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor, prefix.size()+1);
+            prevCharacter = tc.selectedText();
+            prevCharacter.chop(prefix.size());
+
+            if (prevCharacter == "@") {
+                // TODO Maybe use a generation completion model
+                mpCompleter->setModel(nullptr);
+            }
+            else {
+                updateAutoCompleteList();
+            }
 
             //Abort with empty prefix, unless Ctrl-Space is pressed
             if((event->key() != Qt::Key_Space || !event->modifiers().testFlag(Qt::ControlModifier)) && prefix.isEmpty())
@@ -573,9 +587,9 @@ void TerminalConsole::keyPressEvent(QKeyEvent *event)
                 mpCompleter->setCompletionPrefix(prefix);
                 mpCompleter->popup()->setCurrentIndex(mpCompleter->completionModel()->index(0, 0));
             }
+
             QRect cr = cursorRect();
-            cr.setWidth(mpCompleter->popup()->sizeHintForColumn(0)
-                        + mpCompleter->popup()->verticalScrollBar()->sizeHint().width());
+            cr.setWidth(mpCompleter->popup()->sizeHintForColumn(0) + mpCompleter->popup()->verticalScrollBar()->sizeHint().width());
             mpCompleter->complete(cr);
         }
     }
