@@ -41,6 +41,7 @@
 #include "LibraryHandler.h"
 #include "common.h"
 #include "Utilities/GUIUtilities.h"
+#include "MessageHandler.h"
 
 // HopsanCore includes
 #include "HopsanCore.h"
@@ -475,6 +476,8 @@ bool CoreSystemAccess::setParameterValue(QString componentName, QString paramete
 {
     hopsan::Component *pComponent = mpCoreComponentSystem->getSubComponent(componentName.toStdString().c_str());
     bool retval = pComponent->setParameterValue(parameterName.toStdString().c_str(), value.toStdString().c_str(), force);
+    pComponent->reconfigure();
+    gpMessageHandler->collectHopsanCoreMessages();
     return retval;
 }
 
@@ -1041,6 +1044,18 @@ bool CoreSystemAccess::isLoggingEnabled(const QString &componentName, const QStr
     {
         return false;
     }
+}
+
+QStringList CoreSystemAccess::getPortNames(const QString &componentName)
+{
+    hopsan::Component* pComp = mpCoreComponentSystem->getSubComponent(componentName.toStdString().c_str());
+
+    QStringList ret;
+    for(const auto &port : pComp->getPortNames()) {
+        ret.push_back(port.c_str());
+    }
+
+    return ret;
 }
 
 

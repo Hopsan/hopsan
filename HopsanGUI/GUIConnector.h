@@ -119,8 +119,8 @@ public slots:
     void setPassive();
     void setHovered();
     void setUnHovered();
-    void deleteMe(UndoStatusEnumT undo=Undo);
-    void deleteMeWithNoUndo();
+    void deleteMe(UndoStatusEnumT undo=Undo, bool force=false);
+    void deleteMeWithNoUndo(bool force=false);
     void deselect();
     void select();
     void setDashed(bool value);

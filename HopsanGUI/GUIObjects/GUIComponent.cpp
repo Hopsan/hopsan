@@ -139,7 +139,59 @@ QString Component::getTypeCQS() const
 //! @brief Set a parameter value to be mapped to a System parameter
 bool Component::setParameterValue(QString name, QString value, bool force)
 {
+    if(this->getTypeName() == "FMIWrapper" && name == "path") {
+        //Remove old ports
+        QList<Port*> ports = this->getPortListPtrs();
+        for(const auto port : ports) {
+            this->removeExternalPort(port->getName());
+        }
+        this->getAppearanceData()->getPortAppearanceMap().clear();
+    }
+
     bool retval =  mpParentSystemObject->getCoreSystemAccessPtr()->setParameterValue(this->getName(), name, value, force);
+
+    if(this->getTypeName() == "FMIWrapper" && name == "path") {
+        //Get lists of input and output ports from core component
+        QStringList inputs, outputs;
+        for(const auto &port: mpParentSystemObject->getCoreSystemAccessPtr()->getPortNames(this->getName())) {
+            QString type = mpParentSystemObject->getCoreSystemAccessPtr()->getPortType(this->getName(), port);
+            SharedPortAppearanceT app(new PortAppearance());
+            if("ReadPortType" == type) {
+                inputs << port;
+            }
+            else if("WritePortType" == type) {
+                outputs << port;
+            }
+        }
+
+        //Auto-place input ports
+        for(int i=0; i<inputs.size(); ++i) {
+            SharedPortAppearanceT app(new PortAppearance());
+            app->x = 0.0;
+            app->y = double(1+i)/double(1+inputs.size());
+            app->rot = 180;
+            app->mEnabled = true;
+            this->getAppearanceData()->addPortAppearance(inputs[i],app);
+            this->createRefreshExternalPort(inputs[i]);
+        }
+
+        //Auto-place output ports
+        for(int i=0; i<outputs.size(); ++i) {
+            SharedPortAppearanceT app(new PortAppearance());
+            app->x = 1.0;
+            app->y = double(1+i)/double(1+outputs.size());
+            app->rot = 0;
+            app->mEnabled = true;
+            this->getAppearanceData()->addPortAppearance(outputs[i],app);
+            this->createRefreshExternalPort(outputs[i]);
+        }
+
+        //Adjust icon scale
+        this->getAppearanceData()->setIconScale(qMax(qMax(inputs.size(),outputs.size())/3.0,1.0), UserGraphics);
+
+        //Refresh appearance
+        this->refreshAppearance();
+    }
 
     return retval;
 }

@@ -225,6 +225,7 @@ public:
     bool isPortConnected(QString componentName, QString portName);
     void setLoggingEnabled(const QString &componentName, const QString &portName, bool enable);
     bool isLoggingEnabled(const QString &componentName, const QString &portName);
+    QStringList getPortNames(const QString &componentName);
 
     // Component creation and removal
     QString createComponent(QString type, QString name="");

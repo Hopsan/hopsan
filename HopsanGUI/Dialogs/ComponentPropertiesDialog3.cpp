@@ -1096,6 +1096,9 @@ bool VariableTableWidget::setStartValues()
             // Parameter has changed, add to undo stack and set the parameter
             if( cleanAndVerifyParameterValue(value, qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)))->getDataType()) )
             {
+                if(!mpModelObject->hasParameter(name)) {
+                    continue;
+                }
                 // Try to set the actual parameter
                 if(mpModelObject->setParameterValue(name, value))
                 {

@@ -1,3 +1,5 @@
+include( ../../Common.prf )
+
 # QT -= core gui, means that we should not link the default qt libs into the component
 # Template = lib, means that we want to build a library (.dll or .so)
 QT -= core gui
@@ -6,6 +8,7 @@ TEMPLATE = lib
 # TARGET is the name of the compiled lib, (.dll or .so will be added automatically)
 # Change this to the name of YOUR lib
 TARGET = extensionlibrary
+TARGET = $${TARGET}$${DEBUG_EXT}
 
 # Destination for the compiled dll. $${PWD}/ means the same directory as this .pro file, even if you use shadow build
 DESTDIR = $${PWD}/
@@ -29,3 +32,4 @@ SOURCES += extensionLibrary.cpp
 
 include(Components.pri)
 
+include($${PWD}/../../dependencies/fmilibrary.pri)

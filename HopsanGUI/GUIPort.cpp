@@ -844,7 +844,7 @@ void Port::disconnectAndRemoveAllConnectedConnectors()
 {
     while (mConnectedConnectors.size() > 0)
     {
-        mConnectedConnectors[0]->deleteMeWithNoUndo();
+        mConnectedConnectors[0]->deleteMeWithNoUndo(true);
     }
 }
 
