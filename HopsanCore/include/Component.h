@@ -93,6 +93,7 @@ public:
     //==========Public functions==========
     // Configuration and simulation functions
     virtual void configure();
+    virtual void reconfigure();
     virtual void deconfigure();
     virtual bool preInitialize();
     virtual bool checkModelBeforeSimulation();

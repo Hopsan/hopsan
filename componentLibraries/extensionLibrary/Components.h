@@ -26,3 +26,4 @@
 #include "Electrical/Electrical.h"
 #include "Hydraulic/Hydraulic.h"
 #include "Mechanical/Mechanical.h"
+#include "Connectivity/Connectivity.h"

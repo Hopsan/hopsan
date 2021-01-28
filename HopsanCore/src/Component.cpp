@@ -1679,6 +1679,16 @@ void Component::configure()
     addErrorMessage("You must overload the configure() function in Component: " + mTypeName);
 }
 
+//! @brief Re-configures a component, depending on e.g. parameter values or external files
+//! @details This function can be optionally overloaded if it is needed
+//! This function must explicitly be called by host environment whenever necessary, but always after calling configure().
+//! @ingroup ComponentSetup
+void Component::reconfigure()
+{
+    // This function can be overloaded in every component
+    // Does nothing by default
+}
+
 //! @brief Deconfigure a component, use this to cleanup and memory/resource allocations you have made in configure
 //! @details This function can be optionally overloaded if it is needed
 //! You can use it to free memory or other resources that you have created in configure
