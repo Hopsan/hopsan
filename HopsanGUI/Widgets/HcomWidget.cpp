@@ -237,8 +237,7 @@ TerminalConsole::TerminalConsole(TerminalWidget *pParent)
     mpCompleter->setWidget(this);
     mpCompleter->setCompletionMode(QCompleter::PopupCompletion);
     mpCompleter->setCaseSensitivity(Qt::CaseInsensitive);
-    QObject::connect(mpCompleter, SIGNAL(activated(QString)),
-                     this, SLOT(insertCompletion(QString)));
+    connect(mpCompleter, qOverload<const QString&>(&QCompleter::activated), this, &TerminalConsole::insertCompletion);
 }
 
 
@@ -581,21 +580,26 @@ void TerminalConsole::keyPressEvent(QKeyEvent *event)
             prevCharacter = tc.selectedText();
             prevCharacter.chop(prefix.size());
 
+            QStringList autoCompleteWords;
             if (prevCharacter == "@") {
                 // TODO Maybe use a generation completion model
                 mpCompleter->setModel(nullptr);
             }
             else {
-                updateAutoCompleteList();
+                autoCompleteWords = mpTerminal->mpHandler->getAutoCompleteWords();
+                mpCompleter->setModel(new QStringListModel(autoCompleteWords, mpCompleter));
             }
 
-            //Abort with empty prefix, unless Ctrl-Space is pressed
-            if((event->key() != Qt::Key_Space || !event->modifiers().testFlag(Qt::ControlModifier)) && prefix.isEmpty())
+            // Abort when empty prefix, unless Ctrl-Space is pressed
+            //! @todo ctrl+space does not seem to work, If I hold ctrl in terminal and press space it will never get here
+            const bool ctrlSpacePressed = (event->key() == Qt::Key_Space) && event->modifiers().testFlag(Qt::ControlModifier);
+            if(!ctrlSpacePressed && prefix.isEmpty()) {
                 return;
+            }
 
-            if((event->key() != Qt::Key_Space || !event->modifiers().testFlag(Qt::ControlModifier)) &&
-               (mpTerminal->mpHandler->getAutoCompleteWords().contains(prefix,Qt::CaseInsensitive) ||
-               mpTerminal->mpHandler->getAutoCompleteWords().contains(prefix+" ",Qt::CaseInsensitive))) {
+            // Abort (do not show completer popup) if exact match found among completer words, unless ctrl+space is pressed
+            if(!ctrlSpacePressed && (autoCompleteWords.contains(prefix,Qt::CaseInsensitive) ||
+                                     autoCompleteWords.contains(prefix+" ",Qt::CaseInsensitive)) ) {
                 return;
             }
 
@@ -652,12 +656,6 @@ void TerminalConsole::insertCompletion(const QString& completion)
     tc.movePosition(QTextCursor::EndOfWord);
     tc.insertText(temp.right(extra));
     setTextCursor(tc);
-}
-
-//! @brief Updates list of auto complete words
-void TerminalConsole::updateAutoCompleteList()
-{
-    mpCompleter->setModel(new QStringListModel(mpTerminal->mpHandler->getAutoCompleteWords(), mpCompleter));
 }
 
 void TerminalConsole::resetBackgroundColor()

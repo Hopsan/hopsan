@@ -114,7 +114,6 @@ protected:
 
 private slots:
     void insertCompletion(const QString& completion);
-    void updateAutoCompleteList();
     void resetBackgroundColor();
 
 private:
