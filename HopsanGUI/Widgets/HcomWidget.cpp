@@ -503,18 +503,32 @@ void TerminalConsole::keyPressEvent(QKeyEvent *event)
     {
         if (mpCompleter->popup()->isVisible())
         {
-            //Ignore the following keys when the completer is visible
-           switch (event->key()) {
-           case Qt::Key_Enter:
-           case Qt::Key_Return:
-           case Qt::Key_Escape:
-           case Qt::Key_Tab:
-           case Qt::Key_Backtab:
+            // Ignore the following keys when the completer is visible
+            switch (event->key()) {
+            case Qt::Key_Escape:
+            case Qt::Key_Backtab:
                 event->ignore();
                 return;
-           default:
-               break;
-           }
+            default:
+                break;
+            }
+
+            // If the completer has a selection, then pass Tab or Enter onto the completer
+            // It should only have a connection if you used the keyboard arrows or mouse to select, or if you pressed Tab once when no index was selected
+            QModelIndex selectedIndex = mpCompleter->popup()->currentIndex();
+            if (selectedIndex.isValid()) {
+                switch (event->key()) {
+                case Qt::Key_Enter:
+                case Qt::Key_Return:
+                case Qt::Key_Tab:
+                    event->ignore();
+                    return;
+                default:
+                    break;
+                }
+            }
+
+            // Note! The completer seem to swallow Key_Up and Key_Down evens automatically
         }
 
         int col = this->textCursor().columnNumber();
@@ -536,7 +550,9 @@ void TerminalConsole::keyPressEvent(QKeyEvent *event)
         }
         else if(event->key() == Qt::Key_Tab)
         {
-            handleTabKeyPress();
+            //handleTabKeyPress(); //!< @todo Make the code in there, work again, together with the completer
+            // If the code get here, than no selection in the completer was made, but using tab will select the first item
+            mpCompleter->popup()->setCurrentIndex(mpCompleter->completionModel()->index(0, 0));
             return;
         }
         else if(event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return)
@@ -585,7 +601,6 @@ void TerminalConsole::keyPressEvent(QKeyEvent *event)
 
             if (prefix != mpCompleter->completionPrefix()) {
                 mpCompleter->setCompletionPrefix(prefix);
-                mpCompleter->popup()->setCurrentIndex(mpCompleter->completionModel()->index(0, 0));
             }
 
             QRect cr = cursorRect();
@@ -963,6 +978,7 @@ void TerminalConsole::cancelAutoComplete()
 {
     mAutoCompleteFilter.clear();
     mAutoCompleteResults.clear();
+    mpCompleter->popup()->hide();
 }
 
 void TerminalConsole::cancelRecentHistory()
