@@ -568,17 +568,30 @@ void TerminalConsole::keyPressEvent(QKeyEvent *event)
             QTextEdit::keyPressEvent(event);
 
             // Compute prefix letters before cursor
+            QString fullPrefix, prevCharacter;
             QTextCursor tc = textCursor();
-            auto curretPos = tc.position();
-            tc.select(QTextCursor::WordUnderCursor);
-            QString prefix = tc.selectedText();
-            // Restore cursor position and anchor
-            tc.setPosition(curretPos);
+            while(true) {
+                auto curretPos = tc.position();
+                tc.select(QTextCursor::WordUnderCursor);
+                QString prefix = tc.selectedText();
+                // Restore cursor position and anchor after extracting WordUnderCursor
+                tc.setPosition(curretPos);
 
-            QString prevCharacter;
-            tc.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor, prefix.size()+1);
-            prevCharacter = tc.selectedText();
-            prevCharacter.chop(prefix.size());
+                // Move cursor to before the character before the prefix
+                tc.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor, prefix.size()+1);
+                prevCharacter = tc.selectedText();
+                prevCharacter.chop(prefix.size());
+
+                // As long as the character preceding the WordUnderCursor is . keep collecting words until the complete name is included
+                if (prevCharacter == ".") {
+                    fullPrefix.prepend(prevCharacter+prefix);
+                    tc.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor, prevCharacter.size());
+                }
+                else {
+                    fullPrefix.prepend(prefix);
+                    break;
+                }
+            }
 
             QStringList autoCompleteWords;
             if (prevCharacter == "@") {
@@ -593,18 +606,18 @@ void TerminalConsole::keyPressEvent(QKeyEvent *event)
             // Abort when empty prefix, unless Ctrl-Space is pressed
             //! @todo ctrl+space does not seem to work, If I hold ctrl in terminal and press space it will never get here
             const bool ctrlSpacePressed = (event->key() == Qt::Key_Space) && event->modifiers().testFlag(Qt::ControlModifier);
-            if(!ctrlSpacePressed && prefix.isEmpty()) {
+            if(!ctrlSpacePressed && fullPrefix.isEmpty()) {
                 return;
             }
 
             // Abort (do not show completer popup) if exact match found among completer words, unless ctrl+space is pressed
-            if(!ctrlSpacePressed && (autoCompleteWords.contains(prefix,Qt::CaseInsensitive) ||
-                                     autoCompleteWords.contains(prefix+" ",Qt::CaseInsensitive)) ) {
+            if(!ctrlSpacePressed && (autoCompleteWords.contains(fullPrefix,Qt::CaseInsensitive) ||
+                                     autoCompleteWords.contains(fullPrefix+" ",Qt::CaseInsensitive)) ) {
                 return;
             }
 
-            if (prefix != mpCompleter->completionPrefix()) {
-                mpCompleter->setCompletionPrefix(prefix);
+            if (fullPrefix != mpCompleter->completionPrefix()) {
+                mpCompleter->setCompletionPrefix(fullPrefix);
             }
 
             QRect cr = cursorRect();
