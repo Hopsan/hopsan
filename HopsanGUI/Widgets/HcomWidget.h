@@ -113,7 +113,7 @@ protected:
     virtual void keyPressEvent(QKeyEvent * event);
 
 private slots:
-    void insertCompletion(const QString& completion);
+    void insertCompletion(QString completionResult);
     void resetBackgroundColor();
 
 private:

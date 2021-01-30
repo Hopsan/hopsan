@@ -653,21 +653,24 @@ void TerminalConsole::keyPressEvent(QKeyEvent *event)
     }
 }
 
-//! @brief Inserts a selected completion from autocompleter
-void TerminalConsole::insertCompletion(const QString& completion)
+//! @brief Inserts a selected completion from auto completer
+void TerminalConsole::insertCompletion(QString completionResult)
 {
-    QString temp = completion;
-    if(temp.endsWith("()"))
-        temp.chop(1);
-
-    if (mpCompleter->widget() != this)
+    if (mpCompleter->widget() != this) {
         return;
+    }
+
+    if(completionResult.endsWith("()")) {
+        completionResult.chop(1);
+    }
 
     QTextCursor tc = textCursor();
-    int extra = temp.length() - mpCompleter->completionPrefix().length();
+    // Put the cursor at the end, then move it to the left to create a selection over the prefix text
     tc.movePosition(QTextCursor::Left);
     tc.movePosition(QTextCursor::EndOfWord);
-    tc.insertText(temp.right(extra));
+    tc.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor, mpCompleter->completionPrefix().length());
+    // Insert completion result, overwriting selected prefix text. This will ensure that character case is corrected in prefix text
+    tc.insertText(completionResult);
     setTextCursor(tc);
 }
 
