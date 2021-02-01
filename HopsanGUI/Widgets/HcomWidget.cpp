@@ -577,10 +577,10 @@ void TerminalConsole::keyPressEvent(QKeyEvent *event)
                 // Restore cursor position and anchor after extracting WordUnderCursor
                 tc.setPosition(curretPos);
 
-                // Move cursor to before the character before the prefix
-                tc.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor, prefix.size()+1);
+                // Move cursor to before the character before the just extracted prefix word
+                tc.movePosition(QTextCursor::StartOfWord, QTextCursor::MoveAnchor);
+                tc.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);
                 prevCharacter = tc.selectedText();
-                prevCharacter.chop(prefix.size());
 
                 // As long as the character preceding the WordUnderCursor is . keep collecting words until the complete name is included
                 if (prevCharacter == ".") {
