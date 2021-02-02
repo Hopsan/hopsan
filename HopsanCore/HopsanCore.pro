@@ -166,6 +166,7 @@ SOURCES += \
     src/ComponentUtilities/HopsanPowerUser.cpp \
     src/ComponentUtilities/LookupTable.cpp \
     src/ComponentUtilities/PLOParser.cpp \
+    src/ComponentUtilities/TempDirectoryHandle.cpp \
     $${PWD}/dependencies/indexingcsvparser/src/indexingcsvparser.cpp \
     src/Quantities.cpp \
     src/CoreUtilities/NumHopHelper.cpp \
@@ -209,6 +210,7 @@ HEADERS += \
     include/ComponentUtilities/CSVParser.h \
     include/ComponentUtilities/AuxiliarySimulationFunctions.h \
     include/ComponentUtilities/AuxiliaryMathematicaWrapperFunctions.h \
+    include/ComponentUtilities/TempDirectoryHandle.h \
     include/Parameters.h \
     include/Components/DummyComponent.hpp \
     include/ComponentUtilities/EquationSystemSolver.h \

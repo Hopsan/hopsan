@@ -33,12 +33,6 @@
 #include <FMI2/fmi2_import.h>
 #include <JM/jm_portability.h>
 
-#include <iostream>
-#include <filesystem>
-#include <random>
-#include <sstream>
-#include <iomanip>
-
 //!
 //! @file FMIWrapper.hpp
 //! @author Robert Braun <robert.braun@liu.se>
@@ -113,7 +107,8 @@ void fmiLogger(fmi2ComponentEnvironment pComponentEnvironment, fmi2_string_t ins
 class FMIWrapper : public ComponentSignal
 {
 private:
-    HString mFmuPath, mLastFmuPath, mTmpPath;
+    TempDirectoryHandle *mpTempDir;
+    HString mFmuPath, mLastFmuPath;
     std::map<fmi2_value_reference_t,double*> mOutputs;
     std::map<fmi2_value_reference_t,double*> mInputs;
     std::map<fmi2_value_reference_t,double> mParameters;
@@ -175,20 +170,15 @@ public:
 
         addInfoMessage("Loading FMU from "+mFmuPath+"...");
 
-        //Generate random temporary path
-        mTmpPath = std::filesystem::temp_directory_path().c_str();
-        std::random_device rd;
-        std::default_random_engine gen(rd());
-        std::uniform_int_distribution<> distrib(0, 999999);
-        std::stringstream ss;
-        ss << std::setw(6) << std::setfill('0') << distrib(gen);
-        mTmpPath.append("/Hopsan/fmu_"+HString(ss.str().c_str()));
-        std::filesystem::create_directory(mTmpPath.c_str());
+        mpTempDir = new TempDirectoryHandle("fmu");
+        if(!mpTempDir->isValid()) {
+            addErrorMessage("Unable to create temp directory: "+mpTempDir->path());
+            return;
+        }
 
+        addDebugMessage("Using temporary directory: "+mpTempDir->path());
 
-        addDebugMessage("Using temporary directory: "+mTmpPath);
-
-        version = fmi_import_get_fmi_version(context, mFmuPath.c_str(), mTmpPath.c_str());
+        version = fmi_import_get_fmi_version(context, mFmuPath.c_str(), mpTempDir->path().c_str());
         if(version != fmi_version_2_0_enu) {
             //! @todo Implement FMI 1.0 support
             addErrorMessage("The code only supports version 2.0");
@@ -197,7 +187,7 @@ public:
 
         addDebugMessage("FMU version: 2.0");
 
-        fmu = fmi2_import_parse_xml(context, mTmpPath.c_str(), nullptr);
+        fmu = fmi2_import_parse_xml(context, mpTempDir->path().c_str(), nullptr);
         if(!fmu) {
             addErrorMessage("Parsing model description failed");
             return;
@@ -348,7 +338,7 @@ public:
             context = nullptr;
         }
 
-        std::filesystem::remove_all(mTmpPath.c_str());
+        delete mpTempDir;
     }
 };
 
