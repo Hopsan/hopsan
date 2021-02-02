@@ -47,5 +47,5 @@
 #include "ComponentUtilities/num2string.hpp"
 #include "ComponentUtilities/EquationSystemSolver.h"
 #include "ComponentUtilities/LookupTable.h"
-
+#include "ComponentUtilities/TempDirectoryHandle.h"
 #endif // COMPONENTUTILITIES_H_INCLUDED
