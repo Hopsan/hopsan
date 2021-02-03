@@ -8,13 +8,15 @@ endif()
 
 set(targetname extensionlibrary)
 
+include(${CMAKE_CURRENT_LIST_DIR}/../../dependencies/fmilibrary.cmake)
+
 file(GLOB_RECURSE component_files *.h *.hpp *cci)
 
 add_library(${targetname} SHARED extensionLibrary.cpp ${component_files})
 target_include_directories(${targetname} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 
-target_link_libraries(${targetname} hopsancore)
+target_link_libraries(${targetname} hopsancore fmilibrary)
 
 install(TARGETS ${targetname}
   RUNTIME DESTINATION componentLibraries/extensionLibrary
