@@ -61,5 +61,4 @@
   <componentxml>Grafcet/Transition.xml</componentxml>
   <componentxml>Electrical/ElectricInductanceC.xml</componentxml>
   <componentxml>Connectivity/FMIWrapper.xml</componentxml>
-  <componentxml>Signal/FibonacciNumbers.xml</componentxml>
 </hopsancomponentlibrary>
