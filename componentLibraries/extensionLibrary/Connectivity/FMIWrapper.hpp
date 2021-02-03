@@ -72,7 +72,7 @@ void jmLogger(jm_callbacks *c, jm_string module, jm_log_level_enu_t log_level, j
 void fmiLogger(fmi2ComponentEnvironment pComponentEnvironment, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...)
 {
     hopsan::Component* pComponent = (hopsan::Component*)pComponentEnvironment;
-    if (pComponent == nullptr) {
+    if (pComponent == NULL) {
         return;
     }
 
@@ -143,14 +143,14 @@ public:
 
         deconfigure(); //Make sure to unload FMU and free memory before loading a new one
 
-        for(const auto *port : mPorts) {
-            removePort(port->getName());
+        for(int i=0; i<mPorts.size(); ++i) {
+            removePort(mPorts[i]->getName());
         }
         std::vector<HString> parameters;
         this->getParameterNames(parameters);
-        for(const auto &parameter : parameters) {
-            if(parameter != "path") {
-                this->unRegisterParameter(parameter);
+        for(int i=0; i<parameters.size(); ++i) {
+            if(parameters[i] != "path") {
+                this->unRegisterParameter(parameters[i]);
             }
         }
         mPorts.clear();
@@ -187,7 +187,7 @@ public:
 
         addDebugMessage("FMU version: 2.0");
 
-        fmu = fmi2_import_parse_xml(context, mpTempDir->path().c_str(), nullptr);
+        fmu = fmi2_import_parse_xml(context, mpTempDir->path().c_str(), NULL);
         if(!fmu) {
             addErrorMessage("Parsing model description failed");
             return;
@@ -215,7 +215,7 @@ public:
 
             const char* name = fmi2_import_get_variable_name(pVar);
             const char* description = fmi2_import_get_variable_description(pVar);
-            if(description == nullptr) {
+            if(description == NULL) {
                 description = "";
             }
             fmi2_base_type_enu_t type = fmi2_import_get_variable_base_type(pVar);
@@ -271,8 +271,9 @@ public:
     {
         addInfoMessage("Initializing FMU 2.0 import");
 
-        for(const auto &parameter : mParameters) {
-            fmistatus = fmi2_import_set_real(fmu, &parameter.first, 1, &parameter.second);
+        std::map<fmi2_value_reference_t,double>::iterator it;
+        for(it = mParameters.begin(); it != mParameters.end(); it++) {
+            fmistatus = fmi2_import_set_real(fmu, &it->first, 1, &it->second);
         }
 
         //Setup experiment
@@ -300,8 +301,9 @@ public:
     void simulateOneTimestep()
     {
         //Read inputs
-        for(const auto &input : mInputs) {
-            fmistatus = fmi2_import_set_real(fmu, &input.first, 1, input.second);
+        std::map<fmi2_value_reference_t,double*>::iterator it;
+        for(it = mInputs.begin(); it != mInputs.end(); it++) {
+            fmistatus = fmi2_import_set_real(fmu, &it->first, 1, it->second);
         }
 
         //Take step
@@ -312,8 +314,8 @@ public:
         }
 
         //Write outputs
-        for(const auto &output : mOutputs) {
-            fmistatus = fmi2_import_get_real(fmu, &output.first, 1, output.second);
+        for(it = mOutputs.begin(); it != mOutputs.end(); it++) {
+            fmistatus = fmi2_import_get_real(fmu, &it->first, 1, it->second);
         }
     }
 
@@ -330,12 +332,12 @@ public:
             fmi2_import_free_instance(fmu);
             fmi2_import_destroy_dllfmu(fmu);
             fmi2_import_free(fmu);
-            fmu = nullptr;
+            fmu = NULL;
         }
 
         if(context) {
             fmi_import_free_context(context);
-            context = nullptr;
+            context = NULL;
         }
 
         delete mpTempDir;
