@@ -23,11 +23,11 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   SecondOrderTransferFunction.h
-//! @author Björn Eriksson <bjorn.eriksson@liu.se>
-//! @date   2009-12-23
+//! @file   TempDirectoryHandle.cpp
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2021-02-02
 //!
-//! @brief Contains the Core Second Order Transfer Function class
+//! @brief Contains a temp directory handle class
 //!
 //$Id$
 
@@ -53,7 +53,7 @@ namespace hopsan {
         HString getTempDirectory();
         HString generateRandomNumericString();
         bool createDirectory(HString path);
-        bool folderExists(HString &foldername);
+        bool directoryExists(HString &foldername);
         bool removeDirectory(HString path);
     };
 }

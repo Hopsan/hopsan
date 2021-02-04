@@ -255,7 +255,7 @@ public:
 
         //Instantiate FMU
         HString instanceName = getName();
-        fmi2_string_t fmuResourceLocation = "file:///home/robbr48/Documents/Hopsan/import/FMU/hopsan_tutorial/resources";
+        fmi2_string_t fmuResourceLocation = HString(mpTempDir->path()+"/resources").c_str();
         fmi2_boolean_t visible = fmi2_false;
         jm_status_enu_t jmstatus = fmi2_import_instantiate(fmu, instanceName.c_str(), fmi2_cosimulation, fmuResourceLocation, visible);
         if (jmstatus == jm_status_error) {
