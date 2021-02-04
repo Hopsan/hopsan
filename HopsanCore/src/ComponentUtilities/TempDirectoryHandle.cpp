@@ -79,7 +79,6 @@ TempDirectoryHandle::TempDirectoryHandle(HString prefix)
 
 TempDirectoryHandle::~TempDirectoryHandle()
 {
-    std::cout << "Test\n";
     removeDirectory(mPath);
 }
 
@@ -126,7 +125,7 @@ HString TempDirectoryHandle::getTempDirectory() {
 
 HString TempDirectoryHandle::generateRandomNumericString()
 {
-#if false//__cplusplus >= 201103L
+#if __cplusplus >= 201103L
         std::random_device rd;
         std::default_random_engine gen(rd());
         std::uniform_int_distribution<> distrib(0, 999999999);
@@ -142,24 +141,21 @@ HString TempDirectoryHandle::generateRandomNumericString()
 bool TempDirectoryHandle::createDirectory(HString path)
 {
 #if __cplusplus >= 201703L
-        return std::filesystem::create_directory(mPath.c_str());
+        return std::filesystem::create_directory(path.c_str());
 #else
     HString currentLevel = "";
     std::string level;
-    if(!path.empty() && path[0] == '/') {
-        //path.erase(0,1);
-    }
     std::stringstream ss(path.c_str());
 
     while(std::getline(ss, level, '/')) {
         currentLevel.append(level.c_str());
 #ifdef _WIN32
-        if (!folderExists(currentLevel) && _mkdir(currentLevel.c_str()) != 0) {
+        if (!directoryExists(currentLevel) && _mkdir(currentLevel.c_str()) != 0) {
             return false;
         }
 #else
         if(!currentLevel.empty()) {
-            if (!folderExists(currentLevel)) {
+            if (!directoryExists(currentLevel)) {
                 if(mkdir(currentLevel.c_str(), 0755) != 0) {
                     return false;
                 }
@@ -170,11 +166,11 @@ bool TempDirectoryHandle::createDirectory(HString path)
         currentLevel += "/"; // don't forget to append a slash
     }
 #endif
-    return folderExists(path);
+    return directoryExists(path);
 }
 
 
-bool TempDirectoryHandle::folderExists(HString &foldername)
+bool TempDirectoryHandle::directoryExists(HString &foldername)
 {
     struct stat st;
     stat(foldername.c_str(), &st);
@@ -183,9 +179,8 @@ bool TempDirectoryHandle::folderExists(HString &foldername)
 
 bool TempDirectoryHandle::removeDirectory(HString path)
 {
-    std::cout << "Trying to remove directory: " << path.c_str() << "\n";
 #if __cplusplus >= 201703L
-    std::filesystem::remove_all(mTmpPath.c_str());
+    std::filesystem::remove_all(path.c_str());
 #else
 #ifdef _WIN32
     WCHAR szDir[MAX_PATH+1];
@@ -208,12 +203,10 @@ bool TempDirectoryHandle::removeDirectory(HString path)
     bool success = false;
 
     if(dir) {
-        std::cout << "Found directory: " << path.c_str() << "\n";
         struct dirent *p;
 
         success = true;
         while (success && (p=readdir(dir))) {
-            std::cout << "Read directory: " << p->d_name << "\n";
             char *buf;
             size_t len;
 
@@ -230,11 +223,9 @@ bool TempDirectoryHandle::removeDirectory(HString path)
                 snprintf(buf, len, "%s/%s", path.c_str(), p->d_name);
                 if (!stat(buf, &statbuf)) {
                     if (S_ISDIR(statbuf.st_mode)) {
-                        std::cout << "Removing sub-directory: " << buf << "\n";
                         success = removeDirectory(buf);
                     }
                     else {
-                        std::cout << "UNLINKING file: " << buf << "\n";
                         success = (unlink(buf) == 0);
                     }
                 }
@@ -245,15 +236,7 @@ bool TempDirectoryHandle::removeDirectory(HString path)
     }
 
     if (success) {
-        std::cout << "REMOVING directory: " << path.c_str() << "\n";
         success = (0 == rmdir(path.c_str()));
-    }
-
-    if(success) {
-        std::cout << "Success!\n";
-    }
-    else {
-        std::cout << "Failed!\n";
     }
 
     return success;
