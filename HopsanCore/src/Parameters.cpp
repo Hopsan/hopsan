@@ -460,6 +460,16 @@ const std::vector<HString> &ParameterEvaluator::getConditions() const
     return mConditions;
 }
 
+void ParameterEvaluator::setTriggersReconfiguration()
+{
+    mTriggersReconfiguration = true;
+}
+
+bool ParameterEvaluator::triggersReconfiguration()
+{
+    return mTriggersReconfiguration;
+}
+
 void ParameterEvaluator::resolveSignPrefix(HString &rSignPrefix) const
 {
     // Resolve prefix, check num -, ignore +
@@ -837,6 +847,29 @@ bool ParameterEvaluatorHandler::checkParameters(HString &rErrParName)
         }
     }
     return success;
+}
+
+void ParameterEvaluatorHandler::setParameterTriggersReconfiguration(const HString &rParameterName)
+{
+    for(size_t i=0; i<mParameters.size(); ++i)
+    {
+        if(mParameters[i]->getName() == rParameterName)
+        {
+            mParameters[i]->setTriggersReconfiguration();
+        }
+    }
+}
+
+bool ParameterEvaluatorHandler::parameterTriggersReconfiguration(const HString &rParameterName)
+{
+    for(size_t i=0; i<mParameters.size(); ++i)
+    {
+        if(mParameters[i]->getName() == rParameterName)
+        {
+            return mParameters[i]->triggersReconfiguration();
+        }
+    }
+    return false;
 }
 
 
