@@ -134,7 +134,11 @@ void* Component::getParameterDataPtr(const HString &rName)
 
 bool Component::setParameterValue(const HString &rName, const HString &rValue, bool force)
 {
-    return mpParameters->setParameterValue(rName, rValue, force);
+    bool success = mpParameters->setParameterValue(rName, rValue, force);
+    if(success && mpParameters->parameterTriggersReconfiguration(rName)) {
+        this->reconfigure();
+    }
+    return success;
 }
 
 
@@ -511,6 +515,11 @@ void Component::addConditionalConstant(const HString &rName, const HString &rDes
         rData=0;
     }
     registerConditionalParameter(rName, rDescription, rConditions, rData);
+}
+
+void Component::addReconfigurationParameter(const HString &rName)
+{
+    mpParameters->setParameterTriggersReconfiguration(rName);
 }
 
 //! @brief Add (register) a constant parameter with a default value to the component

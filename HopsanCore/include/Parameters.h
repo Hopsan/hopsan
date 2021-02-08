@@ -68,6 +68,9 @@ public:
     const HString &getQuantity() const;
     const std::vector<HString> &getConditions() const;
 
+    void setTriggersReconfiguration();
+    bool triggersReconfiguration();
+
 protected:
     void resolveSignPrefix(HString &rSignPrefix) const;
     void splitSignPrefix(const HString &rString, HString &rPrefix, HString &rValue);
@@ -82,6 +85,7 @@ protected:
     size_t mDepthCounter;
     ParameterEvaluatorHandler* mpParameterEvaluatorHandler;
     std::vector<HString> mConditions;
+    bool mTriggersReconfiguration = false;
 };
 
 
@@ -116,6 +120,9 @@ public:
 
     bool hasParameter(const HString &rName) const;
     bool checkParameters(HString &rErrParName);
+
+    void setParameterTriggersReconfiguration(const HString &rParameterName);
+    bool parameterTriggersReconfiguration(const HString &rParameterName);
 
     Component *getComponent() const;
 
