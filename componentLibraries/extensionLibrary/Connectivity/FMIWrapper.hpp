@@ -247,7 +247,7 @@ public:
         //Load FMU binary
         status = fmi2_import_create_dllfmu(fmu, fmi2_fmu_kind_cs, &fmiCallbackFunctions);
         if (status == jm_status_error) {
-            stopSimulation("Failed to load .dll/.so file (error: "+HString(fmi2_import_get_last_error(fmu))+")");
+            addErrorMessage("Failed to load .dll/.so file (error: "+HString(fmi2_import_get_last_error(fmu))+")");
             return;
         }
 
@@ -255,9 +255,9 @@ public:
 
         //Instantiate FMU
         HString instanceName = getName();
-        fmi2_string_t fmuResourceLocation = HString(mpTempDir->path()+"/resources").c_str();
+        HString resourceDir = "file://"+mpTempDir->path()+"/resources";
         fmi2_boolean_t visible = fmi2_false;
-        jm_status_enu_t jmstatus = fmi2_import_instantiate(fmu, instanceName.c_str(), fmi2_cosimulation, fmuResourceLocation, visible);
+        jm_status_enu_t jmstatus = fmi2_import_instantiate(fmu, instanceName.c_str(), fmi2_cosimulation, resourceDir.c_str(), visible);
         if (jmstatus == jm_status_error) {
             stopSimulation("Failed to instantiate FMU");
             return;

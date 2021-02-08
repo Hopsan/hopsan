@@ -64,17 +64,13 @@
 
 using namespace hopsan;
 
-TempDirectoryHandle::TempDirectoryHandle(HString prefix)
+TempDirectoryHandle::TempDirectoryHandle(const HString &rPrefix)
 {
-        mPath = getTempDirectory();
-        mPath.append("/Hopsan/"+prefix);
-        mPath.append(generateRandomNumericString());
+    mPath = getTempDirectory();
+    mPath.append("/Hopsan/"+rPrefix);
+    mPath.append(generateRandomNumericString());
 
-#if __cplusplus >= 201703L
-        mPath = std::filesystem::create_directory(mPath.c_str());
-#else
-        mIsValid = createDirectory(mPath);
-#endif
+    mIsValid = createPath(mPath);
 }
 
 TempDirectoryHandle::~TempDirectoryHandle()
@@ -82,18 +78,18 @@ TempDirectoryHandle::~TempDirectoryHandle()
     removeDirectory(mPath);
 }
 
-HString TempDirectoryHandle::path()
+const HString &TempDirectoryHandle::path() const
 {
     return mPath;
 }
 
-bool TempDirectoryHandle::isValid()
+bool TempDirectoryHandle::isValid() const
 {
     return mIsValid;
 }
 
 
-HString TempDirectoryHandle::getTempDirectory() {
+const HString TempDirectoryHandle::getTempDirectory() const {
 #if __cplusplus >= 201703L
         mPath = std::filesystem::temp_directory_path().c_str();
 #else
@@ -123,7 +119,7 @@ HString TempDirectoryHandle::getTempDirectory() {
 #endif
 }
 
-HString TempDirectoryHandle::generateRandomNumericString()
+const HString TempDirectoryHandle::generateRandomNumericString() const
 {
 #if __cplusplus >= 201103L
         std::random_device rd;
@@ -138,54 +134,54 @@ HString TempDirectoryHandle::generateRandomNumericString()
         return ss.str().c_str();
 }
 
-bool TempDirectoryHandle::createDirectory(HString path)
+bool TempDirectoryHandle::createDir(const HString &rName) const
+{
+#ifdef _WIN32
+        return _mkdir(rName.c_str()) == 0;
+#else
+        return mkdir(rName.c_str(), 0777) == 0;
+#endif
+}
+
+bool TempDirectoryHandle::createPath(const HString &rPath) const
 {
 #if __cplusplus >= 201703L
-        return std::filesystem::create_directory(path.c_str());
+        return std::filesystem::create_directory(rPath.c_str());
 #else
     HString currentLevel = "";
     std::string level;
-    std::stringstream ss(path.c_str());
+    std::stringstream ss(rPath.c_str());
 
     while(std::getline(ss, level, '/')) {
         currentLevel.append(level.c_str());
-#ifdef _WIN32
-        if (!directoryExists(currentLevel) && _mkdir(currentLevel.c_str()) != 0) {
-            return false;
-        }
-#else
         if(!currentLevel.empty()) {
-            if (!directoryExists(currentLevel)) {
-                if(mkdir(currentLevel.c_str(), 0755) != 0) {
-                    return false;
-                }
+            if (!directoryExists(currentLevel) && !createDir(currentLevel)) {
+                return false;
             }
         }
-#endif
-
         currentLevel += "/"; // don't forget to append a slash
     }
 #endif
-    return directoryExists(path);
+    return directoryExists(rPath);
 }
 
 
-bool TempDirectoryHandle::directoryExists(HString &foldername)
+bool TempDirectoryHandle::directoryExists(const HString &rName) const
 {
     struct stat st;
-    stat(foldername.c_str(), &st);
+    stat(rName.c_str(), &st);
     return st.st_mode & S_IFDIR;
 }
 
-bool TempDirectoryHandle::removeDirectory(HString path)
+bool TempDirectoryHandle::removeDirectory(const HString &rPath) const
 {
 #if __cplusplus >= 201703L
-    std::filesystem::remove_all(path.c_str());
+    std::filesystem::remove_all(rPath.c_str());
 #else
 #ifdef _WIN32
     WCHAR szDir[MAX_PATH+1];
     SHFILEOPSTRUCTW fos = {0};
-    std::string tempStr(path.c_str());
+    std::string tempStr(rPath.c_str());
     std::wstring stemp = std::wstring(tempStr.begin(), tempStr.end());
     StringCchCopyW(szDir, MAX_PATH,STRSAFE_LPCWSTR(stemp.c_str()));
     int len = lstrlenW(szDir);
@@ -198,8 +194,8 @@ bool TempDirectoryHandle::removeDirectory(HString path)
     return (0 == SHFileOperationW( &fos ));
 
 #else
-    DIR *dir = opendir(path.c_str());
-    size_t path_len = path.size();
+    DIR *dir = opendir(rPath.c_str());
+    size_t path_len = rPath.size();
     bool success = false;
 
     if(dir) {
@@ -220,7 +216,7 @@ bool TempDirectoryHandle::removeDirectory(HString path)
             if (buf) {
                 struct stat statbuf;
 
-                snprintf(buf, len, "%s/%s", path.c_str(), p->d_name);
+                snprintf(buf, len, "%s/%s", rPath.c_str(), p->d_name);
                 if (!stat(buf, &statbuf)) {
                     if (S_ISDIR(statbuf.st_mode)) {
                         success = removeDirectory(buf);
@@ -236,7 +232,7 @@ bool TempDirectoryHandle::removeDirectory(HString path)
     }
 
     if (success) {
-        success = (0 == rmdir(path.c_str()));
+        success = (0 == rmdir(rPath.c_str()));
     }
 
     return success;
