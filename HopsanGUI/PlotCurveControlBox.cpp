@@ -83,12 +83,12 @@ PlotCurveControlBox::PlotCurveControlBox(PlotCurve *pPlotCurve, PlotArea *pParen
     mpSourceLable->setText("U");
     mpSourceLable->setToolTip(variableSourceTypeAsShortString(UndefinedVariableSourceType));
 
-    mpAutoUpdateCheckBox = new QCheckBox("AU");
-    mpAutoUpdateCheckBox->setToolTip("Auto Update");
+    mpAutoUpdateCheckBox = new QCheckBox("Auto");
+    mpAutoUpdateCheckBox->setToolTip("Auto update");
     mpAutoUpdateCheckBox->setChecked(mpPlotCurve->isAutoUpdating());
 
-    mpInvertCurveCheckBox = new QCheckBox("IV");
-    mpInvertCurveCheckBox->setToolTip("Invert Plot Curve");
+    mpInvertCurveCheckBox = new QCheckBox("Inv");
+    mpInvertCurveCheckBox->setToolTip("Invert this plot curve (use model properties for persistence)");
     mpInvertCurveCheckBox->setChecked(mpPlotCurve->isInverted());
 
     QToolButton *pColorButton = new QToolButton(this);

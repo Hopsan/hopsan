@@ -885,7 +885,7 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
     columnHeaders.append("Unit");
     columnHeaders.append("Value");
     columnHeaders.append("Quantity");
-    columnHeaders.append("PlotSettings");
+    columnHeaders.append("PlotLabel");
     columnHeaders.append("Port");
     this->setHorizontalHeaderLabels(columnHeaders);
 
@@ -2155,14 +2155,14 @@ PlotSettingsWidget::PlotSettingsWidget(const CoreVariameterDescription &rData, M
     QHBoxLayout *pLayout = new QHBoxLayout(this);
     QMargins margins = pLayout->contentsMargins(); margins.setBottom(0); margins.setTop(0);
     pLayout->setContentsMargins(margins);
-    QCheckBox *pInverCheckbox = new QCheckBox(this);
-    pInverCheckbox->setToolTip("Invert plot");
+    QCheckBox *pInverCheckbox = new QCheckBox("Inv", this);
+    pInverCheckbox->setToolTip("Invert plot curve");
     pInverCheckbox->setChecked(mOrigInverted);
     mpPlotLabel = new QLineEdit(mOriginalPlotLabel,this);
     mpPlotLabel->setFrame(false);
-    mpPlotLabel->setToolTip("Custom label");
-    pLayout->addWidget(pInverCheckbox);
+    mpPlotLabel->setToolTip("Custom plot curve label");
     pLayout->addWidget(mpPlotLabel);
+    pLayout->addWidget(pInverCheckbox);
 
     connect(pInverCheckbox, SIGNAL(toggled(bool)), this, SLOT(invertPlot(bool)));
     connect(mpPlotLabel, SIGNAL(textChanged(QString)), this, SLOT(setPlotLabel(QString)));
