@@ -772,7 +772,7 @@ Port *ModelObject::createRefreshExternalPort(QString portName)
 
 //! @brief Removes an external Port from a container object
 //! @param[in] portName The name of the port to be removed
-void ModelObject::removeExternalPort(QString portName)
+void ModelObject::removeExternalPort(QString portName, bool keepBrokenConnectors)
 {
     QList<Port*>::iterator plit;
     for (plit=mPortListPtrs.begin(); plit!=mPortListPtrs.end(); ++plit)
@@ -780,7 +780,12 @@ void ModelObject::removeExternalPort(QString portName)
         if ((*plit)->getName() == portName )
         {
             // Delete the GUIPort its post in the port list and its appearance data
-            (*plit)->disconnectAndRemoveAllConnectedConnectors();
+            if(keepBrokenConnectors) {
+                (*plit)->breakAllConnections();
+            }
+            else {
+                (*plit)->disconnectAndRemoveAllConnectedConnectors();
+            }
             (*plit)->deleteLater();
             mPortListPtrs.erase(plit);
             mModelObjectAppearance.erasePortAppearance(portName); // It is important that we remove the appearance data last, or some pointers will be dangling

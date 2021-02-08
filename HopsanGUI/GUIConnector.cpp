@@ -1018,6 +1018,20 @@ void Connector::deleteMeWithNoUndo(bool force)
     deleteMe(NoUndo, force);
 }
 
+void Connector::breakConnection(const Port *pPort)
+{
+    if(mpStartPort == pPort) {
+        mpStartPort = nullptr;
+        mIsBroken = true;
+        refreshConnectorAppearance();
+    }
+    else if(mpEndPort == pPort) {
+        mpEndPort = nullptr;
+        mIsBroken = true;
+        refreshConnectorAppearance();
+    }
+}
+
 
 //! @brief Function that returns true if first or last line is diagonal. Used to determine snapping stuff.
 bool Connector::isFirstOrLastDiagonal()

@@ -91,6 +91,7 @@ public:
 
     bool getLastNodeData(QString dataName, double& rData) const;
 
+    void breakAllConnections();
     void disconnectAndRemoveAllConnectedConnectors();
     virtual void rememberConnection(Connector *pConnector);
     virtual void forgetConnection(Connector *pConnector);

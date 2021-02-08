@@ -141,7 +141,7 @@ public:
     Port *getPort(const QString &rName);
     QList<Port*> &getPortListPtrs();
     virtual Port* createRefreshExternalPort(QString portName);
-    virtual void removeExternalPort(QString portName);
+    virtual void removeExternalPort(QString portName, bool keepBrokenConnector=false);
 
     // Type info
     virtual int type() const override = 0;
