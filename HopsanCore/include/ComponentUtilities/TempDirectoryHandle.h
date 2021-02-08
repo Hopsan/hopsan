@@ -42,19 +42,21 @@ namespace hopsan {
     class HOPSANCORE_DLLAPI TempDirectoryHandle
     {
     public:
-        TempDirectoryHandle(HString prefix);
+        TempDirectoryHandle(const HString &rPrefix);
         ~TempDirectoryHandle();
-        HString path();
-        bool isValid();
+        const HString &path() const;
+        bool isValid() const;
+        bool addSubDirectory(const HString &rName);
 
     private:
         HString mPath;
         bool mIsValid = false;
-        HString getTempDirectory();
-        HString generateRandomNumericString();
-        bool createDirectory(HString path);
-        bool directoryExists(HString &foldername);
-        bool removeDirectory(HString path);
+        const HString getTempDirectory() const;
+        const HString generateRandomNumericString() const;
+        bool createPath(const HString &rPath) const;
+        bool createDir(const HString &rName) const;
+        bool directoryExists(const HString &rName) const;
+        bool removeDirectory(const HString &path) const;
     };
 }
 
