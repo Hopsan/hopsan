@@ -1002,9 +1002,9 @@ void Connector::setUnHovered()
 
 
 //! @brief Asks the parent system to delete the connector
-void Connector::deleteMe(UndoStatusEnumT undo, bool force)
+void Connector::deleteMe(UndoStatusEnumT undo)
 {
-    if (mpParentSystemObject->getModelLockLevel()==NotLocked || force)
+    if (mpParentSystemObject->getModelLockLevel()==NotLocked)
     {
         mpParentSystemObject->removeSubConnector(this, undo);
     }
@@ -1013,9 +1013,9 @@ void Connector::deleteMe(UndoStatusEnumT undo, bool force)
 
 //! @brief Asks the parent system to delete the connector, and tells it to not add it to the undo stack
 //! This is necessary because slots cannot take UNDO or NOUNDO as arguments in a simple way
-void Connector::deleteMeWithNoUndo(bool force)
+void Connector::deleteMeWithNoUndo()
 {
-    deleteMe(NoUndo, force);
+    deleteMe(NoUndo);
 }
 
 void Connector::breakConnection(const Port *pPort)
