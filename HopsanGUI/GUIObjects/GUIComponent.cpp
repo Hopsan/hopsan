@@ -143,7 +143,7 @@ bool Component::setParameterValue(QString name, QString value, bool force)
         //Remove old ports
         QList<Port*> ports = this->getPortListPtrs();
         for(const auto port : ports) {
-            this->removeExternalPort(port->getName());
+            this->removeExternalPort(port->getName(), true);
         }
         this->getAppearanceData()->getPortAppearanceMap().clear();
     }

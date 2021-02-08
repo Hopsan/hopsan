@@ -971,6 +971,14 @@ bool Port::getLastNodeData(QString dataName, double& rData) const
     return mpParentModelObject->getParentSystemObject()->getCoreSystemAccessPtr()->getLastNodeData(getParentModelObjectName(), this->getName(), dataName, rData);
 }
 
+void Port::breakAllConnections()
+{
+    while (mConnectedConnectors.size() > 0) {
+        mConnectedConnectors[0]->breakConnection(this);
+        mConnectedConnectors.removeFirst();
+    }
+}
+
 
 //! @brief Slot that hides the port if "hide ports" setting is enabled, but only if the project tab is opened.
 //! @param doShow shall we show unconnected ports
