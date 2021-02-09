@@ -40,6 +40,8 @@
 #include <QHBoxLayout>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QFileInfo>
+#include <QDialogButtonBox>
 
 
 //Hopsan includes
@@ -715,6 +717,57 @@ void ModelWidget::stopRealtimeSimulation()
     mCoreSimulationHandler.stopRealtimeSimulation(mpToplevelSystem->getCoreSystemAccessPtr());
     mCoreSimulationHandler.finalize(mpToplevelSystem->getCoreSystemAccessPtr());
     mSimulateMutex.unlock();
+
+bool ModelWidget::simulateDcpSlave()
+{
+    // Save backup copy
+    if (!isSaved() && gpConfig->getBoolSetting(CFG_AUTOBACKUP))
+    {
+        //! @todo this should be a help function, also we may not want to call it every time when we run optimization (not sure if that is done now but probably)
+        QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
+        fileNameWithoutHmf.chop(4);
+        saveTo(gpDesktopHandler->getBackupPath() + fileNameWithoutHmf + "_sim_backup.hmf");
+    }
+
+    QDialog */*pDcpSlaveDialog*/pDialog = new QDialog(gpMainWindowWidget);
+    QGridLayout */*pDcpSlaveDialogLayout*/pLayout = new QGridLayout(pDialog);
+    QLineEdit *pHostLineEdit = new QLineEdit("127.0.0.1",pDialog);
+    QSpinBox *pPortSpinBox = new QSpinBox(pDialog);
+    pPortSpinBox->setMaximum(1000000);
+    pPortSpinBox->setValue(8080);
+    pPortSpinBox->setSingleStep(1);
+    QLineEdit *pTargetFileLineEdit = new QLineEdit(gpDesktopHandler->getDocumentsPath()+"/"+getTopLevelSystemContainer()->getModelFileInfo().baseName()+".dcpx");
+    QDialogButtonBox *pButtonBox = new QDialogButtonBox(pDialog);
+    QPushButton *pOkButton = pButtonBox->addButton(QDialogButtonBox::Ok);
+    QPushButton *pCancelButton = pButtonBox->addButton(QDialogButtonBox::Cancel);
+    connect(pOkButton, SIGNAL(clicked()), pDialog, SLOT(accept()));
+    connect(pCancelButton, SIGNAL(clicked()), pDialog, SLOT(reject()));
+    pLayout->addWidget(new QLabel("Host address:",pDialog),0,0);
+    pLayout->addWidget(pHostLineEdit,0,1,1,2);
+    pLayout->addWidget(new QLabel("Port:",pDialog),1,0);
+    pLayout->addWidget(pPortSpinBox,1,1,1,2);
+    pLayout->addWidget(new QLabel("XML output file:",pDialog),2,0);
+    pLayout->addWidget(pTargetFileLineEdit,2,1,1,2);
+    pLayout->addWidget(pButtonBox, 3,1,1,3);
+
+    if(pDialog->exec() == QDialog::Rejected) {
+        return false;
+    }
+
+    if(!mSimulateMutex.tryLock())
+    {
+        gpMessageHandler->addErrorMessage("Simulation mutex is locked. Aborting.");
+        return false;
+    }
+
+    mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
+    mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
+    mSimulationProgress=0;
+    mpSimulationThreadHandler->initSimulateFinalizeDcpSlave(mpToplevelSystem, pHostLineEdit->text(), pPortSpinBox->value(), pTargetFileLineEdit->text());
+
+
+    return true;
+    //! @todo fix return code
 }
 
 

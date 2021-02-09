@@ -38,6 +38,7 @@
 #include "common.h"
 #include "global.h"
 #include "GUIObjects/GUIContainerObject.h"
+#include "dcpslave.h"
 
 namespace {
 
@@ -244,6 +245,11 @@ void ProgressBarWorkerObject::setProgressBarState(SimulationState state)
         emit setProgressBarText(tr("Simulating..."));
         emit setProgressBarRange(0, 0);
         break;
+    case SimulationState::DcpSlaveSimulate:
+        emit setProgressBarText(tr("Running DCP simulation..."));
+        emit setProgressBarRange(0, 0);
+        startRefreshTimer(gpConfig->getProgressBarStep());
+        break;
     case SimulationState::Finalize:
         stopRefreshTimer();
         emit setProgressBarText(tr("Finalizing..."));
@@ -328,6 +334,15 @@ void SimulationThreadHandler::initSimulateFinalizeRemote(SharedRemoteCoreSimulat
     initSimulateFinalizePrivate();
 }
 #endif
+
+void SimulationThreadHandler::initSimulateFinalizeDcpSlave(SystemObject* pSystem, const QString &host, int port, const QString &targetFile)
+{
+    mvpSystems.clear();
+    mvpSystems.push_back(pSystem);
+    mpSimulationWorkerObject = new DCPSlaveSimulationWorkerObject(pSystem, host, port, targetFile);
+    mpSimulationWorkerObject->setMessageHandler(mpMessageHandler);
+    initSimulateFinalizePrivate();
+}
 
 void SimulationThreadHandler::initSimulateFinalize(QVector<SystemObject*> vpSystems, const bool noChanges)
 {
@@ -550,4 +565,37 @@ int SimulationThreadHandler::getLastSimulationTime()
 void SimulationThreadHandler::setMessageHandler(GUIMessageHandler *pMessageHandler)
 {
     mpMessageHandler = pMessageHandler;
+}
+
+DCPSlaveSimulationWorkerObject::DCPSlaveSimulationWorkerObject(SystemObject *pSystem, const QString &host, int port, const QString &targetFile)
+{
+    mpSystem = pSystem;
+    mHost = host;
+    mPort = port;
+    mTargetFile = targetFile;
+}
+
+void DCPSlaveSimulationWorkerObject::initSimulateFinalize()
+{
+    QTime timer;
+    DcpSlave *pDcpSlave = new DcpSlave(mpSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), mHost.toStdString(), mPort, mpSystem->getNumberOfLogSamples());
+
+    // Initializing
+    emit setProgressState(SimulationState::Initialize);
+    timer.start();
+    pDcpSlave->generateDescriptionFile(mTargetFile.toStdString());
+    emit initDone(true, timer.elapsed());
+
+    // Simulating
+    emit setProgressState(SimulationState::DcpSlaveSimulate);
+    gpMessageHandler->addInfoMessage("Starting a DCP simulation...");
+    bool success = pDcpSlave->start();
+    gpMessageHandler->addInfoMessage("DCP simulation finished!");
+    emit simulateDone(success, timer.elapsed());
+
+    // Finalizing
+    delete pDcpSlave;
+    // Finalizing
+    emit setProgressState(SimulationState::Finalize);
+    emit finalizeDone(true, timer.elapsed());
 }

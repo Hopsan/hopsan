@@ -66,8 +66,7 @@ void DcpMaster::start() {
     std::thread b(&DcpManagerMaster::start, manager);
     std::chrono::seconds dura(1);
     std::this_thread::sleep_for(dura);
-    //driver->getDcpDriver().connectToSlave(1);
-    std::cout << "Register Slaves" << std::endl;
+
     for(size_t i=0; i<slaveDescriptions.size(); ++i) {
         manager->STC_register(u_char(i+1), DcpState::ALIVE, convertToUUID(slaveDescriptions[i]->uuid), DcpOpMode::NRT, 1, 0);
     }
@@ -149,7 +148,7 @@ void DcpMaster::doStep() {
 }
 
 void DcpMaster::stop() {
-    std::chrono::seconds dura(secondsToSimulate + 2);
+    std::chrono::seconds dura(1);
     std::this_thread::sleep_for(dura);
     std::cout << "Stop Simulation" << std::endl;
     for(size_t i=0; i<slaveDescriptions.size(); ++i) {
@@ -240,6 +239,10 @@ void DcpMaster::receiveStateChangedNotification(uint8_t sender,
             break;
 
         case DcpState::STOPPED:
+            stoppedSlaves++;
+            if(stoppedSlaves < 2) {
+                return;
+            }
             deregister();
             break;
 

@@ -1,9 +1,9 @@
 #ifndef DCPMASTER_H
 #define DCPMASTER_H
 
-//#include "dcp/model/DcpTypes.hpp"
+#include "hopsandcp_win32dll.h"
+
 #include "dcp/model/constant/DcpState.hpp"
-//#include "dcp/xml/DcpSlaveDescriptionElements.hpp"
 #include "dcp/model/constant/DcpError.hpp"
 #include "dcp/log/OstreamLog.hpp"
 
@@ -22,7 +22,7 @@ struct DcpConnection
     std::vector<size_t> toSlaves, toVrs;
 };
 
-class DcpMaster
+HOPSANDCP_DLLAPI class DcpMaster
 {
 public:
     DcpMaster(const string host, u_short port);
@@ -74,6 +74,7 @@ private:
     uint8_t slavesWaitingForDeregister = 0;
     uint8_t slavesWaitingForInitialize = 0;
     uint8_t slavesWaitingToRun = 0;
+    uint8_t stoppedSlaves = 0;
 };
 
 #endif // DCPMASTER_H
