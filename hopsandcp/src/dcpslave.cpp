@@ -31,29 +31,11 @@ const LogTemplate SIM_LOG = LogTemplate(
 
 using namespace hopsan;
 
-DcpSlave::DcpSlave(const std::string modelfile, const std::string host, int port, std::string resultFile)
-    : mHost(host), mPort(port), mResultFile(resultFile)
+DcpSlave::DcpSlave(ComponentSystem *pSystem, const std::string host, int port, size_t numLogSamples)
+    : mpRootSystem(pSystem), mHost(host), mPort(port), mNumLogSamples(numLogSamples)
 {
-    //Create Hopsan object
-    mpHopsanCore = new HopsanEssentials();
-
-#ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
-    // Load default Hopsan component lib
-    std::string libpath = default_library;
-    mpHopsanCore->loadExternalComponentLib(libpath.c_str());
-#endif
-
-    //Load model file
-    double startTime=0, stopTime=1;
-    mpRootSystem = mpHopsanCore->loadHMFModelFile(modelfile.c_str(), startTime, stopTime);
-    printWaitingMessages();
-    if(mpRootSystem == nullptr) {
-        std::cout << "Failed to load model file: " << modelfile << "\n";
-        exit(-1);
-    }
-
     //Generate list of inputs and outputs based on interface components
-    for(const auto &component : mpRootSystem->getSubComponents()) {
+    for(const auto &component : pSystem->getSubComponents()) {
         if(component->getTypeName() == "SignalInputInterface") {
             mInputs.push_back(component->getName().c_str());
         }
@@ -70,9 +52,6 @@ DcpSlave::DcpSlave(const std::string modelfile, const std::string host, int port
         std::cout << " " << output;
     }
     std::cout << "\n";
-
-    printWaitingMessages();
-
 
     //Create UDP driver
     udpDriver = new UdpDriver(host, uint16_t(port));
@@ -106,22 +85,7 @@ DcpSlave::DcpSlave(const std::string modelfile, const std::string host, int port
 
 DcpSlave::~DcpSlave()
 {
-    delete mpHopsanCore;
 }
-
-
-void DcpSlave::printWaitingMessages()
-{
-    hopsan::HString msg, type, tag;
-    while (mpHopsanCore->checkMessage() > 0)
-    {
-        mpHopsanCore->getMessage(msg,type,tag);
-        if(type != "debug") {
-            std::cout << msg.c_str() << std::endl;
-        }
-    }
-}
-
 
 SlaveDescription_t *DcpSlave::getSlaveDescription() {
     SlaveDescription_t *slaveDescription = new SlaveDescription_t(make_SlaveDescription(1, 0, mpRootSystem->getName().c_str(), "b5279485-720d-4542-9f29-bee4d9a75ef9"));
@@ -165,13 +129,19 @@ SlaveDescription_t *DcpSlave::getSlaveDescription() {
 }
 
 
-void DcpSlave::generateDescriptionFile(std::string &targetFile) {
+void DcpSlave::generateDescriptionFile(std::string targetFile) {
     writeDcpSlaveDescription(*getSlaveDescription(), targetFile.c_str());
 }
 
-void DcpSlave::start()
+bool DcpSlave::start()
 {
-    mManager->start();
+    try {
+        mManager->start();
+        return true;
+    } catch (std::exception& e) {
+        mpRootSystem->addErrorMessage(e.what());
+        return false;
+    }
 }
 
 
@@ -182,7 +152,6 @@ void DcpSlave::configure() {
     }
     else {
         std::cout << "Failed!\n";
-        printWaitingMessages();
         exit(-1);
     }
 
@@ -196,13 +165,13 @@ void DcpSlave::configure() {
     }
 
     std::cout << "Initializing... ";
+    mpRootSystem->setNumLogSamples(mNumLogSamples);
+    mpRootSystem->setLogStartTime(0);
     if(mpRootSystem->initialize(0,10)) {
         std::cout << "Success!\n";
-        printWaitingMessages();
     }
     else {
         std::cout << "Failed!\n";
-        printWaitingMessages();
         exit(-1);
     }
 }
@@ -228,8 +197,6 @@ void DcpSlave::doStep(uint64_t steps) {
         *(mOutputDataPtrs[o]) = *(mOutputNodePtrs[o]);
         mManager->Log(SIM_LOG, mSimulationTime, *mOutputDataPtrs[o]);
     }
-
-    printWaitingMessages();
 }
 
 void DcpSlave::setTimeRes(const uint32_t numerator, const uint32_t denominator) {
@@ -238,7 +205,5 @@ void DcpSlave::setTimeRes(const uint32_t numerator, const uint32_t denominator) 
 
 void DcpSlave::stop()
 {
-    if(!mResultFile.empty()) {
-        saveResultsToCSV(mpRootSystem, mResultFile, SaveResults::Full, std::vector<std::string>());
-    }
+    dynamic_cast<AbstractDcpManager*>(mManager)->stop();
 }

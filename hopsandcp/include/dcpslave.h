@@ -1,6 +1,8 @@
 #ifndef DCPSLAVE_H
 #define DCPSLAVE_H
 
+#include "hopsandcp_win32dll.h"
+
 #include <string>
 #include <vector>
 
@@ -14,27 +16,25 @@ class DcpManagerSlave;
 class UdpDriver;
 class OstreamLog;
 
-class DcpSlave
+HOPSANDCP_DLLAPI class DcpSlave
 {
 public:
-    DcpSlave(const std::string modelfile, const std::string host, int port, std::string resultFile="");
+    DcpSlave(hopsan::ComponentSystem *pSystem, const std::string host, int port, size_t numLogSamples);
     ~DcpSlave();
 
-    void generateDescriptionFile(std::string &targetFile);
-    void start();
+    void generateDescriptionFile(std::string targetFile);
+    bool start();
 
 private:
-    void printWaitingMessages();
     SlaveDescription_t *getSlaveDescription();
 
-    hopsan::HopsanEssentials *mpHopsanCore;
     hopsan::ComponentSystem *mpRootSystem;
     std::vector<std::string> mInputs, mOutputs;
     std::vector<double*> mInputNodePtrs, mOutputNodePtrs;
     std::vector<double*> mInputDataPtrs, mOutputDataPtrs;
     std::string mHost = "127.0.0.1";
     int mPort = 8080;
-    std::string mResultFile;
+    size_t mNumLogSamples = 0;
     DcpManagerSlave *mManager;
     OstreamLog *stdLog;
     UdpDriver* udpDriver;

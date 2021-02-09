@@ -108,6 +108,13 @@ DEFINES *= OPS_DLLIMPORT
 #--------------------------------------------------------
 
 #--------------------------------------------------------
+# Set Ops Paths
+INCLUDEPATH *= $${PWD}/../hopsandcp/include/
+LIBS *= -L$${PWD}/../bin -lhopsandcp$${DEBUG_EXT}
+DEFINES *= HOPSANDCP_DLLIMPORT
+#--------------------------------------------------------
+
+#--------------------------------------------------------
 # Set Discount (libmarkdown) paths
 include($${PWD}/../dependencies/discount.pri)
 have_libmarkdown(){
