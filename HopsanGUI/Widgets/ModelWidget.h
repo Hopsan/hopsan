@@ -119,6 +119,7 @@ public slots:
     void setTopLevelSimulationTime(const QString startTime, const QString timeStep, const QString stopTime);
     bool simulate_nonblocking();
     bool simulate_blocking();
+    bool simulateDcpSlave();
     void save();
     void saveAs();
     void exportModelParameters();
