@@ -220,6 +220,7 @@ public:
     QAction *mpShowLossesAction;
     QAction *mpMeasureSimulationTimeAction;
     QAction *mpToggleHideAllDockAreasAction;
+    QAction *mpSimulateDcpSlaveAction;
 
     QAction *mpDebug1Action;
     QAction *mpDebug2Action;

@@ -624,6 +624,9 @@ void MainWindow::createActions()
     mHelpPopupTextMap.insert(mpToggleRemoteCoreSimAction, "Connect or disconnect to a remote HopsanCore, this will determine if local or remote simulation is run, when calling simulate");
     connect(mpToggleRemoteCoreSimAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
+    mpSimulateDcpSlaveAction = new QAction(QIcon(QString(ICONPATH) + "svg/Hopsan-SimulateRemote.svg"), tr("Simulate Model as DCP Slave"), this);
+    mpSimulateDcpSlaveAction->setToolTip("Simulate Model as DCP Slave");
+
     mpOpenDebuggerAction = new QAction(QIcon(QString(ICONPATH) + "svg/Hopsan-Debug.svg"), tr("&Launch Debugger"), this);
     mpOpenDebuggerAction->setToolTip(tr("Launch Debugger"));
     connect(mpOpenDebuggerAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
@@ -1181,6 +1184,7 @@ void MainWindow::createToolbars()
     mpSimToolBar->addWidget(mpSimulationTimeEdit);
     mpSimToolBar->addAction(mpSimulateAction);
     mpSimToolBar->addAction(mpToggleRemoteCoreSimAction);
+    mpSimToolBar->addAction(mpSimulateDcpSlaveAction);
     mpSimToolBar->addAction(mpOpenDebuggerAction);
     mpSimToolBar->addAction(mpOptimizeAction);
     mpSimToolBar->addAction(mpSensitivityAnalysisAction);

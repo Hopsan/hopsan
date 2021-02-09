@@ -4,7 +4,7 @@
 include( ../Common.prf )
 
 TARGET = hopsandcp
-TEMPLATE = app
+TEMPLATE = lib
 CONFIG += shared
 DESTDIR = $${PWD}/../bin
 TARGET = $${TARGET}$${DEBUG_EXT}
@@ -85,13 +85,13 @@ unix {
 # Project files
 # -------------------------------------------------
 SOURCES = \
-        dcpmaster.cpp \
-        dcpslave.cpp \
-        main.cpp \
-        utilities.cpp
+        src/dcpmaster.cpp \
+        src/dcpslave.cpp \
+        src/utilities.cpp
 
 HEADERS += \
-    dcpmaster.h \
-    dcpslave.h \
-    utilities.h
+    include/dcpmaster.h \
+    include/dcpslave.h \
+    include/hopsandcp_win32dll.h \
+    include/utilities.h
 

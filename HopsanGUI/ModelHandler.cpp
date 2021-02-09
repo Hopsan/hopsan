@@ -711,6 +711,7 @@ void ModelHandler::disconnectMainWindowConnections(ModelWidget *pModel)
 
     disconnect(gpMainWindow,                                SIGNAL(simulateKeyPressed()),   pModel,  SLOT(simulate_nonblocking()));
     disconnect(gpMainWindow->mpToggleRemoteCoreSimAction,   SIGNAL(triggered(bool)),        pModel,  SLOT(setUseRemoteSimulation(bool)));
+    disconnect(gpMainWindow->mpSimulateDcpSlaveAction,      SIGNAL(triggered()),            pModel,    SLOT(simulateDcpSlave()));
     disconnect(gpMainWindow->mpSaveAction,                  SIGNAL(triggered()),            pModel,  SLOT(save()));
     disconnect(gpMainWindow->mpSaveAsAction,                SIGNAL(triggered()),            pModel,  SLOT(saveAs()));
     disconnect(gpMainWindow->mpExportModelParametersActionToHpf, SIGNAL(triggered()),       pModel,  SLOT(exportModelParametersToHpf()));

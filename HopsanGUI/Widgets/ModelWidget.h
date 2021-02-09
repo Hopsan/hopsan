@@ -121,6 +121,7 @@ public slots:
     bool simulate_blocking();
     bool startRealtimeSimulation(const double realtimeFactor);
     void stopRealtimeSimulation();
+    bool simulateDcpSlave();
     void save();
     void saveAs();
     void exportModelParametersToHpf();
