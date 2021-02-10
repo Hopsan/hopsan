@@ -1,21 +1,24 @@
 #include "dcpmaster.h"
 
-#include <iostream>
-#include <cstdint>
-#include <fstream>
-#include <memory>
-
+#include "dcp/log/OstreamLog.hpp"
 #include "dcp/helper/LogHelper.hpp"
 #include "dcp/model/pdu/DcpPduFactory.hpp"
 #include "dcp/xml/DcpSlaveDescriptionReader.hpp"
 #include "dcp/driver/ethernet/udp/UdpDriver.hpp"
 #include "dcp/logic/DcpManagerMaster.hpp"
 
+#include <cmath>
+#include <iostream>
+#include <cstdint>
+#include <fstream>
+#include <memory>
 
-DcpMaster::DcpMaster(const std::string host, u_short port)
-    : stdLog(std::cout)
+DcpMaster::DcpMaster(const std::string host, int port, double comStep=0.001)
+    : mComStep(comStep)
 {
-    driver = new UdpDriver(host, port);
+    OstreamLog stdLog(std::cout);
+
+    driver = new UdpDriver(host, port_t(port));
 
     manager = new DcpManagerMaster(driver->getDcpDriver());
 
@@ -38,7 +41,7 @@ DcpMaster::~DcpMaster() {
     delete manager;
 }
 
-void DcpMaster::addSlave(string &filepath)
+void DcpMaster::addSlave(string filepath)
 {
     slaveDescriptions.push_back(new SlaveDescription_t(*readSlaveDescription(filepath.c_str())));
     u_char id = u_char(slaveDescriptions.size());
@@ -94,9 +97,12 @@ void DcpMaster::configuration() {
     std::cout << "Configure Slaves" << std::endl;
 
     //Count received acks so that we know when all configuration messages are acknowledged
-    for(size_t i=0; i<slaveDescriptions.size(); ++i) {
-        receivedAcks[dcpId_t(i+1)] = 0;
-        numOfCmd[dcpId_t(i+1)] = 0;
+    for(size_t i=1; i<=slaveDescriptions.size(); ++i) {
+        receivedAcks[dcpId_t(i)] = 0;
+        numOfCmd[dcpId_t(i)] = 0;
+
+        manager->CFG_time_res(uint8_t(i), 1, uint32_t(std::floor(1.0/mComStep)));
+        numOfCmd[dcpId_t(i)]++;
     }
 
     for(size_t i=0; i<connections.size(); ++i) {
@@ -157,8 +163,8 @@ void DcpMaster::stop() {
 }
 
 void DcpMaster::deregister() {
-    slavesWaitingForDeregister++;
-    if(slavesWaitingForDeregister < slaveDescriptions.size()) {
+    slavesWaitingToStop++;
+    if(slavesWaitingToStop < slaveDescriptions.size()) {
         return;
     }
     std::cout << "Deregister Slave" << std::endl;
@@ -239,20 +245,21 @@ void DcpMaster::receiveStateChangedNotification(uint8_t sender,
             break;
 
         case DcpState::STOPPED:
-            stoppedSlaves++;
-            if(stoppedSlaves < 2) {
+            slavesWaitingToStop++;
+            if(slavesWaitingToStop < slaveDescriptions.size()) {
                 return;
             }
-            deregister();
+            std::cout << "Stopping master manager\n";
+            manager->stop();
             break;
 
         case DcpState::ALIVE:
             //simulation finished
             slavesWaitingAtExit++;
-            if(slavesWaitingAtExit < 2) {
+            if(slavesWaitingAtExit < slaveDescriptions.size()) {
                 return;
             }
-            std::exit(0);
+            break;
 
         case DcpState::PREPARING:
         default:
@@ -260,3 +267,52 @@ void DcpMaster::receiveStateChangedNotification(uint8_t sender,
     }
 }
 
+
+
+void getDataFromSlaveDescription(const hopsan::HString &rFilePath, hopsan::HString &rName, hopsan::HString &rVariables, hopsan::HString &rValueReferences)
+{
+    shared_ptr<SlaveDescription_t> slaveDesc = readSlaveDescription(rFilePath.c_str());
+    hopsan::HString inputs,outputs,pars;
+    hopsan::HString inputVrs, outputVrs, parVrs;
+    for(const auto &var : slaveDesc->Variables) {
+        if(var.Input.get() != nullptr) {
+            inputs.append(hopsan::HString(var.name.c_str())+",");
+            inputVrs.append(to_hstring(var.valueReference)+",");
+        }
+        else if(var.Output.get() != nullptr) {
+            outputs.append(hopsan::HString(var.name.c_str())+",");
+            outputVrs.append(to_hstring(var.valueReference)+",");
+        }
+        else if(var.Parameter.get() != nullptr) {
+            pars.append(hopsan::HString(var.name.c_str())+",");
+            parVrs.append(to_hstring(var.valueReference)+",");
+        }
+    }
+    if(!inputs.empty()) {
+        inputs.erase(inputs.size()-1);
+        inputVrs.erase(inputVrs.size()-1);
+    }
+    if(!outputs.empty()) {
+        outputs.erase(outputs.size()-1);
+        outputVrs.erase(outputVrs.size()-1);
+    }
+    if(!pars.empty()) {
+        pars.erase(pars.size()-1);
+        parVrs.erase(parVrs.size()-1);
+    }
+    rName = slaveDesc->dcpSlaveName.c_str();
+
+    //Variables names are stored in a semicolon and comma separated string.
+    //Variable types are separated by semicolons, while variable names within
+    //each type are separated by commas.
+    rVariables = inputs+";"+outputs+";"+pars;
+
+    //Value references is a plain comma-separated string
+    rValueReferences = inputVrs+","+outputVrs+","+parVrs;
+
+    //Value references string could end with a comma if one
+    //of the lists above is empty. If so, remove this.
+    if(rValueReferences.at(rValueReferences.size()-1) == ',') {
+        rValueReferences.erase(rValueReferences.size()-1);
+    }
+}

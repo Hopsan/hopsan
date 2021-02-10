@@ -3,18 +3,20 @@
 
 #include "hopsandcp_win32dll.h"
 
-#include "dcp/model/constant/DcpState.hpp"
-#include "dcp/model/constant/DcpError.hpp"
-#include "dcp/log/OstreamLog.hpp"
+#include "HopsanEssentials.h"
+#include "ComponentUtilities/num2string.hpp"
 
 #include <vector>
 #include <map>
 
 using namespace std;
 
+class SlaveDescription_t;
 class DcpManagerMaster;
 class UdpDriver;
-class SlaveDescription_t;
+class OstreamLog;
+enum class DcpState : uint8_t;
+enum class DcpError : uint16_t;
 
 struct DcpConnection
 {
@@ -25,10 +27,10 @@ struct DcpConnection
 HOPSANDCP_DLLAPI class DcpMaster
 {
 public:
-    DcpMaster(const string host, u_short port);
+    DcpMaster(const string host, int port, double comStep);
     ~DcpMaster();
 
-    void addSlave(std::string &filepath);
+    void addSlave(string filepath);
     void addConnection(size_t fromId, size_t fromVr, std::vector<size_t> toIds, std::vector<size_t> toVrs);
 
     void start();
@@ -53,14 +55,15 @@ private:
 
     std::map<uint8_t, DcpState> curState;
 
+    double mComStep;
+
     UdpDriver *driver;
 
-    OstreamLog stdLog;
+    OstreamLog *mpStdLog;
 
     DcpManagerMaster *manager;
 
     uint64_t nSteps=0;
-    uint64_t secondsToSimulate = 10;
     std::map<uint8_t, uint8_t> numOfCmd;
     std::map<uint8_t, uint64_t> receivedAcks;
 
@@ -71,10 +74,12 @@ private:
     uint8_t slavesWaitingForStep = 0;
     uint8_t slavesWaitingForConfiguration = 0;
     uint8_t slavesWaitingAtExit = 0;
-    uint8_t slavesWaitingForDeregister = 0;
+    uint8_t slavesWaitingToStop = 0;
     uint8_t slavesWaitingForInitialize = 0;
     uint8_t slavesWaitingToRun = 0;
-    uint8_t stoppedSlaves = 0;
 };
+
+void getDataFromSlaveDescription(const hopsan::HString &rFilePath, hopsan::HString &rName, hopsan::HString &rVariables, hopsan::HString &rValueReferences);
+
 
 #endif // DCPMASTER_H

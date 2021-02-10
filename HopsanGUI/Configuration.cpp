@@ -1311,6 +1311,8 @@ void Configuration::registerSettings()
     mStringSettings.insert(cfg::dir::customtemppath, "");
     mStringSettings.insert(cfg::dir::gcc64, "");
     mStringSettings.insert(cfg::dir::gcc32, "");
+    mStringSettings.insert(cfg::dir::dcp, gpDesktopHandler->getDocumentsPath());
+
 #ifndef _WIN32
 #ifdef HOPSANCOMPILED64BIT
     mStringSettings.insert(cfg::dir::gcc64, "/usr/bin");

@@ -193,6 +193,16 @@ void ModelWidget::setMessageHandler(GUIMessageHandler *pMessageHandler)
     connect(this, SIGNAL(checkMessages()), mpMessageHandler, SLOT(collectHopsanCoreMessages()), Qt::UniqueConnection);
 }
 
+void ModelWidget::setModelType(ModelWidget::ModelType type)
+{
+    mModelType = type;
+}
+
+ModelWidget::ModelType ModelWidget::getModelType() const
+{
+    return mModelType;
+}
+
 void ModelWidget::setTopLevelSimulationTime(const QString startTime, const QString timeStep, const QString stopTime, UndoStatusEnumT undoSettings)
 {
     if(undoSettings == Undo) {
@@ -765,9 +775,61 @@ bool ModelWidget::simulateDcpSlave()
     mSimulationProgress=0;
     mpSimulationThreadHandler->initSimulateFinalizeDcpSlave(mpToplevelSystem, pHostLineEdit->text(), pPortSpinBox->value(), pTargetFileLineEdit->text());
 
+    unlockSimulateMutex();
 
     return true;
     //! @todo fix return code
+}
+
+bool ModelWidget::simulateDcpManager()
+{
+    // Save backup copy
+    if (!isSaved() && gpConfig->getBoolSetting(CFG_AUTOBACKUP))
+    {
+        //! @todo this should be a help function, also we may not want to call it every time when we run optimization (not sure if that is done now but probably)
+        QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
+        fileNameWithoutHmf.chop(4);
+        saveTo(gpDesktopHandler->getBackupPath() + fileNameWithoutHmf + "_sim_backup.hmf");
+    }
+
+    QDialog *pDcpSettingsDialog = new QDialog(gpMainWindowWidget);
+    QGridLayout *pDialogLayout = new QGridLayout(pDcpSettingsDialog);
+    QLineEdit *pHostLineEdit = new QLineEdit("127.0.0.1",pDcpSettingsDialog);
+    QSpinBox *pPortSpinBox = new QSpinBox(pDcpSettingsDialog);
+    pPortSpinBox->setMaximum(1000000);
+    pPortSpinBox->setValue(8180);
+    pPortSpinBox->setSingleStep(1);
+    QDialogButtonBox *pButtonBox = new QDialogButtonBox(pDcpSettingsDialog);
+    QPushButton *pOkButton = pButtonBox->addButton(QDialogButtonBox::Ok);
+    QPushButton *pCancelButton = pButtonBox->addButton(QDialogButtonBox::Cancel);
+    connect(pOkButton, SIGNAL(clicked()), pDcpSettingsDialog, SLOT(accept()));
+    connect(pCancelButton, SIGNAL(clicked()), pDcpSettingsDialog, SLOT(reject()));
+    pDialogLayout->addWidget(new QLabel("Host address:",pDcpSettingsDialog),0,0);
+    pDialogLayout->addWidget(pHostLineEdit,0,1,1,2);
+    pDialogLayout->addWidget(new QLabel("Port:",pDcpSettingsDialog),1,0);
+    pDialogLayout->addWidget(pPortSpinBox,1,1,1,2);
+    pDialogLayout->addWidget(pButtonBox, 3,1,1,3);
+
+    if(pDcpSettingsDialog->exec() == QDialog::Rejected) {
+        return false;
+    }
+
+    if(!mSimulateMutex.tryLock())
+    {
+        gpMessageHandler->addErrorMessage("Simulation mutex is locked. Aborting.");
+        return false;
+    }
+
+    mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
+    mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
+    mSimulationProgress=0;
+    mpSimulationThreadHandler->initSimulateFinalizeDcpManager(mpToplevelSystem, pHostLineEdit->text(), pPortSpinBox->value());
+
+    unlockSimulateMutex();
+
+    return true;
+    //! @todo fix return code
+
 }
 
 
