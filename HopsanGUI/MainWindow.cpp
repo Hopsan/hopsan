@@ -624,8 +624,15 @@ void MainWindow::createActions()
     mHelpPopupTextMap.insert(mpToggleRemoteCoreSimAction, "Connect or disconnect to a remote HopsanCore, this will determine if local or remote simulation is run, when calling simulate");
     connect(mpToggleRemoteCoreSimAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpSimulateDcpSlaveAction = new QAction(QIcon(QString(ICONPATH) + "svg/Hopsan-SimulateRemote.svg"), tr("Simulate Model as DCP Slave"), this);
-    mpSimulateDcpSlaveAction->setToolTip("Simulate Model as DCP Slave");
+    mpNewDcpModelAction = new QAction(QIcon(QString(ICONPATH) + "svg/Hopsan-NewDcpModel.svg"), tr("Create new DCP model"), this);
+    mpNewDcpModelAction->setToolTip("Create new DCP model");
+    connect(mpNewDcpModelAction, SIGNAL(triggered()), mpModelHandler, SLOT(addNewDcpModel()));
+
+    mpStartDcpManagerAction = new QAction(QIcon(QString(ICONPATH) + "svg/Hopsan-StartDcpManager.svg"), tr("Simulate model as DCP manager"), this);
+    mpStartDcpManagerAction->setToolTip("Simulate model as DCP manager");
+
+    mpStartDcpServerAction = new QAction(QIcon(QString(ICONPATH) + "svg/Hopsan-StartDcpServer.svg"), tr("Simulate model as DCP server"), this);
+    mpStartDcpServerAction->setToolTip("Simulate model as DCP server");
 
     mpOpenDebuggerAction = new QAction(QIcon(QString(ICONPATH) + "svg/Hopsan-Debug.svg"), tr("&Launch Debugger"), this);
     mpOpenDebuggerAction->setToolTip(tr("Launch Debugger"));
@@ -1184,7 +1191,6 @@ void MainWindow::createToolbars()
     mpSimToolBar->addWidget(mpSimulationTimeEdit);
     mpSimToolBar->addAction(mpSimulateAction);
     mpSimToolBar->addAction(mpToggleRemoteCoreSimAction);
-    mpSimToolBar->addAction(mpSimulateDcpSlaveAction);
     mpSimToolBar->addAction(mpOpenDebuggerAction);
     mpSimToolBar->addAction(mpOptimizeAction);
     mpSimToolBar->addAction(mpSensitivityAnalysisAction);
@@ -1222,6 +1228,14 @@ void MainWindow::createToolbars()
     mpViewToolBar->addAction(mpTogglePortsAction);
     mpViewToolBar->addAction(mpToggleSignalsAction);
     mpViewToolBar->addAction(mpToggleHideAllDockAreasAction);
+
+    mpDcpToolBar = new QToolBar(tr("DCP Toolbar"));
+    addToolBar(Qt::TopToolBarArea, mpDcpToolBar);
+    mpDcpToolBar->setAllowedAreas(Qt::TopToolBarArea | Qt::LeftToolBarArea | Qt::RightToolBarArea);
+    mpDcpToolBar->setAttribute(Qt::WA_MouseTracking);
+    mpDcpToolBar->addAction(mpNewDcpModelAction);
+    mpDcpToolBar->addAction(mpStartDcpManagerAction);
+    mpDcpToolBar->addAction(mpStartDcpServerAction);
 
     //Tools toolbar, contains all tools used to modify the model
     mpToolsToolBar = new QToolBar(tr("Tools Toolbar"));
@@ -1440,25 +1454,27 @@ void MainWindow::updateToolBarsToNewTab()
 
     ModelWidget *pModel = qobject_cast<ModelWidget*>(mpCentralTabs->currentWidget());
     bool modelTab = modelOpen && pModel;
+    bool dcpTab = modelTab && (pModel->getModelType() == ModelWidget::DcpModel);
     bool logData = modelTab && pModel->getViewContainerObject()->getLogDataHandler();
 
     TextEditorWidget *pEditor = qobject_cast<TextEditorWidget*>(mpCentralTabs->currentWidget());
     bool editorTab = (pEditor != nullptr);
+    bool hcomTab = editorTab && (pEditor->getFileInfo().suffix() == "hcom");
 
     if(modelTab)
     {
         mpTogglePortsAction->setChecked(pModel->getTopLevelSystemContainer()->areSubComponentPortsShown());
     }
 
-    mpShowLossesAction->setEnabled(logData);
-    mpAnimateAction->setEnabled(modelTab);
+    mpShowLossesAction->setEnabled(logData && !dcpTab);
+    mpAnimateAction->setEnabled(modelTab && !dcpTab);
     mpSaveAction->setEnabled(modelTab || editorTab);
-    mpExportToFMUMenuButton->setEnabled(modelTab);
-    mpExportToExeMenuButton->setEnabled(modelTab);
-    mpExportToExeMenu->setEnabled(modelTab);
+    mpExportToFMUMenuButton->setEnabled(modelTab && !dcpTab);
+    mpExportToExeMenuButton->setEnabled(modelTab && !dcpTab);
+    mpExportToExeMenu->setEnabled(modelTab && !dcpTab);
     mpSaveAsAction->setEnabled(modelTab || editorTab);
-    mpSaveAndRunAction->setEnabled(editorTab && pEditor->getFileInfo().suffix() == "hcom");
-    mpExportSimulationStateAction->setEnabled(modelTab);
+    mpSaveAndRunAction->setEnabled(hcomTab);
+    mpExportSimulationStateAction->setEnabled(modelTab && !dcpTab);
     mpExportModelParametersMenu->setEnabled(modelTab);
     mpExportModelParametersMenuButton->setEnabled(modelTab);
     mpExportModelParametersActionToSsv->setEnabled(modelTab);
@@ -1488,23 +1504,26 @@ void MainWindow::updateToolBarsToNewTab()
     mpFlipHorizontalAction->setEnabled(modelTab);
     mpFlipVerticalAction->setEnabled(modelTab);
     mpSimulationTimeEdit->setEnabled(modelTab);
-    mpSimulateAction->setEnabled(modelTab);
-    mpToggleRemoteCoreSimAction->setEnabled(modelTab);
-    mpOpenDebuggerAction->setEnabled(modelTab);
-    mpOptimizeAction->setEnabled(modelTab);
-    mpSensitivityAnalysisAction->setEnabled(modelTab);
-    mpMeasureSimulationTimeAction->setEnabled(modelTab);
-    mpPlotAction->setEnabled(logData);
+    mpSimulateAction->setEnabled(modelTab && !dcpTab);
+    mpToggleRemoteCoreSimAction->setEnabled(modelTab && !dcpTab);
+    mpOpenDebuggerAction->setEnabled(modelTab && !dcpTab);
+    mpOptimizeAction->setEnabled(modelTab && !dcpTab);
+    mpSensitivityAnalysisAction->setEnabled(modelTab && !dcpTab);
+    mpMeasureSimulationTimeAction->setEnabled(modelTab && !dcpTab);
+    mpPlotAction->setEnabled(logData && !dcpTab);
     mpPropertiesAction->setEnabled(modelTab);
     mpOpenSystemParametersAction->setEnabled(modelTab);
-    mpExportToFMU1_32Action->setEnabled(modelTab);
-    mpExportToFMU2_32Action->setEnabled(modelTab);
-    mpExportToLabviewAction->setEnabled(modelTab);
-    mpExportToSimulinkAction->setEnabled(modelTab);
-    mpImportFMUAction->setEnabled(modelTab);
-    mpImportModelParametersMenuButton->setEnabled(modelTab);
-    mpLoadModelParametersFromHpfAction->setEnabled(modelTab);
-    mpLoadModelParametersFromSsvAction->setEnabled(modelTab);
+    mpExportToFMU1_32Action->setEnabled(modelTab && !dcpTab);
+    mpExportToFMU2_32Action->setEnabled(modelTab && !dcpTab);
+    mpExportToLabviewAction->setEnabled(modelTab && !dcpTab);
+    mpExportToSimulinkAction->setEnabled(modelTab && !dcpTab);
+    mpImportFMUAction->setEnabled(modelTab && !dcpTab);
+    mpImportModelParametersMenuButton->setEnabled(modelTab && !dcpTab);
+    mpLoadModelParametersFromHpfAction->setEnabled(modelTab && !dcpTab);
+    mpLoadModelParametersFromSsvAction->setEnabled(modelTab && !dcpTab);
+    mpStartDcpServerAction->setEnabled(modelTab && !dcpTab);
+
+    mpStartDcpManagerAction->setEnabled(dcpTab);
 
     if(gpFindWidget) {
         gpFindWidget->setEnabled(modelTab || editorTab);
