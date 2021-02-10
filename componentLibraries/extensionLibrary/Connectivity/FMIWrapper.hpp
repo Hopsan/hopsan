@@ -132,7 +132,7 @@ public:
     void configure()
     {
         addConstant("path", "Path to functional mockup unit (FMU)", "", mFmuPath);
-        addReconfigurationParameter("path");
+        setReconfigurationParameter("path");
     }
 
     void reconfigure()

@@ -517,7 +517,7 @@ void Component::addConditionalConstant(const HString &rName, const HString &rDes
     registerConditionalParameter(rName, rDescription, rConditions, rData);
 }
 
-void Component::addReconfigurationParameter(const HString &rName)
+void Component::setReconfigurationParameter(const HString &rName)
 {
     mpParameters->setParameterTriggersReconfiguration(rName);
 }

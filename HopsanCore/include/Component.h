@@ -140,7 +140,7 @@ public:
     void addConditionalConstant(const HString &rName, const HString &rDescription, std::vector<HString> &rConditions, int &rData);
     void addConditionalConstant(const HString &rName, const HString &rDescription, std::vector<HString> &rConditions, const int defaultValue, int &rData);
 
-    void addReconfigurationParameter(const HString &rName);
+    void setReconfigurationParameter(const HString &rName);
 
     void setConstantValue(const HString &rName, const double value);
     void setConstantValue(const HString &rName, const int value);
