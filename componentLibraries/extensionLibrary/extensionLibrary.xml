@@ -31,7 +31,6 @@
   <component>Hydraulic/HydraulicVariableVolumeLengthMP.hpp</component>
   <component>Electrical/ElectricInductanceC.hpp</component>
   <component>Connectivity/FMIWrapper.hpp</component>
-  <component>Signal/FibonacciNumbers.hpp</component>
   <componentxml>Mechanical/MechanicalSeparator.xml</componentxml>
   <componentxml>Mechanical/MechanicForceTransformerQ.xml</componentxml>
   <componentxml>Mechanical/MechanicFreeFixWall.xml</componentxml>
