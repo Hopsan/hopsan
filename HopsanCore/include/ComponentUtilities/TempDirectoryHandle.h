@@ -50,7 +50,7 @@ namespace hopsan {
 
     private:
         HString mPath;
-        bool mIsValid = false;
+        bool mIsValid;
         const HString getTempDirectory() const;
         const HString generateRandomNumericString() const;
         bool createPath(const HString &rPath) const;

@@ -85,7 +85,7 @@ protected:
     size_t mDepthCounter;
     ParameterEvaluatorHandler* mpParameterEvaluatorHandler;
     std::vector<HString> mConditions;
-    bool mTriggersReconfiguration = false;
+    bool mTriggersReconfiguration;
 };
 
 
