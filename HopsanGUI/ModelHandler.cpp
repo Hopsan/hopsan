@@ -115,6 +115,19 @@ ModelWidget *ModelHandler::addNewModel(QString modelName, LoadOptions options)
     return pNewModelWidget;
 }
 
+ModelWidget *ModelHandler::addNewDcpModel()
+{
+    QString modelName = "Untitled"+QString::number(mNumberOfUntitledModels);
+    ModelWidget *pNewModelWidget = new ModelWidget(this,gpCentralTabWidget);
+    pNewModelWidget->setModelType(ModelWidget::DcpModel);
+    pNewModelWidget->getTopLevelSystemContainer()->setName(modelName);
+    addModelWidget(pNewModelWidget, modelName, NoLoadOptions);
+    pNewModelWidget->setSaved(true);
+    mNumberOfUntitledModels++;
+
+    return pNewModelWidget;
+}
+
 
 void ModelHandler::setCurrentModel(int idx)
 {
@@ -698,7 +711,8 @@ void ModelHandler::disconnectMainWindowConnections(ModelWidget *pModel)
 
     disconnect(gpMainWindow,                                SIGNAL(simulateKeyPressed()),   pModel,  SLOT(simulate_nonblocking()));
     disconnect(gpMainWindow->mpToggleRemoteCoreSimAction,   SIGNAL(triggered(bool)),        pModel,  SLOT(setUseRemoteSimulation(bool)));
-    disconnect(gpMainWindow->mpSimulateDcpSlaveAction,      SIGNAL(triggered()),            pModel,    SLOT(simulateDcpSlave()));
+    disconnect(gpMainWindow->mpStartDcpServerAction,        SIGNAL(triggered()),            pModel,  SLOT(simulateDcpSlave()));
+    disconnect(gpMainWindow->mpStartDcpManagerAction,       SIGNAL(triggered()),            pModel,  SLOT(simulateDcpManager()));
     disconnect(gpMainWindow->mpSaveAction,                  SIGNAL(triggered()),            pModel,  SLOT(save()));
     disconnect(gpMainWindow->mpSaveAsAction,                SIGNAL(triggered()),            pModel,  SLOT(saveAs()));
     disconnect(gpMainWindow->mpExportModelParametersAction, SIGNAL(triggered()),            pModel,  SLOT(exportModelParameters()));
@@ -739,7 +753,8 @@ void ModelHandler::connectMainWindowConnections(ModelWidget *pModel)
 
     connect(gpMainWindow,                                   SIGNAL(simulateKeyPressed()),   pModel,    SLOT(simulate_nonblocking()), Qt::UniqueConnection);
     connect(gpMainWindow->mpToggleRemoteCoreSimAction,      SIGNAL(triggered(bool)),        pModel,    SLOT(setUseRemoteSimulation(bool)), Qt::UniqueConnection);
-    connect(gpMainWindow->mpSimulateDcpSlaveAction,         SIGNAL(triggered()),            pModel,    SLOT(simulateDcpSlave()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpStartDcpServerAction,           SIGNAL(triggered()),            pModel,    SLOT(simulateDcpSlave()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpStartDcpManagerAction,          SIGNAL(triggered()),            pModel,    SLOT(simulateDcpManager()), Qt::UniqueConnection);
     connect(gpMainWindow->mpSaveAction,                     SIGNAL(triggered()),            pModel,    SLOT(save()), Qt::UniqueConnection);
     connect(gpMainWindow->mpSaveAsAction,                   SIGNAL(triggered()),            pModel,    SLOT(saveAs()), Qt::UniqueConnection);
     connect(gpMainWindow->mpExportModelParametersAction,    SIGNAL(triggered()),            pModel,    SLOT(exportModelParameters()), Qt::UniqueConnection);

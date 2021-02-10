@@ -151,6 +151,11 @@
         <file>graphics/porticons/PetrinetPort.svg</file>
         <file>graphics/uiicons/svg/Hopsan-Modelica.svg</file>
         <file>graphics/uiicons/svg/Hopsan-SaveAndRun.svg</file>
+        <file>graphics/uiicons/svg/Hopsan-StartDcpServer.svg</file>
+        <file>graphics/uiicons/svg/Hopsan-StartDcpManager.svg</file>
+        <file>graphics/uiicons/svg/Hopsan-NewDcpModel.svg</file>
+        <file>graphics/builtinCAF/hidden/dcpcomponent.xml</file>
+        <file>graphics/objecticons/dcpcomponent.svg</file>
     </qresource>
     <qresource prefix="/license">
         <file alias="licenseNoticeGPLv3">../licenseNoticeGPLv3</file>
