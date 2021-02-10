@@ -38,7 +38,10 @@
 #include "common.h"
 #include "global.h"
 #include "GUIObjects/GUIContainerObject.h"
+#include "dcpmaster.h"
 #include "dcpslave.h"
+#include "GUIConnector.h"
+#include "GUIPort.h"
 
 namespace {
 
@@ -335,6 +338,16 @@ void SimulationThreadHandler::initSimulateFinalizeRemote(SharedRemoteCoreSimulat
 }
 #endif
 
+void SimulationThreadHandler::initSimulateFinalizeDcpManager(SystemObject *pSystem, const QString &host, int port)
+{
+    mvpSystems.clear();
+    mvpSystems.push_back(pSystem);
+    mpSimulationWorkerObject = new DCPManagerSimulationWorkerObject(pSystem, host, port);
+    mpSimulationWorkerObject->setMessageHandler(mpMessageHandler);
+    initSimulateFinalizePrivate();
+}
+
+
 void SimulationThreadHandler::initSimulateFinalizeDcpSlave(SystemObject* pSystem, const QString &host, int port, const QString &targetFile)
 {
     mvpSystems.clear();
@@ -595,6 +608,75 @@ void DCPSlaveSimulationWorkerObject::initSimulateFinalize()
 
     // Finalizing
     delete pDcpSlave;
+    // Finalizing
+    emit setProgressState(SimulationState::Finalize);
+    emit finalizeDone(true, timer.elapsed());
+}
+
+DCPManagerSimulationWorkerObject::DCPManagerSimulationWorkerObject(SystemObject *pSystem, const QString &host, int port)
+    : mpSystem(pSystem), mHost(host), mPort(port)
+{
+
+}
+
+void DCPManagerSimulationWorkerObject::initSimulateFinalize()
+{
+    // Initializing
+    QTime timer;
+    emit setProgressState(SimulationState::Initialize);
+    timer.start();
+
+    DcpMaster *pDcpMaster = new DcpMaster(mHost.toStdString(), mPort, mpSystem->getTimeStep());
+    for(const auto comp : mpSystem->getModelObjects()) {
+        if(comp->getTypeName() == HOPSANGUIDCPCOMPONENT) {   //Just in case, model shall only contain DCP components anyway
+            pDcpMaster->addSlave(comp->getParameterValue("dcpxFile").toStdString());
+        }
+    }
+    std::map<std::pair<size_t,size_t>,std::pair<std::vector<size_t>,std::vector<size_t> > > connections;
+    for(const auto &connection : mpSystem->getSubConnectorPtrs()) {
+        Port *pStartPort = connection->getStartPort();
+        Port *pEndPort = connection->getEndPort();
+        ModelObject *pStartComponent = pStartPort->getParentModelObject();
+        ModelObject *pEndComponent = pEndPort->getParentModelObject();
+        size_t fromSlave = size_t(mpSystem->getModelObjects().indexOf(pStartComponent))+1;  //DCPLib uses one-based indexing
+        size_t toSlave = size_t(mpSystem->getModelObjects().indexOf(pEndComponent))+1;      //DCPLib uses one-based indexing
+        QVector<CoreVariameterDescription> variameters;
+        size_t fromVr, toVr;
+        pStartComponent->getVariameterDescriptions(variameters);
+        for(const auto &variameter : variameters) {
+            if(variameter.mPortName == pStartPort->getName()) {
+                fromVr = variameter.mDescription.toUInt();
+            }
+        }
+        pEndComponent->getVariameterDescriptions(variameters);
+        for(const auto &variameter : variameters) {
+            if(variameter.mPortName == pEndPort->getName()) {
+                toVr = variameter.mDescription.toUInt();
+            }
+        }
+
+        if(connections.count(std::make_pair(fromSlave,fromVr)) == 0) {
+            connections[std::make_pair(fromSlave,fromVr)] = std::make_pair(std::vector<size_t>(),std::vector<size_t>());
+        }
+        connections[std::make_pair(fromSlave,fromVr)].first.push_back(toSlave);
+        connections[std::make_pair(fromSlave,fromVr)].second.push_back(toVr);
+    }
+
+    for(const auto &con : connections) {
+        pDcpMaster->addConnection(con.first.first, con.first.second, con.second.first, con.second.second);
+    }
+
+    emit initDone(true, timer.elapsed());
+
+    // Simulating
+    emit setProgressState(SimulationState::DcpMasterSimulate);
+    gpMessageHandler->addInfoMessage("Starting a DCP simulation as manager...");
+    pDcpMaster->start();
+    gpMessageHandler->addInfoMessage("DCP simulation finished!");
+    emit simulateDone(true, timer.elapsed());
+
+    // Finalizing
+    delete pDcpMaster;
     // Finalizing
     emit setProgressState(SimulationState::Finalize);
     emit finalizeDone(true, timer.elapsed());
