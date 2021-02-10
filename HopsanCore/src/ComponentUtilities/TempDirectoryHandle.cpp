@@ -92,7 +92,7 @@ bool TempDirectoryHandle::isValid() const
 
 const HString TempDirectoryHandle::getTempDirectory() const {
 #if __cplusplus >= 201703L
-        mPath = std::filesystem::temp_directory_path().c_str();
+    return std::filesystem::temp_directory_path().c_str();
 #else
 #ifdef _WIN32
     char tempdirbuff[MAX_PATH+1];
