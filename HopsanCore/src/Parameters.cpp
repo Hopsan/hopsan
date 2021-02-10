@@ -72,6 +72,7 @@ ParameterEvaluator::ParameterEvaluator(const HString &rName, const HString &rVal
     mType = rType;
     mQuantity = rQuantity;
     mUnit = rUnit;
+    mTriggersReconfiguration = false;
 
     mpData = pDataPtr;
     mpParameterEvaluatorHandler = pParameterEvalHandler;

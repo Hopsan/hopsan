@@ -65,6 +65,7 @@
 using namespace hopsan;
 
 TempDirectoryHandle::TempDirectoryHandle(const HString &rPrefix)
+    : mIsValid(false)
 {
     mPath = getTempDirectory();
     mPath.append("/Hopsan/"+rPrefix);
