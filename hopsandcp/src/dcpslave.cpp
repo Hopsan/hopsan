@@ -205,5 +205,7 @@ void DcpSlave::setTimeRes(const uint32_t numerator, const uint32_t denominator) 
 
 void DcpSlave::stop()
 {
-    dynamic_cast<AbstractDcpManager*>(mManager)->stop();
+    //dynamic_cast<AbstractDcpManager*>(mManager)->stop();
+    udpDriver->getDcpDriver().stopReceiving();
+    udpDriver->getDcpDriver().disconnect();
 }

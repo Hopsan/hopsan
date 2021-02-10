@@ -61,6 +61,11 @@
 #include "GUIPort.h"
 #include "Widgets/LibraryWidget.h"
 
+#include "dcpmaster.h"
+
+#include <vector>
+#include <memory>
+
 //! @class GraphicsView
 //! @brief The GraphicsView class is a class which display the content of a scene of components.
 //!
@@ -126,6 +131,10 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
         {
             QGraphicsView::contextMenuEvent(event);
             QMenu menu(this);
+            QAction *addDcpServerAction = nullptr;
+            if(mpParentModelWidget->getModelType() == ModelWidget::DcpModel) {
+                addDcpServerAction = menu.addAction("Add DCP Server");
+            }
             QAction *addTextBoxAction = menu.addAction("Add Text Box Widget");
             addTextBoxAction->setDisabled(mpParentModelWidget->isEditingLimited() || mpContainerObject->isLocallyLocked());
             QAction *addImageWidgetAction = menu.addAction("Add Image Widget");
@@ -142,6 +151,24 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
             else if(selectedAction == addImageWidgetAction) {
                 mpContainerObject->getUndoStackPtr()->newPost();
                 mpContainerObject->addImageWidget(this->mapToScene(event->pos()).toPoint());
+            else if(addDcpServerAction != nullptr && selectedAction == addDcpServerAction) {
+                QString dcpxPath = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Select DCP Slave Description File"),
+                                                                     gpConfig->getStringSetting(CFG_DCPDIR),
+                                                                     tr("DCP Slave Description (*.dcpx)"));
+                if(dcpxPath.isEmpty()) {
+                    return;
+                }
+                QFileInfo dcpxFileInfo(dcpxPath);
+                gpConfig->setStringSetting(CFG_DCPDIR, dcpxFileInfo.absolutePath());
+
+                hopsan::HString name, variables, valueRefs;
+                getDataFromSlaveDescription(dcpxFileInfo.filePath().toStdString().c_str(), name, variables, valueRefs);
+
+                ModelObject *pObj = mpContainerObject->addModelObject(HOPSANGUIDCPCOMPONENT, this->mapToScene(event->pos()).toPoint());
+                mpParentModelWidget->getTopLevelSystemContainer()->renameModelObject(pObj->getName(), (name.c_str()));
+                pObj->setParameterValue("dcpxFile", dcpxFileInfo.absoluteFilePath());
+                pObj->setParameterValue("valueRefs", valueRefs.c_str());
+                pObj->setParameterValue("variables",variables.c_str()); //Must be called AFTER the two other parameters, since this variable triggers the reconfiguration
             }
         }
     }
@@ -209,18 +236,20 @@ void GraphicsView::insertComponentFromLineEdit()
 //! @todo This function seems to do nothing. Can it be removed?
 void GraphicsView::dragMoveEvent(QDragMoveEvent *event)
 {
-    qDebug() << "Accepting: " << event->mimeData()->text();
+    bool isPlotData = event->mimeData()->hasText() && event->mimeData()->text().startsWith("HOPSANPLOTDATA:");
+    bool isDragCopy = event->mimeData()->hasText() && event->mimeData()->text().startsWith("HOPSANDRAGCOPY");
+    bool isUrl = event->mimeData()->hasUrls();
+    bool editingLimited = mpParentModelWidget->isEditingLimited();
+    bool locked = mpContainerObject->isLocallyLocked();
+    bool isComponent = !isUrl && !isPlotData && !isDragCopy;
+    bool dcpModel = (mpParentModelWidget->getModelType() == ModelWidget::DcpModel);
 
-    event->accept();
-
-//    if (event->mimeData()->hasText())
-//    {
-//        event->accept();
-//    }
-//    else
-//    {
-//        event->ignore();
-//    }
+    if((editingLimited || locked || dcpModel) && isComponent) {
+        event->ignore();
+    }
+    else {
+        event->accept();
+    }
 }
 
 
@@ -228,11 +257,20 @@ void GraphicsView::dragMoveEvent(QDragMoveEvent *event)
 //! @param event contains information of the drop operation.
 void GraphicsView::dropEvent(QDropEvent *event)
 {
-    if(mpParentModelWidget->isEditingLimited() || mpContainerObject->isLocallyLocked())
+    bool isPlotData = event->mimeData()->hasText() && event->mimeData()->text().startsWith("HOPSANPLOTDATA:");
+    bool isDragCopy = event->mimeData()->hasText() && event->mimeData()->text().startsWith("HOPSANDRAGCOPY");
+    bool isUrl = event->mimeData()->hasUrls();
+    bool editingLimited = mpParentModelWidget->isEditingLimited();
+    bool locked = mpContainerObject->isLocallyLocked();
+    bool isComponent = !isUrl && !isPlotData && !isDragCopy;
+    bool dcpModel = (mpParentModelWidget->getModelType() == ModelWidget::DcpModel);
+
+    if((editingLimited || locked || dcpModel) && isComponent) {
         return;
+    }
 
     //A HMF file was dropped in the graphics view, so try to open the model
-    if(event->mimeData()->hasUrls())
+    if(isUrl)
     {
         for(int i=0; i<event->mimeData()->urls().size(); ++i)
         {
@@ -243,42 +281,33 @@ void GraphicsView::dropEvent(QDropEvent *event)
         }
         return;
     }
-    if (event->mimeData()->hasText())
-    {
+    if(isDragCopy) {
         mpParentModelWidget->hasChanged();
         QString text = event->mimeData()->text();
+        //These booleans must be reset here, because they are not automatically reset when dropping things.
+        //It doesn't really matter if it will be incorrect, because keeping the shift key pressed after a drop
+        //and attempting to do more ctrl-stuff does not make any sense anyway.
+        mShiftKeyPressed = false;
+        mLeftMouseButtonPressed = false;
 
-        //Dropped item is a drag copy operation
-        if(text == "HOPSANDRAGCOPY")
+        //Paste the drag copy component
+        mpContainerObject->paste(mpContainerObject->getDragCopyStackPtr());
+        return;
+    }
+    else if(isPlotData) {
+        QStringList fields = event->mimeData()->text().split(":");
+        if (fields.size() > 2)
         {
-            //These booleans must be reset here, because they are not automatically reset when dropping things.
-            //It doesn't really matter if it will be incorrect, because keeping the shift key pressed after a drop
-            //and attempting to do more ctrl-stuff does not make any sense anyway.
-            mShiftKeyPressed = false;
-            mLeftMouseButtonPressed = false;
-
-            //Paste the drag copy component
-            mpContainerObject->paste(mpContainerObject->getDragCopyStackPtr());
-            return;
+            getContainerPtr()->getLogDataHandler()->plotVariable("", fields[1], fields[2].toInt(), 0);
         }
-
-        //Check if dropped item is a plot data string, and attempt to open a plot window if so
-        else if(text.startsWith("HOPSANPLOTDATA:"))
-        {
-            QStringList fields = text.split(":");
-            if (fields.size() > 2)
-            {
-                getContainerPtr()->getLogDataHandler()->plotVariable("", fields[1], fields[2].toInt(), 0);
-            }
-            return;
-        }
-
-
+        return;
+    }
+    else if(isComponent) {
         //Dropped item is not a plot data string, so assume it is a component typename
         mpContainerObject->getUndoStackPtr()->newPost();
         event->accept();
         QPointF position = event->pos();
-        mpContainerObject->addModelObject(text, this->mapToScene(position.toPoint()));
+        mpContainerObject->addModelObject(event->mimeData()->text(), this->mapToScene(position.toPoint()));
         this->setFocus();
     }
 

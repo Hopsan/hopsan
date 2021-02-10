@@ -140,7 +140,8 @@ QString Component::getTypeCQS() const
 bool Component::setParameterValue(QString name, QString value, bool force)
 {
     QMap<QString, QVector<Connector*> > connectionsBeforeReconfigure;
-    if((this->getTypeName() == "FMIWrapper" || this->getTypeName() == "FMIWrapperQ") && (name == "path" || name == "portspecs")) {
+    if(((this->getTypeName() == "FMIWrapper" || this->getTypeName() == "FMIWrapperQ") && (name == "path" || name == "portspecs")) ||
+       (this->getTypeName() == "DcpComponent" && name == "variables")) {
         //Remove old ports
         QList<Port*> ports = this->getPortListPtrs();
         for(const auto port : ports) {
@@ -152,7 +153,8 @@ bool Component::setParameterValue(QString name, QString value, bool force)
 
     bool retval =  mpParentSystemObject->getCoreSystemAccessPtr()->setParameterValue(this->getName(), name, value, force);
 
-    if((this->getTypeName() == "FMIWrapper" || this->getTypeName() == "FMIWrapperQ") && (name == "path" || name == "portspecs")) {
+    if(((this->getTypeName() == "FMIWrapper" || this->getTypeName() == "FMIWrapperQ") && (name == "path" || name == "portspecs")) ||
+       (this->getTypeName() == "DcpComponent" && name == "variables")) {
         //Get lists of input and output ports from core component
         QStringList visibleOutputs = getParameterValue("visibleOutputs").split(",");
         QStringList inputs, outputs, powerPorts;

@@ -220,7 +220,9 @@ public:
     QAction *mpShowLossesAction;
     QAction *mpMeasureSimulationTimeAction;
     QAction *mpToggleHideAllDockAreasAction;
-    QAction *mpSimulateDcpSlaveAction;
+    QAction *mpNewDcpModelAction;
+    QAction *mpStartDcpManagerAction;
+    QAction *mpStartDcpServerAction;
 
     QAction *mpDebug1Action;
     QAction *mpDebug2Action;
@@ -331,6 +333,7 @@ private:
     QToolBar *mpToolsToolBar;
     QToolBar *mpSimToolBar;
     QToolBar *mpViewToolBar;
+    QToolBar *mpDcpToolBar;
     QLabel *mpTimeLabelDeliminator1;
     QLabel *mpTimeLabelDeliminator2;
 

@@ -108,7 +108,7 @@ DEFINES *= OPS_DLLIMPORT
 #--------------------------------------------------------
 
 #--------------------------------------------------------
-# Set Ops Paths
+# Set hopsandcp Paths
 INCLUDEPATH *= $${PWD}/../hopsandcp/include/
 LIBS *= -L$${PWD}/../bin -lhopsandcp$${DEBUG_EXT}
 DEFINES *= HOPSANDCP_DLLIMPORT

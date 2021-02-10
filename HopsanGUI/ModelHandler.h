@@ -100,6 +100,7 @@ public:
 
 public slots:
     ModelWidget *addNewModel(QString modelName="Untitled", ModelHandler::LoadOptions options=NoLoadOptions);
+    ModelWidget *addNewDcpModel();
     void loadModel();
     void loadModel(QAction *action);
     void newTextFile();
