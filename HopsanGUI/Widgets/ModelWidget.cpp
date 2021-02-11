@@ -1491,6 +1491,9 @@ bool ModelWidget::loadModel(QFile &rModelFile)
     // Check if this is an expected hmf xml file
     QDomDocument domDocument;
     QDomElement hmfRoot = loadXMLDomDocument(rModelFile, domDocument, HMF_ROOTTAG);
+    if(hmfRoot.attribute(HMF_CUSTOMTYPETAG) == "dcp") {
+        mModelType = DcpModel;
+    }
     if (!hmfRoot.isNull())
     {
         //! @todo check if we could load else give error message and don't attempt to load
@@ -1593,7 +1596,11 @@ QDomDocument ModelWidget::saveToDom(SaveContentsEnumT contents)
     QDomElement rootElement;
     if(contents==FullModel)
     {
-        rootElement = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
+        QString customType;
+        if(mModelType == DcpModel) {
+            customType = "dcp";
+        }
+        rootElement = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion(), customType);
     }
     else
     {
