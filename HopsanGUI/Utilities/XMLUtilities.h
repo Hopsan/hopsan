@@ -42,7 +42,7 @@ QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString
 
 void appendRootXMLProcessingInstruction(QDomDocument &rDomDocument);
 
-QDomElement appendHMFRootElement(QDomDocument &rDomDocument, QString hmfVersion, QString hopsanGuiVersion, QString hopsanCoreVersion);
+QDomElement appendHMFRootElement(QDomDocument &rDomDocument, QString hmfVersion, QString hopsanGuiVersion, QString hopsanCoreVersion, QString customType=QString());
 QDomElement getOrAppendNewDomElement(QDomElement &rDomElement, const QString element_name);
 
 QDomComment appendComment(QDomElement &rDomElement, const QString &rComment);
@@ -158,6 +158,7 @@ namespace hmf {
     constexpr auto simulationlogsettings = "simulationlogsettings";
     constexpr auto scriptfile = "scriptfile";
     constexpr auto undo = "hopsanundo";
+    constexpr auto customtype = "customtype";
 
     namespace widget {
         constexpr auto textboxwidget = "textboxwidget";
