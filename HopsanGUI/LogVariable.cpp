@@ -420,13 +420,20 @@ QString VectorVariable::getImportedFileName() const
 
 bool VectorVariable::isPlotInverted() const
 {
-    return mpVariableDescription->mInvertData;
+    return mpVariableDescription->mLocalInvertInvertPlot ?
+                !mpVariableDescription->mModelInvertPlot :
+                 mpVariableDescription->mModelInvertPlot;
+}
+
+void VectorVariable::setPlotInverted(bool tf)
+{
+    mpVariableDescription->mLocalInvertInvertPlot = (mpVariableDescription->mModelInvertPlot != tf);
+    emit dataChanged();
 }
 
 void VectorVariable::togglePlotInverted()
 {
-    mpVariableDescription->mInvertData = !mpVariableDescription->mInvertData;
-    emit dataChanged();
+    setPlotInverted(!isPlotInverted());
 }
 
 

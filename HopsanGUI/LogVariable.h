@@ -95,7 +95,8 @@ public:
     QString mModelPath;
     VariableSourceTypeT mVariableSourceType;
 
-    bool mInvertData=false;
+    bool mModelInvertPlot=false;
+    bool mLocalInvertInvertPlot=false;
 
     QString getFullName() const;
     QString getFullNameWithSeparator(const QString sep) const;
@@ -153,6 +154,7 @@ public:
 
     // Data plot scaling
     bool isPlotInverted() const;
+    void setPlotInverted(bool tf);
     void togglePlotInverted();
     double getGenerationPlotOffsetIfTime() const;
 

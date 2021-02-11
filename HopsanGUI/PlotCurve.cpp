@@ -168,14 +168,7 @@ PlotCurve::PlotCurve(SharedVectorVariableT data, const QwtPlot::Axis axisY, cons
     mAxisY = axisY;
 
     // We do not want imported data to auto refresh, in case the data name is the same as something from the model (alias)
-    if (data->isImported())
-    {
-        mAutoUpdate = false;
-    }
-    else
-    {
-        mAutoUpdate = true;
-    }
+    mAutoUpdate = !data->isImported();
 
     // Set QwtPlotCurve stuff
     //! @todo maybe this code should be run when we are adding a curve to a plottab
@@ -493,8 +486,10 @@ const SharedVectorVariableT PlotCurve::getSharedCustomXVariable() const
 bool PlotCurve::setGeneration(const int generation)
 {
     mSetGeneration = generation;
+    const bool requestedGenerationIsLatestAvailable = (generation == -1);
     if(mData)
     {
+        SharedVectorVariableT pPreviousData = mData;
         SharedVectorVariableT pNewData = switchVariableGeneration(mData, generation);
         if (pNewData)
         {
@@ -510,7 +505,7 @@ bool PlotCurve::setGeneration(const int generation)
                     setCustomXData(pNewXData);
                     mSetGenerationIsValid = true;
                 }
-                // If we cant switch the custom X data then the swithc should not be allowed
+                // If we cant switch the custom X data then the switch should not be allowed
                 else
                 {
                     mSetGenerationIsValid = false;
@@ -529,10 +524,23 @@ bool PlotCurve::setGeneration(const int generation)
             mSetGenerationIsValid = false;
         }
 
+        // If the curve is updated to latest available generation, and there is no gap between the previous generation then consider using the same inverted
+        // plot toggle state from the previous generation.
+        if (requestedGenerationIsLatestAvailable && mSetGenerationIsValid && (mSetGeneration > 0) &&
+            pPreviousData && (pPreviousData->getGeneration() == (mSetGeneration-1))) {
+
+            const auto& previousVarDesc = pPreviousData->getVariableDescription();
+            const auto& newVarDesc = mData->getVariableDescription();
+            const bool modelInvertedStateChanged = (previousVarDesc->mModelInvertPlot != newVarDesc->mModelInvertPlot);
+            // If model invert state has changed let it override local choice, otherwise use same invert state as previous generation
+            const bool invertNew = modelInvertedStateChanged ? newVarDesc->mModelInvertPlot : pPreviousData->isPlotInverted();
+            mData->setPlotInverted(invertNew);
+        }
+
         updateCurve();
         refreshCurveTitle();
 
-        // Abort if curve generation is not valid, retun false to indicate that the curve is currently not in a valid state
+        // Abort if curve generation is not valid, return false to indicate that the curve is currently not in a valid state
         if (!mSetGenerationIsValid)
         {
             return false;
@@ -912,14 +920,10 @@ bool PlotCurve::isAutoUpdating() const
 
 bool PlotCurve::isInverted() const
 {
-    if (mData)
-    {
+    if (mData) {
         return mData->isPlotInverted();
     }
-    else
-    {
-        return false;
-    }
+    return false;
 }
 
 QColor PlotCurve::getLineColor() const
@@ -1140,7 +1144,7 @@ void PlotCurve::updateCurveExtraDataScaleAndOffsetFromDialog()
 //! @brief Updates a plot curve to the most recent available generation of its data
 void PlotCurve::updateToNewGeneration()
 {
-    // Only change the generation if auto update is on and if this is not an imported varaible
+    // Only change the generation if auto update is on and if this is not an imported variable
     if(mAutoUpdate && mData && !mData->isImported())
     {
         setNonImportedGeneration(-1);
@@ -1190,7 +1194,7 @@ void PlotCurve::updateCurve()
         //! @todo maybe be smart about doing this copy, only copy if a disk cached variable
         tempY = mData->getDataVectorCopy();
 
-        const bool invertYData = mData->getVariableDescription()->mInvertData;
+        const bool invertYData = mData->isPlotInverted();
         DataUnitConverter yConverter(mCurveDataUnitScale, mData->getGenerationPlotOffsetIfTime(), invertYData, mCurveExtraDataScale, mCurveExtraDataOffset);
         yConverter.convertVector(tempY);
 
@@ -1198,7 +1202,7 @@ void PlotCurve::updateCurve()
         {
             // Use special X-data, Copy here, it should be faster then peek (at least when data is cached on disc)
             tempX = mCustomXdata->getDataVectorCopy();
-            const bool xInvertData = mCustomXdata->getVariableDescription()->mInvertData;
+            const bool xInvertData = mCustomXdata->isPlotInverted();
             constexpr double localCurveXScale = 1.0;
             constexpr double localCurveXOffset = 0.0;
             DataUnitConverter xConverter(mCurveCustomXDataUnitScale, mCustomXdata->getGenerationPlotOffsetIfTime(), xInvertData, localCurveXScale, localCurveXOffset);
@@ -1303,13 +1307,8 @@ void PlotCurve::setAutoUpdate(bool value)
 
 void PlotCurve::setInvertPlot(bool tf)
 {
-    if (mData)
-    {
-        if ( (mData->isPlotInverted() && !tf) ||
-             (!mData->isPlotInverted() && tf) )
-        {
-            mData->togglePlotInverted();
-        }
+    if (mData) {
+        mData->setPlotInverted(tf);
     }
 }
 

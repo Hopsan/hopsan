@@ -1258,7 +1258,8 @@ bool LogDataHandler2::collectLogDataFromSystem(SystemObject *pCurrentSystem, con
                         pVarDesc->mDataDescription = varDesc.mDescription;
                         pVarDesc->mAliasName  = varDesc.mAlias;
                         pVarDesc->mVariableSourceType = ModelVariableType;
-                        pVarDesc->mInvertData = pModelObject->getInvertPlotVariable(pPort->getName()+"#"+varDesc.mName);
+                        pVarDesc->mModelInvertPlot = pModelObject->getInvertPlotVariable(pPort->getName()+"#"+varDesc.mName);
+                        pVarDesc->mLocalInvertInvertPlot = false;
                         pVarDesc->mCustomLabel = pModelObject->getVariablePlotLabel(pPort->getName()+"#"+varDesc.mName);
 
                         SharedVectorVariableT pNewData;
