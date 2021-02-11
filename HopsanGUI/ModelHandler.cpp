@@ -361,6 +361,7 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, LoadOptions options)
    addModelWidget(pNewModel, modelFileInfo.baseName(), options);
    bool loadOK = pNewModel->loadModel(modelFile);
    if (loadOK) {
+       gpMainWindow->updateToolBarsToNewTab();
        emit newModelWidgetAdded();
        if(!options.testFlag(Detatched)) {
            emit modelChanged(pNewModel);
