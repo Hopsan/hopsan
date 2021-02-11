@@ -160,7 +160,7 @@ private:
     void saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT contents=FullModel);
     void createOrDestroyToplevelSystem(bool recreate);
 
-    ModelType mModelType;
+    ModelType mModelType = HopsanModel;
 
     QString mStartTime, mStopTime;
     int mLastSimulationTime;
