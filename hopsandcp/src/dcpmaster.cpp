@@ -13,9 +13,11 @@
 #include <fstream>
 #include <memory>
 
-DcpMaster::DcpMaster(const std::string host, int port, double comStep=0.001)
-    : mComStep(comStep)
+DcpMaster::DcpMaster(hopsan::ComponentSystem *pSystem, const std::string host, int port, double comStep, double startTime, double stopTime)
+    : mpSystem(pSystem), mComStep(comStep), mStartTime(startTime), mStopTime(stopTime)
 {
+    (*mpSystem->getTimePtr()) = mStartTime;
+
     OstreamLog stdLog(std::cout);
 
     driver = new UdpDriver(host, port_t(port));
@@ -143,6 +145,8 @@ void DcpMaster::doStep() {
     for(size_t i=0; i<serverDescriptions.size(); ++i) {
         manager->STC_do_step(u_char(i+1),DcpState::RUNNING,1);
     }
+
+    (*mpSystem->getTimePtr()) += mComStep;
 }
 
 void DcpMaster::stop() {
@@ -218,11 +222,10 @@ void DcpMaster::receiveStateChangedNotification(uint8_t sender,
             break;
 
         case DcpState::RUNNING:
-            if(nSteps>10000) {
+            if(mpSystem->getTime() > mStopTime) {
                 stop();
             }
             else {
-                ++nSteps;
                 doStep();
             }
             break;
