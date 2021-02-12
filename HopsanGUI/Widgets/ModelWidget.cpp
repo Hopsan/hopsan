@@ -747,7 +747,7 @@ bool ModelWidget::simulateDcpServer()
     //! @todo fix return code
 }
 
-bool ModelWidget::simulateDcpManager()
+bool ModelWidget::simulateDcpMaster()
 {
     // Save backup copy
     if (!isSaved() && gpConfig->getBoolSetting(CFG_AUTOBACKUP))
@@ -789,7 +789,7 @@ bool ModelWidget::simulateDcpManager()
     mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
     mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
     mSimulationProgress=0;
-    mpSimulationThreadHandler->initSimulateFinalizeDcpManager(mpToplevelSystem, pHostLineEdit->text(), pPortSpinBox->value());
+    mpSimulationThreadHandler->initSimulateFinalizeDcpMaster(mpToplevelSystem, pHostLineEdit->text(), pPortSpinBox->value());
 
     unlockSimulateMutex();
 

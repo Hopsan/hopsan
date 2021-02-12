@@ -128,7 +128,7 @@ public slots:
     bool simulate_nonblocking();
     bool simulate_blocking();
     bool simulateDcpServer();
-    bool simulateDcpManager();
+    bool simulateDcpMaster();
     void save();
     void saveAs();
     void exportModelParameters();
