@@ -628,8 +628,8 @@ void MainWindow::createActions()
     mpNewDcpModelAction->setToolTip("Create new DCP model");
     connect(mpNewDcpModelAction, SIGNAL(triggered()), mpModelHandler, SLOT(addNewDcpModel()));
 
-    mpStartDcpManagerAction = new QAction(QIcon(QString(ICONPATH) + "svg/Hopsan-StartDcpManager.svg"), tr("Simulate model as DCP manager"), this);
-    mpStartDcpManagerAction->setToolTip("Simulate model as DCP manager");
+    mpStartDcpMasterAction = new QAction(QIcon(QString(ICONPATH) + "svg/Hopsan-StartDcpManager.svg"), tr("Simulate model as DCP master"), this);
+    mpStartDcpMasterAction->setToolTip("Simulate model as DCP master");
 
     mpStartDcpServerAction = new QAction(QIcon(QString(ICONPATH) + "svg/Hopsan-StartDcpServer.svg"), tr("Simulate model as DCP server"), this);
     mpStartDcpServerAction->setToolTip("Simulate model as DCP server");
@@ -1234,7 +1234,7 @@ void MainWindow::createToolbars()
     mpDcpToolBar->setAllowedAreas(Qt::TopToolBarArea | Qt::LeftToolBarArea | Qt::RightToolBarArea);
     mpDcpToolBar->setAttribute(Qt::WA_MouseTracking);
     mpDcpToolBar->addAction(mpNewDcpModelAction);
-    mpDcpToolBar->addAction(mpStartDcpManagerAction);
+    mpDcpToolBar->addAction(mpStartDcpMasterAction);
     mpDcpToolBar->addAction(mpStartDcpServerAction);
 
     //Tools toolbar, contains all tools used to modify the model
@@ -1523,7 +1523,7 @@ void MainWindow::updateToolBarsToNewTab()
     mpLoadModelParametersFromSsvAction->setEnabled(modelTab && !dcpTab);
     mpStartDcpServerAction->setEnabled(modelTab && !dcpTab);
 
-    mpStartDcpManagerAction->setEnabled(dcpTab);
+    mpStartDcpMasterAction->setEnabled(dcpTab);
 
     if(gpFindWidget) {
         gpFindWidget->setEnabled(modelTab || editorTab);
