@@ -20,8 +20,8 @@ enum class DcpError : uint16_t;
 
 struct DcpConnection
 {
-    size_t fromSlave, fromVr;
-    std::vector<size_t> toSlaves, toVrs;
+    size_t fromServer, fromVr;
+    std::vector<size_t> toServers, toVrs;
 };
 
 HOPSANDCP_DLLAPI class DcpMaster
@@ -30,7 +30,7 @@ public:
     DcpMaster(const string host, int port, double comStep);
     ~DcpMaster();
 
-    void addSlave(string filepath);
+    void addServer(string filepath);
     void addConnection(size_t fromId, size_t fromVr, std::vector<size_t> toIds, std::vector<size_t> toVrs);
 
     void start();
@@ -68,18 +68,18 @@ private:
     std::map<uint8_t, uint64_t> receivedAcks;
 
 
-    std::vector<SlaveDescription_t*> slaveDescriptions;
+    std::vector<SlaveDescription_t*> serverDescriptions;
 
-    uint8_t slavesWaitingForConfigure = 0;
-    uint8_t slavesWaitingForStep = 0;
-    uint8_t slavesWaitingForConfiguration = 0;
-    uint8_t slavesWaitingAtExit = 0;
-    uint8_t slavesWaitingToStop = 0;
-    uint8_t slavesWaitingForInitialize = 0;
-    uint8_t slavesWaitingToRun = 0;
+    uint8_t serversWaitingForConfigure = 0;
+    uint8_t serversWaitingForStep = 0;
+    uint8_t serversWaitingForConfiguration = 0;
+    uint8_t serversWaitingAtExit = 0;
+    uint8_t serversWaitingToStop = 0;
+    uint8_t serversWaitingForInitialize = 0;
+    uint8_t serversWaitingToRun = 0;
 };
 
-void getDataFromSlaveDescription(const hopsan::HString &rFilePath, hopsan::HString &rName, hopsan::HString &rVariables, hopsan::HString &rValueReferences);
+void getDataFromProtocolFile(const hopsan::HString &rFilePath, hopsan::HString &rName, hopsan::HString &rVariables, hopsan::HString &rValueReferences);
 
 
 #endif // DCPMASTER_H

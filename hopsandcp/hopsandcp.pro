@@ -86,12 +86,12 @@ unix {
 # -------------------------------------------------
 SOURCES = \
         src/dcpmaster.cpp \
-        src/dcpslave.cpp \
+        src/dcpserver.cpp \
         src/utilities.cpp
 
 HEADERS += \
     include/dcpmaster.h \
-    include/dcpslave.h \
+    include/dcpserver.h \
     include/hopsandcp_win32dll.h \
     include/utilities.h
 
