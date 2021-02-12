@@ -596,7 +596,7 @@ void DCPSlaveSimulationWorkerObject::initSimulateFinalize()
     // Initializing
     emit setProgressState(SimulationState::Initialize);
     timer.start();
-    pDcpSlave->generateDescriptionFile(mTargetFile.toStdString());
+    pDcpSlave->generateDcpFile(mTargetFile.toStdString());
     emit initDone(true, timer.elapsed());
 
     // Simulating
@@ -629,7 +629,7 @@ void DCPManagerSimulationWorkerObject::initSimulateFinalize()
     DcpMaster *pDcpMaster = new DcpMaster(mHost.toStdString(), mPort, mpSystem->getTimeStep());
     for(const auto comp : mpSystem->getModelObjects()) {
         if(comp->getTypeName() == HOPSANGUIDCPCOMPONENT) {   //Just in case, model shall only contain DCP components anyway
-            pDcpMaster->addSlave(comp->getParameterValue("dcpxFile").toStdString());
+            pDcpMaster->addSlave(comp->getParameterValue("dcpFile").toStdString());
         }
     }
     std::map<std::pair<size_t,size_t>,std::pair<std::vector<size_t>,std::vector<size_t> > > connections;

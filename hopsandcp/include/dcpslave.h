@@ -22,7 +22,7 @@ public:
     DcpSlave(hopsan::ComponentSystem *pSystem, const std::string host, int port, size_t numLogSamples);
     ~DcpSlave();
 
-    void generateDescriptionFile(std::string targetFile);
+    void generateDcpFile(std::string targetFile);
     bool start();
 
 private:

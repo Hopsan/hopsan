@@ -4,7 +4,7 @@
 #include <dcp/helper/Helper.hpp>
 #include <dcp/log/OstreamLog.hpp>
 #include <dcp/logic/DcpManagerSlave.hpp>
-#include <dcp/xml/DcpSlaveDescriptionWriter.hpp>
+#include <dcp/zip/DcpSlaveWriter.hpp>
 #include <dcp/model/pdu/DcpPduFactory.hpp>
 #include <dcp/driver/ethernet/udp/UdpDriver.hpp>
 
@@ -129,8 +129,8 @@ SlaveDescription_t *DcpSlave::getSlaveDescription() {
 }
 
 
-void DcpSlave::generateDescriptionFile(std::string targetFile) {
-    writeDcpSlaveDescription(*getSlaveDescription(), targetFile.c_str());
+void DcpSlave::generateDcpFile(std::string targetFile) {
+    writeDcpSlaveFile(std::shared_ptr<SlaveDescription_t>(getSlaveDescription()), targetFile.c_str());
 }
 
 bool DcpSlave::start()
