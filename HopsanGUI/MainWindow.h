@@ -221,7 +221,7 @@ public:
     QAction *mpMeasureSimulationTimeAction;
     QAction *mpToggleHideAllDockAreasAction;
     QAction *mpNewDcpModelAction;
-    QAction *mpStartDcpManagerAction;
+    QAction *mpStartDcpMasterAction;
     QAction *mpStartDcpServerAction;
 
     QAction *mpDebug1Action;
