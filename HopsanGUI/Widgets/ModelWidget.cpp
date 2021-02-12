@@ -694,7 +694,7 @@ bool ModelWidget::simulate_blocking()
 
 }
 
-bool ModelWidget::simulateDcpSlave()
+bool ModelWidget::simulateDcpServer()
 {
     // Save backup copy
     if (!isSaved() && gpConfig->getBoolSetting(CFG_AUTOBACKUP))
@@ -705,8 +705,8 @@ bool ModelWidget::simulateDcpSlave()
         saveTo(gpDesktopHandler->getBackupPath() + fileNameWithoutHmf + "_sim_backup.hmf");
     }
 
-    QDialog */*pDcpSlaveDialog*/pDialog = new QDialog(gpMainWindowWidget);
-    QGridLayout */*pDcpSlaveDialogLayout*/pLayout = new QGridLayout(pDialog);
+    QDialog */*pDcpServerDialog*/pDialog = new QDialog(gpMainWindowWidget);
+    QGridLayout */*pDcpServerDialogLayout*/pLayout = new QGridLayout(pDialog);
     QLineEdit *pHostLineEdit = new QLineEdit("127.0.0.1",pDialog);
     QSpinBox *pPortSpinBox = new QSpinBox(pDialog);
     pPortSpinBox->setMaximum(1000000);
@@ -739,7 +739,7 @@ bool ModelWidget::simulateDcpSlave()
     mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
     mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
     mSimulationProgress=0;
-    mpSimulationThreadHandler->initSimulateFinalizeDcpSlave(mpToplevelSystem, pHostLineEdit->text(), pPortSpinBox->value(), pTargetFileLineEdit->text());
+    mpSimulationThreadHandler->initSimulateFinalizeDcpServer(mpToplevelSystem, pHostLineEdit->text(), pPortSpinBox->value(), pTargetFileLineEdit->text());
 
     unlockSimulateMutex();
 
