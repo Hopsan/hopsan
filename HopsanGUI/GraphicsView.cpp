@@ -152,21 +152,21 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
                 mpContainerObject->getUndoStackPtr()->newPost();
                 mpContainerObject->addImageWidget(this->mapToScene(event->pos()).toPoint());
             else if(addDcpServerAction != nullptr && selectedAction == addDcpServerAction) {
-                QString dcpxPath = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Select DCP Slave Description File"),
+                QString dcpPath = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Select DCP Slave Description File"),
                                                                      gpConfig->getStringSetting(CFG_DCPDIR),
-                                                                     tr("DCP Slave Description (*.dcpx)"));
-                if(dcpxPath.isEmpty()) {
+                                                                     tr("Distributed Co-Simulation Protocol File (*.dcp)"));
+                if(dcpPath.isEmpty()) {
                     return;
                 }
-                QFileInfo dcpxFileInfo(dcpxPath);
-                gpConfig->setStringSetting(CFG_DCPDIR, dcpxFileInfo.absolutePath());
+                QFileInfo dcpFileInfo(dcpPath);
+                gpConfig->setStringSetting(CFG_DCPDIR, dcpFileInfo.absolutePath());
 
                 hopsan::HString name, variables, valueRefs;
-                getDataFromSlaveDescription(dcpxFileInfo.filePath().toStdString().c_str(), name, variables, valueRefs);
+                getDataFromSlaveDescription(dcpFileInfo.filePath().toStdString().c_str(), name, variables, valueRefs);
 
                 ModelObject *pObj = mpContainerObject->addModelObject(HOPSANGUIDCPCOMPONENT, this->mapToScene(event->pos()).toPoint());
                 mpParentModelWidget->getTopLevelSystemContainer()->renameModelObject(pObj->getName(), (name.c_str()));
-                pObj->setParameterValue("dcpxFile", dcpxFileInfo.absoluteFilePath());
+                pObj->setParameterValue("dcpFile", dcpFileInfo.absoluteFilePath());
                 pObj->setParameterValue("valueRefs", valueRefs.c_str());
                 pObj->setParameterValue("variables",variables.c_str()); //Must be called AFTER the two other parameters, since this variable triggers the reconfiguration
             }

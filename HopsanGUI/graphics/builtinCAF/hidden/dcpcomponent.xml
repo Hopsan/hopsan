@@ -5,7 +5,7 @@
             <icon type="defaultmissing" path="dcpcomponent.svg" iconrotation="ON" scale="1.0"/>
 	    </icons>
         <defaultparameters>
-            <parameter name="dcpxFile" hidden="true"></parameter>
+            <parameter name="dcpFile" hidden="true"></parameter>
             <parameter name="variables" hidden="true"></parameter>
             <parameter name="valueRefs" hidden="true"></parameter>
         </defaultparameters>

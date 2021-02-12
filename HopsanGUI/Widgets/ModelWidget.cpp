@@ -746,7 +746,7 @@ bool ModelWidget::simulateDcpSlave()
     pPortSpinBox->setMaximum(1000000);
     pPortSpinBox->setValue(8080);
     pPortSpinBox->setSingleStep(1);
-    QLineEdit *pTargetFileLineEdit = new QLineEdit(gpDesktopHandler->getDocumentsPath()+"/"+getTopLevelSystemContainer()->getModelFileInfo().baseName()+".dcpx");
+    QLineEdit *pTargetFileLineEdit = new QLineEdit(gpDesktopHandler->getDocumentsPath()+"/"+getTopLevelSystemContainer()->getModelFileInfo().baseName()+".dcp");
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(pDialog);
     QPushButton *pOkButton = pButtonBox->addButton(QDialogButtonBox::Ok);
     QPushButton *pCancelButton = pButtonBox->addButton(QDialogButtonBox::Cancel);
