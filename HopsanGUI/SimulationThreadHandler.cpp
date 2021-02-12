@@ -343,11 +343,11 @@ void SimulationThreadHandler::initSimulateFinalizeRemote(SharedRemoteCoreSimulat
 }
 #endif
 
-void SimulationThreadHandler::initSimulateFinalizeDcpManager(SystemObject *pSystem, const QString &host, int port)
+void SimulationThreadHandler::initSimulateFinalizeDcpMaster(SystemObject *pSystem, const QString &host, int port)
 {
     mvpSystems.clear();
     mvpSystems.push_back(pSystem);
-    mpSimulationWorkerObject = new DCPManagerSimulationWorkerObject(pSystem, host, port, mStartT, mStopT);
+    mpSimulationWorkerObject = new DcpMasterSimulationWorkerObject(pSystem, host, port, mStartT, mStopT);
     mpSimulationWorkerObject->setMessageHandler(mpMessageHandler);
     initSimulateFinalizePrivate();
 }
@@ -618,14 +618,14 @@ void DcpServerSimulationWorkerObject::initSimulateFinalize()
     emit finalizeDone(true, timer.elapsed());
 }
 
-DCPManagerSimulationWorkerObject::DCPManagerSimulationWorkerObject(SystemObject *pSystem, const QString &host, int port, double startTime, double stopTime)
+DcpMasterSimulationWorkerObject::DcpMasterSimulationWorkerObject(SystemObject *pSystem, const QString &host, int port, double startTime, double stopTime)
     : mpSystem(pSystem), mHost(host), mPort(port)
 {
     mStartTime = startTime;
     mStopTime = stopTime;
 }
 
-void DCPManagerSimulationWorkerObject::initSimulateFinalize()
+void DcpMasterSimulationWorkerObject::initSimulateFinalize()
 {
     // Initializing
     QTime timer;
@@ -676,7 +676,7 @@ void DCPManagerSimulationWorkerObject::initSimulateFinalize()
 
     // Simulating
     emit setProgressState(SimulationState::DcpMasterSimulate);
-    gpMessageHandler->addInfoMessage("Starting a DCP simulation as manager...");
+    gpMessageHandler->addInfoMessage("Starting a DCP simulation as master...");
     pDcpMaster->start();
     gpMessageHandler->addInfoMessage("DCP simulation finished!");
     emit simulateDone(true, timer.elapsed());
