@@ -129,7 +129,7 @@ public slots:
     bool simulate_blocking();
     bool startRealtimeSimulation(const double realtimeFactor);
     void stopRealtimeSimulation();
-    bool simulateDcpSlave();
+    bool simulateDcpServer();
     bool simulateDcpManager();
     void save();
     void saveAs();

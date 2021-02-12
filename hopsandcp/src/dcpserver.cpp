@@ -1,4 +1,4 @@
-#include "dcpslave.h"
+#include "dcpserver.h"
 #include "utilities.h"
 
 #include <dcp/helper/Helper.hpp>
@@ -31,7 +31,7 @@ const LogTemplate SIM_LOG = LogTemplate(
 
 using namespace hopsan;
 
-DcpSlave::DcpSlave(ComponentSystem *pSystem, const std::string host, int port, size_t numLogSamples)
+DcpServer::DcpServer(ComponentSystem *pSystem, const std::string host, int port, size_t numLogSamples)
     : mpRootSystem(pSystem), mHost(host), mPort(port), mNumLogSamples(numLogSamples)
 {
     //Generate list of inputs and outputs based on interface components
@@ -56,25 +56,25 @@ DcpSlave::DcpSlave(ComponentSystem *pSystem, const std::string host, int port, s
     //Create UDP driver
     udpDriver = new UdpDriver(host, uint16_t(port));
 
-    //Create slave DCP manager
-    mManager = new DcpManagerSlave(*getSlaveDescription(), udpDriver->getDcpDriver());
+    //Create server DCP manager
+    mManager = new DcpManagerSlave(*getServerDescription(), udpDriver->getDcpDriver());
     mManager->setInitializeCallback<SYNC>(
-            std::bind(&DcpSlave::initialize, this));
+            std::bind(&DcpServer::initialize, this));
     mManager->setConfigureCallback<SYNC>(
-            std::bind(&DcpSlave::configure, this));
+            std::bind(&DcpServer::configure, this));
     mManager->setSynchronizingStepCallback<SYNC>(
-            std::bind(&DcpSlave::doStep, this, std::placeholders::_1));
+            std::bind(&DcpServer::doStep, this, std::placeholders::_1));
     mManager->setSynchronizedStepCallback<SYNC>(
-            std::bind(&DcpSlave::doStep, this, std::placeholders::_1));
+            std::bind(&DcpServer::doStep, this, std::placeholders::_1));
     mManager->setRunningStepCallback<SYNC>(
-            std::bind(&DcpSlave::doStep, this, std::placeholders::_1));
+            std::bind(&DcpServer::doStep, this, std::placeholders::_1));
     mManager->setRunningNRTStepCallback<SYNC>(
-                std::bind(&DcpSlave::doStep, this, std::placeholders::_1));
-    mManager->setTimeResListener<SYNC>(std::bind(&DcpSlave::setTimeRes, this,
+                std::bind(&DcpServer::doStep, this, std::placeholders::_1));
+    mManager->setTimeResListener<SYNC>(std::bind(&DcpServer::setTimeRes, this,
                                                 std::placeholders::_1,
                                                 std::placeholders::_2));
     mManager->setStopCallback<SYNC>(
-                std::bind(&DcpSlave::stop, this));
+                std::bind(&DcpServer::stop, this));
 
     //Display log messages on console
     stdLog = new OstreamLog(std::cout);
@@ -83,57 +83,57 @@ DcpSlave::DcpSlave(ComponentSystem *pSystem, const std::string host, int port, s
     mManager->setGenerateLogString(true);
 }
 
-DcpSlave::~DcpSlave()
+DcpServer::~DcpServer()
 {
 }
 
-SlaveDescription_t *DcpSlave::getSlaveDescription() {
-    SlaveDescription_t *slaveDescription = new SlaveDescription_t(make_SlaveDescription(1, 0, mpRootSystem->getName().c_str(), "b5279485-720d-4542-9f29-bee4d9a75ef9"));
-    slaveDescription->OpMode.HardRealTime = make_HardRealTime_ptr();
-    slaveDescription->OpMode.SoftRealTime = make_SoftRealTime_ptr();
-    slaveDescription->OpMode.NonRealTime = make_NonRealTime_ptr();
+SlaveDescription_t *DcpServer::getServerDescription() {
+    SlaveDescription_t *serverDescription = new SlaveDescription_t(make_SlaveDescription(1, 0, mpRootSystem->getName().c_str(), "b5279485-720d-4542-9f29-bee4d9a75ef9"));
+    serverDescription->OpMode.HardRealTime = make_HardRealTime_ptr();
+    serverDescription->OpMode.SoftRealTime = make_SoftRealTime_ptr();
+    serverDescription->OpMode.NonRealTime = make_NonRealTime_ptr();
     Resolution_t resolution = make_Resolution();
     resolution.numerator = 1;
     resolution.denominator = denominator_t(1.0/mpRootSystem->getTimestep());
-    slaveDescription->TimeRes.resolutions.push_back(resolution);
-    slaveDescription->TransportProtocols.UDP_IPv4 = make_UDP_ptr();
-    slaveDescription->TransportProtocols.UDP_IPv4->Control = make_Control_ptr(mHost.c_str(), port_t(mPort));
-    slaveDescription->TransportProtocols.UDP_IPv4->DAT_input_output = make_DAT_ptr();
-    slaveDescription->TransportProtocols.UDP_IPv4->DAT_input_output->availablePortRanges.push_back(make_AvailablePortRange(2048, 65535));
-    slaveDescription->TransportProtocols.UDP_IPv4->DAT_parameter = make_DAT_ptr();
-    slaveDescription->TransportProtocols.UDP_IPv4->DAT_parameter->availablePortRanges.push_back(make_AvailablePortRange(2048, 65535));
-    slaveDescription->CapabilityFlags.canAcceptConfigPdus = true;
-    slaveDescription->CapabilityFlags.canHandleReset = false;
-    slaveDescription->CapabilityFlags.canHandleVariableSteps = false;
-    slaveDescription->CapabilityFlags.canMonitorHeartbeat = false;
-    slaveDescription->CapabilityFlags.canProvideLogOnRequest = true;
-    slaveDescription->CapabilityFlags.canProvideLogOnNotification = true;
+    serverDescription->TimeRes.resolutions.push_back(resolution);
+    serverDescription->TransportProtocols.UDP_IPv4 = make_UDP_ptr();
+    serverDescription->TransportProtocols.UDP_IPv4->Control = make_Control_ptr(mHost.c_str(), port_t(mPort));
+    serverDescription->TransportProtocols.UDP_IPv4->DAT_input_output = make_DAT_ptr();
+    serverDescription->TransportProtocols.UDP_IPv4->DAT_input_output->availablePortRanges.push_back(make_AvailablePortRange(2048, 65535));
+    serverDescription->TransportProtocols.UDP_IPv4->DAT_parameter = make_DAT_ptr();
+    serverDescription->TransportProtocols.UDP_IPv4->DAT_parameter->availablePortRanges.push_back(make_AvailablePortRange(2048, 65535));
+    serverDescription->CapabilityFlags.canAcceptConfigPdus = true;
+    serverDescription->CapabilityFlags.canHandleReset = false;
+    serverDescription->CapabilityFlags.canHandleVariableSteps = false;
+    serverDescription->CapabilityFlags.canMonitorHeartbeat = false;
+    serverDescription->CapabilityFlags.canProvideLogOnRequest = true;
+    serverDescription->CapabilityFlags.canProvideLogOnNotification = true;
 
     for(size_t i=0; i<mOutputs.size(); ++i) {
         std::shared_ptr<Output_t> causality = make_Output_ptr<float64_t>();
-        slaveDescription->Variables.push_back(make_Variable_output(mOutputs[i], valueReference_t(i), causality));
+        serverDescription->Variables.push_back(make_Variable_output(mOutputs[i], valueReference_t(i), causality));
     }
     for(size_t i=0; i<mInputs.size(); ++i) {
         std::shared_ptr<CommonCausality_t> causality = make_CommonCausality_ptr<float64_t>();
         causality->Float64->start = std::make_shared<std::vector<float64_t>>();
         causality->Float64->start->push_back(0.0);
-        slaveDescription->Variables.push_back(make_Variable_input(mInputs[i], valueReference_t(mOutputs.size()+i), causality));
+        serverDescription->Variables.push_back(make_Variable_input(mInputs[i], valueReference_t(mOutputs.size()+i), causality));
     }
 
-    slaveDescription->Log = make_Log_ptr();
-    slaveDescription->Log->categories.push_back(make_Category(1, "DCP_SLAVE"));
-    slaveDescription->Log->templates.push_back(make_Template(
+    serverDescription->Log = make_Log_ptr();
+    serverDescription->Log->categories.push_back(make_Category(1, "DCP_SERVER"));
+    serverDescription->Log->templates.push_back(make_Template(
             1, 1, (uint8_t) DcpLogLevel::LVL_INFORMATION, "[Time = %float64]: output = %float64"));
 
-    return slaveDescription;
+    return serverDescription;
 }
 
 
-void DcpSlave::generateDcpFile(std::string targetFile) {
-    writeDcpSlaveFile(std::shared_ptr<SlaveDescription_t>(getSlaveDescription()), targetFile.c_str());
+void DcpServer::generateDcpFile(std::string targetFile) {
+    writeDcpSlaveFile(std::shared_ptr<SlaveDescription_t>(getServerDescription()), targetFile.c_str());
 }
 
-bool DcpSlave::start()
+bool DcpServer::start()
 {
     try {
         mManager->start();
@@ -145,7 +145,7 @@ bool DcpSlave::start()
 }
 
 
-void DcpSlave::configure() {
+void DcpServer::configure() {
     std::cout << "Checking model... ";
     if (mpRootSystem->checkModelBeforeSimulation()) {
         std::cout << "Success!\n";
@@ -176,12 +176,12 @@ void DcpSlave::configure() {
     }
 }
 
-void DcpSlave::initialize() {
+void DcpServer::initialize() {
 
 
 }
 
-void DcpSlave::doStep(uint64_t steps) {
+void DcpServer::doStep(uint64_t steps) {
 
     // Read inputs
     for(size_t i=0; i<mInputs.size(); ++i) {
@@ -199,11 +199,11 @@ void DcpSlave::doStep(uint64_t steps) {
     }
 }
 
-void DcpSlave::setTimeRes(const uint32_t numerator, const uint32_t denominator) {
+void DcpServer::setTimeRes(const uint32_t numerator, const uint32_t denominator) {
     mpRootSystem->setDesiredTimestep(double(numerator)/double(denominator));
 }
 
-void DcpSlave::stop()
+void DcpServer::stop()
 {
     //dynamic_cast<AbstractDcpManager*>(mManager)->stop();
     udpDriver->getDcpDriver().stopReceiving();

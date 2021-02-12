@@ -39,7 +39,7 @@
 #include "global.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "dcpmaster.h"
-#include "dcpslave.h"
+#include "dcpserver.h"
 #include "GUIConnector.h"
 #include "GUIPort.h"
 
@@ -248,7 +248,7 @@ void ProgressBarWorkerObject::setProgressBarState(SimulationState state)
         emit setProgressBarText(tr("Simulating..."));
         emit setProgressBarRange(0, 0);
         break;
-    case SimulationState::DcpSlaveSimulate:
+    case SimulationState::DcpServerSimulate:
         emit setProgressBarText(tr("Running DCP simulation..."));
         emit setProgressBarRange(0, 0);
         startRefreshTimer(gpConfig->getProgressBarStep());
@@ -348,11 +348,11 @@ void SimulationThreadHandler::initSimulateFinalizeDcpManager(SystemObject *pSyst
 }
 
 
-void SimulationThreadHandler::initSimulateFinalizeDcpSlave(SystemObject* pSystem, const QString &host, int port, const QString &targetFile)
+void SimulationThreadHandler::initSimulateFinalizeDcpServer(SystemObject* pSystem, const QString &host, int port, const QString &targetFile)
 {
     mvpSystems.clear();
     mvpSystems.push_back(pSystem);
-    mpSimulationWorkerObject = new DCPSlaveSimulationWorkerObject(pSystem, host, port, targetFile);
+    mpSimulationWorkerObject = new DcpServerSimulationWorkerObject(pSystem, host, port, targetFile);
     mpSimulationWorkerObject->setMessageHandler(mpMessageHandler);
     initSimulateFinalizePrivate();
 }
@@ -580,7 +580,7 @@ void SimulationThreadHandler::setMessageHandler(GUIMessageHandler *pMessageHandl
     mpMessageHandler = pMessageHandler;
 }
 
-DCPSlaveSimulationWorkerObject::DCPSlaveSimulationWorkerObject(SystemObject *pSystem, const QString &host, int port, const QString &targetFile)
+DcpServerSimulationWorkerObject::DcpServerSimulationWorkerObject(SystemObject *pSystem, const QString &host, int port, const QString &targetFile)
 {
     mpSystem = pSystem;
     mHost = host;
@@ -588,26 +588,26 @@ DCPSlaveSimulationWorkerObject::DCPSlaveSimulationWorkerObject(SystemObject *pSy
     mTargetFile = targetFile;
 }
 
-void DCPSlaveSimulationWorkerObject::initSimulateFinalize()
+void DcpServerSimulationWorkerObject::initSimulateFinalize()
 {
     QTime timer;
-    DcpSlave *pDcpSlave = new DcpSlave(mpSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), mHost.toStdString(), mPort, mpSystem->getNumberOfLogSamples());
+    DcpServer *pDcpServer = new DcpServer(mpSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), mHost.toStdString(), mPort, mpSystem->getNumberOfLogSamples());
 
     // Initializing
     emit setProgressState(SimulationState::Initialize);
     timer.start();
-    pDcpSlave->generateDcpFile(mTargetFile.toStdString());
+    pDcpServer->generateDcpFile(mTargetFile.toStdString());
     emit initDone(true, timer.elapsed());
 
     // Simulating
-    emit setProgressState(SimulationState::DcpSlaveSimulate);
+    emit setProgressState(SimulationState::DcpServerSimulate);
     gpMessageHandler->addInfoMessage("Starting a DCP simulation...");
-    bool success = pDcpSlave->start();
+    bool success = pDcpServer->start();
     gpMessageHandler->addInfoMessage("DCP simulation finished!");
     emit simulateDone(success, timer.elapsed());
 
     // Finalizing
-    delete pDcpSlave;
+    delete pDcpServer;
     // Finalizing
     emit setProgressState(SimulationState::Finalize);
     emit finalizeDone(true, timer.elapsed());
@@ -629,7 +629,7 @@ void DCPManagerSimulationWorkerObject::initSimulateFinalize()
     DcpMaster *pDcpMaster = new DcpMaster(mHost.toStdString(), mPort, mpSystem->getTimeStep());
     for(const auto comp : mpSystem->getModelObjects()) {
         if(comp->getTypeName() == HOPSANGUIDCPCOMPONENT) {   //Just in case, model shall only contain DCP components anyway
-            pDcpMaster->addSlave(comp->getParameterValue("dcpFile").toStdString());
+            pDcpMaster->addServer(comp->getParameterValue("dcpFile").toStdString());
         }
     }
     std::map<std::pair<size_t,size_t>,std::pair<std::vector<size_t>,std::vector<size_t> > > connections;
@@ -638,8 +638,8 @@ void DCPManagerSimulationWorkerObject::initSimulateFinalize()
         Port *pEndPort = connection->getEndPort();
         ModelObject *pStartComponent = pStartPort->getParentModelObject();
         ModelObject *pEndComponent = pEndPort->getParentModelObject();
-        size_t fromSlave = size_t(mpSystem->getModelObjects().indexOf(pStartComponent))+1;  //DCPLib uses one-based indexing
-        size_t toSlave = size_t(mpSystem->getModelObjects().indexOf(pEndComponent))+1;      //DCPLib uses one-based indexing
+        size_t fromServer = size_t(mpSystem->getModelObjects().indexOf(pStartComponent))+1;  //DCPLib uses one-based indexing
+        size_t toServer = size_t(mpSystem->getModelObjects().indexOf(pEndComponent))+1;      //DCPLib uses one-based indexing
         QVector<CoreVariameterDescription> variameters;
         size_t fromVr, toVr;
         pStartComponent->getVariameterDescriptions(variameters);
@@ -655,11 +655,11 @@ void DCPManagerSimulationWorkerObject::initSimulateFinalize()
             }
         }
 
-        if(connections.count(std::make_pair(fromSlave,fromVr)) == 0) {
-            connections[std::make_pair(fromSlave,fromVr)] = std::make_pair(std::vector<size_t>(),std::vector<size_t>());
+        if(connections.count(std::make_pair(fromServer,fromVr)) == 0) {
+            connections[std::make_pair(fromServer,fromVr)] = std::make_pair(std::vector<size_t>(),std::vector<size_t>());
         }
-        connections[std::make_pair(fromSlave,fromVr)].first.push_back(toSlave);
-        connections[std::make_pair(fromSlave,fromVr)].second.push_back(toVr);
+        connections[std::make_pair(fromServer,fromVr)].first.push_back(toServer);
+        connections[std::make_pair(fromServer,fromVr)].second.push_back(toVr);
     }
 
     for(const auto &con : connections) {
