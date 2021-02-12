@@ -130,7 +130,7 @@ public slots:
     bool startRealtimeSimulation(const double realtimeFactor);
     void stopRealtimeSimulation();
     bool simulateDcpServer();
-    bool simulateDcpManager();
+    bool simulateDcpMaster();
     void save();
     void saveAs();
     void exportModelParametersToHpf();
