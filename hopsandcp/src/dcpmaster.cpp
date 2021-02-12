@@ -3,7 +3,7 @@
 #include "dcp/log/OstreamLog.hpp"
 #include "dcp/helper/LogHelper.hpp"
 #include "dcp/model/pdu/DcpPduFactory.hpp"
-#include "dcp/xml/DcpSlaveDescriptionReader.hpp"
+#include "dcp/zip/DcpSlaveReader.hpp"
 #include "dcp/driver/ethernet/udp/UdpDriver.hpp"
 #include "dcp/logic/DcpManagerMaster.hpp"
 
@@ -43,7 +43,7 @@ DcpMaster::~DcpMaster() {
 
 void DcpMaster::addSlave(string filepath)
 {
-    slaveDescriptions.push_back(new SlaveDescription_t(*readSlaveDescription(filepath.c_str())));
+    slaveDescriptions.push_back(new SlaveDescription_t(*getSlaveDescriptionFromDcpFile(1,0,filepath.c_str())));
     u_char id = u_char(slaveDescriptions.size());
     uint8_t *netInfo = new uint8_t[6];
     //*((uint8_t *) netInfo) = *slaveDescriptions.back()->TransportProtocols.UDP_IPv4->Control->port;
@@ -271,7 +271,7 @@ void DcpMaster::receiveStateChangedNotification(uint8_t sender,
 
 void getDataFromSlaveDescription(const hopsan::HString &rFilePath, hopsan::HString &rName, hopsan::HString &rVariables, hopsan::HString &rValueReferences)
 {
-    shared_ptr<SlaveDescription_t> slaveDesc = readSlaveDescription(rFilePath.c_str());
+    shared_ptr<SlaveDescription_t> slaveDesc = getSlaveDescriptionFromDcpFile(1,0,rFilePath.c_str());
     hopsan::HString inputs,outputs,pars;
     hopsan::HString inputVrs, outputVrs, parVrs;
     for(const auto &var : slaveDesc->Variables) {

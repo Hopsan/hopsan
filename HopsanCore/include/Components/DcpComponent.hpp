@@ -42,7 +42,7 @@ namespace hopsan {
     {
     private:
         //Parameters
-        HString mDcpxFile;
+        HString mDcpFile;
         HString mVariables;
         HString mValueRefs;
         HString mLastVariables;
@@ -61,7 +61,7 @@ namespace hopsan {
 
         void configure()
         {
-            addConstant("dcpxFile", "", "", "", mDcpxFile);
+            addConstant("dcpFile", "", "", "", mDcpFile);
             addConstant("valueRefs", "vr1,vr2,vr3...", "", "", mValueRefs);
             addConstant("variables", "in1,in2;out1,out2;par1,par2...", "", "", mVariables);
             setReconfigurationParameter("variables");
@@ -82,7 +82,7 @@ namespace hopsan {
             std::vector<HString> parameters;
             this->getParameterNames(parameters);
             for(size_t i=0; i<parameters.size(); ++i) {
-                if(parameters[i] != "hopsan::HString" && parameters[i] != "dcpxFile" && parameters[i] != "variables" && parameters[i] != "valueRefs") {
+                if(parameters[i] != "hopsan::HString" && parameters[i] != "dcpFile" && parameters[i] != "variables" && parameters[i] != "valueRefs") {
                     this->unRegisterParameter(parameters[i]);
                 }
             }
