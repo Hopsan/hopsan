@@ -119,7 +119,7 @@ private:
     QString mHost;
     int mPort;
 public:
-    DCPManagerSimulationWorkerObject(SystemObject *pSystem, const QString &host, int port);
+    DCPManagerSimulationWorkerObject(SystemObject *pSystem, const QString &host, int port, double startTime, double stopTime);
     int swoType() const {return DCPManagerSWO;}
 
 public slots:
