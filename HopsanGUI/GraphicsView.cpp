@@ -152,9 +152,9 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
                 mpContainerObject->getUndoStackPtr()->newPost();
                 mpContainerObject->addImageWidget(this->mapToScene(event->pos()).toPoint());
             else if(addDcpServerAction != nullptr && selectedAction == addDcpServerAction) {
-                QString dcpPath = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Select DCP Slave Description File"),
+                QString dcpPath = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Select Distributed Co-Simlation Protocol File"),
                                                                      gpConfig->getStringSetting(CFG_DCPDIR),
-                                                                     tr("Distributed Co-Simulation Protocol File (*.dcp)"));
+                                                                     tr("Distributed Co-Simulation Protocol Files (*.dcp)"));
                 if(dcpPath.isEmpty()) {
                     return;
                 }
@@ -162,7 +162,7 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
                 gpConfig->setStringSetting(CFG_DCPDIR, dcpFileInfo.absolutePath());
 
                 hopsan::HString name, variables, valueRefs;
-                getDataFromSlaveDescription(dcpFileInfo.filePath().toStdString().c_str(), name, variables, valueRefs);
+                getDataFromProtocolFile(dcpFileInfo.filePath().toStdString().c_str(), name, variables, valueRefs);
 
                 ModelObject *pObj = mpContainerObject->addModelObject(HOPSANGUIDCPCOMPONENT, this->mapToScene(event->pos()).toPoint());
                 mpParentModelWidget->getTopLevelSystemContainer()->renameModelObject(pObj->getName(), (name.c_str()));
