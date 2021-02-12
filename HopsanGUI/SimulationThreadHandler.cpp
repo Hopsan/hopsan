@@ -222,8 +222,12 @@ void ProgressBarWorkerObject::setProgressBarState(SimulationState state)
         emit setProgressBarRange(0, 0);
         break;
     case SimulationState::DcpServerSimulate:
-        emit setProgressBarText(tr("Running DCP simulation..."));
+        emit setProgressBarText(tr("Running DCP simulation (server)..."));
         emit setProgressBarRange(0, 0);
+        break;
+    case SimulationState::DcpMasterSimulate:
+        emit setProgressBarText(tr("Running DCP simulation (master)..."));
+        emit setProgressBarRange(0, 100);
         startRefreshTimer(gpConfig->getProgressBarStep());
         break;
     case SimulationState::Finalize:
@@ -268,6 +272,7 @@ void ProgressBarWorkerObject::refreshProgressBar()
             mpProgressDialogRefreshTimer->setInterval( currentTimeStep + 10);
         }
     }
+    qApp->processEvents();
 }
 
 void ProgressBarWorkerObject::abort()
@@ -315,7 +320,7 @@ void SimulationThreadHandler::initSimulateFinalizeDcpManager(SystemObject *pSyst
 {
     mvpSystems.clear();
     mvpSystems.push_back(pSystem);
-    mpSimulationWorkerObject = new DCPManagerSimulationWorkerObject(pSystem, host, port);
+    mpSimulationWorkerObject = new DCPManagerSimulationWorkerObject(pSystem, host, port, mStartT, mStopT);
     mpSimulationWorkerObject->setMessageHandler(mpMessageHandler);
     initSimulateFinalizePrivate();
 }
@@ -583,10 +588,11 @@ void DcpServerSimulationWorkerObject::initSimulateFinalize()
     emit finalizeDone(true, timer.elapsed());
 }
 
-DCPManagerSimulationWorkerObject::DCPManagerSimulationWorkerObject(SystemObject *pSystem, const QString &host, int port)
+DCPManagerSimulationWorkerObject::DCPManagerSimulationWorkerObject(SystemObject *pSystem, const QString &host, int port, double startTime, double stopTime)
     : mpSystem(pSystem), mHost(host), mPort(port)
 {
-
+    mStartTime = startTime;
+    mStopTime = stopTime;
 }
 
 void DCPManagerSimulationWorkerObject::initSimulateFinalize()
@@ -596,7 +602,7 @@ void DCPManagerSimulationWorkerObject::initSimulateFinalize()
     emit setProgressState(SimulationState::Initialize);
     timer.start();
 
-    DcpMaster *pDcpMaster = new DcpMaster(mHost.toStdString(), mPort, mpSystem->getTimeStep());
+    DcpMaster *pDcpMaster = new DcpMaster(mpSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), mHost.toStdString(), mPort, mpSystem->getTimeStep(), mStartTime, mStopTime);
     for(const auto comp : mpSystem->getModelObjects()) {
         if(comp->getTypeName() == HOPSANGUIDCPCOMPONENT) {   //Just in case, model shall only contain DCP components anyway
             pDcpMaster->addServer(comp->getParameterValue("dcpFile").toStdString());

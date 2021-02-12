@@ -27,7 +27,7 @@ struct DcpConnection
 HOPSANDCP_DLLAPI class DcpMaster
 {
 public:
-    DcpMaster(const string host, int port, double comStep);
+    DcpMaster(hopsan::ComponentSystem *pSystem, const string host, int port, double comStep=0.001, double startTime=0, double stopTime=10);
     ~DcpMaster();
 
     void addServer(string filepath);
@@ -48,6 +48,8 @@ private:
     void dataReceived(uint16_t dataId, size_t length, uint8_t payload[]);
     void receiveStateChangedNotification(uint8_t sender, DcpState state);
 
+    hopsan::ComponentSystem *mpSystem;
+
     std::vector<DcpConnection> connections;
 
     uint8_t maxInitRuns = 0;
@@ -56,6 +58,8 @@ private:
     std::map<uint8_t, DcpState> curState;
 
     double mComStep;
+    double mStartTime;
+    double mStopTime;
 
     UdpDriver *driver;
 
@@ -63,7 +67,6 @@ private:
 
     DcpManagerMaster *manager;
 
-    uint64_t nSteps=0;
     std::map<uint8_t, uint8_t> numOfCmd;
     std::map<uint8_t, uint64_t> receivedAcks;
 
