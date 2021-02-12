@@ -47,8 +47,8 @@ class GUIMessageHandler;
 #include "RemoteCoreAccess.h"
 #endif
 
-enum SimulationWorkeObjectEnumT {LocalSWO, RemoteSWO, DCPManagerSWO, DCPSlaveSWO};
-enum class SimulationState {Initialize, Simulate, RemoteSimulate, DcpMasterSimulate, DcpSlaveSimulate, Finalize, Done};
+enum SimulationWorkeObjectEnumT {LocalSWO, RemoteSWO, DCPManagerSWO, DcpServerSWO};
+enum class SimulationState {Initialize, Simulate, RemoteSimulate, DcpMasterSimulate, DcpServerSimulate, Finalize, Done};
 
 Q_DECLARE_METATYPE(SimulationState);
 
@@ -126,7 +126,7 @@ public slots:
     void initSimulateFinalize();
 };
 
-class DCPSlaveSimulationWorkerObject : public SimulationWorkerObjectBase
+class DcpServerSimulationWorkerObject : public SimulationWorkerObjectBase
 {
     Q_OBJECT
 private:
@@ -135,8 +135,8 @@ private:
     int mPort;
     QString mTargetFile;
 public:
-    DCPSlaveSimulationWorkerObject(SystemObject *pSystem, const QString &host, int port, const QString &targetFile);
-    int swoType() const {return DCPSlaveSWO;}
+    DcpServerSimulationWorkerObject(SystemObject *pSystem, const QString &host, int port, const QString &targetFile);
+    int swoType() const {return DcpServerSWO;}
 
 public slots:
     void initSimulateFinalize();
@@ -230,7 +230,7 @@ public:
     void initSimulateFinalizeRemote(SharedRemoteCoreSimulationHandlerT pRCSH, QVector<RemoteResultVariable> *pRemoteResultVariables, double *pProgress);
 #endif
     void initSimulateFinalizeDcpManager(SystemObject *pSystem, const QString &host, int port);
-    void initSimulateFinalizeDcpSlave(SystemObject *pSystem, const QString &host, int port, const QString &targetFile);
+    void initSimulateFinalizeDcpServer(SystemObject *pSystem, const QString &host, int port, const QString &targetFile);
     void initSimulateFinalize(QVector<SystemObject*> vpSystems, const bool noChanges=false);
     void initSimulateFinalize_blocking(QVector<SystemObject*> vpSystems, const bool noChanges=false);
     bool wasSuccessful();
