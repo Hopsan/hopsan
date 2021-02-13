@@ -1,26 +1,25 @@
 /*!
 \page userAutomaticCodeGenerationPage Automatically generating Component Code
 \section component-generator Component Generator Dialog
-Hopsan has a component skeleton generator functionality, from where new components can be written without deeper knowledge of the Hopsan simulation core interface. __Note!__ This functionality has moved into the HoLC program (included with each Hopsan release). It was previously a part of Hopsan GUI.
+Hopsan has a component skeleton generator functionality, from where new components can be written without deeper knowledge of the Hopsan simulation core interface. You will find it by choosing "Create external library" in the library widget.
+After a library has been created you can right click it and select to "Add new component".
+__Note__ This functionality was previously present in the separate HoLC (Hopsan Library Creator) application, but this application should now be considered deprecated. Using the functional build into HopsanGUI is recommended.
 
-In this dialog it is possible to specify component name (used by simulation core, must not contain spaces), display name (shown in graphical interface) and component type (C,Q or S - see the \ref userTransmissionLineModelingMethodPage "transmission line element method"). It is also possible to add ports, parameters, utility functions and static variables. Finally, the code for the component can be written in two ways, either directly from C++ code, or from algebraic equations using a subset of the Modelica language.
+In this dialog it is possible to specify component type (used by simulation core, must be unique not contain spaces), display name (shown in graphical interface) and component type (C,Q or S - see the \ref userTransmissionLineModelingMethodPage "transmission line element method"). It is also possible to add ports, parameters, utility functions and static variables. Finally, the code for the component can be written in two ways, either directly from C++ code, or from algebraic equations using a subset of the Modelica language.
 
 When writing C++ code, there are three functions available: Initialize, SimulateOneTimeStep and Finalize. Initialize runs before the first time step of the simulation, SimulateOneTimeStep runs every time step, and finalize runs after the simulation is finished. Available and sought parameters are displayed above the code boxes. When clicking compile, the component will be converted to Hopsan interface syntax and compiled to an external library.
 
 The other option is to use equations. This function is currently an experimental feature, and full functionality is not guaranteed. Equation-based modeling has several advantages over plain code modeling. It allows equations written in arbitrary ways, i.e. more than one variable on the left side. Equations can also be written in any order, as long as the number of equations equals the number of unknown variables. The language used is a subset of Modelica. It allows most basic functionality in the equation section. There is also an algorithm section, that will be executed prior to the equation solver each time step. This section does not support all Modelica algorithm functionality, and is basically intended only for defining explicit expressions that does not need to be part of the equation system. When compiling, a symbolic Jacobian matrix is generated and displayed in a popup window. This is then transformed to Hopsan syntax, together with a fixed-step equation system solver.
 
-Generated components are loaded automatically into a "Generated Component" library.
-
-\section generating-components-mathematica Generating Components From Mathematica
-This feature is not implemented in the current version of Hopsan. In future releases it will be possible to automatically generate components from equations in Mathematica.
+To be able to use the created components, you must have the Hopsan version with a compiler included or have configured Hopsan to use the system compiler (must be compatible, same used to build Hopsan).
 */
 
 /*!
-\page userUnitTestModelsAndComponentsPage Model and Component Unit-Testing
+\page userUnitTestModelsAndComponentsPage Model and Component Regression Testing
 When you have finished a component and/or model and you are satisfied with the simulation results you can save you model and some of the simulation results as a test model.
 You can later run this model again and automatically compare the simulation results.
 This is very important if you want to make sure that your component and models do not change their behaviour when new versions of Hopsan are released.
-__Remember__ that you can not make any more changes (that affect simulation results) to the model file if you want the validation to match.
+__Remember__ that if you want to make new changes (that affect simulation results) in the modeled component, your validation data must be recreated.
 
 \section userUnitTestModelsAndComponentsPage-components_howtocreateCLI How to Create a Validation Model in Hopsan CLI
 The HopsanCLI can automatically create a validation data set based on all scopes in your model. If no scopes are available, no data set will be created.
