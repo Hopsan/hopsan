@@ -864,6 +864,9 @@ void MainWindow::createActions()
     mpWebsiteAction = new QAction(this);
     mpWebsiteAction->setText("Open Hopsan Website");
     connect(mpWebsiteAction, SIGNAL(triggered()), this, SLOT(openHopsanURL()));
+    mpTutorialsAction = new QAction(this);
+    mpTutorialsAction->setText("Open Tutorials Website");
+    connect(mpTutorialsAction, &QAction::triggered, this, &MainWindow::openHopsanTutorialURL);
 
     //! @todo Check for new version could probably work in a better way...
     mpNewVersionsAction = new QAction(this);
@@ -1052,6 +1055,7 @@ void MainWindow::createMenus()
     mpHelpMenu->addMenu(mpTestModelsMenu);
     mpHelpMenu->addAction(mpIssueTrackerAction);
     mpHelpMenu->addAction(mpWebsiteAction);
+    mpHelpMenu->addAction(mpTutorialsAction);
     mpHelpMenu->addAction(mpNewVersionsAction);
     mpHelpMenu->addAction(mpLicenseAction);
     mpHelpMenu->addAction(mpAboutAction);
@@ -1270,6 +1274,11 @@ void MainWindow::openRecentModel()
 void MainWindow::openHopsanURL()
 {
     QDesktopServices::openUrl(QUrl(hopsanweblinks::homepage));
+}
+
+void MainWindow::openHopsanTutorialURL()
+{
+    QDesktopServices::openUrl(QUrl(hopsanweblinks::tutorials));
 }
 
 

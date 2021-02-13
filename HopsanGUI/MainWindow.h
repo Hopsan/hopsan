@@ -211,6 +211,7 @@ public:
     QAction *mpHelpAction;
     QAction *mpReleaseNotesAction;
     QAction *mpWebsiteAction;
+    QAction *mpTutorialsAction;
     QAction *mpNewVersionsAction;
     QAction *mpShowLossesAction;
     QAction *mpMeasureSimulationTimeAction;
@@ -248,6 +249,7 @@ private slots:
     void openSystemParametersWidget();
     void openRecentModel();
     void openHopsanURL();
+    void openHopsanTutorialURL();
     void openArchiveURL();
     void openIssueTrackerDialog();
     void updatePlotActionButton(bool);

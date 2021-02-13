@@ -43,6 +43,7 @@ namespace hopsanweblinks {
     constexpr auto news = "http://tiny.cc/hopsannewsfeed";
     constexpr auto releases = "http://tiny.cc/hopsanreleases";
     constexpr auto releases_archive = "http://tiny.cc/hopsanarchive";
+    constexpr auto tutorials = "https://hopsan.github.io/tutorials";
 }
 
 // Path definitions (development and release)

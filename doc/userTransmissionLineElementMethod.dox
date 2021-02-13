@@ -1,5 +1,8 @@
 /*!
 \page userTransmissionLineModelingMethodPage Transmission Line Modeling (TLM)
+
+For a more in-depth tutorial see the following document https://hopsan.github.io/tutorials/mainTLMtutorial.pdf
+
 The Transmission Line Element Method (TLM) origins from the method of characteristics and from PQ-modeling. The basic idea is to model the wave propagation by using impedances and wave variables with delayed information. This can be used for all systems that can be modeled with potentials, flows and restrictors, for example hydraulics, pneumatics, mechanics, electrics, magnetics and heat transfer. The TLM method has several benefits. Most importantly it gives a physically correct model of wave propagation in the system. It also enables the use of distributed solvers, where each component solves its own equations. This gives very good numerical stability, and opens up good opportunities for dividing a simulation into several parallel threads. The latter is used in Hopsan NG to make benefits of multi-core processors. Last but not least, the TLM method provides an intuitive and physically correct way of modeling a system.
 
 Power-transmitting components are divided into two types. The first type is capacitive components, called "C-type", and does generally represent volumes or transmission line components. These calculate the \a characteristic \a impedance (Zc) by using the bulk modulus, and in turn use this to calculate the \a wave \a variables (c). They take pressure and flow as input variables, and write c and Zc. The speed of the wave propagation is simulated by using delay operators, which controls how long it will take for a wave variable to reach the opposite side of the component. 
