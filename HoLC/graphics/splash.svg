@@ -12,14 +12,14 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="svg2816"
    version="1.1"
-   inkscape:version="0.48.4 r9939"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
    width="640"
    height="340"
    sodipodi:docname="splash.svg"
    enable-background="new"
-   inkscape:export-filename="/home/robbr48/Documents/Subversion/HOPSAN++/HoLC/graphics/splash.png"
-   inkscape:export-xdpi="90"
-   inkscape:export-ydpi="90"
+   inkscape:export-filename="/home/peter/Workspace/hopsan-code/HoLC/graphics/splash.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
    sodipodi:version="0.32"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
   <sodipodi:namedview
@@ -31,15 +31,15 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1600"
-     inkscape:window-height="876"
+     inkscape:window-width="1920"
+     inkscape:window-height="1015"
      id="namedview2818"
      showgrid="false"
-     inkscape:zoom="0.75976564"
-     inkscape:cx="313.04508"
-     inkscape:cy="146.45312"
+     inkscape:zoom="1.0744709"
+     inkscape:cx="437.10957"
+     inkscape:cy="169.7865"
      inkscape:window-x="0"
-     inkscape:window-y="24"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer2"
      inkscape:snap-page="true"
@@ -889,30 +889,28 @@
          id="path2582" />
       <text
          xml:space="preserve"
-         style="font-size:9.08486843px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none"
          x="-98.520874"
          y="409.31757"
          id="text2586"
-         sodipodi:linespacing="100%"
          transform="scale(0.96343718,1.0379504)"><tspan
            sodipodi:role="line"
            id="tspan2588"
            x="-98.520874"
            y="409.31757"
-           style="font-size:9.08486843px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;font-family:Arial;-inkscape-font-specification:Arial">Fluid &amp; Mechatronic Systems</tspan></text>
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.08486843px;line-height:100%;font-family:Arial;-inkscape-font-specification:Arial;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1">Fluid &amp; Mechatronic Systems</tspan></text>
       <text
          xml:space="preserve"
-         style="font-size:9.08468246px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none"
          x="-100.92628"
          y="361.0126"
          id="text3360"
-         sodipodi:linespacing="100%"
          transform="scale(0.96343392,1.0379539)"><tspan
            sodipodi:role="line"
            id="tspan3362"
            x="-100.92628"
            y="361.0126"
-           style="font-size:9.08468246px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;font-family:Arial;-inkscape-font-specification:Arial">Fluida &amp; Mekatroniska System</tspan></text>
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.08468246px;line-height:100%;font-family:Arial;-inkscape-font-specification:Arial;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1">Fluida &amp; Mekatroniska System</tspan></text>
     </g>
     <g
        style="fill:#285078;fill-opacity:1"
@@ -1379,12 +1377,13 @@
        id="text3610"
        y="169.92694"
        x="27.292358"
-       style="font-size:80px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       style="font-style:normal;font-weight:normal;line-height:0%;font-family:'Bitstream Vera Sans';fill:#000000;fill-opacity:1;stroke:none"
        xml:space="preserve"><tspan
          y="169.92694"
          x="27.292358"
          id="tspan3612"
-         sodipodi:role="line">HoLC</tspan></text>
+         sodipodi:role="line"
+         style="font-size:80px;line-height:1.25">HoLC</tspan></text>
     <g
        id="g5568"
        transform="matrix(1.1986801,0,0,1.1986801,-124.8617,-29.543181)">
@@ -1679,21 +1678,46 @@
     </g>
     <text
        xml:space="preserve"
-       style="font-size:150px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
        x="33.18103"
        y="199.22812"
-       id="text5627"
-       sodipodi:linespacing="125%"><tspan
+       id="text5627"><tspan
          sodipodi:role="line"
          id="tspan5629"
          x="33.18103"
          y="199.22812"
-         style="font-size:25px">Ho<tspan
-   style="font-size:25px;fill:#3e546a;fill-opacity:1"
+         style="font-size:25px;line-height:1.25;font-family:sans-serif">Ho<tspan
+   style="font-size:25px;font-family:sans-serif;fill:#3e546a;fill-opacity:1"
    id="tspan5635">psan </tspan>L<tspan
-   style="font-size:25px;fill:#3e546a;fill-opacity:1"
+   style="font-size:25px;font-family:sans-serif;fill:#3e546a;fill-opacity:1"
    id="tspan5673">ibrary</tspan> C<tspan
-   style="font-size:25px;fill:#3e546a;fill-opacity:1"
+   style="font-size:25px;font-family:sans-serif;fill:#3e546a;fill-opacity:1"
    id="tspan5677">reator </tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:24.43935585px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.61098391"
+       x="188.39149"
+       y="231.86427"
+       id="text1102"><tspan
+         sodipodi:role="line"
+         id="tspan1100"
+         x="188.39149"
+         y="231.86427"
+         style="fill:#ff0000;fill-opacity:1;stroke-width:0.61098391">Deprecated</tspan><tspan
+         sodipodi:role="line"
+         x="188.39149"
+         y="262.41345"
+         style="fill:#ff0000;fill-opacity:1;stroke-width:0.61098391"
+         id="tspan1120" /><tspan
+         sodipodi:role="line"
+         x="188.39149"
+         y="292.96265"
+         id="tspan1106"
+         style="fill:#ff0000;fill-opacity:1;stroke-width:0.61098391">Functionality has been</tspan><tspan
+         sodipodi:role="line"
+         x="188.39149"
+         y="323.51184"
+         style="fill:#ff0000;fill-opacity:1;stroke-width:0.61098391"
+         id="tspan1114">merged into HopsanGUI</tspan></text>
   </g>
 </svg>

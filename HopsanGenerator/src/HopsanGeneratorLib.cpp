@@ -334,7 +334,7 @@ bool callCheckComponentLibrary(const char* libraryXMLPath, messagehandler_t mess
         if (differences.empty()) {
             messageHandler("No differences found", 'I', pMessageObject);
         } else {
-            messageHandler("There are differenses that needs to be resolved. Edit the files manually or use HoLC to add the existing components.", 'W', pMessageObject);
+            messageHandler("There are differences that needs to be resolved. Edit the files manually, or choose to \"Add existing component\" if files are missing.", 'W', pMessageObject);
         }
     }
     return differences.empty();
