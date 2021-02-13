@@ -1056,10 +1056,6 @@ QDomElement ModelObjectAppearance::addModelObjectRootElement(QDomElement parentD
 {
     QDomElement more = getOrAppendNewDomElement(parentDomElement, CAF_MODELOBJECT);
     more.setAttribute(CAF_TYPENAME, mTypeName);
-    if(mTypeName.startsWith("CppComponent"))
-    {
-        more.setAttribute(CAF_TYPENAME, "CppComponent");
-    }
     more.setAttribute(CAF_DISPLAYNAME, mDisplayName);
     if (!mSubTypeName.isEmpty())
     {

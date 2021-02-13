@@ -4678,11 +4678,6 @@ void SystemObject::loadFromDomElement(QDomElement domElement)
                 volunectorObjectPtrs.append(pObj);
             }
 
-//            if(pObj && pObj->getTypeName().startsWith("CppComponent"))
-//            {
-//                recompileCppComponents(pObj);
-//            }
-
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_COMPONENTTAG);
         }
 
