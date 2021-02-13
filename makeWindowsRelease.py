@@ -740,8 +740,16 @@ def copyFiles():
     if not fileExists(hopsanDir+r'\doc\html\index.html'):
         printError("Failed to build user documentation")
 
-    # Export "HopsanCore" SVN directory to "include" in temporary directory
+    # Export HopsanCore including all source code, then cleanup unneeded file
     git_export('HopsanCore', gTemporaryBuildDir)
+    callRd(gTemporaryBuildDir+r'/HopsanCore/dependencies/sundials/config')
+    callRd(gTemporaryBuildDir+r'/HopsanCore/dependencies/sundials/doc')
+    callRd(gTemporaryBuildDir+r'/HopsanCore/dependencies/sundials/examples')
+    callRd(gTemporaryBuildDir+r'/HopsanCore/dependencies/sundials/test')
+    callDel(gTemporaryBuildDir+r'/HopsanCore/dependencies/sundials/INSTALL_GUIDE.pdf')
+    callDel(gTemporaryBuildDir+r'/HopsanCore/dependencies/sundials/CMakeLists.txt')
+
+    # Export HopsanC include directory
     git_export('hopsanc/include', gTemporaryBuildDir+r'/hopsanc')
 
     # Export needed core code dependencies

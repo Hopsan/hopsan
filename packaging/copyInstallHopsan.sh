@@ -49,6 +49,12 @@ install_dir  $srcDir/hopsanc/include                           $dstDir/hopsanc
 install_dir  $srcDir/HopsanCore/include                        $dstDir/HopsanCore
 install_dir  $srcDir/HopsanCore/src                            $dstDir/HopsanCore
 install_dir  $srcDir/HopsanCore/dependencies                   $dstDir/HopsanCore
+rm -rf $dstDir/HopsanCore/dependencies/sundials/config
+rm -rf $dstDir/HopsanCore/dependencies/sundials/doc
+rm -rf $dstDir/HopsanCore/dependencies/sundials/examples
+rm -rf $dstDir/HopsanCore/dependencies/sundials/test
+rm -rf $dstDir/HopsanCore/dependencies/sundials/*.pdf
+rm -rf $dstDir/HopsanCore/dependencies/sundials/*.txt
 
 install_dir  $srcDir/componentLibraries/defaultLibrary         $dstDir/componentLibraries
 install_dir  $srcDir/componentLibraries/exampleComponentLib    $dstDir/componentLibraries
