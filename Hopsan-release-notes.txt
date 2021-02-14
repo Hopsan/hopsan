@@ -30,6 +30,91 @@
 ******************************
     Version History
 ******************************
+2.17.0 (2021-02-14)
+
+----- Enhancements -----
+
+- BuildSystem:
+  - CMake build system can now build all Hopsan parts and support for the Microsoft Visual C++ compiler has been added
+    Some issues still remain for CMake / MSVC builds, so this is not yet the default build system
+    Build instructions have been updated, if you wish to use this build method
+
+- Documentation:
+  - Add link to tutorials under the help menu in HopsanGUI. There is now a more in-depth tutorial on the TLM method available.
+
+- HopsanC:
+  - List alternatives when querying for illegal port or variable names
+
+- HopsanCore:
+  - New "quantity" LeakageCoefficient added with various scale factors
+  - Add Component::reconfigure() function that components can overload to reconfigure themselves
+    Reconfigure is triggered when a parameter registered with the Component::setReconfigurationParameter(const HString &rName) function
+    is changed.
+
+- HopsanGUI:
+  - Do not trigger auto complete popup after @
+  - Do not auto select auto complete item while typing, user must press Tab, arrow keys or select with mouse
+    This avoids the very annoying unintentional auto complete
+  - Auto complete now replaces the entire completer prefix, to ensure that case is corrected
+    Example: step.out.y -> Step.out.y
+  - Fix auto complete not recognizing . in names such as Step.out.y
+  - If you invert a plot curve using the curve controls, the setting will be remembered for the next generation
+    If you want the invert curve setting to be persistent, check the box in the component properties instead
+  - HCOM "edit" command now opens supported files in the Hopsan text editor instead of external editor (which quite often is not found)
+
+- Ops
+  - Add elites parameter in genetic algorithm
+    The best individuals are always carried over to the next generation without crossover and mutation.
+    This helps avoid degradation of solution quality between generations.
+
+----- Bug Fixes -----
+
+- HopsanC:
+  - Header file for hopsanc was not included in release
+  
+- HopsanGUI:
+  - Do not clear undo-stack when a connector can not be found
+  - Prevent renaming subsystem copy twice
+    Fixes invalid name lookup for attached connector in undo
+  - Fix hand icon getting stuck (finally after all these years)
+  - Fix pasting system ports with connections
+    They are no longer lost due to port being renamed
+  - Fix enable/disable undo action syncing with changes in systems
+  - Fix redo for subsystem paste
+  - Process undo items in reverse order
+    So that sub-operations are undone in the correct order
+  - Fix redo for text widgets
+  - Fix model lock-level detection for top-level system
+    Prevents changes to model when model is locked
+  - Prevent paste while left mouse button is pressed
+    It would mess with the positions of the pasted components
+  - Maybe fixed crash when simulation is finished, related to progress bar handling
+    The problem could not be reproduced reliably (by the developers) so hard to know if it is fixed
+  - Remove fade effect on red error flash in terminal, on some systems it would take a long time to fade
+    Replaced by 400 ms solid read background
+  - Fixed lock axis setting was forgotten when browsing to an empty generation
+  - Fix splash screen not including version number and mentioning "development version"
+
+- Ops:
+  - Check for minimum number of candidates in DE algorithm, to avoid crash.
+    DE algorithm requires four points
+
+----- Component Libraries -----
+
+- Renamed ContainerPort to SystemPort
+  Containers (a type of system) were removed from Hopsan several years ago
+- Turn off rotation for various signal component icons with symbols
+- Added missing unit to leakage parameter for all pump/motor components
+  Set the same default value for leakage parameter to 1e-12 for all pump/motor components
+- Use consistent default parameter value for density 870 kg/m^3 in the default component library
+- New component: Hydraulic differential pressure sensor
+- Obsolete CppComponent and ModelicaComponent traces removed (were causing warning messages)
+  The HopsanGenerator can generate proper components, so the old wrappers are no longer needed (and they no longer work)
+- New component: (Extension library) Experimental FMI wrapper using reconfigure rather then requiring recompilation
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
 2.16.0 (2020-11-08)
 
 --- Important Change ---
