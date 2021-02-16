@@ -118,8 +118,9 @@ private:
     SystemObject *mpSystem;
     QString mHost;
     int mPort;
+    bool mRealTime;
 public:
-    DcpMasterSimulationWorkerObject(SystemObject *pSystem, const QString &host, int port, double startTime, double stopTime);
+    DcpMasterSimulationWorkerObject(SystemObject *pSystem, const QString &host, int port, double startTime, double stopTime, bool realTime);
     int swoType() const {return DCPMasterSWO;}
 
 public slots:
@@ -229,7 +230,7 @@ public:
 #ifdef USEZMQ
     void initSimulateFinalizeRemote(SharedRemoteCoreSimulationHandlerT pRCSH, QVector<RemoteResultVariable> *pRemoteResultVariables, double *pProgress);
 #endif
-    void initSimulateFinalizeDcpMaster(SystemObject *pSystem, const QString &host, int port);
+    void initSimulateFinalizeDcpMaster(SystemObject *pSystem, const QString &host, int port, bool realTime);
     void initSimulateFinalizeDcpServer(SystemObject *pSystem, const QString &host, int port, const QString &targetFile);
     void initSimulateFinalize(QVector<SystemObject*> vpSystems, const bool noChanges=false);
     void initSimulateFinalize_blocking(QVector<SystemObject*> vpSystems, const bool noChanges=false);

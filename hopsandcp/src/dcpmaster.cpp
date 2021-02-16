@@ -12,9 +12,10 @@
 #include <cstdint>
 #include <fstream>
 #include <memory>
+#include <chrono>
 
-DcpMaster::DcpMaster(hopsan::ComponentSystem *pSystem, const std::string host, int port, double comStep, double startTime, double stopTime)
-    : mpSystem(pSystem), mComStep(comStep), mStartTime(startTime), mStopTime(stopTime)
+DcpMaster::DcpMaster(hopsan::ComponentSystem *pSystem, const std::string host, int port, double comStep, double startTime, double stopTime, bool realTime)
+    : mpSystem(pSystem), mComStep(comStep), mStartTime(startTime), mStopTime(stopTime), mRealTime(realTime)
 {
     (*mpSystem->getTimePtr()) = mStartTime;
 
@@ -64,13 +65,18 @@ void DcpMaster::addConnection(size_t fromServer, size_t fromVr, std::vector<size
     connections.push_back(connection);
 }
 
+
 void DcpMaster::start() {
     std::thread b(&DcpManagerMaster::start, manager);
     std::chrono::seconds dura(1);
     std::this_thread::sleep_for(dura);
+    DcpOpMode mode = DcpOpMode::NRT;
+    if(mRealTime) {
+        mode = DcpOpMode::SRT;
+    }
 
     for(size_t i=0; i<serverDescriptions.size(); ++i) {
-        manager->STC_register(u_char(i+1), DcpState::ALIVE, convertToUUID(serverDescriptions[i]->uuid), DcpOpMode::NRT, 1, 0);
+        manager->STC_register(u_char(i+1), DcpState::ALIVE, convertToUUID(serverDescriptions[i]->uuid), mode, 1, 0);
     }
     b.join();
 }
@@ -226,7 +232,15 @@ void DcpMaster::receiveStateChangedNotification(uint8_t sender,
                 stop();
             }
             else {
-                doStep();
+                if(!mRealTime) {
+                    doStep();
+                }
+                else {
+                    std::thread timerThread(&DcpMaster::timer, this, mpSystem, mStartTime, mStopTime);
+                    timerThread.join();
+                    serversWaitingToStop = uint8_t(serverDescriptions.size());
+                    stop();
+                }
             }
             break;
 
@@ -254,6 +268,18 @@ void DcpMaster::receiveStateChangedNotification(uint8_t sender,
         case DcpState::PREPARING:
         default:
             break;
+    }
+}
+
+void DcpMaster::timer(hopsan::ComponentSystem *pSystem, double startTime, double stopTime)
+{
+    std::chrono::steady_clock::time_point time = std::chrono::steady_clock::now();
+    double simTime = startTime;
+    while(simTime < stopTime) {
+        time += std::chrono::milliseconds{100};
+        simTime += 0.1;
+        (*pSystem->getTimePtr()) = simTime;
+        std::this_thread::sleep_until(time);
     }
 }
 
