@@ -343,11 +343,11 @@ void SimulationThreadHandler::initSimulateFinalizeRemote(SharedRemoteCoreSimulat
 }
 #endif
 
-void SimulationThreadHandler::initSimulateFinalizeDcpMaster(SystemObject *pSystem, const QString &host, int port)
+void SimulationThreadHandler::initSimulateFinalizeDcpMaster(SystemObject *pSystem, const QString &host, int port, bool realTime)
 {
     mvpSystems.clear();
     mvpSystems.push_back(pSystem);
-    mpSimulationWorkerObject = new DcpMasterSimulationWorkerObject(pSystem, host, port, mStartT, mStopT);
+    mpSimulationWorkerObject = new DcpMasterSimulationWorkerObject(pSystem, host, port, mStartT, mStopT, realTime);
     mpSimulationWorkerObject->setMessageHandler(mpMessageHandler);
     initSimulateFinalizePrivate();
 }
@@ -618,8 +618,8 @@ void DcpServerSimulationWorkerObject::initSimulateFinalize()
     emit finalizeDone(true, timer.elapsed());
 }
 
-DcpMasterSimulationWorkerObject::DcpMasterSimulationWorkerObject(SystemObject *pSystem, const QString &host, int port, double startTime, double stopTime)
-    : mpSystem(pSystem), mHost(host), mPort(port)
+DcpMasterSimulationWorkerObject::DcpMasterSimulationWorkerObject(SystemObject *pSystem, const QString &host, int port, double startTime, double stopTime, bool realTime)
+    : mpSystem(pSystem), mHost(host), mPort(port), mRealTime(realTime)
 {
     mStartTime = startTime;
     mStopTime = stopTime;
@@ -632,7 +632,7 @@ void DcpMasterSimulationWorkerObject::initSimulateFinalize()
     emit setProgressState(SimulationState::Initialize);
     timer.start();
 
-    DcpMaster *pDcpMaster = new DcpMaster(mpSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), mHost.toStdString(), mPort, mpSystem->getTimeStep(), mStartTime, mStopTime);
+    DcpMaster *pDcpMaster = new DcpMaster(mpSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), mHost.toStdString(), mPort, mpSystem->getTimeStep(), mStartTime, mStopTime, mRealTime);
     for(const auto comp : mpSystem->getModelObjects()) {
         if(comp->getTypeName() == HOPSANGUIDCPCOMPONENT) {   //Just in case, model shall only contain DCP components anyway
             pDcpMaster->addServer(comp->getParameterValue("dcpFile").toStdString());

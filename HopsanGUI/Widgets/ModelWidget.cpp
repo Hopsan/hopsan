@@ -803,12 +803,15 @@ bool ModelWidget::simulateDcpMaster()
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(pDcpSettingsDialog);
     QPushButton *pOkButton = pButtonBox->addButton(QDialogButtonBox::Ok);
     QPushButton *pCancelButton = pButtonBox->addButton(QDialogButtonBox::Cancel);
+    QCheckBox *pRealTimeCheckBox = new QCheckBox("Realtime", pDcpSettingsDialog);
+    pRealTimeCheckBox->setChecked(false);
     connect(pOkButton, SIGNAL(clicked()), pDcpSettingsDialog, SLOT(accept()));
     connect(pCancelButton, SIGNAL(clicked()), pDcpSettingsDialog, SLOT(reject()));
     pDialogLayout->addWidget(new QLabel("Host address:",pDcpSettingsDialog),0,0);
     pDialogLayout->addWidget(pHostLineEdit,0,1,1,2);
     pDialogLayout->addWidget(new QLabel("Port:",pDcpSettingsDialog),1,0);
     pDialogLayout->addWidget(pPortSpinBox,1,1,1,2);
+    pDialogLayout->addWidget(pRealTimeCheckBox);
     pDialogLayout->addWidget(pButtonBox, 3,1,1,3);
 
     if(pDcpSettingsDialog->exec() == QDialog::Rejected) {
@@ -821,10 +824,10 @@ bool ModelWidget::simulateDcpMaster()
         return false;
     }
 
-    mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
+    mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), uint(mpToplevelSystem->getNumberOfLogSamples()));
     mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
     mSimulationProgress=0;
-    mpSimulationThreadHandler->initSimulateFinalizeDcpMaster(mpToplevelSystem, pHostLineEdit->text(), pPortSpinBox->value());
+    mpSimulationThreadHandler->initSimulateFinalizeDcpMaster(mpToplevelSystem, pHostLineEdit->text(), pPortSpinBox->value(), pRealTimeCheckBox->isChecked());
 
     unlockSimulateMutex();
 
