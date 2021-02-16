@@ -27,7 +27,7 @@ struct DcpConnection
 HOPSANDCP_DLLAPI class DcpMaster
 {
 public:
-    DcpMaster(hopsan::ComponentSystem *pSystem, const string host, int port, double comStep=0.001, double startTime=0, double stopTime=10);
+    DcpMaster(hopsan::ComponentSystem *pSystem, const string host, int port, double comStep=0.001, double startTime=0, double stopTime=10, bool realTime=false);
     ~DcpMaster();
 
     void addServer(string filepath);
@@ -47,8 +47,10 @@ private:
     void receiveNAck(uint8_t sender, uint16_t pduSeqId, DcpError errorCode);
     void dataReceived(uint16_t dataId, size_t length, uint8_t payload[]);
     void receiveStateChangedNotification(uint8_t sender, DcpState state);
+    void timer(hopsan::ComponentSystem *pSystem, double startTime, double stopTime);
 
     hopsan::ComponentSystem *mpSystem;
+    bool mRealTime;
 
     std::vector<DcpConnection> connections;
 
