@@ -5,6 +5,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace hopsan {
 class HopsanEssentials;
@@ -26,8 +27,9 @@ public:
     bool start();
 
 private:
-    SlaveDescription_t *getServerDescription();
+    std::shared_ptr<SlaveDescription_t> createServerDescription();
 
+    std::shared_ptr<SlaveDescription_t> mpServerDescription;
     hopsan::ComponentSystem *mpRootSystem;
     std::vector<std::string> mInputs, mOutputs;
     std::vector<double*> mInputNodePtrs, mOutputNodePtrs;
