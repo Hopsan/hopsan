@@ -31,4 +31,8 @@
 #ifndef UTILITIES_H
 #define UTILITIES_H
 
+#include "HopsanTypes.h"
+
+hopsan::HString generateUuid();
+
 #endif // UTILITIES_H
