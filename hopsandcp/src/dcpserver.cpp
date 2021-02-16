@@ -57,7 +57,8 @@ DcpServer::DcpServer(ComponentSystem *pSystem, const std::string host, int port,
     udpDriver = new UdpDriver(host, uint16_t(port));
 
     //Create server DCP manager
-    mManager = new DcpManagerSlave(*getServerDescription(), udpDriver->getDcpDriver());
+    mpServerDescription = createServerDescription();
+    mManager = new DcpManagerSlave(*mpServerDescription, udpDriver->getDcpDriver());
     mManager->setInitializeCallback<SYNC>(
             std::bind(&DcpServer::initialize, this));
     mManager->setConfigureCallback<SYNC>(
@@ -87,50 +88,50 @@ DcpServer::~DcpServer()
 {
 }
 
-SlaveDescription_t *DcpServer::getServerDescription() {
-    SlaveDescription_t *serverDescription = new SlaveDescription_t(make_SlaveDescription(1, 0, mpRootSystem->getName().c_str(), "b5279485-720d-4542-9f29-bee4d9a75ef9"));
-    serverDescription->OpMode.HardRealTime = make_HardRealTime_ptr();
-    serverDescription->OpMode.SoftRealTime = make_SoftRealTime_ptr();
-    serverDescription->OpMode.NonRealTime = make_NonRealTime_ptr();
+std::shared_ptr<SlaveDescription_t> DcpServer::createServerDescription() {
+    SlaveDescription_t serverDescription = make_SlaveDescription(1, 0, mpRootSystem->getName().c_str(), generateUuid().c_str());
+    serverDescription.OpMode.HardRealTime = make_HardRealTime_ptr();
+    serverDescription.OpMode.SoftRealTime = make_SoftRealTime_ptr();
+    serverDescription.OpMode.NonRealTime = make_NonRealTime_ptr();
     Resolution_t resolution = make_Resolution();
     resolution.numerator = 1;
     resolution.denominator = denominator_t(1.0/mpRootSystem->getTimestep());
-    serverDescription->TimeRes.resolutions.push_back(resolution);
-    serverDescription->TransportProtocols.UDP_IPv4 = make_UDP_ptr();
-    serverDescription->TransportProtocols.UDP_IPv4->Control = make_Control_ptr(mHost.c_str(), port_t(mPort));
-    serverDescription->TransportProtocols.UDP_IPv4->DAT_input_output = make_DAT_ptr();
-    serverDescription->TransportProtocols.UDP_IPv4->DAT_input_output->availablePortRanges.push_back(make_AvailablePortRange(2048, 65535));
-    serverDescription->TransportProtocols.UDP_IPv4->DAT_parameter = make_DAT_ptr();
-    serverDescription->TransportProtocols.UDP_IPv4->DAT_parameter->availablePortRanges.push_back(make_AvailablePortRange(2048, 65535));
-    serverDescription->CapabilityFlags.canAcceptConfigPdus = true;
-    serverDescription->CapabilityFlags.canHandleReset = false;
-    serverDescription->CapabilityFlags.canHandleVariableSteps = false;
-    serverDescription->CapabilityFlags.canMonitorHeartbeat = false;
-    serverDescription->CapabilityFlags.canProvideLogOnRequest = true;
-    serverDescription->CapabilityFlags.canProvideLogOnNotification = true;
+    serverDescription.TimeRes.resolutions.push_back(resolution);
+    serverDescription.TransportProtocols.UDP_IPv4 = make_UDP_ptr();
+    serverDescription.TransportProtocols.UDP_IPv4->Control = make_Control_ptr(mHost.c_str(), port_t(mPort));
+    serverDescription.TransportProtocols.UDP_IPv4->DAT_input_output = make_DAT_ptr();
+    serverDescription.TransportProtocols.UDP_IPv4->DAT_input_output->availablePortRanges.push_back(make_AvailablePortRange(2048, 65535));
+    serverDescription.TransportProtocols.UDP_IPv4->DAT_parameter = make_DAT_ptr();
+    serverDescription.TransportProtocols.UDP_IPv4->DAT_parameter->availablePortRanges.push_back(make_AvailablePortRange(2048, 65535));
+    serverDescription.CapabilityFlags.canAcceptConfigPdus = true;
+    serverDescription.CapabilityFlags.canHandleReset = false;
+    serverDescription.CapabilityFlags.canHandleVariableSteps = false;
+    serverDescription.CapabilityFlags.canMonitorHeartbeat = false;
+    serverDescription.CapabilityFlags.canProvideLogOnRequest = true;
+    serverDescription.CapabilityFlags.canProvideLogOnNotification = true;
 
     for(size_t i=0; i<mOutputs.size(); ++i) {
         std::shared_ptr<Output_t> causality = make_Output_ptr<float64_t>();
-        serverDescription->Variables.push_back(make_Variable_output(mOutputs[i], valueReference_t(i), causality));
+        serverDescription.Variables.push_back(make_Variable_output(mOutputs[i], valueReference_t(i), causality));
     }
     for(size_t i=0; i<mInputs.size(); ++i) {
         std::shared_ptr<CommonCausality_t> causality = make_CommonCausality_ptr<float64_t>();
         causality->Float64->start = std::make_shared<std::vector<float64_t>>();
         causality->Float64->start->push_back(0.0);
-        serverDescription->Variables.push_back(make_Variable_input(mInputs[i], valueReference_t(mOutputs.size()+i), causality));
+        serverDescription.Variables.push_back(make_Variable_input(mInputs[i], valueReference_t(mOutputs.size()+i), causality));
     }
 
-    serverDescription->Log = make_Log_ptr();
-    serverDescription->Log->categories.push_back(make_Category(1, "DCP_SERVER"));
-    serverDescription->Log->templates.push_back(make_Template(
+    serverDescription.Log = make_Log_ptr();
+    serverDescription.Log->categories.push_back(make_Category(1, "DCP_SERVER"));
+    serverDescription.Log->templates.push_back(make_Template(
             1, 1, (uint8_t) DcpLogLevel::LVL_INFORMATION, "[Time = %float64]: output = %float64"));
 
-    return serverDescription;
+    return std::make_shared<SlaveDescription_t>(serverDescription);
 }
 
 
 void DcpServer::generateDcpFile(std::string targetFile) {
-    writeDcpSlaveFile(std::shared_ptr<SlaveDescription_t>(getServerDescription()), targetFile.c_str());
+    writeDcpSlaveFile(std::shared_ptr<SlaveDescription_t>(mpServerDescription), targetFile.c_str());
 }
 
 bool DcpServer::start()
