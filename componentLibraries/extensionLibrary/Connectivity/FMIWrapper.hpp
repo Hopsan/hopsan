@@ -358,13 +358,14 @@ public:
     void finalize()
     {
         if(fmu) {
-            fmistatus = fmi2_import_terminate(fmu);
+            fmistatus = fmi2_import_reset(fmu);
         }
     }
 
     void deconfigure()
     {
         if(fmu) {
+            fmistatus = fmi2_import_terminate(fmu);
             fmi2_import_free_instance(fmu);
             fmi2_import_destroy_dllfmu(fmu);
             fmi2_import_free(fmu);
