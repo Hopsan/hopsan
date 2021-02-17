@@ -161,6 +161,14 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
                 QFileInfo dcpFileInfo(dcpPath);
                 gpConfig->setStringSetting(CFG_DCPDIR, dcpFileInfo.absolutePath());
 
+                //Check that DCP server is not already added to model
+                for(const auto &comp : mpParentModelWidget->getTopLevelSystemContainer()->getModelObjects()) {
+                    if(comp->getParameterValue("dcpFile") == dcpFileInfo.absoluteFilePath()) {
+                        gpMessageHandler->addErrorMessage("Specified DCP server already exists in model. Only one instance is allowed.");
+                        return;
+                    }
+                }
+
                 hopsan::HString name, variables, valueRefs;
                 getDataFromProtocolFile(dcpFileInfo.filePath().toStdString().c_str(), name, variables, valueRefs);
 
