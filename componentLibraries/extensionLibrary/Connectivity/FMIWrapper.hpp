@@ -116,7 +116,7 @@ class FMIWrapper : public ComponentSignal
 {
 private:
     TempDirectoryHandle *mpTempDir;
-    HString mFmuPath, mLastFmuPath;
+    HFilePath mFmuPath, mLastFmuPath;
     std::map<fmi2_value_reference_t,double*> mOutputs;
     std::map<fmi2_value_reference_t,double*> mIntOutputs;
     std::map<fmi2_value_reference_t,double*> mBoolOutputs;
@@ -145,7 +145,7 @@ public:
 
     void configure()
     {
-        addConstant("path", "Path to functional mockup unit (FMU)", "", mFmuPath);
+        addConstant("path", "Path to functional mockup unit (FMU)", mFmuPath);
         setReconfigurationParameter("path");
     }
 

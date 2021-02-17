@@ -137,6 +137,7 @@ public:
     void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const bool defaultValue, bool &rData);
     void addConstant(const HString &rName, const HString &rDescription, const HString &rQuantity, const HString &rUnit, const double defaultValue, double &rData);
     void addConstant(const HString &rName, const HString &rDescription, HTextBlock &rData);
+    void addConstant(const HString &rName, const HString &rDescription, HFilePath &rData);
     void addConditionalConstant(const HString &rName, const HString &rDescription, std::vector<HString> &rConditions, int &rData);
     void addConditionalConstant(const HString &rName, const HString &rDescription, std::vector<HString> &rConditions, const int defaultValue, int &rData);
 
@@ -294,6 +295,7 @@ private:
     void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, HString &rValue);
     void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, bool &rValue);
     void registerParameter(const HString &rName, const HString &rDescription, HTextBlock &rValue);
+    void registerParameter(const HString &rName, const HString &rDescription, HFilePath &rValue);
 
     // Private member variables
     HString mName;

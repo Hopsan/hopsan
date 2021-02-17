@@ -264,6 +264,7 @@ private slots:
     void resetDefault();
     void createSysParameterSelectionMenu();
     void openValueEditDialog();
+    void openFileBrowserDialog();
 
 private:
     QString mVariableDataType, mVariablePortDataName, mVariablePortName;
