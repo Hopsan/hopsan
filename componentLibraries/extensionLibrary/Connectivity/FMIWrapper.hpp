@@ -232,22 +232,26 @@ public:
             if(causality == fmi2_causality_enu_parameter && type == fmi2_base_type_str)
             {
                 addDebugMessage("String parameter: "+HString(name));
-                addConstant(name, description, "", mStringParameters[vr]);
+                const char* startValue = fmi2_import_get_string_variable_start(fmi2_import_get_variable_as_string(pVar));
+                addConstant(name, description, "", startValue, mStringParameters[vr]);
             }
             else if(causality == fmi2_causality_enu_parameter && type == fmi2_base_type_bool)
             {
                 addDebugMessage("Boolean parameter: "+HString(name));
-                addConstant(name, description, "", mBoolParameters[vr]);
+                bool startValue = fmi2_import_get_boolean_variable_start(fmi2_import_get_variable_as_boolean(pVar));
+                addConstant(name, description, "", startValue, mBoolParameters[vr]);
             }
             else if(causality == fmi2_causality_enu_parameter && type == fmi2_base_type_int)
             {
                 addDebugMessage("Integer parameter: "+HString(name));
-                addConstant(name, description, "", mIntParameters[vr]);
+                int startValue = fmi2_import_get_integer_variable_start(fmi2_import_get_variable_as_integer(pVar));
+                addConstant(name, description, "", startValue, mIntParameters[vr]);
             }
             else if(causality == fmi2_causality_enu_parameter)
             {
                 addDebugMessage("Real parameter: "+HString(name));
-                addConstant(name, description, "", mRealParameters[vr]);
+                double startValue = fmi2_import_get_real_variable_start(fmi2_import_get_variable_as_real(pVar));
+                addConstant(name, description, "", startValue, mRealParameters[vr]);
             }
             else if(causality == fmi2_causality_enu_input && type == fmi2_base_type_real)
             {
