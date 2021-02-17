@@ -111,7 +111,10 @@ private:
     HString mFmuPath, mLastFmuPath;
     std::map<fmi2_value_reference_t,double*> mOutputs;
     std::map<fmi2_value_reference_t,double*> mInputs;
-    std::map<fmi2_value_reference_t,double> mParameters;
+    std::map<fmi2_value_reference_t,double> mRealParameters;
+    std::map<fmi2_value_reference_t,bool> mBoolParameters;
+    std::map<fmi2_value_reference_t,int> mIntParameters;
+    std::map<fmi2_value_reference_t,HString> mStringParameters;
     std::vector<Port*> mPorts;
 
     jm_callbacks callbacks;
@@ -157,7 +160,10 @@ public:
         mPorts.clear();
         mOutputs.clear();
         mInputs.clear();
-        mParameters.clear();
+        mRealParameters.clear();
+        mStringParameters.clear();
+        mBoolParameters.clear();
+        mIntParameters.clear();
 
         callbacks.malloc = malloc;
         callbacks.calloc = calloc;
@@ -223,10 +229,25 @@ public:
             fmi2_causality_enu_t causality = fmi2_import_get_causality(pVar);
             fmi2_value_reference_t vr = fmi2_import_get_variable_vr(pVar);
 
-            if(causality == fmi2_causality_enu_parameter)
+            if(causality == fmi2_causality_enu_parameter && type == fmi2_base_type_str)
             {
-                addDebugMessage("Parameter: "+HString(name));
-                addConstant(name, description, "", mParameters[vr]);
+                addDebugMessage("String parameter: "+HString(name));
+                addConstant(name, description, "", mStringParameters[vr]);
+            }
+            else if(causality == fmi2_causality_enu_parameter && type == fmi2_base_type_bool)
+            {
+                addDebugMessage("Boolean parameter: "+HString(name));
+                addConstant(name, description, "", mBoolParameters[vr]);
+            }
+            else if(causality == fmi2_causality_enu_parameter && type == fmi2_base_type_int)
+            {
+                addDebugMessage("Integer parameter: "+HString(name));
+                addConstant(name, description, "", mIntParameters[vr]);
+            }
+            else if(causality == fmi2_causality_enu_parameter)
+            {
+                addDebugMessage("Real parameter: "+HString(name));
+                addConstant(name, description, "", mRealParameters[vr]);
             }
             else if(causality == fmi2_causality_enu_input && type == fmi2_base_type_real)
             {
@@ -272,9 +293,23 @@ public:
     {
         addInfoMessage("Initializing FMU 2.0 import");
 
-        std::map<fmi2_value_reference_t,double>::iterator it;
-        for(it = mParameters.begin(); it != mParameters.end(); it++) {
-            fmistatus = fmi2_import_set_real(fmu, &it->first, 1, &it->second);
+        std::map<fmi2_value_reference_t,double>::iterator itr;
+        for(itr = mRealParameters.begin(); itr != mRealParameters.end(); itr++) {
+            fmistatus = fmi2_import_set_real(fmu, &itr->first, 1, &itr->second);
+        }
+        std::map<fmi2_value_reference_t,HString>::iterator its;
+        for(its = mStringParameters.begin(); its != mStringParameters.end(); ++its) {
+            const char* value = its->second.c_str();
+            fmistatus = fmi2_import_set_string(fmu, &its->first, 1, &value);
+        }
+        std::map<fmi2_value_reference_t,bool>::iterator itb;
+        for(itb = mBoolParameters.begin(); itb != mBoolParameters.end(); ++itb) {
+            int value = int(itb->second);
+            fmistatus = fmi2_import_set_boolean(fmu, &its->first, 1, &value);
+        }
+        std::map<fmi2_value_reference_t,int>::iterator iti;
+        for(iti = mIntParameters.begin(); iti != mIntParameters.end(); ++iti) {
+            fmistatus = fmi2_import_set_integer(fmu, &its->first, 1, &iti->second);
         }
 
         //Setup experiment
