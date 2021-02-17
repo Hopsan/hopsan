@@ -54,7 +54,7 @@ namespace hopsan {
         HString mInDataName, mOutDataName;
         bool mReloadPLO;
         bool mUseTextInput;
-        HString mPloFileName;
+        HFilePath mPloFileName;
         HTextBlock mTextInput;
         PLOParser mPLOParser;
         LookupTable1D mLookupTable;
@@ -70,7 +70,7 @@ namespace hopsan {
             addInputVariable("in", "", "", 0.0, &mpIn);
             addOutputVariable("out", "", "", &mpOut);
 
-            addConstant("filename", "Data file (absolute or relative to model path)", "", "FilePath", mPloFileName);
+            addConstant("filename", "Data file (absolute or relative to model path)", mPloFileName);
             addConstant("text", "Text input (instead of file)", mTextInput);
             addConstant("invar", "Name of input variable (in file)", "", "Time", mInDataName);
             addConstant("outvar", "Name of output variable (in file)", "", "Data", mOutDataName);

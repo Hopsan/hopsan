@@ -54,7 +54,7 @@ namespace hopsan {
         int mNumLinesToSkip;
         bool mReloadCSV;
         bool mUseTextInput;
-        HString mFileName;
+        HFilePath mFileName;
         HString mCommentChar;
         HTextBlock mTextInput;
         CSVParserNG mCSVParser;
@@ -73,7 +73,7 @@ namespace hopsan {
             addInputVariable("plane", "", "", 0.0, &mpInPlane);
             addOutputVariable("out", "", "", &mpOut);
 
-            addConstant("filename", "Data file (absolute or relative to model path)", "", "FilePath", mFileName);
+            addConstant("filename", "Data file (absolute or relative to model path)", mFileName);
             addConstant("text", "Text input (instead of file)", mTextInput);
             addConstant("numlineskip", "The number of lines to skip (from the top)", "", 0, mNumLinesToSkip);
             addConstant("comment", "Skip initial lines starting with character", "", "", mCommentChar);
