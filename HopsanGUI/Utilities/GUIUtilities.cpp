@@ -796,7 +796,7 @@ bool verifyParameterValue(QString &rValue, const QString type, const QStringList
         }
         return true;
     }
-    else if (type == "string" || type == "textblock")
+    else if (type == "string" || type == "textblock" || type == "filepath")
     {
         return true;
     }

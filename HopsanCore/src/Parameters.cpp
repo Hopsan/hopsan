@@ -208,7 +208,7 @@ bool ParameterEvaluator::refreshParameterValueText()
                 ss << "false";
             }
         }
-        else if(mType=="string" || mType=="textblock")
+        else if(mType=="string" || mType=="textblock" || mType=="filepath")
         {
             ss << *static_cast<string*>(mpData);
         }
@@ -252,7 +252,7 @@ bool ParameterEvaluator::evaluate(HString &rResult)
         return false;
     }
 
-    if(!((mType=="double") || (mType=="integer") || (mType=="bool") || (mType=="string") || (mType=="textblock") || (mType=="conditional")))
+    if(!((mType=="double") || (mType=="integer") || (mType=="bool") || (mType=="string") || (mType=="textblock") || (mType=="filepath") || (mType=="conditional")))
     {
         mpParameterEvaluatorHandler->getComponent()->addErrorMessage("Parameter could not be evaluated, unknown type: " + mType);
     }
@@ -271,7 +271,7 @@ bool ParameterEvaluator::evaluate(HString &rResult)
     {
         doCheckOthers = !mParameterValue.isBool();
     }
-    else if ((mType=="string") || (mType=="textblock"))
+    else if ((mType=="string") || (mType=="textblock") || (mType=="filepath"))
     {
         doCheckOthers = true;
     }
@@ -298,7 +298,7 @@ bool ParameterEvaluator::evaluate(HString &rResult)
             evaluatedParameterValue = mParameterValue;
         }
     }
-    else if (doCheckOthers && (mType=="string" || mType=="textblock" || mType=="bool")) {
+    else if (doCheckOthers && (mType=="string" || mType=="textblock" || mType=="filepath" || mType=="bool")) {
 
         const HString& possibleNameOfOtherParameter = mParameterValue;
         const bool isSelfParameter = possibleNameOfOtherParameter.startsWith("self.");
@@ -413,7 +413,7 @@ bool ParameterEvaluator::evaluate(HString &rResult)
             success = false;
         }
     }
-    else if(mType=="string" || mType=="textblock")
+    else if(mType=="string" || mType=="textblock" || mType=="filepath")
     {
         // If a data pointer has been set, then write evaluated value to data variable
         if(mpData)

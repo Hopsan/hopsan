@@ -31,6 +31,7 @@
 namespace hopsan {
 
 class HOPSANCORE_DLLAPI HTextBlock : public HString {};
+class HOPSANCORE_DLLAPI HFilePath : public HString {};
 
 }
 

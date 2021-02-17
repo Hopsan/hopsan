@@ -752,6 +752,9 @@ void getParameters(QList<ParameterSpecification> &parameters, hopsan::ComponentS
         else if(par->getType() == "textblock") {
             spec.type = "String";
         }
+        else if(par->getType() == "filepath") {
+            spec.type = "String";
+        }
         else if(par->getType() == "conditional") {
             spec.type = "Integer";
         }

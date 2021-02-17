@@ -606,6 +606,11 @@ void Component::addConstant(const HString &rName, const HString &rDescription, H
     registerParameter(rName, rDescription, rData);
 }
 
+void Component::addConstant(const HString &rName, const HString &rDescription, HFilePath &rData)
+{
+    registerParameter(rName, rDescription, rData);
+}
+
 ///@{
 //! @brief Register a parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
 //! @param [in] rName The name of the parameter
@@ -688,6 +693,20 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
         mpParameters->deleteParameter(rName);     //Remove parameter if it is already registered
 
     mpParameters->addParameter(rName, rValue, rDescription, "", "", "textblock", &rValue);
+}
+
+void Component::registerParameter(const HString &rName, const HString &rDescription, HFilePath &rValue)
+{
+    if (!isNameValid(rName))
+    {
+        addErrorMessage("Will not register Invalid parameter name: "+rName);
+        return;
+    }
+
+    if(mpParameters->hasParameter(rName))
+        mpParameters->deleteParameter(rName);     //Remove parameter if it is already registered
+
+    mpParameters->addParameter(rName, rValue, rDescription, "", "", "filepath", &rValue);
 }
 ///@}
 

@@ -56,6 +56,7 @@ public:
         addItem("bool");
         addItem("string");
         addItem("textblock");
+        addItem("filepath");
     }
 };
 

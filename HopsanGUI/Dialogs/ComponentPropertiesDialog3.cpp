@@ -1576,6 +1576,15 @@ ParameterValueSelectionWidget::ParameterValueSelectionWidget(const CoreVariamete
             mpValueEdit->setReadOnly(true);
         }
 
+        if (rData.mDataType == "filepath") {
+            QToolButton *pBrowseButton =  new QToolButton(this);
+            pBrowseButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Open.svg"));
+            pBrowseButton->setToolTip("Browse");
+            pBrowseButton->setFixedSize(24,24);
+            connect(pBrowseButton, SIGNAL(clicked()), this, SLOT(openFileBrowserDialog()));
+            pLayout->addWidget(pBrowseButton);
+        }
+
         QToolButton *pResetButton =  new QToolButton(this);
         pResetButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-ResetDefault.svg"));
         pResetButton->setToolTip("Reset Default Value");
@@ -1709,7 +1718,7 @@ void ParameterValueSelectionWidget::resetDefault()
     if(mpModelObject && mpValueEdit)
     {
         QString defaultText = mpModelObject->getDefaultParameterValue(mVariablePortDataName);
-        if(!defaultText.isEmpty() || mVariableDataType=="string" || mVariableDataType=="textblock")
+        if(!defaultText.isEmpty() || mVariableDataType=="string" || mVariableDataType=="textblock" || mVariableDataType=="filepath")
         {
             mpValueEdit->setText(defaultText);
             setDefaultValueTextStyle();
@@ -1790,6 +1799,14 @@ void ParameterValueSelectionWidget::openValueEditDialog()
             mpValueEdit->setMaxLength(text.size());
         }
         mpValueEdit->setText(text);
+    }
+}
+
+void ParameterValueSelectionWidget::openFileBrowserDialog()
+{
+    QString filePath = QFileDialog::getOpenFileName(gpMainWindowWidget, "Select file", gpDesktopHandler->getDocumentsPath());
+    if(!filePath.isEmpty()) {
+        mpValueEdit->setText(filePath);
     }
 }
 
