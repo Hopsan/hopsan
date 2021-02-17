@@ -53,7 +53,8 @@ namespace hopsan {
     private:
         Port *mpIn;
         double *mpDt;
-        HString mFilePath, mNames, mAliases, mUnits;
+        HFilePath mFilePath;
+        HString mNames, mAliases, mUnits;
         enum FileTypes {PlainColumnWiseCSV, PlainRowWiseCSV, HopsanRowWiseCSV, HopsanPLO};
         int mFileType;
         std::ofstream mFile;
@@ -77,7 +78,7 @@ namespace hopsan {
             filetypes.push_back("Hopsan PLO");
 
             mpIn = addReadMultiPort("in", "NodeSignal", "", Port::NotRequired);
-            addConstant("path", "Path to output log file", "", "", mFilePath);
+            addConstant("path", "Path to output log file", mFilePath);
             addConditionalConstant("filetype", "File type", filetypes,0,mFileType);
             addInputVariable("dt", "Logging Interval (0 = log every sample)", "Time", 0, &mpDt);
             addConstant("names", "Variable names (comma separated)", "", "", mNames);

@@ -39,7 +39,7 @@ class SignalNumHopSISO : public ComponentSignal
 
 private:
     double *mpIn, *mpOut;
-    HString mScriptFile;
+    HFilePath mScriptFile;
     NumHopHelper *mpNumHop;
 
 public:
@@ -53,7 +53,7 @@ public:
         addInputVariable("in", "", "", 0.0, &mpIn);
         addOutputVariable("out", "", "", &mpOut);
 
-        addConstant("scriptfile", "Script file (absolute or relative to model path)", "", "FilePath", mScriptFile);
+        addConstant("scriptfile", "Script file (absolute or relative to model path)", mScriptFile);
 
         mpNumHop = new NumHopHelper();
     }

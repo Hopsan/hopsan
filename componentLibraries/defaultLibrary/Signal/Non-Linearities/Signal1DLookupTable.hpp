@@ -54,7 +54,7 @@ namespace hopsan {
         int mInDataId, mOutDataId, mNumLinesToSkip;
         bool mReloadCSV;
         bool mUseTextInput;
-        HString mFileName;
+        HFilePath mFileName;
         HTextBlock mTextInput;
         HString mSeparatorChar;
         HString mCommentChar;
@@ -74,7 +74,7 @@ namespace hopsan {
             addInputVariable("in", "", "", 0.0, &mpIn);
             addOutputVariable("out", "", "", &mpOut);
 
-            addConstant("filename", "Data file (absolute or relative to model path)", "", "FilePath", mFileName);
+            addConstant("filename", "Data file (absolute or relative to model path)", mFileName);
             addConstant("text", "Text input (instead of file)", mTextInput);
             addConstant("csvsep", "csv separator character", "", HString(","), mSeparatorChar);
             addConstant("inid", "csv file index column (0-based index)", "", 0, mInDataId);
