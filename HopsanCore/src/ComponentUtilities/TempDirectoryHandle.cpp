@@ -140,7 +140,8 @@ bool TempDirectoryHandle::createDir(const HString &rName) const
 #ifdef _WIN32
         return _mkdir(rName.c_str()) == 0;
 #else
-        return mkdir(rName.c_str(), 0777) == 0;
+        int ret = mkdir(rName.c_str(), 0777) == 0;
+        return (ret != 0);
 #endif
 }
 
@@ -160,7 +161,9 @@ bool TempDirectoryHandle::createPath(const HString &rPath) const
                 return false;
             }
         }
-        currentLevel += "/"; // don't forget to append a slash
+        if(currentLevel.empty() || currentLevel[currentLevel.size()-1] != '/') {
+            currentLevel += "/"; // don't forget to append a slash
+        }
     }
 #endif
     return directoryExists(rPath);
@@ -170,8 +173,13 @@ bool TempDirectoryHandle::createPath(const HString &rPath) const
 bool TempDirectoryHandle::directoryExists(const HString &rName) const
 {
     struct stat st;
-    stat(rName.c_str(), &st);
-    return st.st_mode & S_IFDIR;
+    if(stat(rName.c_str(), &st) != 0) {
+        return false;
+    }
+    else if(st.st_mode & S_IFDIR) {
+        return true;
+    }
+    return false;
 }
 
 bool TempDirectoryHandle::removeDirectory(const HString &rPath) const
