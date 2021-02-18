@@ -378,7 +378,7 @@ public:
         }
 
         //Take step
-        fmistatus = fmi2_import_do_step(fmu, mTime, mTimestep, true);
+        fmistatus = fmi2_import_do_step(fmu, mTime-mTimestep, mTimestep, true);
         if (fmistatus != fmi2_status_ok) {
             stopSimulation("fmi2_import_do_step failed");
             return;
