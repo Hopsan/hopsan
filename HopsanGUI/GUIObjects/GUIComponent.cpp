@@ -152,6 +152,7 @@ bool Component::setParameterValue(QString name, QString value, bool force)
 
     if(this->getTypeName() == "FMIWrapper" && name == "path") {
         //Get lists of input and output ports from core component
+        QStringList visibleOutputs = getParameterValue("visibleOutputs").split(",");
         QStringList inputs, outputs;
         for(const auto &port: mpParentSystemObject->getCoreSystemAccessPtr()->getPortNames(this->getName())) {
             QString type = mpParentSystemObject->getCoreSystemAccessPtr()->getPortType(this->getName(), port);
@@ -159,7 +160,7 @@ bool Component::setParameterValue(QString name, QString value, bool force)
             if("ReadPortType" == type) {
                 inputs << port;
             }
-            else if("WritePortType" == type) {
+            else if("WritePortType" == type && visibleOutputs.contains(port)) {
                 outputs << port;
             }
         }

@@ -125,7 +125,7 @@ private:
     fmi2_status_t fmistatus;
     fmi2_import_t* fmu;
     double mTolerance = 1e-4;
-
+    HString mVisibleOutputs;
 
 public:
     static Component *Creator()
@@ -270,8 +270,17 @@ public:
             {
                 addDebugMessage("Output: "+HString(name));
                 mPorts.push_back(addOutputVariable(name, description, "", &mOutputs[vr]));
+                mVisibleOutputs.append(HString(name)+",");
+            }
+            else if(causality == fmi2_causality_enu_local && type == fmi2_base_type_real) {
+                addDebugMessage("Local: "+HString(name));
+                mPorts.push_back(addOutputVariable(name, description, "", &mOutputs[vr]));
             }
         }
+        if(!mVisibleOutputs.empty() && mVisibleOutputs.back() == ',') {
+            mVisibleOutputs.erase(mVisibleOutputs.size()-1,1);  //Remove trailing comma
+        }
+        addConstant("visibleOutputs", "Visible output variables (hidden)", "", mVisibleOutputs, mVisibleOutputs);
 
         fmiCallbackFunctions.logger = fmiLogger;
         fmiCallbackFunctions.allocateMemory = calloc;
