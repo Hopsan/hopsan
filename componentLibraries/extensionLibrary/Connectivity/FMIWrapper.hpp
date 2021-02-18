@@ -124,6 +124,7 @@ private:
     fmi2_callback_functions_t fmiCallbackFunctions;
     fmi2_status_t fmistatus;
     fmi2_import_t* fmu;
+    double mTolerance = 1e-4;
 
 
 public:
@@ -213,6 +214,12 @@ public:
         if (fmuKind == fmi2_fmu_kind_me_and_cs) {
             fmuKind = fmi2_fmu_kind_cs;
         }
+
+        if(fmi2_import_get_default_experiment_has_tolerance(fmu)) {
+            mTolerance = fmi2_import_get_default_experiment_tolerance(fmu);
+        }
+
+        addConstant("tol", "Relative tolerance", "", mTolerance);
 
         //Loop through variables in FMU and generate the lists
         fmi2_import_variable_list_t *pVarList = fmi2_import_get_variable_list(fmu,0);
@@ -317,7 +324,7 @@ public:
         }
 
         //Setup experiment
-        fmistatus = fmi2_import_setup_experiment(fmu, fmi2_false, 0, mTime, fmi2_false, 10);
+        fmistatus = fmi2_import_setup_experiment(fmu, fmi2_true, mTolerance, mTime, fmi2_false, 0.0);
         if(fmistatus != fmi2_status_ok) {
             stopSimulation("fmi2_import_setup_experiment() failed");
             return;
