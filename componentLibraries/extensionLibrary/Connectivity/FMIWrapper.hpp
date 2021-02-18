@@ -263,7 +263,8 @@ public:
             else if(causality == fmi2_causality_enu_input && type == fmi2_base_type_real)
             {
                 addDebugMessage("Input: "+HString(name));
-                mPorts.push_back(addInputVariable(name, description, "", 0, &mInputs[vr]));
+                double startValue = fmi2_import_get_real_variable_start(fmi2_import_get_variable_as_real(pVar));
+                mPorts.push_back(addInputVariable(name, description, "", startValue, &mInputs[vr]));
             }
             else if(causality == fmi2_causality_enu_output && type == fmi2_base_type_real)
             {
@@ -303,6 +304,20 @@ public:
     void initialize()
     {
         addInfoMessage("Initializing FMU 2.0 import");
+
+        //Loop through output variables and assign start values
+        fmi2_import_variable_list_t *pVarList = fmi2_import_get_variable_list(fmu,0);
+        for(size_t i=0; i<fmi2_import_get_variable_list_size(pVarList); ++i)
+        {
+            fmi2_import_variable_t *pVar = fmi2_import_get_variable(pVarList, i);
+            fmi2_base_type_enu_t type = fmi2_import_get_variable_base_type(pVar);
+            fmi2_causality_enu_t causality = fmi2_import_get_causality(pVar);
+            fmi2_value_reference_t vr = fmi2_import_get_variable_vr(pVar);
+
+            if(causality == fmi2_causality_enu_output && type == fmi2_base_type_real) {
+                (*mOutputs[vr]) = fmi2_import_get_real_variable_start(fmi2_import_get_variable_as_real(pVar));
+            }
+        }
 
         std::map<fmi2_value_reference_t,double>::iterator itr;
         for(itr = mRealParameters.begin(); itr != mRealParameters.end(); itr++) {
