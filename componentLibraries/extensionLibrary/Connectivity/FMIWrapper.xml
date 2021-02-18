@@ -5,6 +5,9 @@
             <icon scale="1" path="FMIWrapper.svg" iconrotation="ON" type="user"/>
         </icons>
         <ports/>
+        <defaultparameters>
+            <parameter name="visibleOutputs" hidden="true"></parameter>
+        </defaultparameters>
         <help/>
     </modelobject>
 </hopsanobjectappearance>
