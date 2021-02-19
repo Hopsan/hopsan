@@ -749,7 +749,14 @@ bool ParameterEvaluatorHandler::evaluateInComponent(const HString &rName, HStrin
     bool success = false;
     for(size_t i = 0; i < mParameters.size(); ++i)
     {
-        if ( (mParameters[i]->getName() == rName) && (mParameters[i]->getType() == rType) )
+        if ( (mParameters[i]->getName() == rName) &&
+             ((mParameters[i]->getType() == rType) ||
+              ((mParameters[i]->getType() == "string") && (rType == "filepath")) ||
+              ((mParameters[i]->getType() == "string") && (rType == "textblock")) ||
+              ((mParameters[i]->getType() == "filepath") && (rType == "string")) ||
+              ((mParameters[i]->getType() == "filepath") && (rType == "textblock")) ||
+              ((mParameters[i]->getType() == "textblock") && (rType == "string")) ||
+              ((mParameters[i]->getType() == "textblock") && (rType == "filepath"))))
         {
             success = mParameters[i]->evaluate(rEvaluatedParameterValue);
         }
