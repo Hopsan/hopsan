@@ -718,6 +718,104 @@ private slots:
     }
 
 
+    void System_GetAndEval_StringFilePath_Parameter()
+    {
+        QFETCH(HString, subSystemName);
+        QFETCH(HString, paramName);
+        QFETCH(HString, paramType);
+        QFETCH(bool, expectHasParameter);
+        QFETCH(bool, expectEvalOK);
+        QFETCH(HString, expectedParamValue);
+        QFETCH(HString, expectedEvaluatedParamValue);
+
+
+        ComponentSystem* pEvalSystem = mpSystemFromFile;
+        getSystem(subSystemName, &pEvalSystem);
+
+        QVERIFY(pEvalSystem->hasParameter(paramName) == expectHasParameter);
+        HString actualValue;
+        pEvalSystem->getParameterValue(paramName, actualValue);
+        QVERIFY(actualValue.compare(expectedParamValue));
+        bool evalOK = pEvalSystem->evaluateParameter(paramName, actualValue, paramType);
+        QVERIFY(evalOK == expectEvalOK);
+        QVERIFY(expectedEvaluatedParamValue == actualValue);
+    }
+
+    void System_GetAndEval_StringFilePath_Parameter_data()
+    {
+        QTest::addColumn<HString>("subSystemName");
+        QTest::addColumn<HString>("paramName");
+        QTest::addColumn<HString>("paramType");
+        QTest::addColumn<bool>("expectHasParameter");
+        QTest::addColumn<bool>("expectEvalOK");
+        QTest::addColumn<HString>("expectedParamValue");
+        QTest::addColumn<HString>("expectedEvaluatedParamValue");
+
+        const HString mainsystem = "";
+        const HString subsystem = "Subsystem";
+        const HString subsubsystem = "Subsystem$Subsubsystem";
+        const HString stringtype = "string";
+        const HString filepathtype = "filepath";
+
+        HString evalSystem, paramName, paramType, expectedParamValue, expectedEvaluatedParamValue;
+        bool expectEvalOK, expectHasParameter;
+
+        evalSystem = subsystem;
+        paramName = "sub_string_a";
+        paramType = stringtype;
+        expectHasParameter = true;
+        expectedParamValue = "main_string_a";
+        expectedEvaluatedParamValue = "string_a";
+        expectEvalOK = true;
+        QTest::newRow("1") << evalSystem << paramName << paramType << expectHasParameter << expectEvalOK << expectedParamValue << expectedEvaluatedParamValue;
+
+        evalSystem = subsubsystem;
+        paramName = "subsub_string_a";
+        paramType = stringtype;
+        expectHasParameter = true;
+        expectedParamValue = "sub_string_a";
+        expectedEvaluatedParamValue = "string_a";
+        expectEvalOK = true;
+        QTest::newRow("2") << evalSystem << paramName << paramType << expectHasParameter << expectEvalOK << expectedParamValue << expectedEvaluatedParamValue;
+
+        evalSystem = subsubsystem;
+        paramName = "subsub_string_b";
+        paramType = stringtype;
+        expectHasParameter = true;
+        expectedParamValue = "sub_string_b";
+        expectedEvaluatedParamValue = "string_b";
+        expectEvalOK = true;
+        QTest::newRow("3") << evalSystem << paramName << paramType << expectHasParameter << expectEvalOK << expectedParamValue << expectedEvaluatedParamValue;
+
+        evalSystem = subsystem;
+        paramName = "sub_filepath_a";
+        paramType = filepathtype;
+        expectHasParameter = true;
+        expectedParamValue = "main_filepath_a";
+        expectedEvaluatedParamValue = "filepath_a";
+        expectEvalOK = true;
+        QTest::newRow("4") << evalSystem << paramName << paramType << expectHasParameter << expectEvalOK << expectedParamValue << expectedEvaluatedParamValue;
+
+        evalSystem = subsubsystem;
+        paramName = "subsub_filepath_a";
+        paramType = filepathtype;
+        expectHasParameter = true;
+        expectedParamValue = "sub_filepath_a";
+        expectedEvaluatedParamValue = "filepath_a";
+        expectEvalOK = true;
+        QTest::newRow("5") << evalSystem << paramName << paramType << expectHasParameter << expectEvalOK << expectedParamValue << expectedEvaluatedParamValue;
+
+        evalSystem = subsubsystem;
+        paramName = "subsub_filepath_b";
+        paramType = filepathtype;
+        expectHasParameter = true;
+        expectedParamValue = "sub_filepath_b";
+        expectedEvaluatedParamValue = "filepath_b";
+        expectEvalOK = true;
+        QTest::newRow("6") << evalSystem << paramName << paramType << expectHasParameter << expectEvalOK << expectedParamValue << expectedEvaluatedParamValue;
+    }
+
+
     void System_NumHop_GetAndEval_Parameter()
     {
         QFETCH(HString, subSystemName);
