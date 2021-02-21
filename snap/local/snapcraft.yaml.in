@@ -48,7 +48,7 @@ apps:
       CPLUS_INCLUDE_PATH: $SNAP/usr/include/c++/7:$SNAP/usr/include
 
   gui:
-    command: desktop-launch $SNAP/bin/hopsangui
+    command: bin/desktop-launch $SNAP/bin/hopsangui
     plugs: [home, x11, wayland, desktop, desktop-legacy, gsettings, opengl, network]
     desktop: usr/share/applications/HopsanGUI.desktop
     environment:
@@ -59,7 +59,7 @@ apps:
       CPLUS_INCLUDE_PATH: $SNAP/usr/include/c++/7:$SNAP/usr/include
 
   holc:
-    command: desktop-launch $SNAP/bin/holc
+    command: bin/desktop-launch $SNAP/bin/holc
     plugs: [home, x11, wayland, desktop, desktop-legacy, gsettings]
     desktop: usr/share/applications/HoLC.desktop
     environment:
