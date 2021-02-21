@@ -12,6 +12,8 @@ confinement: strict
 
 base: core18
 
+compression: lzo
+
 layout:
   /usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/libmvec_nonshared.a:
     bind-file: $SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/libmvec_nonshared.a
