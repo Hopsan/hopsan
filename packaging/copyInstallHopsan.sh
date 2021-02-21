@@ -27,7 +27,7 @@ function install_dir {
     dst_dir="$2"
     mkdir -p "${dst_dir}"
     cp -a "${src_dir}" "${dst_dir}"
-    find "${dst_dir}" -name ".git*" -exec rm {} \;
+    find "${dst_dir}" -name ".git*" | xargs -r rm -r
     chmod -R u+rwX,go-w+rX "${dst_dir}"
 }
 
