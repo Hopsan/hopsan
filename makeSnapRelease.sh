@@ -63,8 +63,8 @@ else
 fi
 
 echo Done preparing snapcraft.yaml
-
-echo Now build the snap,  \(snapcraft snap\) or \(snapcraft snap --use-lxd\) and then upload the snap
-echo If you are building in a container, make sure that "git status --ignored" was clean before you ran this script!
-echo Then build with \(snapcraft snap\)
+echo
+echo 'Make sure that "git status --ignored" was clean before you ran this script!'
+echo 'You may want to "multipass delete snapcraft-hopsan" followed by "multipass purge"'
+echo 'Now build the snap, "snapcraft snap" or "snapcraft snap --use-lxd" and then upload the snap'
 echo
