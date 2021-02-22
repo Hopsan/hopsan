@@ -25,6 +25,14 @@
 #ifndef FMIWRAPPER_HPP
 #define FMIWRAPPER_HPP
 
+#define UNDERSCORE 95
+#define UPPERCASE_LOW 65
+#define UPPERCASE_HIGH 90
+#define LOWERCASE_LOW 97
+#define LOWERCASE_HIGH 122
+#define NUMBERS_LOW 48
+#define NUMBERS_HIGH 57
+
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
 
@@ -219,7 +227,7 @@ public:
             mTolerance = fmi2_import_get_default_experiment_tolerance(fmu);
         }
 
-        addConstant("tol", "Relative tolerance", "", mTolerance);
+        addConstant("tol", "Relative tolerance", "", mTolerance, mTolerance);
 
         //Loop through variables in FMU and generate the lists
         fmi2_import_variable_list_t *pVarList = fmi2_import_get_variable_list(fmu,0);
@@ -240,41 +248,41 @@ public:
             {
                 addDebugMessage("String parameter: "+HString(name));
                 const char* startValue = fmi2_import_get_string_variable_start(fmi2_import_get_variable_as_string(pVar));
-                addConstant(name, description, "", startValue, mStringParameters[vr]);
+                addConstant(toValidHopsanVarName(name), description, "", startValue, mStringParameters[vr]);
             }
             else if(causality == fmi2_causality_enu_parameter && type == fmi2_base_type_bool)
             {
                 addDebugMessage("Boolean parameter: "+HString(name));
                 bool startValue = fmi2_import_get_boolean_variable_start(fmi2_import_get_variable_as_boolean(pVar));
-                addConstant(name, description, "", startValue, mBoolParameters[vr]);
+                addConstant(toValidHopsanVarName(name), description, "", startValue, mBoolParameters[vr]);
             }
             else if(causality == fmi2_causality_enu_parameter && type == fmi2_base_type_int)
             {
                 addDebugMessage("Integer parameter: "+HString(name));
                 int startValue = fmi2_import_get_integer_variable_start(fmi2_import_get_variable_as_integer(pVar));
-                addConstant(name, description, "", startValue, mIntParameters[vr]);
+                addConstant(toValidHopsanVarName(name), description, "", startValue, mIntParameters[vr]);
             }
             else if(causality == fmi2_causality_enu_parameter)
             {
                 addDebugMessage("Real parameter: "+HString(name));
                 double startValue = fmi2_import_get_real_variable_start(fmi2_import_get_variable_as_real(pVar));
-                addConstant(name, description, "", startValue, mRealParameters[vr]);
+                addConstant(toValidHopsanVarName(name), description, "", startValue, mRealParameters[vr]);
             }
             else if(causality == fmi2_causality_enu_input && type == fmi2_base_type_real)
             {
                 addDebugMessage("Input: "+HString(name));
                 double startValue = fmi2_import_get_real_variable_start(fmi2_import_get_variable_as_real(pVar));
-                mPorts.push_back(addInputVariable(name, description, "", startValue, &mInputs[vr]));
+                mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, "", startValue, &mInputs[vr]));
             }
             else if(causality == fmi2_causality_enu_output && type == fmi2_base_type_real)
             {
                 addDebugMessage("Output: "+HString(name));
-                mPorts.push_back(addOutputVariable(name, description, "", &mOutputs[vr]));
+                mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &mOutputs[vr]));
                 mVisibleOutputs.append(HString(name)+",");
             }
             else if(causality == fmi2_causality_enu_local && type == fmi2_base_type_real) {
                 addDebugMessage("Local: "+HString(name));
-                mPorts.push_back(addOutputVariable(name, description, "", &mOutputs[vr]));
+                mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &mOutputs[vr]));
             }
         }
         if(!mVisibleOutputs.empty() && mVisibleOutputs.back() == ',') {
@@ -340,11 +348,11 @@ public:
         std::map<fmi2_value_reference_t,bool>::iterator itb;
         for(itb = mBoolParameters.begin(); itb != mBoolParameters.end(); ++itb) {
             int value = int(itb->second);
-            fmistatus = fmi2_import_set_boolean(fmu, &its->first, 1, &value);
+            fmistatus = fmi2_import_set_boolean(fmu, &itb->first, 1, &value);
         }
         std::map<fmi2_value_reference_t,int>::iterator iti;
         for(iti = mIntParameters.begin(); iti != mIntParameters.end(); ++iti) {
-            fmistatus = fmi2_import_set_integer(fmu, &its->first, 1, &iti->second);
+            fmistatus = fmi2_import_set_integer(fmu, &iti->first, 1, &iti->second);
         }
 
         //Setup experiment
@@ -413,6 +421,25 @@ public:
         }
 
         delete mpTempDir;
+    }
+
+
+    //! @brief Removes all illegal characters from the string, so that it can be used as a variable name.
+    //! @param [in out] rName String that will be modified
+    //! @todo Check if variable/parameter exist in model already and append number if so
+    HString toValidHopsanVarName(const HString &rName)
+    {
+        HString ret = rName;
+        for (size_t i=0; i<ret.size(); ++i) {
+            if (!(((ret[i] >= LOWERCASE_LOW) && (ret[i] <= LOWERCASE_HIGH)) ||
+                   ((ret[i] >= UPPERCASE_LOW) && (ret[i] <= UPPERCASE_HIGH)) ||
+                   ((ret[i] >= NUMBERS_LOW)   && (ret[i] <= NUMBERS_HIGH))   ||
+                   (ret[i] == UNDERSCORE)))
+            {
+                ret[i] = '_';
+            }
+        }
+        return ret;
     }
 };
 
