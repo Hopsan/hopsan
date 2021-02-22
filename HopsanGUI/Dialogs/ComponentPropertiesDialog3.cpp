@@ -1804,9 +1804,14 @@ void ParameterValueSelectionWidget::openValueEditDialog()
 
 void ParameterValueSelectionWidget::openFileBrowserDialog()
 {
-    QString filePath = QFileDialog::getOpenFileName(gpMainWindowWidget, "Select file", gpDesktopHandler->getDocumentsPath());
+    QString defaultPath = gpDesktopHandler->getDocumentsPath();
+    if(!mpValueEdit->text().isEmpty()) {
+        defaultPath = QFileInfo(mpValueEdit->text()).absolutePath();
+    }
+    QString filePath = QFileDialog::getOpenFileName(gpMainWindowWidget, "Select file", defaultPath);
     if(!filePath.isEmpty()) {
-        mpValueEdit->setText(filePath);
+        QDir relDir(gpDesktopHandler->getExecPath());
+        mpValueEdit->setText(relDir.relativeFilePath(filePath));
     }
 }
 
