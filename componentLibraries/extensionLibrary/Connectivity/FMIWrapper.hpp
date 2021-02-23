@@ -278,7 +278,7 @@ public:
             {
                 addDebugMessage("Output: "+HString(name));
                 mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &mOutputs[vr]));
-                mVisibleOutputs.append(HString(name)+",");
+                mVisibleOutputs.append(toValidHopsanVarName(name)+",");
             }
             else if(causality == fmi2_causality_enu_local && type == fmi2_base_type_real) {
                 addDebugMessage("Local: "+HString(name));
