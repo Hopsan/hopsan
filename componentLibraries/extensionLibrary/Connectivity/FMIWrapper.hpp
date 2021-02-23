@@ -306,9 +306,8 @@ public:
 
         //Instantiate FMU
         HString instanceName = getName();
-        HString resourceDir = "file://"+mpTempDir->path()+"/resources";
         fmi2_boolean_t visible = fmi2_false;
-        jm_status_enu_t jmstatus = fmi2_import_instantiate(fmu, instanceName.c_str(), fmi2_cosimulation, resourceDir.c_str(), visible);
+        jm_status_enu_t jmstatus = fmi2_import_instantiate(fmu, instanceName.c_str(), fmi2_cosimulation, 0, visible);
         if (jmstatus == jm_status_error) {
             stopSimulation("Failed to instantiate FMU");
             return;
