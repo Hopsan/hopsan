@@ -40,6 +40,7 @@
 #endif
 #if __cplusplus >= 201103L
 #include <random>
+#include <chrono>
 #endif
 #include <sstream>
 #include <iomanip>
@@ -123,16 +124,21 @@ const HString TempDirectoryHandle::getTempDirectory() const {
 const HString TempDirectoryHandle::generateRandomNumericString() const
 {
 #if __cplusplus >= 201103L
-        static std::random_device rd;
-        static std::mt19937 gen(rd());
-        static std::uniform_int_distribution<> distrib(0, 999999999);
-        int random = distrib(gen);
+
+#ifdef __MINGW32__
+    // "Bug" in MinGW (using constant seed) supposedly fixed in GCC 9.2, using current time as seed instead
+    static std::mt19937 gen(static_cast<long unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count()));
 #else
-        int random = rand() % 1000000000;
+    static std::mt19937 gen(std::random_device{}());
 #endif
-        std::stringstream ss;
-        ss << std::setw(6) << std::setfill('0') << random;
-        return ss.str().c_str();
+    static std::uniform_int_distribution<> distrib(0, 999999999);
+    int random = distrib(gen);
+#else
+    int random = rand() % 1000000000;
+#endif
+    std::stringstream ss;
+    ss << std::setw(6) << std::setfill('0') << random;
+    return ss.str().c_str();
 }
 
 bool TempDirectoryHandle::createDir(const HString &rName) const

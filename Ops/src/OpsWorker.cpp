@@ -38,6 +38,7 @@
 #include <time.h>
 #include <algorithm>
 #include <random>
+#include <chrono>
 
 //#include <QDebug>
 #include "OpsWorker.h"
@@ -365,8 +366,12 @@ size_t Worker::getCurrentNumberOfIterations()
 
 double Worker::opsRand()
 {
-    static std::random_device device;
-    static std::mt19937 generator(device());
+#ifdef __MINGW32__
+    // "Bug" in MinGW (using constant seed) supposedly fixed in GCC 9.2, using current time as seed instead
+    static std::mt19937 generator(static_cast<long unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count()));
+#else
+    static std::mt19937 generator(std::random_device{}());
+#endif
     static std::uniform_real_distribution<> distribution(0.0, 1.0);
     return distribution(generator);
 }
