@@ -217,7 +217,7 @@ std::list<HString> Component::getModelAssets() const
     for (it=pParameters->begin(); it!=pParameters->end(); ++it)
     {
         ParameterEvaluator* pPE = *it;
-        if (pPE->getType() == "string" && !pPE->getValue().empty())
+        if ((pPE->getType() == "string" || pPE->getType() == "filepath") && !pPE->getValue().empty())
         {
             //! @todo add parameter type (file or asset)
             // Check if parameter value represents a file
