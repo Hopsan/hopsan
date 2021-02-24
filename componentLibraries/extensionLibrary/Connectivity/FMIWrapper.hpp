@@ -453,8 +453,9 @@ public:
     }
 
 
-    //! @brief Removes all illegal characters from the string, so that it can be used as a variable name.
-    //! @param [in out] rName String that will be modified
+    //! @brief Replaces all illegal characters in the string with underscores, so that it can be used as a variable name.
+    //! @param [in] rName Input string
+    //! @returns Input string with illegal characters replaced with underscore
     //! @todo Check if variable/parameter exist in model already and append number if so
     HString toValidHopsanVarName(const HString &rName)
     {
