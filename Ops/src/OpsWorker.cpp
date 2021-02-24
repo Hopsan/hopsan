@@ -365,9 +365,9 @@ size_t Worker::getCurrentNumberOfIterations()
 
 double Worker::opsRand()
 {
-    std::random_device device;
-    std::default_random_engine generator(device());
-    std::uniform_real_distribution<> distribution(0.0, 1.0);
+    static std::random_device device;
+    static std::mt19937 generator(device());
+    static std::uniform_real_distribution<> distribution(0.0, 1.0);
     return distribution(generator);
 }
 

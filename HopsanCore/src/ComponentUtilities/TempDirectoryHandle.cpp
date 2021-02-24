@@ -123,9 +123,9 @@ const HString TempDirectoryHandle::getTempDirectory() const {
 const HString TempDirectoryHandle::generateRandomNumericString() const
 {
 #if __cplusplus >= 201103L
-        std::random_device rd;
-        std::default_random_engine gen(rd());
-        std::uniform_int_distribution<> distrib(0, 999999999);
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+        static std::uniform_int_distribution<> distrib(0, 999999999);
         int random = distrib(gen);
 #else
         int random = rand() % 1000000000;
