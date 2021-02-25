@@ -117,10 +117,12 @@ class FMIWrapper : public ComponentSignal
 private:
     TempDirectoryHandle *mpTempDir;
     HFilePath mFmuPath, mLastFmuPath;
-    std::map<fmi2_value_reference_t,double*> mOutputs;
+    std::map<fmi2_value_reference_t,double*> mRealOutputs;
     std::map<fmi2_value_reference_t,double*> mIntOutputs;
     std::map<fmi2_value_reference_t,double*> mBoolOutputs;
-    std::map<fmi2_value_reference_t,double*> mInputs;
+    std::map<fmi2_value_reference_t,double*> mRealInputs;
+    std::map<fmi2_value_reference_t,double*> mIntInputs;
+    std::map<fmi2_value_reference_t,double*> mBoolInputs;
     std::map<fmi2_value_reference_t,double> mRealParameters;
     std::map<fmi2_value_reference_t,bool> mBoolParameters;
     std::map<fmi2_value_reference_t,int> mIntParameters;
@@ -169,8 +171,12 @@ public:
             }
         }
         mPorts.clear();
-        mOutputs.clear();
-        mInputs.clear();
+        mRealOutputs.clear();
+        mBoolOutputs.clear();
+        mIntOutputs.clear();
+        mRealInputs.clear();
+        mBoolInputs.clear();
+        mIntInputs.clear();
         mRealParameters.clear();
         mStringParameters.clear();
         mBoolParameters.clear();
@@ -274,12 +280,24 @@ public:
             {
                 addDebugMessage("Input: "+HString(name));
                 double startValue = fmi2_import_get_real_variable_start(fmi2_import_get_variable_as_real(pVar));
-                mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, "", startValue, &mInputs[vr]));
+                mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, "", startValue, &mRealInputs[vr]));
+            }
+            else if(causality == fmi2_causality_enu_input && type == fmi2_base_type_int)
+            {
+                addDebugMessage("Input: "+HString(name));
+                int startValue = fmi2_import_get_integer_variable_start(fmi2_import_get_variable_as_integer(pVar));
+                mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, "", startValue, &mIntInputs[vr]));
+            }
+            else if(causality == fmi2_causality_enu_input && type == fmi2_base_type_bool)
+            {
+                addDebugMessage("Input: "+HString(name));
+                int startValue = fmi2_import_get_boolean_variable_start(fmi2_import_get_variable_as_boolean(pVar));
+                mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, "", startValue, &mBoolInputs[vr]));
             }
             else if(causality == fmi2_causality_enu_output && type == fmi2_base_type_real)
             {
                 addDebugMessage("Output: "+HString(name));
-                mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &mOutputs[vr]));
+                mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &mRealOutputs[vr]));
                 mVisibleOutputs.append(toValidHopsanVarName(name)+",");
             }
             else if(causality == fmi2_causality_enu_output && (type == fmi2_base_type_int))
@@ -296,7 +314,7 @@ public:
             }
             else if(causality == fmi2_causality_enu_local && type == fmi2_base_type_real) {
                 addDebugMessage("Local: "+HString(name));
-                mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &mOutputs[vr]));
+                mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &mRealOutputs[vr]));
             }
         }
         if(!mVisibleOutputs.empty() && mVisibleOutputs.back() == ',') {
@@ -345,7 +363,7 @@ public:
             fmi2_value_reference_t vr = fmi2_import_get_variable_vr(pVar);
 
             if(causality == fmi2_causality_enu_output && type == fmi2_base_type_real) {
-                (*mOutputs[vr]) = fmi2_import_get_real_variable_start(fmi2_import_get_variable_as_real(pVar));
+                (*mRealOutputs[vr]) = fmi2_import_get_real_variable_start(fmi2_import_get_variable_as_real(pVar));
             }
             else if(causality == fmi2_causality_enu_output && type == fmi2_base_type_int) {
                 (*mIntOutputs[vr]) = fmi2_import_get_integer_variable_start(fmi2_import_get_variable_as_integer(pVar));
@@ -400,8 +418,16 @@ public:
     {
         //Read inputs
         std::map<fmi2_value_reference_t,double*>::iterator it;
-        for(it = mInputs.begin(); it != mInputs.end(); it++) {
+        for(it = mRealInputs.begin(); it != mRealInputs.end(); it++) {
             fmistatus = fmi2_import_set_real(fmu, &it->first, 1, it->second);
+        }
+        for(it = mIntInputs.begin(); it != mIntInputs.end(); it++) {
+            int value = int(*it->second);
+            fmistatus = fmi2_import_set_integer(fmu, &it->first, 1, &value);
+        }
+        for(it = mBoolInputs.begin(); it != mBoolInputs.end(); it++) {
+            int value = int(*it->second);
+            fmistatus = fmi2_import_set_boolean(fmu, &it->first, 1, &value);
         }
 
         //Take step
@@ -412,7 +438,7 @@ public:
         }
 
         //Write outputs
-        for(it = mOutputs.begin(); it != mOutputs.end(); it++) {
+        for(it = mRealOutputs.begin(); it != mRealOutputs.end(); it++) {
             fmistatus = fmi2_import_get_real(fmu, &it->first, 1, it->second);
         }
         for(it = mIntOutputs.begin(); it != mIntOutputs.end(); it++) {
