@@ -1284,7 +1284,7 @@ private slots:
         // Test that int and string parameter can be self. evaluated
         //! @todo need test for textblock and bool as well, but hav no componetns with two of those (may need to write a test component)
         QTest::newRow("19") << HString("Subsystem$Subsubsystem$1DLookupTable_1") << HString("outid") << HString("integer") << HString("self.numlineskip") << HString("1");
-        QTest::newRow("20") << HString("Subsystem$Subsubsystem$1DLookupTable_1") << HString("comment") << HString("string") << HString("self.filename") << HString("K");
+        QTest::newRow("20") << HString("Subsystem$Subsubsystem$1DLookupTable_1") << HString("comment") << HString("string") << HString("K") << HString("K");
     }
 
     void Component_Get_CQS()
