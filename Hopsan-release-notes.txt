@@ -30,6 +30,31 @@
 ******************************
     Version History
 ******************************
+2.18.0 (2021-02-25)
+
+----- Enhancements -----
+
+- HopsanCore:
+  - New "filepath" parameter type (variable class HFilePath). It is basically string, but will enable a browse dialog button in
+    the component properties dialog. File paths will be added relative to the model, if you want absolute paths, you will have to
+    copy paste the path into to file path text field (like before)
+
+----- Bug Fixes -----
+
+- HopsanGUI:
+ - Due to the random bug described below, starting optimization would instantly freeze the program
+
+- Ops:
+  - On the Windows version build with MinGW the random generator would return the same value on each call. It now returns actual random values
+  - Due to this random bug, optimization would freeze during initialization (get stuck in an infinite loop)
+
+
+----- Component Libraries -----
+
+- Various improvements and fixes to the experimental FMI wrapper component (Extension library)
+- LookupTable components now use the filepath parameter type to allow browsing for files
+
+--------------------------------------------------------------------------------------------------------------------------------------------
 2.17.0 (2021-02-14)
 
 ----- Enhancements -----
@@ -62,7 +87,7 @@
     If you want the invert curve setting to be persistent, check the box in the component properties instead
   - HCOM "edit" command now opens supported files in the Hopsan text editor instead of external editor (which quite often is not found)
 
-- Ops
+- Ops:
   - Add elites parameter in genetic algorithm
     The best individuals are always carried over to the next generation without crossover and mutation.
     This helps avoid degradation of solution quality between generations.
