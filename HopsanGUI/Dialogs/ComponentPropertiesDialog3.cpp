@@ -1810,8 +1810,8 @@ void ParameterValueSelectionWidget::openFileBrowserDialog()
     }
     QString filePath = QFileDialog::getOpenFileName(gpMainWindowWidget, "Select file", defaultPath);
     if(!filePath.isEmpty()) {
-        QDir relDir(gpDesktopHandler->getExecPath());
-        mpValueEdit->setText(relDir.relativeFilePath(filePath));
+        QFileInfo modelFileInfo(mpModelObject->getParentSystemObject()->getModelFilePath());
+        mpValueEdit->setText(modelFileInfo.absoluteDir().relativeFilePath(filePath));
     }
 }
 
