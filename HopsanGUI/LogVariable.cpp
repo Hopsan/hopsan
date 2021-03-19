@@ -740,8 +740,8 @@ SharedVectorVariableT VectorVariable::toFrequencySpectrum(const SharedVectorVari
             QString oldString, newString;
             oldString.setNum(data.size());
             newString.setNum(n);
-            reduceVectorSize(data, n);
-            reduceVectorSize(time, n);
+            resampleVector(data, n);
+            resampleVector(time, n);
         }
 
         //Apply window function
@@ -1619,8 +1619,8 @@ void createBodeVariables(const SharedVectorVariableT pInput, const SharedVectorV
         oldString.setNum(vRealOut.size());
         newString.setNum(n);
         //QMessageBox::information(gpMainWindowWidget, QWidget::tr("Wrong Vector Size"), "Size of data vector must be an even power of 2. Number of log samples was reduced from " + oldString + " to " + newString + ".");
-        reduceVectorSize(vRealOut, n);
-        reduceVectorSize(vRealIn, n);
+        resampleVector(vRealOut, n);
+        resampleVector(vRealIn, n);
     }
 
     //Apply window function

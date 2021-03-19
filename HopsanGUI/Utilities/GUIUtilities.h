@@ -71,7 +71,7 @@ QString parseVariableUnit(QString input);
 QVector< std::complex<double> > realToComplex(const QVector<double> &rRealVector);
 void windowFunction(QVector<double> &data, WindowingFunctionEnumT function, double &Ca, double &Cb);
 void FFT(QVector< std::complex<double> > &data);
-void reduceVectorSize(QVector<double> &vector, int newSize);
+void resampleVector(QVector<double> &vector, int newSize);
 void limitVectorToRange(QVector<double> &x, QVector<double> &y, double min, double max);
 void removeDir(QString path, qint64 age_seconds=-1);
 void copyDir(const QString fromPath, QString toPath);

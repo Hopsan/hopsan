@@ -508,18 +508,24 @@ void FFT(QVector< complex<double> > &data)
 }
 
 
-//! @brief Reduces number of log samples of a data vector to specified value
-//! @param vector Reference to vector that will be reduced
+//! @brief Resample a data vector to specified size using linear interpolation
+//! @param [in,out] vector Reference to vector that will be resampled
 //! @param newSize New size of vector
-void reduceVectorSize(QVector<double> &vector, int newSize)
+void resampleVector(QVector<double> &vector, int newSize)
 {
     int oldSize = vector.size();
 
-    QVector<double> tempVector;
+    QVector<double> tempVector(newSize);
 
-    for(int i=0; i<newSize; ++i)
-    {
-        tempVector.append(vector.at(oldSize/newSize*i));
+    for(int i=0; i<newSize; ++i) {
+        double pos = double(oldSize-1)/double(newSize-1)*double(i);
+        int prev = int(floor(pos)); //Previous index in original vector
+        int next = min(oldSize-1, int(ceil(pos)));  //Next index in original vector
+        double x = 0;
+        if(next != prev) {
+            x = (pos-prev)/(next-prev);  //Fraction
+        }
+        tempVector[i] = (1.0-x)*vector.at(prev) + x*vector.at(next);
     }
 
     vector = tempVector;
