@@ -24,6 +24,7 @@
 
 #define S_FUNCTION_NAME <<<name>>>
 #define S_FUNCTION_LEVEL 2
+#define MDL_START
 
 #include <sstream>
 #include <string>
@@ -38,7 +39,7 @@ HopsanEssentials gHopsanCore;
 ComponentSystem* pComponentSystem;
 bool isOkToSimulate = false;
 
-#define NUMPARAMS 0//<<<numparams>>>
+#define NUMPARAMS 0
 
 <<<15>>>
 static void mdlInitializeSizes(SimStruct *S)
@@ -47,12 +48,7 @@ static void mdlInitializeSizes(SimStruct *S)
     // instead we let the mask create local workspace variables corresponding to our system parameters
     ssSetNumSFcnParams(S, NUMPARAMS);
 #if defined(MATLAB_MEX_FILE)
-    if (ssGetNumSFcnParams(S) == ssGetSFcnParamsCount(S)) {
-        //mdlCheckParameters(S);
-        //if (ssGetErrorStatus(S) != NULL) {
-        //    return;
-        //}
-    } else {
+    if (ssGetNumSFcnParams(S) != ssGetSFcnParamsCount(S)) {
         return; /* Parameter mismatch will be reported by Simulink. */
     }
 #endif
@@ -73,15 +69,9 @@ static void mdlInitializeSizes(SimStruct *S)
         return;
     }
 
-//    std::vector<std::string> extLibs;
-//    readExternalLibsFromTxtFile("externalLibs.txt",extLibs);
-//    for (size_t i=0; i<extLibs.size(); ++i)
-//    {
-//        gHopsanCore.loadExternalComponentLib(extLibs[i].c_str());
-//    }
-
+    //Load Hopsan model
     const char* hmfFilePath = "<<<4>>>";
-    double startT, stopT;
+    double startT, stopT; //Unused, but needed by Hopsan API
     pComponentSystem = gHopsanCore.loadHMFModelFile(hmfFilePath, startT, stopT);
     if (pComponentSystem==0)
     {
@@ -94,25 +84,25 @@ static void mdlInitializeSizes(SimStruct *S)
         ssSetErrorStatus(S,"Error could not open model: <<<4>>>");
         return;
     }
-    startT = ssGetTStart(S);
-    stopT = ssGetTFinal(S);
     pComponentSystem->setDesiredTimestep(<<<timestep>>>);
+
 <<<5>>>}
 
 
 static void mdlInitializeSampleTimes(SimStruct *S)
 {
-    //ssSetSampleTime(S, 0, 0.001);
-    //ssSetOffsetTime(S, 0, 0.0);
+    ssSetSampleTime(S, 0, 0.001);
+    ssSetOffsetTime(S, 0, 0.0);
+}
 
+static void mdlStart(SimStruct *S)
+{
     //Update tunable parameters
     const mxArray* in;
     mwSize parsize;
-    void* pBuffer=0;
+    void* pBuffer=NULL;
     HString valstr;
-
     <<<6>>>
-
     isOkToSimulate = pComponentSystem->checkModelBeforeSimulation();
     if (isOkToSimulate)
     {
@@ -135,8 +125,7 @@ static void mdlInitializeSampleTimes(SimStruct *S)
 <<<16>>>
 
     // Free parameter buffer memory
-    if (pBuffer)
-    {
+    if (pBuffer != NULL) {
         free(pBuffer);
     }
 }
@@ -148,29 +137,20 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     InputRealPtrsType uPtrs1 = ssGetInputPortRealSignalPtrs(S,0);
 
     //S-function output signals
-    <<<7>>>
-    int_T width1 = ssGetOutputPortWidth(S,0);
-
-    //Input parameters
+<<<7>>>
+    //Read input variables from Simulink and write them to Hopsan
 <<<8>>>
-    //Equations
-<<<9>>>
-    output<<<10>>> = 0;		//Error code 0: Nothing is wrong
-
-<<<11>>>
+    //Simulate Hopsan until it reaches current Simulink time
     double time = ssGetT(S);
     pComponentSystem->simulate(time);
 
+    //Read output variables from Hopsan and write them to Simulink
 <<<12>>>
-
-    //Output parameters
-<<<13>>>
-    while(gHopsanCore.checkMessage())
-    {
+    //Read messages from Hopsan and print them
+    while(gHopsanCore.checkMessage()) {
         HString msg, type, tag;
         gHopsanCore.getMessage(msg, type, tag);
-        if (type != "debug")
-        {
+        if (type != "debug") {
             ssPrintf("%s\n",msg.c_str());
         }
     }
@@ -178,6 +158,7 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 
 static void mdlTerminate(SimStruct *S)
 {
+    //Execute finalize code in Hopsan at end of Simulation
     pComponentSystem->finalize();
 }
 

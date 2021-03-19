@@ -257,7 +257,7 @@ bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     QString wrapperReplace5;
     if(!disablePortLabels)
     {
-        wrapperReplace5 = "    mexCallMATLAB(0, 0, 0, 0, \""+name+"MaskSetup\");                              //Run the port label script\n";
+        wrapperReplace5 = "    //Setup block mask (e.g. update icon, graphics etc for Simulink block)\n    mexCallMATLAB(0, 0, 0, 0, \""+name+"MaskSetup\"); //Run the port label script\n";
     }
 
     QString wrapperReplace6;
@@ -265,9 +265,8 @@ bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     {
         QString parname = pParameters->at(p)->getName().c_str();
         //wrapperReplace6.append("in = ssGetSFcnParam(S, "+QString::number(p)+");\n");
-        wrapperReplace6.append("in = mexGetVariable(\"caller\", \""+parname+"\");\n");
-        wrapperReplace6.append("if(in == NULL )\n");
-        wrapperReplace6.append("{\n");
+        wrapperReplace6.append("\nin = mexGetVariable(\"caller\", \""+parname+"\");\n");
+        wrapperReplace6.append("if(in == NULL) {\n");
         wrapperReplace6.append("    mexErrMsgTxt(\"Unable to read parameter \\\""+parname+"\\\"!\");\n");
         wrapperReplace6.append("	return;\n");
         wrapperReplace6.append("}\n");
@@ -276,15 +275,11 @@ bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
         wrapperReplace6.append("mxGetString(in, (char*)pBuffer, parsize+1);\n");
         wrapperReplace6.append("valstr.setString((const char*)pBuffer);\n");
         wrapperReplace6.append("pComponentSystem->setParameterValue(\""+parname+"\", valstr);\n");
-        wrapperReplace6.append("\n");
     }
 
     QString wrapperReplace7;
     QString wrapperReplace8;
-    QString wrapperReplace9;
-    QString wrapperReplace11;
     QString wrapperReplace12;
-    QString wrapperReplace13;
     QString wrapperReplace15;
     QString wrapperReplace16;
     i=0;
@@ -303,8 +298,7 @@ bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
         {
             if(varSpec.causality == InterfaceVarSpec::Input)
             {
-                wrapperReplace8.append("    double input" + QString::number(o) + " = (*uPtrs1[" + QString::number(o) + "]);\n");
-                wrapperReplace11.append("        (*pInputNode"+QString::number(o)+") = input"+QString::number(o)+";\n");
+                wrapperReplace8.append("    (*pInputNode"+QString::number(o)+") = (*uPtrs1[" + QString::number(o) + "]);\n");
                 wrapperReplace15.append("double *pInputNode"+QString::number(o)+";\n");
                 wrapperReplace16.append("    pInputNode"+QString::number(o)+" = pComponentSystem"+path+"->getSubComponent(\""+portSpec.component+"\")->getSafeNodeDataPtr(\""+portSpec.port+"\", "+QString::number(varSpec.dataId)+");\n");
                 ++o;
@@ -312,9 +306,7 @@ bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
             else
             {
                 wrapperReplace7.append("    real_T *y" + QString::number(i) + " = ssGetOutputPortRealSignal(S," + QString::number(i) + ");\n");
-                wrapperReplace9.append("    double output" + QString::number(i) + ";\n");
-                wrapperReplace12.append("        output"+QString::number(i)+" = (*pOutputNode"+QString::number(i)+");\n");
-                wrapperReplace13.append("    *y" + QString::number(i) + " = output" + QString::number(i) + ";\n");
+                wrapperReplace12.append("    (*y" + QString::number(i) + ") = (*pOutputNode"+QString::number(i)+");\n");
                 wrapperReplace15.append("double *pOutputNode"+QString::number(i)+";\n");
                 wrapperReplace16.append("    pOutputNode"+QString::number(i)+" = pComponentSystem"+path+"->getSubComponent(\""+portSpec.component+"\")->getSafeNodeDataPtr(\""+portSpec.port+"\", "+QString::number(varSpec.dataId)+");\n");
                 ++i;
@@ -324,8 +316,7 @@ bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
 
     //Debug port
     wrapperReplace7.append("    real_T *y" + QString::number(i) + " = ssGetOutputPortRealSignal(S," + QString::number(i) + ");\n");
-    wrapperReplace9.append("    double output" + QString::number(i) + ";\n");
-    wrapperReplace13.append("    *y" + QString::number(i) + " = output" + QString::number(i) + ";\n");
+    wrapperReplace12.append("    (*y" + QString::number(i) + ") = 0; //Debugging port (unused here)\n");
     ++i;
 
     int nTotalInputs = o;
@@ -345,11 +336,8 @@ bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     replacePattern("<<<6>>>", wrapperReplace6, wrapperCode);
     wrapperCode.replace("<<<7>>>", wrapperReplace7);
     wrapperCode.replace("<<<8>>>", wrapperReplace8);
-    wrapperCode.replace("<<<9>>>", wrapperReplace9);
     wrapperCode.replace("<<<10>>>", QString::number(nTotalOutputs-1));
-    wrapperCode.replace("<<<11>>>", wrapperReplace11);
     wrapperCode.replace("<<<12>>>", wrapperReplace12);
-    wrapperCode.replace("<<<13>>>", wrapperReplace13);
     wrapperCode.replace("<<<15>>>", wrapperReplace15);
     wrapperCode.replace("<<<16>>>", wrapperReplace16);
     wrapperCode.replace("<<<name>>>", name);
