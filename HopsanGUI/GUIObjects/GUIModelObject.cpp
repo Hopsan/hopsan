@@ -1156,6 +1156,9 @@ void ModelObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 void ModelObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     WorkspaceObject::hoverEnterEvent(event);
+    for(auto *connector : getConnectorPtrs()) {
+        connector->setHovered();
+    }
     this->setZValue(HoveredModelobjectZValue);
     this->showPorts(true);
     mpNameText->show();
@@ -1166,6 +1169,9 @@ void ModelObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 void ModelObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     WorkspaceObject::hoverLeaveEvent(event);
+    for(auto *connector : getConnectorPtrs()) {
+        connector->setUnHovered();
+    }
     this->setZValue(ModelobjectZValue);
     this->showPorts(false);
     // OK now lets hide the name text if text should be hidden or if icon is hidden
