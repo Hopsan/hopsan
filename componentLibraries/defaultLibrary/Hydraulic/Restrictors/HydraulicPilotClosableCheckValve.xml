@@ -6,7 +6,7 @@
             <icon scale="1" path="checkvalvepilotclosed_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
         <help>
-            <text>Hydraulic pilot operated check valve with turbulent flow equation. Pilot pressure will help close the valve. This is a Q-type component.</text>
+            <md>HydraulicPilotClosableCheckValve.md</md>
         </help>
         <ports>
             <port x="0" y="0.25" a="180" name="P_PILOT"/>

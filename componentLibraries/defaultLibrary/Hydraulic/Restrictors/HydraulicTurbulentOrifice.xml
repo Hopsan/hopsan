@@ -12,6 +12,9 @@
             <replacable typename="HydraulicCheckValveWithOrifice"/>
             <replacable typename="HydraulicCheckValvePreLoaded"/>
         </replacables>
+        <help>
+            <md>HydraulicTurbulentOrifice.md</md>
+        </help>
         <ports>
             <port x="1" y="0.5" a="0" name="P1"/>
             <port x="0" y="0.5" a="180" name="P2"/>

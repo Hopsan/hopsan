@@ -13,8 +13,7 @@
             <replacable typename="HydraulicCheckValvePreLoaded"/>
         </replacables>
         <help>
-            <text>Hydraulic check valve with turbulent flow equation. This is a Q-type component.</text>
-            <picture>checkvalvehelp.svg</picture>
+            <md>HydraulicCheckValve.md</md>
         </help>
         <ports>
             <port x="1" y="0.5" a="0" name="P1"/>

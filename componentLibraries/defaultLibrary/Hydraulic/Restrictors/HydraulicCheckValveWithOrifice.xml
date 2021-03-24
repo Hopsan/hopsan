@@ -13,7 +13,7 @@
             <replacable typename="HydraulicCheckValvePreLoaded"/>
         </replacables>
         <help>
-            <text>Hydraulic check valve with turbulent flow equations. Flow in opposite direction will pass through an orifice. This is a Q-type component.</text>
+            <md>HydraulicCheckValveWithOrifice.md</md>
         </help>
         <ports>
             <port x="1" y="0.75" a="0" name="P1"/>
