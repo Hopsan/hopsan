@@ -58,17 +58,6 @@ apps:
       CPATH: $SNAP/usr/include:$SNAP/usr/include/${SNAPCRAFT_ARCH_TRIPLET}
       CPLUS_INCLUDE_PATH: $SNAP/usr/include/c++/7:$SNAP/usr/include
 
-  holc:
-    command: bin/desktop-launch $SNAP/bin/holc
-    plugs: [home, x11, wayland, desktop, desktop-legacy, gsettings]
-    desktop: usr/share/applications/HoLC.desktop
-    environment:
-      # gtk-common-themes support
-      QT_QPA_PLATFORMTHEME: gtk3
-      DISABLE_WAYLAND: 1
-      CPATH: $SNAP/usr/include:$SNAP/usr/include/${SNAPCRAFT_ARCH_TRIPLET}
-      CPLUS_INCLUDE_PATH: $SNAP/usr/include/c++/7:$SNAP/usr/include
-
   addresserver:
     command: bin/hopsanaddressserver
     plugs: [home, network, network-bind]
@@ -140,15 +129,10 @@ parts:
 
       ./packaging/copyInstallHopsan.sh $(pwd)/../src ${SNAPCRAFT_PART_INSTALL}
       install -Dm644 -t $SNAPCRAFT_PART_INSTALL/usr/share/icons/hicolor/128x128/apps HopsanGUI/graphics/uiicons/hopsan128x128.png
-      install -Dm644 -t $SNAPCRAFT_PART_INSTALL/usr/share/icons/hicolor/192x192/apps HoLC/graphics/uiicons/holc-icon192x192.png
       install -Dm644 -t $SNAPCRAFT_PART_INSTALL/usr/share/applications HopsanGUI/HopsanGUI.desktop
-      install -Dm644 -t $SNAPCRAFT_PART_INSTALL/usr/share/applications HoLC/HoLC.desktop
       sed -i 's|Icon=.*|Icon=${SNAP}/usr/share/icons/hicolor/128x128/apps/hopsan128x128.png|g' $SNAPCRAFT_PART_INSTALL/usr/share/applications/HopsanGUI.desktop
       sed -i 's|Exec=.*|Exec=hopsan.gui|g' $SNAPCRAFT_PART_INSTALL/usr/share/applications/HopsanGUI.desktop
       sed -i 's|Path=.*|Path=${SNAP}/bin|g' $SNAPCRAFT_PART_INSTALL/usr/share/applications/HopsanGUI.desktop
-      sed -i 's|Icon=.*|Icon=${SNAP}/usr/share/icons/hicolor/192x192/apps/holc-icon192x192.png|g' $SNAPCRAFT_PART_INSTALL/usr/share/applications/HoLC.desktop
-      sed -i 's|Exec=.*|Exec=hopsan.holc|g' $SNAPCRAFT_PART_INSTALL/usr/share/applications/HoLC.desktop
-      sed -i 's|Path=.*|Path=${SNAP}/bin|g' $SNAPCRAFT_PART_INSTALL/usr/share/applications/HoLC.desktop
 
     project-files: ['HopsanNG.pro']
     after: [desktop-qt5]

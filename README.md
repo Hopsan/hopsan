@@ -44,7 +44,6 @@ The Hopsan simulation core and support libraries are released under the permissi
 
 The GUI applications are released under the copyleft **GNU General Public License 3.0**
 * HopsanGUI Graphical modeling and results analysis application
-* HoLC The Hopsan Library Creator application
 
 ## Download and Installation
 
@@ -80,12 +79,11 @@ or from the terminal:
 ```
 snap install hopsan
 ```
-Application menu entries for HopsanGUI and HoLC will be added but to start the command line applications use a command like:
+Application menu entries for HopsanGUI will be added but to start the command line applications use a command like:
 ```
 hopsan.addresserver
 hopsan.cli
 hopsan.gui
-hopsan.holc
 hopsan.remoteclient
 hopsan.server
 hopsan.servermonitor
