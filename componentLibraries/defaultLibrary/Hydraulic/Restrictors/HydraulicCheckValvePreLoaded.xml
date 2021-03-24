@@ -12,7 +12,7 @@
             <replacable typename="HydraulicCheckValveWithOrifice"/>
         </replacables>
         <help>
-            <text>Hydraulic pre-loaded check valve with turbulent flow equation. This is a Q-type component.</text>
+            <md>HydraulicCheckValvePreLoaded.md</md>
         </help>
         <ports>
             <port x="1" y="0.5" a="0" name="P1"/>
