@@ -60,6 +60,7 @@ private Q_SLOTS:
     void testIconPaths();
     void testPortNames();
     void testSourceCodeLink();
+    void testDescriptionExists();
 
 private:
     void recurseCollectXMLFiles(const QDir &rDir);
@@ -264,6 +265,38 @@ void DefaultLibraryXMLTest::testSourceCodeLink()
         }
     }
     QVERIFY2(isOK, "There were at least one sourcecode link not working!");
+}
+
+
+void DefaultLibraryXMLTest::testDescriptionExists()
+{
+    bool isOK = true;
+    for (int i=0; i<mAllXMLFiles.size(); ++i)
+    {
+        QDomDocument doc;
+        QDomElement mo = loadXMLFileToDOM(mAllXMLFiles[i].absoluteFilePath(),doc).firstChildElement("modelobject");
+        while(!mo.isNull())
+        {
+            QString typeName = extractTypeNameFromMO(mo);
+
+            if(mo.firstChildElement("help").isNull()) {
+                QWARN(QString("No description available for component %1").arg(typeName).toStdString().c_str());
+            }
+            else {
+                QDomElement mdElement = mo.firstChildElement("help").firstChildElement("md");
+                if(!mdElement.isNull()) {
+                    QFileInfo mdFile(mAllXMLFiles[i].absolutePath()+"/"+mdElement.text());
+                    if(!mdFile.exists())
+                    {
+                        QWARN(QString("Description file: %1 for component %2 in file %3 is missing!").arg(mdFile.absoluteFilePath()).arg(typeName).arg(mAllXMLFiles[i].canonicalFilePath()).toStdString().c_str());
+                        isOK = false;
+                    }
+                }
+            }
+            mo = mo.nextSiblingElement("modelobject");
+        }
+    }
+    QVERIFY2(isOK, "There were at least one description file link not working.");
 }
 
 
