@@ -33,8 +33,6 @@ override_dh_auto_install:
 	packaging/copyInstallHopsan.sh ./ debian/hopsan/opt/hopsan
 	dh_install packaging/HopsanGUI.desktop usr/share/applications/
 	dh_install HopsanGUI/graphics/uiicons/hopsan128x128.png usr/share/icons/hicolor/128x128/apps/
-	dh_install packaging/HoLC.desktop usr/share/applications/
-	dh_install HoLC/graphics/uiicons/holc-icon192x192.png usr/share/icons/hicolor/192x192/apps/
 
 override_dh_shlibdeps:
 	dh_shlibdeps -l/opt/hopsan/bin

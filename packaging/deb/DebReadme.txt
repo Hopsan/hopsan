@@ -4,7 +4,7 @@
 These DEB packages are meant for installation on Debian or *Ubuntu (GNU Linux based) operating systems.
 
 Hopsan will be installed to /opt/hopsan
-A "shortcut" to HopsanGUI and HoLC should end up under the Science, Engineering or Education category in your menu.
+A "shortcut" to HopsanGUI should end up under the Science, Engineering or Education category in your menu.
 HopsanCLI, network executables and libraries can be found in /opt/hopsan/bin
 
 ----------------------------------------
