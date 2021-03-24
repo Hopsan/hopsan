@@ -486,6 +486,10 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
            item->text(0) != componentlibrary::roots::externalLibraries &&
            item->text(0) != componentlibrary::roots::fmus) {
             pOpenFolderAction->setVisible(true);
+            pEditXMLAction->setVisible(true);
+            pEditXMLAction->setText("View XML Description");
+            pEditCodeAction->setVisible(true);
+            pEditCodeAction->setText("View Source Code");
         }
 
         if(isComponentItem(item) && gpLibraryHandler->getEntry(mItemToTypeNameMap.find(item).value()).displayPath.startsWith(componentlibrary::roots::externalLibraries)) {
@@ -644,7 +648,12 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                     basePath.append("/");
                 }
                 QString sourceFile = appearance->getSourceCodeFile();
-                gpModelHandler->loadTextFile(basePath+sourceFile);
+                if(sourceFile.isEmpty()) {
+                    gpMessageHandler->addErrorMessage("Source code is not available for this component.");
+                }
+                else {
+                    gpModelHandler->loadTextFile(basePath+sourceFile);
+                }
             }
         }
         else if(pReply == pNewLibraryAction) {
