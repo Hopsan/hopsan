@@ -100,10 +100,6 @@ int getDataVector(const char* variable, double *data)
     hopsan::HVector<hopsan::HString> splitSys = varStr.split('|');
     hopsan::HVector<hopsan::HString> splitVar = splitSys.last().split('.');
     splitSys.resize(splitSys.size()-1);
-    if(splitVar.size() < 3) {
-        printMessage("Error: Component name, port name and variable name must be specified.");
-        return -1;
-    }
 
     //Find system
     hopsan::ComponentSystem *pSystem = spCoreComponentSystem;
@@ -113,6 +109,24 @@ int getDataVector(const char* variable, double *data)
             printMessage("Error: Subsystem not found: "+splitSys[i]);
             return -1;
         }
+    }
+
+    //Check for alias if splitVar is of size one
+    if(splitVar.size() == 1 && pSystem->getAliasHandler().hasAlias(splitVar[0])) {
+        hopsan::HString compName, portName;
+        int varId;
+        pSystem->getAliasHandler().getVariableFromAlias(splitVar[0], compName, portName, varId);
+        hopsan::Component *pComp = pSystem->getSubComponent(compName);
+        hopsan::Port *pPort = pComp->getPort(portName);
+        std::vector< std::vector<double> > *pLogData = pPort->getLogDataVectorPtr();
+        for (size_t t=0; t<pSystem->getNumActuallyLoggedSamples(); ++t) {
+            data[t] = (*pLogData)[t][size_t(varId)];
+        }
+        return 0;   //Found alias variable!
+    }
+    else if(splitVar.size() < 3) {
+        printMessage("Error: Component name, port name and variable name must be specified.");
+        return -1;
     }
 
     //Find component
