@@ -47,7 +47,8 @@ class HydraulicSpringLoadedPistonC : public ComponentC
 {
     private:
         double CxLim, ZxLim, wfak, alpha;
-
+        bool mUseEndStops;
+        
         double ci1, cl1, ci2, cl2;  //Members because old value need to be remembered (c1 and c2 are remembered through nodes)
         double mNum[2];
         double mDen[2];
@@ -80,7 +81,8 @@ class HydraulicSpringLoadedPistonC : public ComponentC
             mpP2 = addPowerMultiPort("P2", "NodeHydraulic", "");
             mpP3 = addPowerPort("P3", "NodeMechanic");
 
-
+            // Add constant parameters
+            addConstant("use_sl", "Use end stops (stroke limitation)", "", true, mUseEndStops);
 
             //Register changeable parameters to the HOPSAN++ core
             addInputVariable("A_1", "Piston area 1", "m^2", 0.001, &mpA1);
@@ -206,7 +208,7 @@ class HydraulicSpringLoadedPistonC : public ComponentC
         void simulateOneTimestep()
         {
             //Declare local variables;
-            double V1, V2, qLeak, qi1, qi2, p1mean, p2mean, V1min, V2min;
+            double V1, V2, qLeak, qi1, qi2, p1mean, p2mean, V1min, V2min, CxLim, ZxLim;;
 
             //Read variables from nodes
             double Zc1 = (*mvpND_Zc1[0]);          //All Zc should be the same and Q components shall
@@ -284,12 +286,21 @@ class HydraulicSpringLoadedPistonC : public ComponentC
             ci2 = std::max(0.0, alpha * ci2 + (1.0 - alpha)*(p2mean*2.0 - ci2 - 2.0*Zc2*qi2));
             cl2 = std::max(0.0, alpha * cl2 + (1.0 - alpha)*(p2mean*2.0 - cl2 - 2.0*Zc2*qLeak));
 
-
-            //limitStroke(CxLim, ZxLim, x3, v3, me, sl);
+            // Add extra force and Zc in end positions to simulate stop.
+            // Stops could also be implemented in the mass component (connected Q-component)
+            if (mUseEndStops)
+            {
+                limitStroke(CxLim, ZxLim, x3, v3, me, sl);
+            }
+            else
+            {
+                CxLim = 0;
+                ZxLim = 0;
+            }
 
             //Internal mechanical port
-            double c3 = A1*ci1 - A2*ci2;// + CxLim;
-            double Zx3 = A1*A1*Zc1 + A2*A2*Zc2 + bp;// + ZxLim;
+            double c3 = A1*ci1 - A2*ci2 + CxLim;
+            double Zx3 = A1*A1*Zc1 + A2*A2*Zc2 + bp + ZxLim;
             //! @note End of stroke limitation currently turned off, because the piston gets stuck in the end position.
             //! @todo Either implement a working limitation, or remove it completely. It works just as well to have it in the mass component.
 
@@ -306,6 +317,38 @@ class HydraulicSpringLoadedPistonC : public ComponentC
             }
             (*mpc3) = c3-Fs;
             (*mpZx3) = Zx3;
+        }
+        
+        void limitStroke(double &CxLim, double &ZxLim, double x3, double v3, double me, double sl)
+        {
+            double FxLim=0.0, ZxLim0, NewCxLim, alfa;
+
+            alfa = 0.5;
+
+            //Equations
+            if (-x3 > sl)
+            {
+                ZxLim0 = wfak*me/mTimestep;
+                ZxLim = ZxLim0/(1.0 - alfa);
+                FxLim = ZxLim0 * (x3 + sl) / mTimestep;
+                NewCxLim = FxLim + ZxLim*v3;
+            }
+            else if (-x3 < 0.0)
+            {
+                ZxLim0 = wfak*me/mTimestep;
+                ZxLim = ZxLim0/(1.0 - alfa);
+                FxLim = ZxLim0*x3/mTimestep;
+                NewCxLim = FxLim + ZxLim*v3;
+            }
+            else
+            {
+                ZxLim = 0.0;
+                CxLim = 0.0;
+                NewCxLim = FxLim + ZxLim*v3;
+            }
+
+            // Filtering of the characteristics
+            CxLim = alfa * CxLim + (1.0 - alfa) * NewCxLim;
         }
     };
 }
