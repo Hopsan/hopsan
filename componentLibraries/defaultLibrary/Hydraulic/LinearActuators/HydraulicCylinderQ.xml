@@ -6,8 +6,7 @@
             <icon scale="1" path="cylinderq_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
         <help>
-            <text>This is a Q-type hydraulic linear actuator with second order dynamics. The capacitances in the chambers are neglected.</text>
-            <picture>cylinderqhelp.svg</picture>
+            <md>HydraulicCylinderQ.md</md>
         </help>
         <ports>
             <port x="0.0274" y="1" a="90" name="P1"/>
