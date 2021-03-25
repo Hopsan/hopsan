@@ -62,6 +62,8 @@ class HydraulicFourChamberPiston : public ComponentC
         //Ports
         Port *mpP1, *mpP2, *mpP3, *mpP4, *mpP5;
 
+        bool mUseEndStops;
+
     public:
         static Component *Creator()
         {
@@ -80,6 +82,9 @@ class HydraulicFourChamberPiston : public ComponentC
             mpP3 = addPowerMultiPort("P3", "NodeHydraulic");
             mpP4 = addPowerMultiPort("P4", "NodeHydraulic");
             mpP5 = addPowerPort("P5", "NodeMechanic");
+
+            // Add constant parameters
+            addConstant("use_sl", "Use end stops (stroke limitation)", "", true, mUseEndStops);
 
             //Register changeable parameters to the HOPSAN++ core
             addInputVariable("A_1", "Piston area 1", "m^2", 0.001, &mpA1);
@@ -404,11 +409,20 @@ class HydraulicFourChamberPiston : public ComponentC
             ci4 = std::max(0.0, alpha * ci4 + (1.0 - alpha)*(p4mean*2.0 - ci4 - 2.0*Zc4*qi4));
             cl4 = std::max(0.0, alpha * cl4 + (1.0 - alpha)*(p4mean*2.0 - cl4 - 2.0*Zc4*qLeak14 - 2.0*Zc4*qLeak24 - 2.0*Zc4*qLeak34));
 
-            //limitStroke(CxLim, ZxLim, x3, v3, me, sl);
-
+            // Add extra force and Zc in end positions to simulate stop.
+            // Stops could also be implemented in the mass component (connected Q-component)
+            if (mUseEndStops)
+            {
+                limitStroke(CxLim, ZxLim, x5, v5, me5, sl);
+            }
+            else
+            {
+                CxLim = 0;
+                ZxLim = 0;
+            }
             //Internal mechanical port
-            double c5 = A1*ci1 - A2*ci2 + A3*ci3 - A4*ci4;// + CxLim;
-            double Zx5 = A1*A1*Zc1 + A2*A2*Zc2 + A3*A3*Zc3 + A4*A4*Zc3 + bp;// + ZxLim;
+            double c5 = A1*ci1 - A2*ci2 + A3*ci3 - A4*ci4 + CxLim;
+            double Zx5 = A1*A1*Zc1 + A2*A2*Zc2 + A3*A3*Zc3 + A4*A4*Zc3 + bp + ZxLim;
             //! @note End of stroke limitation currently turned off, because the piston gets stuck in the end position.
             //! @todo Either implement a working limitation, or remove it completely. It works just as well to have it in the mass component.
 
@@ -435,6 +449,45 @@ class HydraulicFourChamberPiston : public ComponentC
             }
             (*mpc5) = c5;
             (*mpZx5) = Zx5;
+        }
+
+        /* ---------------------------------------------------------------- */
+        /*     Function that simulate the end of the stroke. If X is        */
+        /*     smaller than 0 or greater than SL a large spring force will  */
+        /*     act to force X into the interval again. The spring constant  */
+        /*     is as high possible without numerical instability.           */
+        /* ---------------------------------------------------------------- */
+
+        void limitStroke(double &CxLim, double &ZxLim, double x3, double v3, double me, double sl)
+        {
+            double FxLim=0.0, ZxLim0, NewCxLim, alfa;
+
+            alfa = 0.5;
+
+            //Equations
+            if (-x3 > sl)
+            {
+                ZxLim0 = wfak*me/mTimestep;
+                ZxLim = ZxLim0/(1.0 - alfa);
+                FxLim = ZxLim0 * (x3 + sl) / mTimestep;
+                NewCxLim = FxLim + ZxLim*v3;
+            }
+            else if (-x3 < 0.0)
+            {
+                ZxLim0 = wfak*me/mTimestep;
+                ZxLim = ZxLim0/(1.0 - alfa);
+                FxLim = ZxLim0*x3/mTimestep;
+                NewCxLim = FxLim + ZxLim*v3;
+            }
+            else
+            {
+                ZxLim = 0.0;
+                CxLim = 0.0;
+                NewCxLim = FxLim + ZxLim*v3;
+            }
+
+            // Filtering of the characteristics
+            CxLim = alfa * CxLim + (1.0 - alfa) * NewCxLim;
         }
     };
 }
