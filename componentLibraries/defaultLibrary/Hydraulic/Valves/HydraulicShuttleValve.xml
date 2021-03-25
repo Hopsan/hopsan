@@ -11,6 +11,9 @@
             <port x="0.5" y="0" a="270" name="P3"/>
             <port x="0.5" y="1" a="90" name="out"/>
         </ports>
+        <help>
+            <md>HydraulicShuttleValve.md</md>
+        </help>
         <animation>
             <icon userpath="shuttlevalve_user_base.svg"/>
             <movable idx="0">
