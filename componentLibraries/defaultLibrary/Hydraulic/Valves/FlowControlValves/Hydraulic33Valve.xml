@@ -10,8 +10,7 @@
             <replacable typename="Hydraulic33ShuttleValve"/>
         </replacables>
         <help>
-            <text>Hydraulic proportional closed-center servo valve with second order dynamics. Dynamics is modelled as a low-pass filter with bandwidth and damping. Overlap (or underlap) can be specified individually for each flow direction.</text>
-            <picture>33valvehelp.svg</picture>
+            <md>Hydraulic33Valve.md</md>
         </help>
         <ports>
             <port x="0.5624" y="1" a="90" name="PP"/>
