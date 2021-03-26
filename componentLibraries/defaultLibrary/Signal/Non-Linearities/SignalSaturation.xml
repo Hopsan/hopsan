@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject sourcecode="SignalSaturation.hpp" typename="SignalSaturation" displayname="Saturation">
         <icons>
-            <icon scale="1" path="saturation.svg" iconrotation="ON" type="iso"/>
+            <icon scale="1" path="SignalSaturation.svg" iconrotation="ON" type="iso"/>
         </icons>
         <ports>
             <port x="0" y="0.5" a="180" name="in"/>
