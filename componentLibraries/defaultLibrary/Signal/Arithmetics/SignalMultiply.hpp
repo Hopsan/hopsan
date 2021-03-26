@@ -47,7 +47,6 @@ namespace hopsan {
 
     private:
         double *mpND_in1, *mpND_in2, *mpND_out;
-        Port *mpIn1Port, *mpIn2Port;
 
     public:
         static Component *Creator()
@@ -57,8 +56,8 @@ namespace hopsan {
 
         void configure()
         {
-            mpIn1Port = addInputVariable("in1", "", "", 1.0, &mpND_in1);
-            mpIn2Port = addInputVariable("in2", "", "", 1.0, &mpND_in2);
+            addInputVariable("in1", "", "", 1.0, &mpND_in1);
+            addInputVariable("in2", "", "", 1.0, &mpND_in2);
             addOutputVariable("out", "in1*in2", "", &mpND_out);
         }
 

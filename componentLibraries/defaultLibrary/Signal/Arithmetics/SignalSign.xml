@@ -4,6 +4,9 @@
         <icons>
             <icon scale="1" path="SignalSign.svg" iconrotation="OFF" type="user"/>
         </icons>
+        <help>
+            <md>SignalSign.md</md>
+        </help>
        <replacables>
             <replacable typename="SignalAbsoluteValue"/>
             <replacable typename="SignalGain"/>
