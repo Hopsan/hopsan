@@ -1,15 +1,15 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject sourcecode="SignalTimeDelay.hpp" typename="SignalTimeDelay" displayname="Time Delay">
+    <modelobject sourcecode="SignalUnitDelay.hpp" typename="SignalUnitDelay" displayname="Arithmetic Loop Delay Hint">
         <icons>
-            <icon scale="1" path="delay.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="SignalUnitDelay.svg" iconrotation="OFF" type="user"/>
         </icons>
         <ports>
             <port x="0" y="0.5" a="180" name="in"/>
             <port x="1" y="0.5" a="0" name="out"/>
         </ports>
         <help>
-            <text>Will delay the signal at least one Ts (sample time step) </text>
+            <text>Used to resolve algebraic loops. Will not delay a signal if not connected in a loop!</text>
         </help>
     </modelobject>
 </hopsanobjectappearance>

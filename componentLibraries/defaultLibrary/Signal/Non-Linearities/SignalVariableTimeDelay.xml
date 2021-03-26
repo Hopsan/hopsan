@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject sourcecode="SignalVariableTimeDelay.hpp" typename="SignalVariableTimeDelay" displayname="Variable Time Delay">
         <icons>
-            <icon scale="1" path="variableTimeDelay.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="SignalVariableTimeDelay.svg" iconrotation="ON" type="user"/>
         </icons>
         <ports>
             <port x="0" y="0.5" a="180" name="in"/>
