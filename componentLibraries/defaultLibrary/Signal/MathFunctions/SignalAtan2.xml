@@ -4,6 +4,9 @@
         <icons>
             <icon scale="1" path="SignalAtan2.svg" iconrotation="" type="user"/>
         </icons>
+        <help>
+            <md>SignalAtan2.md</md>
+        </help>
         <ports>
             <port x="0" y="0.5" a="180" name="inY"/>
             <port x="0.5" y="1" a="90" name="inX"/>
