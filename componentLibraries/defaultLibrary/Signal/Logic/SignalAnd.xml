@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject sourcecode="SignalXor.hpp" typename="SignalXor" displayname="Logical Exclusive Or Operator">
+    <modelobject sourcecode="SignalAnd.hpp" typename="SignalAnd" displayname="Logical And Operator">
         <icons>
-            <icon scale="1" path="xor.svg" iconrotation="OFF" type="user"/>
+            <icon scale="1" path="SignalAnd.svg" iconrotation="OFF" type="user"/>
         </icons>
         <replacables>
-            <replacable typename="SignalAnd"/>
             <replacable typename="SignalOr"/>
+            <replacable typename="SignalXor"/>
         </replacables>
         <ports>
             <port x="1" y="0.5" a="0" name="out"/>

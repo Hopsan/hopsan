@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject sourcecode="SignalOr.hpp" typename="SignalOr" displayname="Logical Or Operator">
         <icons>
-            <icon scale="1" path="or.svg" iconrotation="OFF" type="user"/>
+            <icon scale="1" path="SignalOr.svg" iconrotation="OFF" type="user"/>
         </icons>
         <replacables>
             <replacable typename="SignalAnd"/>

@@ -2,8 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject sourcecode="SignalStopSimulation.hpp" typename="SignalStopSimulation" displayname="Stop simulation">
         <icons>
-            <icon scale="1" path="stopsimulation_user.svg" iconrotation="ON" type="user"/>
-            <icon scale="1" path="stopsimulation_user.svg" iconrotation="ON" type="iso"/>
+            <icon scale="1" path="SignalStopSimulation.svg" iconrotation="ON" type="user"/>
         </icons>
         <ports>
             <port x="0" y="0.5" a="180" name="in"/>
