@@ -4,6 +4,9 @@
         <icons>
             <icon scale="1" path="SignalGreaterThan.svg" iconrotation="OFF" type="user"/>
         </icons>
+        <help>
+            <md>SignalGreaterThan.md</md>
+        </help>
         <replacables>
             <replacable typename="SignalNot"/>
             <replacable typename="SignalSmallerThan"/>
