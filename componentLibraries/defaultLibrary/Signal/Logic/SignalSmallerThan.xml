@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject sourcecode="SignalGreaterThan.hpp" typename="SignalGreaterThan" displayname="Greater Than Comparer">
+    <modelobject sourcecode="SignalSmallerThan.hpp" typename="SignalSmallerThan" displayname="Smaller Than Comparer">
         <icons>
-            <icon scale="1" path="greaterthan.svg" iconrotation="OFF" type="user"/>
+            <icon scale="1" path="SignalSmallerThan.svg" iconrotation="OFF" type="user"/>
         </icons>
         <replacables>
+            <replacable typename="SignalGreaterThan"/>
             <replacable typename="SignalNot"/>
-            <replacable typename="SignalSmallerThan"/>
         </replacables>
         <ports>
             <port x="0" y="0.5" a="180" name="in"/>
