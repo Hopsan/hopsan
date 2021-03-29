@@ -10,7 +10,7 @@
             <port x="1" y="0.5" a="0" name="P2"/>
         </ports>
         <help>
-            <text>This is a fictive component that delays the pressure and flow from one end to the other. Even though the icon looks like a pipe, it is not modeling a pipe. You need to add a restrictor to each end if you want to approximately model a pipe.</text>
+            <md>HydraulicTLMlossless.md</md>
         </help>
     </modelobject>
 </hopsanobjectappearance>
