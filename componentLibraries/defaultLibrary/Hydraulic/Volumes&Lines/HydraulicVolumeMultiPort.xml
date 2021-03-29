@@ -8,6 +8,9 @@
         <ports>
             <port x="0.5" y="0.5" a="0" name="P1"/>
         </ports>
+        <help>
+            <md>HydraulicVolumeMultiPort.md</md>
+        </help>
         <animation>
             <icon userpath="volume_user.svg"/>
             <movable idx="0">

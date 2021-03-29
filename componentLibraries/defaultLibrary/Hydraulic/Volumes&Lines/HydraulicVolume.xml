@@ -9,6 +9,9 @@
             <port x="0" y="0.5" a="0" name="P1"/>
             <port x="1" y="0.5" a="0" name="P2"/>
         </ports>
+        <help>
+            <md>HydraulicVolume.md</md>
+        </help>
         <replacables>
             <replacable typename="HydraulicTLMlossless"/>
             <replacable typename="HydraulicHose"/>
