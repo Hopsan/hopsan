@@ -1,9 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject sourcecode="SignalSegare.hpp" typename="SignalSegare" displayname="Segare">
+    <modelobject sourcecode="SignalSegare.hpp" typename="SignalSegare" displayname="Circular Segment Area">
         <icons>
             <icon scale="1" path="SignalSegare.svg" iconrotation="" type="user"/>
         </icons>
+        <help>
+            <md>SignalSegare.md</md>
+        </help>
         <ports>
             <port x="0" y="0.5" a="180" name="x"/>
             <port x=".5" y="0" a="270" name="diameter"/>

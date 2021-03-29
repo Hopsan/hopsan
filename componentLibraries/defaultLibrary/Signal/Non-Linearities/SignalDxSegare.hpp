@@ -56,9 +56,9 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("x", "", "", 0.0, &mpND_x);
-            addInputVariable("diameter", "", "", 0.0, &mpND_diameter);
-            addOutputVariable("width", "dxsegare(in)","",&mpND_width);
+            addInputVariable("x", "Segment height", "", 0.0, &mpND_x);
+            addInputVariable("diameter", "Circle diameter", "", 0.0, &mpND_diameter);
+            addOutputVariable("width", "Width","",&mpND_width);
         }
 
 
