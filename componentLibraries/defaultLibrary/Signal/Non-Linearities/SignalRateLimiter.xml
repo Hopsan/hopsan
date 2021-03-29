@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.3">
-  <modelobject typename="SignalRateLimiter" displayname="Rate limiter" sourcecode="SignalRateLimiter.hpp">
-    <icons>
-      <icon scale="1" path="SignalRateLimiter.svg" iconrotation="OFF" type="user"/>
-    </icons>
-    <ports>
-      <port name="in" x="0" y="0.5" a="180"/>
-      <port name="out" x="1" y="0.5" a="0"/>
-    </ports>
-  </modelobject>
+    <modelobject typename="SignalRateLimiter" displayname="Rate limiter" sourcecode="SignalRateLimiter.hpp">
+        <icons>
+            <icon scale="1" path="SignalRateLimiter.svg" iconrotation="OFF" type="user"/>
+        </icons>
+        <help>
+            <md>SignalRateLimiter.md</md>
+        </help>
+        <ports>
+            <port name="in" x="0" y="0.5" a="180"/>
+            <port name="out" x="1" y="0.5" a="0"/>
+        </ports>
+    </modelobject>
 </hopsanobjectappearance>

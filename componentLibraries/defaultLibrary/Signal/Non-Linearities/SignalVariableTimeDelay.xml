@@ -4,6 +4,9 @@
         <icons>
             <icon scale="1" path="SignalVariableTimeDelay.svg" iconrotation="ON" type="user"/>
         </icons>
+        <help>
+            <md>SignalVariableTimeDelay.md</md>
+        </help>
         <ports>
             <port x="0" y="0.5" a="180" name="in"/>
             <port x="1" y="0.5" a="0" name="out"/>
