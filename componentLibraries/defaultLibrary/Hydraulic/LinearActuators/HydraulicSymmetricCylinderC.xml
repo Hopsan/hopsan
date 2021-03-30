@@ -6,8 +6,7 @@
             <icon scale="1" path="HydraulicSymmetricCylinderC_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
         <help>
-            <text>This is a C-type hydraulic linear actuator with dead volumes, viscous friction and internal leakage. End of stroke must be handled by adjacent component, and should be from zero to stroke length.</text>
-            <picture>cylinderchelp.svg</picture>
+            <md>HydraulicSymmetricCylinderC.md</md>
         </help>
         <ports>
             <port x="0.419243805050505" y="1" a="90" name="P1"/>

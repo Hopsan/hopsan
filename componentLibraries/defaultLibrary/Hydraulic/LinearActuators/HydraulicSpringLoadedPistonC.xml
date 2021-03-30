@@ -5,7 +5,9 @@
             <icon scale="1" path="HydraulicSpringLoadedPistonC_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="HydraulicSpringLoadedPistonC_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
-        <help/>
+        <help>
+            <md>HydraulicSpringLoadedPistonC.md</md>
+        </help>
         <ports>
             <port x="0.0418" y="1" a="90" name="P1"/>
             <port x="0.7106" y="1" a="90" name="P2"/>
