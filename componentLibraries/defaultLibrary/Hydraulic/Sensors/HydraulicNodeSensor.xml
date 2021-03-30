@@ -4,6 +4,9 @@
         <icons>
             <icon scale="1" path="HydraulicPowerSensor_user.svg" iconrotation="ON" type="user"/>
         </icons>
+        <help>
+            <md>HydraulicNodeSensor.md</md>
+        </help>
         <ports>
             <port x="0.5" y="1" a="90" name="P1"/>
             <port x="0.2" y="0.2" a="270" name="p"/>
