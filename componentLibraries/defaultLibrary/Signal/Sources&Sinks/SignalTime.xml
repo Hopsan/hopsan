@@ -4,6 +4,9 @@
         <icons>
             <icon scale="1" path="SignalTime.svg" iconrotation="OFF" type="iso"/>
         </icons>
+        <help>
+            <md>SignalTime.md</md>
+        </help>
         <replacables>
             <replacable typename="SignalStep"/>
             <replacable typename="SignalStepExponentialDelay"/>

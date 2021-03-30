@@ -5,7 +5,7 @@
             <icon scale="1" path="SignalLogger.svg" iconrotation="OFF" type="user"/>
         </icons>
         <help>
-            <text>This component logs connected input variables to an external file.</text>
+            <md>SignalLogger.md</md>
         </help>
         <ports>
             <port x="0" y="0.5" a="180" name="in"/>

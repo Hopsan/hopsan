@@ -5,8 +5,7 @@
             <icon scale="1" path="SignalPulseWave.svg" iconrotation="OFF" type="user"/>
         </icons>
         <help>
-            <text>The dutycycle D, is the ratio of the PeroidTime dT when the signal is high</text>
-            <picture>SignalPulseWaveHelp.svg</picture>
+            <md>SignalPulseWave.md</md>
         </help>
         <replacables>
             <replacable typename="SignalStep"/>

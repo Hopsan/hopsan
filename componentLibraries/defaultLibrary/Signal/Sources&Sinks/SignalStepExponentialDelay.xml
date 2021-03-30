@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject sourcecode="SignalStepExponentialDelay.hpp" typename="SignalStepExponentialDelay" displayname="Step With Exponential Delay">
+    <modelobject sourcecode="SignalStepExponentialDelay.hpp" typename="SignalStepExponentialDelay" displayname="Step With Exponential Decay">
         <icons>
             <icon scale="1" path="SignalStepExponentialDelay.svg" iconrotation="OFF" type="user"/>
         </icons>
         <help>
-            <picture>SignalStepExponentialDelayHelp.svg</picture>
+            <md>SignalStepExponentialDelay.md</md>
         </help>
         <replacables>
             <replacable typename="SignalStep"/>

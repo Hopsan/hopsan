@@ -5,7 +5,7 @@
             <icon scale="1" path="SignalSquareWave.svg" iconrotation="OFF" type="user"/>
         </icons>
         <help>
-            <picture>SignalSquareWaveHelp.svg</picture>
+            <md>SignalSquareWave.md</md>
         </help>
         <replacables>
             <replacable typename="SignalStep"/>
