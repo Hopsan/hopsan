@@ -4,6 +4,9 @@
         <icons>
             <icon scale="1" path="gauge.svg" iconrotation="OFF" type="user"/>
         </icons>
+        <help>
+            <md>SignalAnimationGauge.md</md>
+        </help>
         <ports>
             <port x="0.5" y="1.0" a="90" name="in"/>
         </ports>

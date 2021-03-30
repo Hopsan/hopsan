@@ -4,6 +4,9 @@
         <icons>
             <icon scale="1" path="SignalAnimationSwitch.svg" iconrotation="ON" type="user"/>
         </icons>
+        <help>
+            <md>SignalAnimationSwitch.md</md>
+        </help>
         <ports>
             <port x="1" y="0.5" a="0" name="out"/>
         </ports>
