@@ -5,6 +5,9 @@
             <icon scale="1" path="differentialpressuresensor_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="differentialpressuresensor_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <help>
+            <md>HydraulicDifferentialPressureSensor.md</md>
+        </help>
         <ports>
             <port x="0.33333333" y="1" a="90" name="P1"/>
             <port x="0.66666667" y="1" a="90" name="P2"/>

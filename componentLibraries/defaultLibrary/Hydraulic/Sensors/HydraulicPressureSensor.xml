@@ -9,6 +9,9 @@
             <port x="0.5" y="1" a="90" name="P1"/>
             <port x="0.5" y="0" a="270" name="out"/>
         </ports>
+        <help>
+            <md>HydraulicPressureSensor.md</md>
+        </help>
         <animation>
             <icon userpath="pressuresensor_user_base.svg"/>
             <movable>
