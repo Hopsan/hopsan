@@ -5,7 +5,7 @@
             <icon scale="1" path="SignalSink.svg" iconrotation="OFF" type="user"/>
         </icons>
         <help>
-            <text>This component does nothing, but is required to plot values for non-connected ports.</text>
+            <md>SignalSink.md</md>
         </help>
         <ports>
             <port x="1" y="0.5" a="0" name="in_right"/>

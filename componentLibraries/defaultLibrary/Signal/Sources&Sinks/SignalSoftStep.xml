@@ -5,7 +5,7 @@
             <icon scale="1" path="SignalSoftStep.svg" iconrotation="OFF" type="iso"/>
         </icons>
         <help>
-            <picture>SignalSoftStepHelp.svg</picture>
+            <md>SignalSoftStep.md</md>
         </help>
         <replacables>
             <replacable typename="SignalStep"/>

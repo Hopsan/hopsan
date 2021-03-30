@@ -5,8 +5,7 @@
             <icon scale="1" path="SignalSineWave.svg" iconrotation="OFF" type="iso"/>
         </icons>
         <help>
-            <text>Implemets the function y=Ya*sin(((T-Tstart)-y_offset)*2PI*f)</text>
-            <picture>SignalSineWaveHelp.svg</picture>
+            <md>SignalSineWave.md</md>
         </help>
         <replacables>
             <replacable typename="SignalStep"/>
