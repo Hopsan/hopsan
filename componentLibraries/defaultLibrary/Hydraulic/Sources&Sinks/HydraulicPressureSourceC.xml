@@ -6,7 +6,7 @@
             <icon scale="1" path="pressuresource_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
         <help>
-            <text>Supplies the hydraulic port with the pressure obtained from signal port. Default pressure parameter value is used if signal port is not connected. Flow will be as large as is required.</text>
+            <md>HydraulicPressureSourceC.md</md>
         </help>
         <ports>
             <port x="0.5" y="1" a="90" name="p"/>
