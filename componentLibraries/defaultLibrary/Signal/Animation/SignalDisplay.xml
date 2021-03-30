@@ -4,6 +4,9 @@
         <icons>
             <icon scale="1.0" path="display.svg" iconrotation="OFF" type="user"/>
         </icons>
+        <help>
+            <md>SignalDisplay.md</md>
+        </help>
         <ports>
             <port x="0.0" y="0.5" a="0" name="in"/>
         </ports>
