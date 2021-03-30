@@ -1,20 +1,19 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject sourcecode="SignalSineWave.hpp" typename="SignalSineWave" displayname="Sine Wave">
+    <modelobject sourcecode="SignalStepExponentialDelay.hpp" typename="SignalStepExponentialDelay" displayname="Step With Exponential Delay">
         <icons>
-            <icon scale="1" path="sinewave.svg" iconrotation="OFF" type="iso"/>
+            <icon scale="1" path="SignalStepExponentialDelay.svg" iconrotation="OFF" type="user"/>
         </icons>
         <help>
-            <text>Implemets the function y=Ya*sin(((T-Tstart)-y_offset)*2PI*f)</text>
-            <picture>sinewavehelp.svg</picture>
+            <picture>SignalStepExponentialDelayHelp.svg</picture>
         </help>
         <replacables>
             <replacable typename="SignalStep"/>
-            <replacable typename="SignalStepExponentialDelay"/>
+            <replacable typename="SignalTime"/>
             <replacable typename="SignalStaircase"/>
             <replacable typename="SignalSquareWave"/>
             <replacable typename="SignalSoftStep"/>
-            <replacable typename="SignalTime"/>
+            <replacable typename="SignalSineWave"/>
             <replacable typename="SignalTimestep"/>
             <replacable typename="SignalConstant"/>
             <replacable typename="SignalRamp"/>

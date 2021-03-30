@@ -1,16 +1,13 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject sourcecode="SignalStep.hpp" typename="SignalStep" displayname="Step">
+    <modelobject sourcecode="SignalStaircase.hpp" typename="SignalStaircase" displayname="Staircase">
         <icons>
-            <icon scale="1" path="step.svg" iconrotation="OFF" type="user"/>
+            <icon scale="1.0" path="SignalStaircase.svg" iconrotation="OFF" type="user"/>
         </icons>
-        <help>
-            <picture>stephelp.svg</picture>
-        </help>
         <replacables>
-            <replacable typename="SignalTime"/>
+            <replacable typename="SignalStep"/>
             <replacable typename="SignalStepExponentialDelay"/>
-            <replacable typename="SignalStaircase"/>
+            <replacable typename="SignalTime"/>
             <replacable typename="SignalSquareWave"/>
             <replacable typename="SignalSoftStep"/>
             <replacable typename="SignalSineWave"/>
@@ -22,7 +19,7 @@
             <replacable typename="SignalNoise"/>
         </replacables>
         <ports>
-            <port x="1" y="0.5" a="0" name="out"/>
+            <port x="1.0" y="0.5" a="0" name="out"/>
         </ports>
     </modelobject>
 </hopsanobjectappearance>

@@ -1,11 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject sourcecode="SignalNoiseGenerator.hpp" typename="SignalNoiseGenerator" displayname="White Noise Generator">
+    <modelobject sourcecode="SignalPulseWave.hpp" typename="SignalPulseWave" displayname="PulseWave">
         <icons>
-            <icon scale="1" path="noise.svg" iconrotation="OFF" type="iso"/>
+            <icon scale="1" path="SignalPulseWave.svg" iconrotation="OFF" type="user"/>
         </icons>
         <help>
-            <text>Source component that generates white gaussian noise.</text>
+            <text>The dutycycle D, is the ratio of the PeroidTime dT when the signal is high</text>
+            <picture>SignalPulseWaveHelp.svg</picture>
         </help>
         <replacables>
             <replacable typename="SignalStep"/>
@@ -18,8 +19,8 @@
             <replacable typename="SignalConstant"/>
             <replacable typename="SignalRamp"/>
             <replacable typename="SignalPulse"/>
-            <replacable typename="SignalPulseWave"/>
             <replacable typename="SignalTime"/>
+            <replacable typename="SignalNoise"/>
         </replacables>
         <ports>
             <port x="1" y="0.5" a="0" name="out"/>

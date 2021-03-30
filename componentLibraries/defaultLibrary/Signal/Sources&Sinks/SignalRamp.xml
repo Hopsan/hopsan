@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject sourcecode="SignalPulse.hpp" typename="SignalPulse" displayname="Pulse">
+    <modelobject sourcecode="SignalRamp.hpp" typename="SignalRamp" displayname="Ramp">
         <icons>
-            <icon scale="1" path="pulse.svg" iconrotation="OFF" type="iso"/>
+            <icon scale="1" path="SignalRamp.svg" iconrotation="OFF" type="iso"/>
         </icons>
         <help>
-            <picture>pulsehelp.svg</picture>
+            <picture>SignalRampHelp.svg</picture>
         </help>
         <replacables>
             <replacable typename="SignalStep"/>
@@ -16,8 +16,8 @@
             <replacable typename="SignalSineWave"/>
             <replacable typename="SignalTimestep"/>
             <replacable typename="SignalConstant"/>
-            <replacable typename="SignalRamp"/>
             <replacable typename="SignalTime"/>
+            <replacable typename="SignalPulse"/>
             <replacable typename="SignalPulseWave"/>
             <replacable typename="SignalNoise"/>
         </replacables>
