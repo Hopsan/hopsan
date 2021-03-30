@@ -2,8 +2,11 @@
 <hopsanobjectappearance version="0.3">
     <modelobject sourcecode="SignalQuadRoute.hpp" typename="SignalQuadRoute" displayname="Route With Four Inputs">
         <icons>
-            <icon scale="1" path="quadroute.svg" iconrotation="ON" type="iso"/>
+            <icon scale="1" path="SignalQuadRoute.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <help>
+            <md>SignalQuadRoute.md</md>
+        </help>
         <ports>
             <port x="0.5" y="0" a="270" name="route"/>
             <port x="1" y="0.5" a="0" name="out"/>
