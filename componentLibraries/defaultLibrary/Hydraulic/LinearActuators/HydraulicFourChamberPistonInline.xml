@@ -4,6 +4,9 @@
         <icons>
             <icon scale="1" path="HydraulicFourChamberPistonInline.svg" iconrotation="ON" type="user"/>
         </icons>
+        <help>
+            <md>HydraulicFourChamberPistonInline.md</md>
+        </help>
         <ports>
             <port x="0.02398047" y="1.0" a="90" name="P1"/>
             <port x="0.407667995" y="1.0" a="90" name="P2"/>
