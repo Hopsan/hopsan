@@ -11,5 +11,8 @@
         <ports>
             <port x="0.5" y="0" a="90" name="P1"/>
         </ports>
+        <help>
+            <md>HydraulicTankC.md</md>
+        </help>
     </modelobject>
 </hopsanobjectappearance>

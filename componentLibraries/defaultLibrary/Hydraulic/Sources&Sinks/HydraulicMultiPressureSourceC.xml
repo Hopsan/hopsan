@@ -9,7 +9,7 @@
             <replacable typename="HydraulicMultiTankC"/>
         </replacables>
         <help>
-            <text>Supplies the hydraulic port with the pressure obtained from signal port. Default pressure parameter value is used if signal port is not connected. Flow will be as large as is required. This component is slightly slower than the one without multiport.</text>
+            <md>HydraulicMultiPressureSourceC.md</md>
         </help>
         <ports>
             <port x="0.5" y="1" a="90" name="p"/>
