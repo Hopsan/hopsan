@@ -6,8 +6,7 @@
             <icon scale="1" path="mass_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
         <help>
-            <picture>masshelp.svg</picture>
-            <text>A translational inertia modelled according to Euler's first law of motion. Limitation parameters apply to port P2.</text>
+            <md>MechanicTranslationalMass.md</md>
         </help>
         <ports>
             <port x="0" y="0.5" a="0" name="P1"/>

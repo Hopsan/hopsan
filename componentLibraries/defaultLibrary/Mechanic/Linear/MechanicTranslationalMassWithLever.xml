@@ -5,7 +5,7 @@
             <icon scale="1" path="masslever_user.svg" iconrotation="ON" type="user"/>
         </icons>
         <help>
-            <picture>massleverhelp.svg</picture>
+            <md>MechanicTranslationalMassWithLever.md</md>
         </help>
         <ports>
             <port x="0.4" y="0.4" a="0" name="P1"/>

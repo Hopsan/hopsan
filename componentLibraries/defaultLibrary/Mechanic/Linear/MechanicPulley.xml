@@ -8,6 +8,9 @@
             <port x="0" y="0.01924557351809083910700538876059" a="90" name="P1"/>
             <port x="1" y="0.37900949448293559148062612265846" a="270" name="P2"/>
         </ports>
+        <help>
+            <md>MechanicPulley.md</md>
+        </help>
         <animation>
             <icon userpath="MechanicPulley_base.svg"/>
             <movable idx="0">

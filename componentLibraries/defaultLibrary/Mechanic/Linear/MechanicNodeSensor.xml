@@ -4,6 +4,9 @@
         <icons>
             <icon scale="1" path="MechanicNodeSensor.svg" iconrotation="ON" type="user"/>
         </icons>
+        <help>
+            <md>MechanicNodeSensor.md</md>
+        </help>
         <ports>
             <port x="0.5" y="1" a="90" name="P1"/>
             <port x="0.05" y="0.4" a="270" name="out_f"/>

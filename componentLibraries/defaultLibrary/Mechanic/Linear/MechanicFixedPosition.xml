@@ -8,5 +8,8 @@
         <ports>
             <port x="0" y="0.5" a="0" name="Pm1"/>
         </ports>
+        <help>
+            <md>MechanicFixedPosition.md</md>
+        </help>
     </modelobject>
 </hopsanobjectappearance>
