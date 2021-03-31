@@ -125,24 +125,24 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            c1  = (*mpND_c1)*2;
-            Zx1 = (*mpND_Zx1)*4;
+            c1  = (*mpND_c1);
+            Zx1 = (*mpND_Zx1);
             c2  = (*mpND_c2);
             Zx2 = (*mpND_Zx2);
 
             //Mass equations
-            mDenTheta[1] = ((*mpB)+Zx1+Zx2);
-            mDenOmega[0] = ((*mpB)+Zx1+Zx2);
+            mDenTheta[1] = ((*mpB)+4*Zx1+Zx2);
+            mDenOmega[0] = ((*mpB)+4*Zx1+Zx2);
             mFilterTheta.setDen(mDenTheta);
             mFilterOmega.setDen(mDenOmega);
 
-            x2 = mFilterTheta.update(c1-c2);
-            v2 = mFilterOmega.update(c1-c2);
+            x2 = mFilterTheta.update(2*c1-c2);
+            v2 = mFilterOmega.update(2*c1-c2);
             f2 = c2 + Zx2*v2;
 
             v1 = -v2*2;
             x1 = -x2*2;
-            f1 = (c1 + Zx1*v1)/2.0;
+            f1 = c1 + Zx1*v1;
 
 
             //Write new values to nodes
