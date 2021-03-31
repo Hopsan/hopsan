@@ -6,7 +6,7 @@
             <icon scale="1" path="spring_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
         <help>
-            <picture>springhelp.svg</picture>
+            <md>MechanicTranslationalSpringWithSlack.md</md>
         </help>
         <ports>
             <port x="0" y="0.42353452" a="0" name="P1"/>

@@ -7,6 +7,7 @@
         </icons>
         <help>
             <picture>springhelp.svg</picture>
+            <link>MechanicSpring.nb</link>
         </help>
         <ports>
             <port x="0" y="0.5" a="0" name="Pm1"/>
