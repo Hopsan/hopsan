@@ -5,7 +5,7 @@
             <icon scale="1" path="MechanicAngularVelocityTransformer.svg" iconrotation="ON" type="iso"/>
         </icons>
         <help>
-            <text>Angular velocity source, controlable by signal.</text>
+            <md>MechanicAngularVelocityTransformer.md</md>
         </help>
         <ports>
             <port x="0" y="0.5" a="180" name="omega"/>

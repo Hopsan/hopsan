@@ -5,7 +5,7 @@
             <icon scale="1" path="MechanicAngularVelocityTransformer.svg" iconrotation="ON" type="iso"/>
         </icons>
         <help>
-            <text>Applies specified angle and velocity. Parameter values will be used if their corresponding input port is not connected. If velocity is connected but not angle, the angle will be integrated from the velocity. Connecting both inputs simultaneously or connecting only angle input is possible, but the kinematic relationship between angle and velocity must then be enforced manually.</text>
+            <md>MechanicThetaSource.md</md>
         </help>
         <ports>
             <port x="0" y="0" a="180" name="thetain"/>

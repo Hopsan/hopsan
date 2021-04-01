@@ -5,7 +5,7 @@
             <icon scale="1" path="inertiawgear_user.svg" iconrotation="ON" type="user"/>
         </icons>
         <help>
-            <picture>inertiawgearhelp.svg</picture>
+            <md>MechanicRotationalInertiaWithGearRatio.md</md>
         </help>
         <ports>
             <port x="0" y="0.08" a="0" name="P1"/>

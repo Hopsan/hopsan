@@ -4,6 +4,9 @@
         <icons>
             <icon scale="1" path="MechanicBallScrew.svg" iconrotation="ON" type="user"/>
         </icons>
+        <help>
+            <md>MechanicBallScrew.md</md>
+        </help>
         <ports>
             <port x="0.5" y="0.0" a="0" name="P1"/>
             <port x="0.0" y="0.5" a="0" name="P2"/>

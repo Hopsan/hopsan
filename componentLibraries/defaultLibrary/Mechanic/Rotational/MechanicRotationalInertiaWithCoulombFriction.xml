@@ -6,7 +6,7 @@
             <icon scale="1" path="inertiac_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
         <help>
-            <picture>inertiachelp.svg</picture>
+            <md>MechanicRotationalInertiaWithCoulombFriction.md</md>
         </help>
         <ports>
             <port x="0" y="0.4166666667" a="0" name="P1"/>
