@@ -4,6 +4,9 @@
         <icons>
             <icon scale="1" path="MechanicRackAndPinion.svg" iconrotation="ON" type="user"/>
         </icons>
+        <help>
+            <md>MechanicRackAndPinion.md</md>
+        </help>
         <ports>
             <port x="0.0442" y="0.9743" a="0" name="P1"/>
             <port x="1" y="0.4079" a="0" name="P2"/>

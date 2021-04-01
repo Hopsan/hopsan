@@ -4,6 +4,9 @@
         <icons>
             <icon scale="1" path="MechanicWormDrive.svg" iconrotation="ON" type="user"/>
         </icons>
+        <help>
+            <md>MechanicWormDrive.md</md>
+        </help>
         <ports>
             <port x="1" y="0.2087" a="0" name="P1"/>
             <port x="0.34787997" y="0.656943542" a="90" name="P2"/>
