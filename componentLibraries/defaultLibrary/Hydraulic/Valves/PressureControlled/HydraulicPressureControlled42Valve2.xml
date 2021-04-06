@@ -5,6 +5,9 @@
             <icon scale="1" path="HydraulicPressureControlled42Valve2.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="HydraulicPressureControlled42Valve2_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <help>
+            <md>HydraulicPressureControlled42Valve2.md</md>
+        </help>
         <ports>
             <port name="x_v" x="1.0" y="0.5" a="0" hidden="false"/>
             <port name="PP" x="0.592105263157895" y="1.0" a="270"/>
