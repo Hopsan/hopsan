@@ -180,11 +180,11 @@ public:
 1.,&mpwc);
             addInputVariable("Bm", "Visc. fric. coeff., motor", "Nms/rad", \
 0.0012,&mpBm);
-            addInputVariable("Jm", "Moment of inertia, motor", "kg m^2", \
+            addInputVariable("Jm", "Moment of inertia, motor", "MomentOfInertia", \
 0.1,&mpJm);
             addInputVariable("BL", "Visc. fric. coeff., load", "Nms/rad", \
 0.,&mpBL);
-            addInputVariable("JL", "Moment of inertia, motor", "kg m^2", \
+            addInputVariable("JL", "Moment of inertia, motor", "MomentOfInertia", \
 1,&mpJL);
             addInputVariable("myfric", "friction. coeff. of gear (at \
 output)", "", 0.01,&mpmyfric);

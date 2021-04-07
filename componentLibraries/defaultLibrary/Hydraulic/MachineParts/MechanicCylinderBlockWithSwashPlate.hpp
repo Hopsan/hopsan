@@ -82,7 +82,7 @@ namespace hopsan {
             addOutputVariable("torque", "Torque", "Nm", 0.0, &mpTorque);
             addOutputVariable("movement", "?", "?", 0.0, &mpMovement);
 
-            addConstant("J", "Moment of Inertia of Cylinder Block", "kgm^2", 0.1, J);
+            addConstant("J", "Moment of Inertia of Cylinder Block", "MomentOfInertia", 0.1, J);
             addConstant("m_p", "Mass of each Piston", "kg", 0.001, mp);
             addConstant("r_p", "Piston Radius", "m", 0.01, rp);
 

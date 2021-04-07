@@ -54,6 +54,8 @@ hopsan::QuantityRegister::QuantityRegister()
     registerQuantity("Volume", "m^3");
     registerQuantity("Displacement", "m^3/rev");
 
+    registerQuantity("MomentOfInertia", "kg m^2");
+
     registerQuantity("Density", "kg/m^3");
 
     registerQuantity("Frequency", "rad/s");

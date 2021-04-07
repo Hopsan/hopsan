@@ -168,7 +168,7 @@ public:
             addInputVariable("wc", "Friction speed", "rad/s", 1.,&mpwc);
             addInputVariable("Bm", "Visc. fric. coeff., motor", "Nms/rad", \
 0.0012,&mpBm);
-            addInputVariable("Jm", "Moment of inertia, motor", "kg m^2", \
+            addInputVariable("Jm", "Moment of inertia, motor", "MomentOfInertia", \
 1,&mpJm);
         //Add outputVariables to the component
             addOutputVariable("tormg","Generated motor \
