@@ -87,7 +87,7 @@ namespace hopsan {
             addOutputVariable("x", "Position (traverse)", "m", -0.6, &mpX);
 
             addConstant("r2", "Radius (rotation)", "", 0.1, mRrot);
-            addConstant("J", "Inertia (rotation)", "kgm^2",       0.2, mJ);
+            addConstant("J", "Inertia (rotation)", "MomentOfInertia",       0.2, mJ);
             addInputVariable("Brot", "Viscous Friction (rotation)", "Nms/rad",   10.0, &mpBrot);
             addInputVariable("a_min", "Minimum Angle (rotation)", "rad", -1.5707963267949, &mpAMin);
             addInputVariable("a_max", "Maximum Angle (rotation)", "rad", 1.5707963267949, &mpAMax);

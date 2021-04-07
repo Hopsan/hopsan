@@ -363,7 +363,7 @@ private:
         setDataCharacteristics(Angle, "Angle", "a", "Angle");
         setDataCharacteristics(WaveVariable, "WaveVariable", "c", "Torque", TLMType);
         setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "?", TLMType);
-        setDataCharacteristics(EquivalentInertia, "EquivalentInertia", "Je", "kgm^2", HiddenType);
+        setDataCharacteristics(EquivalentInertia, "EquivalentInertia", "Je", "MomentOfInertia", HiddenType);
     }
 
     virtual void setTLMNodeDataValuesTo(Node *pOtherNode) const
@@ -436,7 +436,7 @@ private:
         setDataCharacteristics(CharImpedanceR, "CharImpedanceR", "Zcr", "?", TLMType);
         setDataCharacteristics(CharImpedanceX, "CharImpedanceX", "Zcx", "Ns/m", TLMType);
         setDataCharacteristics(CharImpedanceY, "CharImpedanceY", "Zcy", "Ns/m", TLMType);
-        setDataCharacteristics(EquivalentInertiaR, "EquivalentInertiaR", "mer", "kgm^2", DefaultType);
+        setDataCharacteristics(EquivalentInertiaR, "EquivalentInertiaR", "mer", "MomentOfInertia", DefaultType);
         setDataCharacteristics(EquivalentMassX, "EquivalentMassX", "mex", "kg", DefaultType);
         setDataCharacteristics(EquivalentMassY, "EquivalentMassY", "mey", "kg", DefaultType);
 

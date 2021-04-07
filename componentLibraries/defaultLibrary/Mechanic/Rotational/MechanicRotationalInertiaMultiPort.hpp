@@ -66,7 +66,7 @@ namespace hopsan {
             mpP2 = addPowerMultiPort("P2", "NodeMechanicRotational");
 
             //Register changeable parameters to the HOPSAN++ core
-            addInputVariable("J", "Inertia", "kgm^2",                100.0, &mpJ);
+            addInputVariable("J", "Inertia", "MomentOfInertia",                100.0, &mpJ);
             addInputVariable("B", "Viscous Friction", "Nms/rad",  10.0,  &B);
             //addInputVariable("k", "Spring Coefficient", "Nm/rad", 0.0,   &k);
             addInputVariable("a_min", "Minimum Angle of Port P2", "rad", -1.0e+300, &mpAMin);

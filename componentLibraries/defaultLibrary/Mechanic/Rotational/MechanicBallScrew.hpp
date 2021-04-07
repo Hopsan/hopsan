@@ -73,7 +73,7 @@ namespace hopsan {
             addInputVariable("ny", "Screw Efficiency", "-", 0.9, &mpNy);
             addInputVariable("ny2", "Reverse Efficiency", "-", 0.8, &mpNy2);
 
-            addInputVariable("J", "Moment of Inertia", "kgm^2", 1.0, &mpJ);
+            addInputVariable("J", "Moment of Inertia", "MomentOfInertia", 1.0, &mpJ);
             addInputVariable("B", "Viscous Friction", "Nms/rad", 10, &mpB);
 
             addConstant("k", "Spring Coefficient", "Nm/rad", 0.0, k);
