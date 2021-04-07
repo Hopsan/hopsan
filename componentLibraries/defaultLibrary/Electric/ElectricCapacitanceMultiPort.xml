@@ -5,6 +5,9 @@
             <icon scale="1" path="ElectricCapacitanceMultiPort.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="ElectricCapacitanceMultiPort.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <help>
+            <md>ElectricCapacitanceMultiPort.md</md>
+        </help>
         <ports>
             <port x="0.5" y="0." a="0" name="Pel1"/>
         </ports>

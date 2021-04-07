@@ -4,6 +4,9 @@
         <icons>
             <icon scale="1" path="ElectricUsource.svg" iconrotation="ON" type="user"/>
         </icons>
+        <help>
+            <md>ElectricVoltageSourceMultiPortC.md</md>
+        </help>
         <ports>
             <port y="0.0" x="0.5" a="270" name="P1"/>
         </ports>

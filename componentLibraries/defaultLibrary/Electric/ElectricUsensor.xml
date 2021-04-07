@@ -6,9 +6,9 @@
             <icon scale="1" path="ElectricUsensor.svg" iconrotation="ON" type="iso"/>
         </icons>
         <help>
-            <text>Electric voltage sensor.</text>
-            <link></link>
-        </help>        <ports>
+            <md>ElectricUsensor.md</md>
+        </help>        
+        <ports>
             <port x="0.5" y="0" a="270" name="Puout"/>
             <port x="0.5" y="1" a="90" name="Pel1"/>
         </ports>
