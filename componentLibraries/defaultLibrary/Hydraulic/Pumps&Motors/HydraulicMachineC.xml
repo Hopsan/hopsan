@@ -5,6 +5,9 @@
             <icon scale="1" path="machinec_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="machinec_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <help>
+            <md>HydraulicMachineC.md</md>
+        </help>
         <ports>
             <port x="1" y="0.0556" a="0" name="eps"/>
             <port x="0.5741" y="0" a="270" name="P1"/>

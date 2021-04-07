@@ -5,6 +5,9 @@
             <icon scale="1" path="variablepump_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="variablepump_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <help>
+            <md>HydraulicVariableDisplacementPump.md</md>
+        </help>
         <ports>
             <port x="0.5741" y="1" a="90" name="P1"/>
             <port x="0.5741" y="0" a="270" name="P2"/>

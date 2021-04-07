@@ -5,6 +5,9 @@
             <icon scale="1" path="fixedpump_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="fixedpump_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <help>
+            <md>HydraulicFixedDisplacementPump.md</md>
+        </help>
         <ports>
             <port x="0.6667" y="1" a="90" name="P1"/>
             <port x="0.6667" y="0" a="270" name="P2"/>
