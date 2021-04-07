@@ -5,6 +5,9 @@
             <icon scale="1" path="HydraulicValve416.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="HydraulicValve416.svg" iconrotation="ON" type="iso"/>
         </icons>
+	<help>
+            <link>HydraulicValve416.nb</link>
+        </help>
         <ports>
             <port x="0.45" y="0" a="270" name="Pa"/>
             <port x="0.71" y="0" a="270" name="Pb"/>

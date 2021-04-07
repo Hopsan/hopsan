@@ -2,6 +2,9 @@
 <hopsanobjectappearance version="0.3">
   <modelobject typename="AeroWind" displayname="AeroWind">
     <icons/>
+    <help>
+        <link>AeroWind.nb</link>
+    </help>
     <ports>
        <port x="0.166667" y="0" enabled="true" a="270" name="V" autoplaced="true"/>
       <port x="0.333333" y="0" enabled="true" a="270" name="h" autoplaced="true"/>
