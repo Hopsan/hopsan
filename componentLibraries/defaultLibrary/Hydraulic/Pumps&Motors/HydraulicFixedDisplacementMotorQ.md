@@ -7,7 +7,7 @@ A hydraulic motor component with inertia load
 * **D_m** - Displacement [m^3/rev]
 * **B_m** - Viscous friction [Nm/rad]
 * **C_lm** - Leakage coefficient [(m^3/s)/Pa]
-* **J_m** - Inertia load [kg*m^2]
+* **J_m** - Inertia load [kg m^2]
 
 ### Theory
 Displacement is used with radians instead of revolutions for simplicity:

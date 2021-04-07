@@ -8,6 +8,7 @@
         <help>
             <text>Hydraulic 3-3 valve with pressure control. Dynamics of spool position is first order</text>
             <picture>33valvehelp.svg</picture>
+            <link>HydraulicPressureControlValve33.nb</link>
         </help>
         <ports>
             <port x="0.44" y="1" a="90" name="P1"/>
