@@ -4,6 +4,9 @@
         <icons>
             <icon scale="1" path="OptimizationTestFunction2D.svg" iconrotation="ON" type="user"/>
         </icons>
+        <help>
+            <md>OptimizationTestFunction6D.md</md>
+        </help>
         <ports>
             <port x="0" y="0.142857143" a="180" name="x1"/>
             <port x="0" y="0.285714286" a="180" name="x2"/>
