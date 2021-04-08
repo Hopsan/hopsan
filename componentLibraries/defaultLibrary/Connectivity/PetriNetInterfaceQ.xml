@@ -5,6 +5,9 @@
             <icon scale="1" path="PetriNetInterfaceQ.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="PetriNetInterfaceQ.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <help>
+            <md>PetriNetInterfaceQ.md</md>
+        </help>
         <ports>
             <port x="0" y="0.5" a="0" name="P1"/>
         </ports>

@@ -5,6 +5,9 @@
             <icon scale="1" path="SignalOutputInterface.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="SignalOutputInterface.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <help>
+            <md>SignalOutputInterface.md</md>
+        </help>
         <ports>
             <port x="0" y="0.5" a="180" name="in"/>
         </ports>
