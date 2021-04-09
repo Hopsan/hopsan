@@ -5,7 +5,7 @@
             <icon scale="1" path="SignalIntegrator2.svg" iconrotation="OFF" type="user"/>
         </icons>
         <help>
-            <text>Integrator component using trapezoid method. Start value on output port will be used as initial value.</text>
+            <md>SignalIntegrator2.md</md>
         </help>
         <replacables>
             <replacable typename="SignalFirstOrderFilter"/>

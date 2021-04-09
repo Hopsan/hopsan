@@ -5,8 +5,7 @@
             <icon scale="1" path="SignalFirstOrderFilter.svg" iconrotation="OFF" type="user"/>
         </icons>
         <help>
-            <text>General first order filter using bilinear transform.</text>
-            <picture>SignalFirstOrderFilterHelp.svg</picture>
+            <md>SignalFirstOrderFilter.md</md>
         </help>
         <replacables>
             <replacable typename="SignalHP1Filter"/>
