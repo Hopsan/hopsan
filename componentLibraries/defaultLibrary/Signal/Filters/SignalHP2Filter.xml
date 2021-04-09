@@ -1,21 +1,21 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject sourcecode="SignalSecondOrderFilter.hpp" typename="SignalSecondOrderFilter" displayname="General second order filter">
+    <modelobject sourcecode="SignalHP2Filter.hpp" typename="SignalHP2Filter" displayname="Second order high pass filter">
         <icons>
-            <icon scale="1" path="secondorder.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="SignalHP2Filter.svg" iconrotation="ON" type="user"/>
         </icons>
         <help>
-            <text>General second order filter using bilinear transform.</text>
-            <picture>secondorderhelp.svg</picture>
+            <text>Second order high pass filter using bilinear transform.</text>
+            <picture>SignalHP2FilterHelp.svg</picture>
         </help>
         <replacables>
             <replacable typename="SignalFirstOrderFilter"/>
             <replacable typename="SignalHP1Filter"/>
-            <replacable typename="SignalHP2Filter"/>
             <replacable typename="SignalIntegrator2"/>
             <replacable typename="SignalLP1Filter"/>
             <replacable typename="SignalLP2Filter"/>
             <replacable typename="SignalSecondOrderTransferFunction"/>
+            <replacable typename="SignalSecondOrderFilter"/>
         </replacables>
         <ports>
             <port x="0" y="0.5" a="180" name="in"/>

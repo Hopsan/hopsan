@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject sourcecode="SignalSecondOrderTransferFunction.hpp" typename="SignalSecondOrderTransferFunction" displayname="General second order transfer function">
+    <modelobject sourcecode="SignalSecondOrderFilter.hpp" typename="SignalSecondOrderFilter" displayname="General second order filter">
         <icons>
-            <icon scale="1" path="secondordertf.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="SignalSecondOrderFilter.svg" iconrotation="ON" type="user"/>
         </icons>
         <help>
-            <text>Second order transfer function using bilinear transform. Parameters are continous, and will be discretized automatically by the component. Start value on output port is used as initial value.</text>
-            <picture>secondordertfhelp.svg</picture>
+            <text>General second order filter using bilinear transform.</text>
+            <picture>SignalSecondOrderFilterHelp.svg</picture>
         </help>
         <replacables>
             <replacable typename="SignalFirstOrderFilter"/>
@@ -15,7 +15,7 @@
             <replacable typename="SignalIntegrator2"/>
             <replacable typename="SignalLP1Filter"/>
             <replacable typename="SignalLP2Filter"/>
-            <replacable typename="SignalSecondOrderFilter"/>
+            <replacable typename="SignalSecondOrderTransferFunction"/>
         </replacables>
         <ports>
             <port x="0" y="0.5" a="180" name="in"/>
