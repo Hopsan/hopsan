@@ -4,6 +4,9 @@
         <icons>
             <icon scale="1" path="CombustionEngine.svg" iconrotation="OFF" type="user"/>
         </icons>
+        <help>
+            <md>CombustionEngine.md</md>
+        </help>
         <ports>
             <port x="0.5" y="0" a="270" name="in"/>
             <port x="1.0" y="0.83" a="0" name="P1"/>
