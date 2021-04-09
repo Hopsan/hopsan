@@ -5,8 +5,7 @@
             <icon scale="1" path="SignalHP2Filter.svg" iconrotation="ON" type="user"/>
         </icons>
         <help>
-            <text>Second order high pass filter using bilinear transform.</text>
-            <picture>SignalHP2FilterHelp.svg</picture>
+            <md>SignalHP2Filter.md</md>
         </help>
         <replacables>
             <replacable typename="SignalFirstOrderFilter"/>

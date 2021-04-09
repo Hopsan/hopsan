@@ -5,8 +5,7 @@
             <icon scale="1" path="SignalFirstOrderTransferFunction.svg" iconrotation="OFF" type="user"/>
         </icons>
         <help>
-            <text>First order transfer function using bilinear transform. Parameters are continuous, and will be discretized automatically by the component. Start value on output port is used as initial value.</text>
-            <picture>SignalFirstOrderTransferFunctionHelp.svg</picture>
+            <md>SignalFirstOrderTransferFunction.md</md>
         </help>
         <ports>
             <port x="0" y="0.5" a="180" name="in"/>
