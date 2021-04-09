@@ -4,6 +4,9 @@
         <icons>
             <icon scale="1" path="svg/swashplate.svg" iconrotation="ON" type="user"/>
         </icons>
+        <help>
+            <md>MechanicCylinderBlockWithSwashPlate.md</md>
+        </help>
         <ports>
             <port x="0.0" y="0.3" a="180" name="movement"/>
             <port x="0.0" y="0.7" a="180" name="torque"/>
