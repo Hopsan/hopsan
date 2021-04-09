@@ -6,8 +6,7 @@
             <icon scale="1" path="Hydraulic42DirectionalValve_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
         <help>
-            <text>Hydraulic two way directional valve with second order dynamics. Dynamics is modelled as a low-pass filter with bandwidth and damping. Overlap (or underlap) can be specified individually for each flow direction.</text>
-            <picture>Hydraulic42DirectionalValve_help.svg</picture>
+            <md>Hydraulic42DirectionalValve.md</md>
         </help>
         <replacables>
             <replacable typename="Hydraulic42Valve"/>
