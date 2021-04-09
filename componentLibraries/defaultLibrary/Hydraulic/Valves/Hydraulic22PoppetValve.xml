@@ -6,8 +6,7 @@
             <icon scale="1" path="22poppetvalve_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
         <help>
-            <text>Hydraulic massless poppet valve.</text>
-            <picture>22poppetvalve_help.svg</picture>
+            <md>Hydraulic22PoppetValve.md</md>
         </help>
         <ports>
             <port x="1.0" y="0.8" a="0" name="PS"/>
