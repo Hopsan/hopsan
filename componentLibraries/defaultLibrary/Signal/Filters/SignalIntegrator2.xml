@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject sourcecode="SignalIntegrator2.hpp" typename="SignalIntegrator2" displayname="Integrator">
         <icons>
-            <icon scale="1" path="integrator.svg" iconrotation="OFF" type="user"/>
+            <icon scale="1" path="SignalIntegrator2.svg" iconrotation="OFF" type="user"/>
         </icons>
         <help>
             <text>Integrator component using trapezoid method. Start value on output port will be used as initial value.</text>

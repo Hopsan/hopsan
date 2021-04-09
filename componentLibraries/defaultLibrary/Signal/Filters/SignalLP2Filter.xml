@@ -2,11 +2,11 @@
 <hopsanobjectappearance version="0.3">
     <modelobject sourcecode="SignalLP2Filter.hpp" typename="SignalLP2Filter" displayname="Second order low pass filter">
         <icons>
-            <icon scale="1" path="lp2filter.svg" iconrotation="OFF" type="user"/>
+            <icon scale="1" path="SignalLP2Filter.svg" iconrotation="OFF" type="user"/>
         </icons>
         <help>
             <text>Second order low pass filter using bilinear transform.</text>
-            <picture>lp2filterhelp.svg</picture>
+            <picture>SignalLP2FilterHelp.svg</picture>
         </help>
         <replacables>
             <replacable typename="SignalFirstOrderFilter"/>
