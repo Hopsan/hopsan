@@ -4,7 +4,9 @@
         <icons>
             <icon scale="1.0" path="svg/valveplate.svg" iconrotation="ON" type="user"/>
         </icons>
-        <help picture="svg/valveplate_help.svg"/>
+        <help>
+            <md>HydraulicValvePlate.md</md>
+        </help>
         <ports>
             <port x="0.5" y="0" a="270" name="movement"/>
             <port x="0" y="0.5" a="0" name="P1"/>

@@ -77,8 +77,8 @@ namespace hopsan {
             addInputVariable("phi_P", "Length of grooves", "deg", 160, &mpPhiP);
             addInputVariable("phi_1", "Length of first pre-compression chamber", "deg", 6, &mpPhi1);
             addInputVariable("phi_2", "Length of second pre-compression chamber", "deg", 6, &mpPhi2);
-            addInputVariable("Delta_alpha", "-", "deg", 5, &mpDAlpha);
-            addInputVariable("alpha_f", "-", "deg", 30, &mpAlphaF);
+            addInputVariable("Delta_alpha", "Length of rounded ends", "deg", 5, &mpDAlpha);
+            addInputVariable("alpha_f", "Length of each port", "deg", 30, &mpAlphaF);
             addInputVariable("R_f", "Radius to groove center line", "m", 0.03, &mpRf);
             addInputVariable("theta_1", "Angle 1", "deg", 6, &mpTh1);
             addInputVariable("theta_2", "Angle 2", "deg", 90, &mpTh2);

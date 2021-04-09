@@ -8,6 +8,9 @@
             <port x="0.5" y="1.0" a="270" name="P1"/>
             <port x="0.5" y="0.0" a="90" name="P3"/>
         </ports>
+        <help>
+            <md>HydraulicPumpPiston.md</md>
+        </help>
         <animation>
             <icon userpath="svg/piston_base.svg"/>
             <movable idx="0">

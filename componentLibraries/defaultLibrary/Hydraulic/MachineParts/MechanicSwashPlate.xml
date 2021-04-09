@@ -4,6 +4,9 @@
         <icons>
             <icon scale="1" path="svg/swashplate.svg" iconrotation="ON" type="user"/>
         </icons>
+        <help>
+            <md>MechanicSwashPlate.md</md>
+        </help>
         <ports>
             <port x="0.0" y="0.5" a="180" name="torque"/>
             <port x="0.5" y="0" a="270" name="angle"/>
