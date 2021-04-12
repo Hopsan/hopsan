@@ -5,6 +5,9 @@
             <icon scale="1" path="SignalFFBor.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="SignalFFBor.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <help>
+            <md>SignalFFBorIn.md</md>
+        </help>
         <ports>
             <port x="1" y="1" a="90" name="state"/>
             <port x="1" y="0.5" a="0" name="out0"/>
