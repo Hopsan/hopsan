@@ -5,6 +5,9 @@
             <icon scale="1" path="SignalFFBloop.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="SignalFFBloop.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <help>
+            <md>SignalFFBloop.md</md>
+        </help>
         <ports>
             <port x="1" y="1" a="90" name="state"/>
             <port x="0.5" y="0" a="270" name="out0"/>
