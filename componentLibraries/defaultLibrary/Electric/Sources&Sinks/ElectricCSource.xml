@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <hopsanobjectappearance version="0.3">
-    <modelobject sourcecode="ElectricCSource.hpp" typename="ElectricCSource" displayname="Electric C-type Source">
+    <modelobject sourcecode="ElectricCSource.hpp" typename="ElectricCSource" displayname="C-type Electric Source">
         <icons>
             <icon scale="1" path="ElectricCSource.svg" iconrotation="ON" type="user"/>
         </icons>

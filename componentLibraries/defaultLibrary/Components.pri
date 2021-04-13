@@ -19,30 +19,30 @@ HEADERS +=  \
  $${PWD}/Connectivity/SignalInputInterface.hpp \ 
  $${PWD}/Connectivity/SignalOutputInterface.hpp \ 
  $${PWD}/Electric/Electric.h \ 
- $${PWD}/Electric/ElectricACmachine.hpp \ 
- $${PWD}/Electric/ElectricBattery.hpp \ 
- $${PWD}/Electric/ElectricCSource.hpp \ 
- $${PWD}/Electric/ElectricCapacitance2.hpp \ 
- $${PWD}/Electric/ElectricCapacitanceMultiPort.hpp \ 
- $${PWD}/Electric/ElectricGround.hpp \ 
- $${PWD}/Electric/ElectricIcontroller.hpp \ 
- $${PWD}/Electric/ElectricInductance.hpp \ 
- $${PWD}/Electric/ElectricInductanceC.hpp \ 
- $${PWD}/Electric/ElectricIsensor.hpp \ 
- $${PWD}/Electric/ElectricIsource.hpp \ 
- $${PWD}/Electric/ElectricMotor.hpp \ 
- $${PWD}/Electric/ElectricMotorGear.hpp \ 
- $${PWD}/Electric/ElectricMotorGearScrewLink.hpp \ 
+ $${PWD}/Electric/Machines/ElectricACmachine.hpp \
+ $${PWD}/Electric/Sources&Sinks/ElectricBattery.hpp \
+ $${PWD}/Electric/Sources&Sinks/ElectricCSource.hpp \
+ $${PWD}/Electric/Elements/ElectricCapacitance2.hpp \
+ $${PWD}/Electric/Elements/ElectricCapacitanceMultiPort.hpp \
+ $${PWD}/Electric/Sources&Sinks/ElectricGround.hpp \
+ $${PWD}/Electric/Controllers&Switches/ElectricIcontroller.hpp \
+ $${PWD}/Electric/Elements/ElectricInductance.hpp \
+ $${PWD}/Electric/Elements/ElectricInductanceC.hpp \
+ $${PWD}/Electric/Sensors/ElectricIsensor.hpp \
+ $${PWD}/Electric/Sources&Sinks/ElectricIsource.hpp \
+ $${PWD}/Electric/Machines/ElectricMotor.hpp \
+ $${PWD}/Electric/Machines/ElectricMotorGear.hpp \
+ $${PWD}/Electric/Machines/ElectricMotorGearScrewLink.hpp \
  $${PWD}/Electric/ElectricNodeSensor.hpp \ 
- $${PWD}/Electric/ElectricPWMdceq.hpp \ 
- $${PWD}/Electric/ElectricQSource.hpp \ 
- $${PWD}/Electric/ElectricResistor.hpp \ 
- $${PWD}/Electric/ElectricSwitch.hpp \ 
- $${PWD}/Electric/ElectricUsensor.hpp \ 
- $${PWD}/Electric/ElectricUsource.hpp \ 
- $${PWD}/Electric/ElectricVarResistor.hpp \ 
- $${PWD}/Electric/ElectricVoltageSourceMultiPortC.hpp \ 
- $${PWD}/Electric/ElectricVoltageSourceQ.hpp \ 
+ $${PWD}/Electric/Controllers&Switches/ElectricPWMdceq.hpp \
+ $${PWD}/Electric/Sources&Sinks/ElectricQSource.hpp \
+ $${PWD}/Electric/Elements/ElectricResistor.hpp \
+ $${PWD}/Electric/Controllers&Switches/ElectricSwitch.hpp \
+ $${PWD}/Electric/Sensors/ElectricUsensor.hpp \
+ $${PWD}/Electric/Sources&Sinks/ElectricUsource.hpp \
+ $${PWD}/Electric/Elements/ElectricVarResistor.hpp \
+ $${PWD}/Electric/Sources&Sinks/ElectricVoltageSourceMultiPortC.hpp \
+ $${PWD}/Electric/Sources&Sinks/ElectricVoltageSourceQ.hpp \
  $${PWD}/Experimental/Experimental.h \ 
  $${PWD}/Experimental/Signal2DReadWrite.hpp \ 
  $${PWD}/Experimental/Signal2DSplit.hpp \ 
