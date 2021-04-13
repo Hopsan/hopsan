@@ -5,6 +5,9 @@
             <icon scale="1" path="SignalTimeAccelerator.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="SignalTimeAccelerator.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <help>
+            <link>SignalTimeAccelerator.pdf</link>
+        </help>
         <ports>
             <port x="0.2" y="1" enabled="true" a="90" name="timeE" autoplaced="true"/>
             <port x="0.6" y="0" enabled="true" a="270" name="vxcg" autoplaced="true"/>

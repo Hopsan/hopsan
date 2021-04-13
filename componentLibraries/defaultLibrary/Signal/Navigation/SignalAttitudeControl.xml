@@ -6,8 +6,8 @@
             <icon scale="1" path="SignalAttitudeControl.svg" iconrotation="ON" type="iso"/>
         </icons>
         <help>
-            <text>Three axis attitude control unit. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
-            <link>SignalAttitudeControl.nb</link>
+            <text>Three axis attitude control unit.</text>
+            <link>SignalAttitudeControl.pdf</link>
         </help>       
         <ports>
             <port x="0.4" y="1" enabled="true" a="90" name="psi" autoplaced="true"/>

@@ -5,6 +5,9 @@
             <icon scale="1" path="SignalAttitudeControl.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="SignalAttitudeControl.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <help>
+            <link>SignalAttitudeTVCcontrol.pdf</link>
+        </help>
         <ports>
             <port x="0.1" y="1" enabled="true" a="90" name="phi" autoplaced="true"/>
             <port x="0.3" y="1" enabled="true" a="90" name="theta" autoplaced="true"/>
