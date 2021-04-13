@@ -6,8 +6,8 @@
             <icon scale="1" path="SignalWaypoint.svg" iconrotation="ON" type="iso"/>
         </icons>
         <help>
-            <text>Waypoint for navigation. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
-            <link>SignalWaypoint.nb</link>
+            <text>Waypoint for navigation.</text>
+            <link>SignalWaypoint.pdf</link>
         </help>       
        <ports>
             <port x="0.5" y="1" enabled="true" a="90" name="headingRef" autoplaced="true"/>
