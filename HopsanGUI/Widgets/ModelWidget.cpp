@@ -40,6 +40,8 @@
 #include <QHBoxLayout>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QFileInfo>
+#include <QDialogButtonBox>
 
 
 //Hopsan includes
@@ -187,6 +189,16 @@ void ModelWidget::setMessageHandler(GUIMessageHandler *pMessageHandler)
     mpMessageHandler = pMessageHandler;
     mpSimulationThreadHandler->setMessageHandler(pMessageHandler);
     connect(this, SIGNAL(checkMessages()), mpMessageHandler, SLOT(collectHopsanCoreMessages()), Qt::UniqueConnection);
+}
+
+void ModelWidget::setModelType(ModelWidget::ModelType type)
+{
+    mModelType = type;
+}
+
+ModelWidget::ModelType ModelWidget::getModelType() const
+{
+    return mModelType;
 }
 
 void ModelWidget::setTopLevelSimulationTime(const QString startTime, const QString timeStep, const QString stopTime)
@@ -682,6 +694,113 @@ bool ModelWidget::simulate_blocking()
 
 }
 
+bool ModelWidget::simulateDcpServer()
+{
+    // Save backup copy
+    if (!isSaved() && gpConfig->getBoolSetting(CFG_AUTOBACKUP))
+    {
+        //! @todo this should be a help function, also we may not want to call it every time when we run optimization (not sure if that is done now but probably)
+        QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
+        fileNameWithoutHmf.chop(4);
+        saveTo(gpDesktopHandler->getBackupPath() + fileNameWithoutHmf + "_sim_backup.hmf");
+    }
+
+    QDialog */*pDcpServerDialog*/pDialog = new QDialog(gpMainWindowWidget);
+    QGridLayout */*pDcpServerDialogLayout*/pLayout = new QGridLayout(pDialog);
+    QLineEdit *pHostLineEdit = new QLineEdit("127.0.0.1",pDialog);
+    QSpinBox *pPortSpinBox = new QSpinBox(pDialog);
+    pPortSpinBox->setMaximum(1000000);
+    pPortSpinBox->setValue(8080);
+    pPortSpinBox->setSingleStep(1);
+    QLineEdit *pTargetFileLineEdit = new QLineEdit(gpDesktopHandler->getDocumentsPath()+"/"+getTopLevelSystemContainer()->getModelFileInfo().baseName()+".dcp");
+    QDialogButtonBox *pButtonBox = new QDialogButtonBox(pDialog);
+    QPushButton *pOkButton = pButtonBox->addButton(QDialogButtonBox::Ok);
+    QPushButton *pCancelButton = pButtonBox->addButton(QDialogButtonBox::Cancel);
+    connect(pOkButton, SIGNAL(clicked()), pDialog, SLOT(accept()));
+    connect(pCancelButton, SIGNAL(clicked()), pDialog, SLOT(reject()));
+    pLayout->addWidget(new QLabel("Host address:",pDialog),0,0);
+    pLayout->addWidget(pHostLineEdit,0,1,1,2);
+    pLayout->addWidget(new QLabel("Port:",pDialog),1,0);
+    pLayout->addWidget(pPortSpinBox,1,1,1,2);
+    pLayout->addWidget(new QLabel("XML output file:",pDialog),2,0);
+    pLayout->addWidget(pTargetFileLineEdit,2,1,1,2);
+    pLayout->addWidget(pButtonBox, 3,1,1,3);
+
+    if(pDialog->exec() == QDialog::Rejected) {
+        return false;
+    }
+
+    if(!mSimulateMutex.tryLock())
+    {
+        gpMessageHandler->addErrorMessage("Simulation mutex is locked. Aborting.");
+        return false;
+    }
+
+    mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
+    mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
+    mSimulationProgress=0;
+    mpSimulationThreadHandler->initSimulateFinalizeDcpServer(mpToplevelSystem, pHostLineEdit->text(), pPortSpinBox->value(), pTargetFileLineEdit->text());
+
+    unlockSimulateMutex();
+
+    return true;
+    //! @todo fix return code
+}
+
+bool ModelWidget::simulateDcpMaster()
+{
+    // Save backup copy
+    if (!isSaved() && gpConfig->getBoolSetting(CFG_AUTOBACKUP))
+    {
+        //! @todo this should be a help function, also we may not want to call it every time when we run optimization (not sure if that is done now but probably)
+        QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
+        fileNameWithoutHmf.chop(4);
+        saveTo(gpDesktopHandler->getBackupPath() + fileNameWithoutHmf + "_sim_backup.hmf");
+    }
+
+    QDialog *pDcpSettingsDialog = new QDialog(gpMainWindowWidget);
+    QGridLayout *pDialogLayout = new QGridLayout(pDcpSettingsDialog);
+    QLineEdit *pHostLineEdit = new QLineEdit("127.0.0.1",pDcpSettingsDialog);
+    QSpinBox *pPortSpinBox = new QSpinBox(pDcpSettingsDialog);
+    pPortSpinBox->setMaximum(1000000);
+    pPortSpinBox->setValue(8180);
+    pPortSpinBox->setSingleStep(1);
+    QDialogButtonBox *pButtonBox = new QDialogButtonBox(pDcpSettingsDialog);
+    QPushButton *pOkButton = pButtonBox->addButton(QDialogButtonBox::Ok);
+    QPushButton *pCancelButton = pButtonBox->addButton(QDialogButtonBox::Cancel);
+    QCheckBox *pRealTimeCheckBox = new QCheckBox("Realtime", pDcpSettingsDialog);
+    pRealTimeCheckBox->setChecked(false);
+    connect(pOkButton, SIGNAL(clicked()), pDcpSettingsDialog, SLOT(accept()));
+    connect(pCancelButton, SIGNAL(clicked()), pDcpSettingsDialog, SLOT(reject()));
+    pDialogLayout->addWidget(new QLabel("Host address:",pDcpSettingsDialog),0,0);
+    pDialogLayout->addWidget(pHostLineEdit,0,1,1,2);
+    pDialogLayout->addWidget(new QLabel("Port:",pDcpSettingsDialog),1,0);
+    pDialogLayout->addWidget(pPortSpinBox,1,1,1,2);
+    pDialogLayout->addWidget(pRealTimeCheckBox);
+    pDialogLayout->addWidget(pButtonBox, 3,1,1,3);
+
+    if(pDcpSettingsDialog->exec() == QDialog::Rejected) {
+        return false;
+    }
+
+    if(!mSimulateMutex.tryLock())
+    {
+        gpMessageHandler->addErrorMessage("Simulation mutex is locked. Aborting.");
+        return false;
+    }
+
+    mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), uint(mpToplevelSystem->getNumberOfLogSamples()));
+    mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
+    mSimulationProgress=0;
+    mpSimulationThreadHandler->initSimulateFinalizeDcpMaster(mpToplevelSystem, pHostLineEdit->text(), pPortSpinBox->value(), pRealTimeCheckBox->isChecked());
+
+    unlockSimulateMutex();
+
+    return true;
+    //! @todo fix return code
+
+}
+
 
 //! Slot that saves current project to old file name if it exists.
 //! @see saveModel(int index)
@@ -1162,6 +1281,9 @@ bool ModelWidget::loadModel(QFile &rModelFile)
     // Check if this is an expected hmf xml file
     QDomDocument domDocument;
     QDomElement hmfRoot = loadXMLDomDocument(rModelFile, domDocument, HMF_ROOTTAG);
+    if(hmfRoot.attribute(HMF_CUSTOMTYPETAG) == "dcp") {
+        mModelType = DcpModel;
+    }
     if (!hmfRoot.isNull())
     {
         //! @todo check if we could load else give error message and don't attempt to load
@@ -1264,7 +1386,11 @@ QDomDocument ModelWidget::saveToDom(SaveContentsEnumT contents)
     QDomElement rootElement;
     if(contents==FullModel)
     {
-        rootElement = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
+        QString customType;
+        if(mModelType == DcpModel) {
+            customType = "dcp";
+        }
+        rootElement = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion(), customType);
     }
     else
     {

@@ -67,10 +67,18 @@ class ModelWidget : public QWidget
     friend class ModelHandler;
 
 public:
+    enum ModelType {
+        HopsanModel = 0x0,
+        DcpModel = 0x1,
+    };
+
     ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *pParentTabWidget = nullptr);
     ~ModelWidget();
 
     void setMessageHandler(GUIMessageHandler *pMessageHandler);
+
+    void setModelType(ModelType type);
+    ModelType getModelType() const;
 
     QString getStartTime();
     QString getTimeStep();
@@ -119,6 +127,8 @@ public slots:
     void setTopLevelSimulationTime(const QString startTime, const QString timeStep, const QString stopTime);
     bool simulate_nonblocking();
     bool simulate_blocking();
+    bool simulateDcpServer();
+    bool simulateDcpMaster();
     void save();
     void saveAs();
     void exportModelParameters();
@@ -149,6 +159,8 @@ signals:
 private:
     void saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT contents=FullModel);
     void createOrDestroyToplevelSystem(bool recreate);
+
+    ModelType mModelType = HopsanModel;
 
     QString mStartTime, mStopTime;
     int mLastSimulationTime;

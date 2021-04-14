@@ -7,3 +7,6 @@
 ./setupKatex.sh
 ./setupTclap.sh
 ./setupHDF5.sh
+./setupAsio.sh
+./setupXerces.sh
+./setupLibzip.sh

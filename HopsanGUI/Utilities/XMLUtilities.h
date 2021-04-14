@@ -42,7 +42,7 @@ QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString
 
 void appendRootXMLProcessingInstruction(QDomDocument &rDomDocument);
 
-QDomElement appendHMFRootElement(QDomDocument &rDomDocument, QString hmfVersion, QString hopsanGuiVersion, QString hopsanCoreVersion);
+QDomElement appendHMFRootElement(QDomDocument &rDomDocument, QString hmfVersion, QString hopsanGuiVersion, QString hopsanCoreVersion, QString customType=QString());
 QDomElement getOrAppendNewDomElement(QDomElement &rDomElement, const QString element_name);
 
 QDomComment appendComment(QDomElement &rDomElement, const QString &rComment);
@@ -191,6 +191,7 @@ void updateRenamedComponentName(QDomElement &rDomElement, const QString oldName,
 #define HMF_VERSIONTAG "hmfversion"
 #define HMF_HOPSANGUIVERSIONTAG "hopsanguiversion"
 #define HMF_HOPSANCOREVERSIONTAG "hopsancoreversion"
+#define HMF_CUSTOMTYPETAG "customtype"
 #define HMF_SIMULATIONTIMETAG "simulationtime"
 #define HMF_SIMULATIONLOGSETTINGS "simulationlogsettings"
 #define HMF_SCRIPTFILETAG "scriptfile"

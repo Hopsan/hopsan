@@ -213,6 +213,7 @@ HEADERS += \
     include/ComponentUtilities/TempDirectoryHandle.h \
     include/Parameters.h \
     include/Components/DummyComponent.hpp \
+    include/Components/DcpComponent.hpp \
     include/ComponentUtilities/EquationSystemSolver.h \
     $${PWD}/dependencies/rapidxml/hopsan_rapidxml.hpp \
     include/CoreUtilities/MultiThreadingUtilities.h \
