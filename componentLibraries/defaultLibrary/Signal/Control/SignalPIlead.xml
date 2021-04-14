@@ -5,6 +5,9 @@
             <icon scale="1" path="SignalPIlead.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="SignalPIlead.svg" iconrotation="ON" type="iso"/>
         </icons>
+		<help>
+			<md>SIgnalPIlead.md</md>
+		</help>
         <ports>
             <port x="1" y="0.5" a="0" name="u"/>
             <port x="0" y="0.5" a="180" name="yref"/>
