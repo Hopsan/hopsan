@@ -66,6 +66,9 @@ void WebViewWrapper::loadHtmlFile(const QUrl &url)
 {
 #ifdef USEWEBKIT
     mpPrivates->mpWebView->load(url);
+#ifdef _WIN32
+    mpPrivates->mpWebView->setZoomFactor(1.3);
+#endif
 #else
     mpPrivates->mpNotice->setText("Sorry, no WebKit or WebEngine support in this release, open in external browser!");
     mpPrivates->mpNotice->show(); // If previously hidden by showText
