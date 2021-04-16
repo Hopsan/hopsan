@@ -3,7 +3,7 @@
 \section component-generator Component Generator Dialog
 Hopsan has a component skeleton generator functionality, from where new components can be written without deeper knowledge of the Hopsan simulation core interface. You will find it by choosing "Create external library" in the library widget.
 After a library has been created you can right click it and select to "Add new component".
-__Note__ This functionality was previously present in the separate HoLC (Hopsan Library Creator) application, but this application should now be considered deprecated. Using the functional build into HopsanGUI is recommended.
+__Note__ This functionality was previously present in the separate HoLC (Hopsan Library Creator) application, which has now been removed from Hopsan. The functionality is replaced by the generator and editor in the regular graphical user interface.
 
 In this dialog it is possible to specify component type (used by simulation core, must be unique not contain spaces), display name (shown in graphical interface) and component type (C,Q or S - see the \ref userTransmissionLineModelingMethodPage "transmission line element method"). It is also possible to add ports, parameters, utility functions and static variables. Finally, the code for the component can be written in two ways, either directly from C++ code, or from algebraic equations using a subset of the Modelica language.
 

@@ -31,9 +31,6 @@ See the \ref page_setupbuildenvironment or \ref page_setuplibrarydevelopmentenvi
 The documentation examples are based on the exampleComponentLibrary that is included in each Hopsan release. You can find it in your Hopsan installation directory, under `componentLibraries/exampleComponentLib`. These documentation examples contain subsets of the original files, you should also look at the original files for their full content and additional comments. When creating a new component library, you can use the example files as a "getting started" template.
 
 \section devWritingCppComponentsPageIntroPage-Tools Tools
-__HoLC (Hopsan Library Creator):__ \n
-From Hopsan version 0.7 the HoLC program is included. It can help you get started by generating the necessary library files and offers a dialog based component template code generator. HoLC also has some limited code editor functionality but may be sufficient for your needs.
-
 __generateLibraryFiles.py:__ \n
 If you end up building large component libraries, then this python script may come in handy. It can be used to automatically generate header and source include files as well as Qt project include files for the entire library tree recursively. See the defualtComponentLibrary that is included in each Hopsan release for an example. 
 
@@ -63,7 +60,7 @@ The header-only .\b hpp files contains the source code for each components, see 
 The .\b xml files contain the appearance description, and the .\b svg files are the icons, see \ref devWritingCppComponentsPageCreateModifyComponentAppearancePage.
 
 \section devWritingCppComponentsPageLibraryFilesPage-hopsancomponentlibraryfile The Hopsan Component Library Information File
-This xml file, introduced in Hopsan version 0.7, contains the necessary information for Hopsan GUI to recognice which file is the component library .dll. This is required if a library in itself dependes on other third party libraries. The file also contains information necessary for automatic (re)compilation by Hopsan. This file is also used as the "project file" by the HoLC program.
+This xml file, introduced in Hopsan version 0.7, contains the necessary information for Hopsan GUI to recognice which file is the component library .dll. This is required if a library in itself dependes on other third party libraries. The file also contains information necessary for automatic (re)compilation by Hopsan. This file is also used as the "project file" when editing component libraries from within Hopsan.
 
 \b exampleComponentLib.xml
 \verbinclude exampleComponentLib.xml
