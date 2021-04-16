@@ -62,5 +62,4 @@ script:
   - ls -l
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then otool -lv hopsancli ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then otool -lv hopsangui ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then otool -lv holc ; fi
 #  - ./hopsangui ../Scripts/HCOM/exit.hcom
