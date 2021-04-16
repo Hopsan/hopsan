@@ -27,7 +27,6 @@
   <component>HydraulicComponents/MyExampleVolume2.hpp</component>
   <component>SignalComponents/MyExampleSignalSum.hpp</component>
   <!-- Use one "componentxml" element for every component description XML file -->
-  <!-- Note! If you write this file manually you do not need to add these, they are only used by the HoLC program -->
   <componentxml>SignalComponents/MyExampleSignalSum.xml</componentxml>
   <componentxml>HydraulicComponents/MyExampleConstantOrifice.xml</componentxml>
   <componentxml>HydraulicComponents/MyExampleOrifice.xml</componentxml>
