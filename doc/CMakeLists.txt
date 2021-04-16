@@ -59,7 +59,6 @@ if (${BUILD_USER_DOCUMENTATION} OR ${BUILD_DEVELOPER_DOCUMENTATION})
                                       ${PROJECT_SOURCE_DIR}/Ops
                                       ${PROJECT_SOURCE_DIR}/UnitTests
                                       ${PROJECT_SOURCE_DIR}/Utilities
-                                      ${PROJECT_SOURCE_DIR}/HoLC
                                       ${PROJECT_SOURCE_DIR}/hopsanc
                                       ${PROJECT_SOURCE_DIR}/componentLibraries
                                       ${PROJECT_SOURCE_DIR}/hopsangeneratorgui
