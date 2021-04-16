@@ -25,7 +25,7 @@ This tutorial is a continuation of the \textit{Writing Component Libraries} tuto
 Two components are explained; a variable pump component with linear equations, and a translational mass component with second order dynamics.
 
 \section*{Requirements}
-It is necessary to know how to write and compile components for Hopsan, either using HoLC or a third-party tool. This is covered by the \textit{Writing Component Libraries} tutorial.
+It is necessary to know how to write and compile components for Hopsan, either using the built-in editor in Hopsan or a third-party tool. This is covered by the \textit{Writing Component Libraries} tutorial.
 
 \section*{Hydraulic Pump}
 A hydraulic pump is a component that transforms an angular velocity on a shaft into hydraulic flow. In this case we will use a simple model with no dynamics, where the angular velocity is assumed to be constant at all time. This is similar to the Q-Type Variable Displacement Pump component in the Hopsan default library.
@@ -160,7 +160,7 @@ void initialize()
 \end{lstlisting}
 \end{minipage}
 
-\noindent Now it is time for the interesting part, to write the actual equations in the \texttt{simulateOneTimestep()} function. The final code is presented below. Some of the steps below will already be done if you used HoLC to generate the code.
+\noindent Now it is time for the interesting part, to write the actual equations in the \texttt{simulateOneTimestep()} function. The final code is presented below. Some of the steps below will already be done if you generate the code from the Hopsan graphical interface.
 
 \begin{tutenumerate}
 \tutitem{Create local variables}

@@ -5,6 +5,9 @@
 \usepackage{hopsantut}
 \usepackage{listings}
 \usepackage{todonotes}
+\usepackage{xcolor}
+
+\newcommand\code[1]{\setlength\emergencystretch{3cm} \texttt{\color{blue} #1}}
 
 \hypersetup{pdfauthor={Robert Braun and Peter Nordin}, pdftitle={Hopsan Tutorial - Getting Started}, pdfsubject={Hopsan Tutorial}}
 
@@ -18,7 +21,7 @@
 \maketitle{Writing Component Libraries}
 
 \section*{Introduction}
-This tutorial will show how to create your own component libraries from C++ by using the HoLC (\underline{Ho}psan \underline{L}ibrary \underline{C}reator) program. In the first section, the requirements are listed. In the second section, all files in a component library are explained. Finally, creating a library is demonstrated with a step-by-step guide in section three.
+This tutorial will show how to create your own component libraries from C++ by using the builtin editor in the Hopsan graphical interface. In the first section, the requirements are listed. In the second section, all files in a component library are explained. Finally, creating a library is demonstrated with a step-by-step guide in section three.
 
 \section*{Requirements}
 It is strongly recommended to complete the \textit{Getting Started} tutorial before undertaking this one. Some basic knowledge of programming languages are also recommended. 
@@ -27,7 +30,6 @@ The following tools are also required:
 \begin{itemize} %
 \itemsep -3pt
 \item Hopsan
-\item HoLC 
 \item Inkscape (optional, for creating component icons)
 \end{itemize} %
 
@@ -53,19 +55,22 @@ Each component in the library consist of three files. The first one has the \tex
 \subsection*{Library Description File}
 The library description file contains general information, such as name, version and source files.
 With this file it is possible to recompile libraries from inside Hopsan.
-It also works as a project file for HoLC.
+It also works as a project file for editing the library.
 It can for example look like this:
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language=xml, basicstyle=\small\ttfamily]
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsancomponentlibrary xmlversion="0.1" libversion="1" name="LibName">
+<hopsancomponentlibrary version="0.3">
+    <id>34992911-0c43-485a-abd8-ccf754bac212</id>
+    <name>LibName</name>
     <lib>LibName</lib>
     <source>LibName.cpp</source>
+    </buildflags>
     <component>Component1.hpp</component>
     <component>Component2.hpp</component>
-    <caf>MyComponent1.xml</caf>
-    <caf>MyComponent2.xml</caf>
+    <componentxml>MyComponent1.xml</componentxml>
+    <componentxml>MyComponent2.xml</componentxml>
 </hopsancomponentlibrary>
 \end{lstlisting}
 \end{minipage}
@@ -74,13 +79,16 @@ It can for example look like this:
 
 \begin{itemize}
 \item \textbf{hopsancomponentlibrary} - Main tag for a component library
-\subitem \textbf{xmlversion} - Should always be 0.1 with this XML layout
-\subitem \textbf{libversion} - Version of the library (decided by creator)
-\subitem \textbf{name} - Name of the library to be shown in Hopsan
+\begin{itemize}
+	\item \textbf{version} - Version of the library xml, should be 0.3 with this XML structure
+\end{itemize} 
+\item \textbf{id} - Unique identifier for the library. Can be any random text.
+\item \textbf{name} - Name of the library to be shown in Hopsan
 \item \textbf{lib} - Base file name of the library file (without prefix, suffix and extension)
 \item \textbf{source} - Source file used to compile the library
+\item \textbf{buildflags} - Define custom flags for the compilation, unused in this tutorial
 \item \textbf{component} - Source file for a component in the library
-\item \textbf{caf} - Appearance \texttt{.xml} file for a component in the library
+\item \textbf{componentxml} - Appearance \texttt{.xml} file for a component in the library
 \end{itemize}
 
 \subsection*{Library Source File}
@@ -108,16 +116,16 @@ extern "C" DLLEXPORT void get_hopsan_info(...)
 {
     pHopsanExternalLibInfo->libName = (char*)"LibName";
     pHopsanExternalLibInfo->hopsanCoreVersion = (char*)HOPSANCOREVERSION;
-    pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)DEBUGRELEASECOMPILED;
+    pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)HOPSAN_BUILD_TYPE_STR;
 }
 \end{lstlisting}
 \end{minipage}
-
+\newpage
 \noindent First of all, all component code files must be included. This is shown in lines 1 and 2 in the example below.
-Second, each component needs to be registered in the HopsanCore by the "`pComponentFactory->registerCreatorFunction()`", as shown in lines  lines 10 and 11.
+Second, each component needs to be registered in the HopsanCore by the \code{registerCreatorFunction()}, as shown in lines  lines 10 and 11.
 The first argument must be a unique \textit{type name} that identifies you component. 
-The second argument is the Creator() function, which must exist in each component.
-Finally, the \texttt{get\_hopsan\_info()} function must provide a unique \textit{library name}, here called "LibName" at line 18. 
+The second argument is the \code{Creator()} function, which must exist in each component.
+Finally, the \code{get\_hopsan\_info()} function must provide a unique \textit{library name}, here called "LibName" at line 18. 
 The next two lines should be left as they are.
 
 \subsection*{Component Source Files}
@@ -309,99 +317,101 @@ A description of the remaining tags follows:
 
 \begin{itemize}
 \item \textbf{hopsanobjectappearance} - Main tag for appearance file
-\subitem \textbf{version} - Should always be 0.3 with this XML layout
+\begin{itemize}
+\item \textbf{version} - Should always be 0.3 with this XML layout
+\end{itemize}
 \item \textbf{modelobject} - Main tag for the component
-\subitem \textbf{typename} - Unique type name of the component
-\subitem \textbf{subtypename} - Specific version of a type name component (optional)
-\subitem \textbf{displayname} - Name for the component shown in the graphical interface
+\begin{itemize}
+\item \textbf{typename} - Unique type name of the component
+\item \textbf{subtypename} - Specific version of a type name component (optional)
+\item \textbf{displayname} - Name for the component shown in the graphical interface
+\end{itemize}
 \item \textbf{icons} - Contains information about icons. At least one type, user or iso is required
-\subitem \textbf{type} - The icon type, user or iso (for ISO 1219 graphics)
-\subitem \textbf{path} - Relative path from the \texttt{.xml} file to the \texttt{.svg} icon
-\subitem \textbf{scale} - Lets you adjust the scale of the \texttt{.svg} icon (default = 1.0)
-\subitem \textbf{iconrotation} - Tells whether or not the icon rotates when the component is rotated
+\begin{itemize}
+\item \textbf{type} - The icon type, user or iso (for ISO 1219 graphics)
+\item \textbf{path} - Relative path from the \texttt{.xml} file to the \texttt{.svg} icon
+\item \textbf{scale} - Lets you adjust the scale of the \texttt{.svg} icon (default = 1.0)
+\item \textbf{iconrotation} - Tells whether or not the icon rotates when the component is rotated
+\end{itemize}
 \item \textbf{help} - Allows you to specify help information about the component (optional)
-\subitem \textbf{text} - The help text (optional)
-\subitem \textbf{picture} - The path to the \texttt{.svg} help picture (optional)
-\subitem \textbf{link} - Link to external document relative this \texttt{.xml} file (optional) 
+\begin{itemize}
+\item \textbf{text} - The help text (optional)
+\item \textbf{picture} - The path to the \texttt{.svg} help picture (optional)
+\item \textbf{link} - Link to external document relative this \texttt{.xml} file (optional) 
+\end{itemize}
 \item \textbf{ports} - Defines the positions and orientations for each port
-\subitem \textbf{name} - Name of the port as defined in the code
-\subitem \textbf{x} - X-position as fraction of component icon width (0.0 = left, 1.0 = right)
-\subitem \textbf{y} - Y-position as fraction of component icon height (0.0 = top, 1.0 = bottom)
-\subitem \textbf{a} - Angle of port, 0 = right, 90 = down, 180 = left, 270 = up
-\subitem \textbf{visible} - Default visibility state
+\begin{itemize}
+\item \textbf{name} - Name of the port as defined in the code
+\item \textbf{x} - X-position as fraction of component icon width (0.0 = left, 1.0 = right)
+\item \textbf{y} - Y-position as fraction of component icon height (0.0 = top, 1.0 = bottom)
+\item \textbf{a} - Angle of port, 0 = right, 90 = down, 180 = left, 270 = up
+\item \textbf{visible} - Default visibility state
+\end{itemize}
 \end{itemize}
 
 \subsection*{Component Icon Files}
 Icons for the graphical interface are stored in the \texttt{.svg} (Scalable Vector Graphics) format. A good and free tool for creating and editing such files is \textit{Inkscape}. If you want to use bitmaps graphics, \texttt{.jpg}, \texttt{.png} or similar formats, such graphics can be embedded in a \texttt{.svg} file.
 
 \section*{Example}
-We shall now demonstrate how to build a simple library using HoLC. The library will contain only one simple arithmetic component.
+We shall now demonstrate how to build a simple library using the built-in editing capabilities in Hopsan. The library will contain only one simple arithmetic component.
 
 \begin{tutenumerate}
-\tutitem{Open HoLC}
-Start HoLC by running holc.exe, located in the \texttt{bin} folder under the HoLC directory.
+\tutitem{Open the Hopsan Graphical User Interface}
+Start Hopsan by running hopsangui.exe, located in the \texttt{bin} folder under the installation directory.
 
-\tutitem{Configure HoLC paths}
-First, we must configure HoLC. Click on he options icon:
+\tutitem{Configure compiler path}
+First, we must configure the compiler. Click on he options icon:
 
 \icon{0}{gfx/Hopsan-Options.png}{Options}
 
-A component library must be compiled against the version of Hopsan where it shall be used. 
-Click on the icon to the right of the "Hopsan Path" field and select your Hopsan installation folder.
-It is also necessary to use the correct compiler, depending on if you target the 32-bit or 64-bit version of Hopsan.
-Click on the icon next to the compiler path and select the compiler path. 
-Compilers are bundled with HoLC and located under the \texttt{ThirdParty} directory.
-It should now look something like this:
+Hopsan needs access to either a 32-bit or a 64-bit compiler, depending on the Hopsan architecture.
+Click on the "Compilers" tab.
+Then make sure a required compiler, or the included compiler, is specified. It should look something like this:
 
-\frame{\includegraphics[width=0.7\textwidth]{gfx/writingcomponents/options.png}}
+\includegraphics{gfx/writingcomponents/options.png}
 
-\tutitem{Create a new project}
-Now we will create a new empty project. 
-First, create an empty folder anywhere on your hard drive.
-Click on the \texttt{New Library} icon:
+\tutitem{Create a new library}
+Now we will create a new empty library. 
+Click on \texttt{Create external library} in the library widget to the left in the program:
 
-\icon{0}{gfx/Hopsan-New.png}{New Library}
+\icon{0}{gfx/Hopsan-Add.png}{Create external library}
 
-Give the library a name without spaces, for exampe "MyComponentLibrary".
-Then click on the folder icon and select the folder you just created.
-The dialog should now look like this:
+A dialog appears that asks you to name the library. Give the library a name without spaces, for exampe "MyComponentLibrary":
 
-\includegraphics[width=0.7\textwidth]{gfx/writingcomponents/newlibrarydialog.png}.
+\includegraphics[scale=0.85]{gfx/writingcomponents/newlibrarydialog.png}
 
-Click on "OK" to close the dialog.
-As you can see, two new files have been created, one \texttt{.xml} file and one .cpp file.
+When clicking "OK", the program asks you to choose a folder for the library. Make sure the folder you choose is empty.
+Two files have now been created in the folder, one \texttt{.xml} file and one .cpp file.
 
 \tutitem{Add a component}
 A component library is not very useful without any components.
 We now want to create a component that solves the equation $y = A*x+b$.
-Click on the \textit{Add New Component} icon:
-
-\icon{0}{gfx/Hopsan-Add.png}{Add New Component}
+Right-click on the component library and choose "Add New Component".
 
 A component generator dialog appears. 
 We need to choose a name.
 We also need 2 constants ($A$ and $B$), 1 input variable ($x$) and 1 output variable ($y$).
-Enter the following information:
-
-\includegraphics[width=0.65\textwidth]{gfx/writingcomponents/newcomponent1.png}
-
-On the next page you can name the variables and give them default values.
-It is also possible to provide units and desriptions.
-Name the constants $A$ and $B$, the input variable $x$ and the output variable $y$.
+Variables are added by clicking on the green plus icons to the right.
 Give $A$ and $B$ the default values 1 and 0.
 This means that with default values, $y = x$.
+The dialog should then look like this:
 
-\includegraphics[width=0.65\textwidth]{gfx/writingcomponents/newcomponent2.png}
+\includegraphics[width=\linewidth]{gfx/writingcomponents/newcomponent.png}
 
 Ignore units and descriptions for now and click "OK".
 Two new files will be created, one \texttt{.hpp} and one \texttt{.xml}.
 
 \tutitem{Write component code}
 Now it is time to implement the equation in the component.
-Open \texttt{MyComponent.hpp} from the file list.
+The source code file \texttt{MyComponent.hpp} should have opened automatically. If not, right-click on the component and choose "Edit Source Code".
+
 As you can see, all functions mentioned in the previous chapter has been generated.
-In this case we only care about the \texttt{simulateOneTimeStep()} function.
-Replace the line "\texttt{//WRITE EQUATIONS HERE}" with the following: "\texttt{y = mA*x+mB;}". Note that in the code, the constants \texttt{A} and \texttt{B} are renamed to \texttt{mA} and \texttt{mB}. This is to indicate that they are \textit{member} variables of the class.
+In this case we only care about the \code{simulateOneTimeStep()} function.
+Add the following under the line "//Simulation code":
+ 
+ \code{y = mA*x+mB;} 
+ 
+ Note that in the code, the constants A and B are renamed to \code{mA} and \code{mB}. This is to indicate that they are \textit{member} variables of the class.
 Remember the semicolon!
 C++ requires each line to end with a semicolon.\\
 \newline\noindent
@@ -410,38 +420,14 @@ It is possible to modify the port positions in the \texttt{.xml} file, and to cr
 Let's ignore that for now.
 
 \tutitem{Compile library}
-Click on the compile button in the toolbar:
+Right-click on the library in the list to the left and select "Recompile". If compiler path is correct and there are no mistakes in the code, the library should now be successfully compiled. Otherwise, look for errors in the compilation dialog.
 
-\icon{0}{gfx/Hopsan-Compile.png}{Compile Library}
-
-The library is now compiled.
-Look at the outputs in the terminal at the bottom. 
-If everything goes well it should tell use that the compilation was successful. 
-
-\begin{lstlisting}[basicstyle=\small\ttfamily]
-Info: Compilation successful.
->> 
-\end{lstlisting}
-
-\tutitem{Open library in Hopsan}
-Now the library is ready to be loaded from Hopsan.
-Start Hopsan, and then click on "Load external library" in the library widget:
-
-\includegraphics[width=0.4\linewidth]{gfx/writingcomponents/loadlibrary.png}
-
-Browse to the folder you created the library in and choose it.
-The component should now be available under the "External Libraries" category.
+\tutitem{Test your new component}
 Build a new model and verify that your own first component works!
 
-\tutitem{Sources of error} %
-\vspace{-\baselineskip}
-\begin{itemize} %
-\item \textbf{Compilation fails in HoLC}\\
-This is usually the result of an error in the code. Check the output in HoLC. It can also be caused by tring to compile with 32-bit compiler against 64-bit Hopsan or the other way around.
-\item \textbf{Component cannot be loaded in Hopsan}\\
-Make sure you are using Hopsan from the same installation directory as you pointed out in HoLC.
-\end{itemize}
-
+ 	\vspace{12pt}
+\includegraphics[width=0.6\textwidth]{gfx/writingcomponents/testmodel.png}
+ 	
 \end{tutenumerate}
  	
 \end{document}
