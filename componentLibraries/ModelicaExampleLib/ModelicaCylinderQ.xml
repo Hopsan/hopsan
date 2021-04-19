@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject displayname="ModelicaCylinderQ" sourcecode="ModelicaCylinderQ.mo" libpath="" typename="ModelicaCylinderQ" recompilable="true">
+    <icons>
+        <icon scale="1" path="ModelicaCylinderQ.svg" iconrotation="ON" type="user"/>
+    </icons>
+    <ports>
+        <port x="0.0274" y="1" a="90" name="P1"/>
+        <port x="0.466" y="1" a="90" name="P2"/>
+        <port x="1" y="0.5" a="0" name="P3"/>
+    </ports>
+  </modelobject>
+</hopsanobjectappearance>
