@@ -291,7 +291,12 @@ bool HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                 for(int i=0; i<lines.at(l).count(",")+1; ++i)
                 {
                     QString name = lines.at(l).trimmed().section(" ", 2).section(",",i,i).section(";",0,0).trimmed();
-                    PortSpecification port("ReadPort", "NodeSignal", name);
+                    QString defaultValue;
+                    if(name.contains("(start=")) {
+                        defaultValue = name.section("(start=",1,1).section(")",0,0);
+                        name.remove("(start="+defaultValue+")");
+                    }
+                    PortSpecification port("ReadPort", "NodeSignal", name, false, defaultValue);
                     portList.append(port);
                     portNames << name;
                 }
