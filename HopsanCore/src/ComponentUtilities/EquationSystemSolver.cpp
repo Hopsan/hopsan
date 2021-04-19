@@ -714,13 +714,13 @@ KinsolSolver::Impl::Impl(Component *pComponent, double tol, int n, SolverTypeEnu
             return;
         }
 
-        flag = KINSetNumMaxIters(mem,1000);
+        flag = KINSetNumMaxIters(mem,100000);
         if(flag<0) {
             mpComponent->stopSimulation("KINSetNumMaxIters() failed with flag "+to_hstring(flag)+".");
             return;
         }
 
-        flag = KINSetNumMaxIters(mem,1000);
+        flag = KINSetNumMaxIters(mem,100000);
         if(flag<0) {
             mpComponent->stopSimulation("KINSetNumMaxIters() failed with flag "+to_hstring(flag)+".");
             return;
