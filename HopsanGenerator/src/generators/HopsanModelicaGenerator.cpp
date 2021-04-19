@@ -172,10 +172,9 @@ bool HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
     bool foundInitialAlgorithms = false;
     for(int l=0; l<lines.size(); ++l)
     {
-        qDebug() << "Line: " << l;
         if(lines[l].trimmed().startsWith("//")) continue;   //Skip comments
         if(lines[l].trimmed().isEmpty()) continue;          //Skip blank lines
-        QStringList words = lines.at(l).trimmed().split(" ");
+        QStringList words = lines.at(l).trimmed().split(QRegExp("\\s(?=(?:[^'\"`]*(['\"`])[^'\"`]*\\1)*[^'\"`]*$)"), QString::SkipEmptyParts);
         if(section == UndefinedPart)
         {
             if(!verifyModelicaLine(lines[l], ModelDeclaration)) {
@@ -240,7 +239,7 @@ bool HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                 QString unit = lines.at(l).section("unit=",1,1).section("\"",1,1);
                 QString init;
                 //Default value can be written with white spaces in different way, test them all
-                if(words.size() == 3)
+                if(words.size() == 3 || (words.size() == 4 && words.at(2).contains(")=")))
                     init = words.at(2).section("=", -1,-1);                         //"...)=x"
                 else if(words.size() == 4 && !words.at(3).startsWith("="))
                     init = words.at(3);                                             //"...)= x"
@@ -1285,7 +1284,7 @@ bool HopsanModelicaGenerator::verifyModelicaLine(const QString &line, int flags)
     }
     if(flags & Annotation) {
         //! @todo Handle multi-line annotations?
-        if(line.trimmed().startsWith("annotation(") && line.endsWith(")")) {
+        if(line.trimmed().startsWith("annotation(") && (line.endsWith(")") || line.endsWith(");"))) {
             return true;
         }
     }
