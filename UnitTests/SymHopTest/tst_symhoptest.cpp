@@ -783,6 +783,26 @@ private Q_SLOTS:
         QTest::newRow("1") << Expression("x*5.0 + (y+5)/(3^z) = tan(sin(x))") << "x*5.0+(y+5.0)/pow(3.0,z)=tan(sin(x))";
     }
 
+    void SymHop_To_Latex()
+    {
+        QFETCH(Expression, expr);
+        QFETCH(QString, str);
+
+        QString failmsg("Failure! toLaTeX() did something wrong: "+expr.toLaTeX());
+        QVERIFY2(expr.toLaTeX() == str, failmsg.toStdString().c_str());
+    }
+
+    void SymHop_To_Latex_data()
+    {
+        QTest::addColumn<Expression>("expr");
+        QTest::addColumn<QString>("str");
+        QTest::newRow("0") << Expression("2*x*x + 4*x*y + x*pow(y,2.4)") << "2 x^2+4 x y+x y^{2.4}";
+        QTest::newRow("1") << Expression("cos(x+y)") << "\\cos\\left(x+y\\right)";
+        QTest::newRow("2") << Expression("exp(x+y)") << "e^{x+y}";
+        QTest::newRow("3") << Expression("foo(x+y)") << "\\mathrm{foo}\\left(x+y\\right)";
+        QTest::newRow("4") << Expression("(x+y)/(a+b)") << "\\dfrac{x+y}{a+b}";
+    }
+
     void SymHop_Derivative()
     {
         QFETCH(Expression, expr);

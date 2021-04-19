@@ -459,7 +459,7 @@ void Expression::commonConstructorCode(QStringList symbols, bool &ok, const Expr
         {
             for(int i=0; i<args.size(); ++i)
             {
-                mArguments.append(Expression(args.at(i)));
+                mArguments.append(Expression(args.at(i),&ok,simplifications));
             }
             if(mFunction.startsWith("-"))
             {
@@ -1270,6 +1270,203 @@ QString Expression::toString() const
         }
         //ret = baseStr+"^"+powerStr;
         ret = "pow("+baseStr+","+powerStr+")";
+    }
+
+    //Simplify output
+    ret.replace("+-", "-");
+    ret.replace("--", "");
+
+    return ret;
+}
+
+QString Expression::toLaTeX() const
+{
+    QString ret;
+
+    if(this->isSymbol())
+    {
+        QStringList greekSymbols = {"alpha","beta","gamma","Gamma","delta","Delta","epsilon","varepsilon","zeta","eta","theta","vartheta","Theta","iota","kappa","lambda","Lambda","mu","nu","xi","Xi","pi","Pi","rho","varrho","sigma","Sigma","tau","upsilon","Upsilon","phi","varphi","Phi","chi","psi","Psi","omega","Omega"};
+
+        if(greekSymbols.contains(mString)) {
+            ret = "\\"+mString;
+        }
+        else if(this->isNumericalSymbol()) {
+            ret = QString::number(mString.toDouble());
+        }
+        else {
+            ret = mString;
+        }
+    }
+    else if(this->isFunction())
+    {
+        QStringList builtinFunctions = {"sin","cos","tan","arcsin","arccos","arctan","cot","sec","csc","sinh","cosh","tanh","lg","ln","log","min","max"     };
+        if(mFunction == "pi" && mArguments.size() == 0) {
+            ret = "\\pi";
+        }
+        else if(mFunction == "sqrt") {
+            ret = "\\sqrt{"+mArguments[0].toLaTeX()+"}";
+        }
+        else if(builtinFunctions.contains(mFunction)) {
+            ret = "\\"+mFunction+"\\left("+mArguments[0].toLaTeX()+"\\right)";
+        }
+        else if(mFunction == "asin") {
+            ret = "\\arcsin\\left("+mArguments[0].toLaTeX()+"\\right)";
+        }
+        else if(mFunction == "acos") {
+            ret = "\\arccos\\left("+mArguments[0].toLaTeX()+"\\right)";
+        }
+        else if(mFunction == "atan") {
+            ret = "\\arctan\\left("+mArguments[0].toLaTeX()+"\\right)";
+        }
+        else if(mFunction == "exp") {
+            ret = "e^{"+mArguments[0].toLaTeX()+"}";
+        }
+        else if(mFunction == "abs") {
+            ret = "\\left\\|"+mArguments[0].toLaTeX()+"\\right\\|";
+        }
+        else if(mFunction == "cos") {
+            ret = "\\sin\\left("+mArguments[0].toLaTeX()+"\\right)";
+        }
+        else if(mFunction == "der") {
+            if(mArguments[0].getFunctionName() == "der") {
+                if(mArguments[0].getArgument(0).isSymbol()) {
+                    ret = "\\dfrac{d^2 "+mArguments[0].getArgument(0).toLaTeX()+"}{dt^2}";
+                }
+                else {
+                    ret = "\\dfrac{d^2}{dt^2}\\left("+mArguments[0].getArgument(0).toLaTeX()+"\\right)";
+                }
+            }
+            else {
+                if(mArguments[0].isSymbol()) {
+                    ret = "\\dfrac{d "+mArguments[0].toLaTeX()+"}{dt}";
+                }
+                else {
+                    ret = "\\dfrac{d}{dt}\\left("+mArguments[0].toLaTeX()+"\\right)";
+                }
+            }
+        }
+        else if(mFunction == "dder") {
+            if(mArguments[0].isSymbol()) {
+                ret = "\\dfrac{d^2 "+mArguments[0].toLaTeX()+"}{dt^2}";
+            }
+            else {
+                ret = "\\dfrac{d^2}{dt^2}\\left("+mArguments[0].toLaTeX()+"\\right)";
+            }
+        }
+        else {
+            ret = "\\mathrm{"+mFunction+"}\\left(";
+            for(int i=0; i<mArguments.size(); ++i)
+            {
+                ret.append(mArguments[i].toLaTeX()+",");
+            }
+            if(!mArguments.isEmpty()) {
+                ret.chop(1);
+            }
+            ret.append("\\right)");
+        }
+    }
+    else if(this->isEquation())
+    {
+        QString leftStr =mpLeft->toLaTeX();
+        QString rightStr = mpRight->toLaTeX();
+        ret = leftStr + "=" + rightStr;
+    }
+    else if(this->isAdd())
+    {
+        Q_FOREACH(const Expression &term, mTerms)
+        {
+            Expression tempTerm = term;
+            QString termString;
+            if(tempTerm.isNegative())
+            {
+                tempTerm.changeSign();
+                if(ret.endsWith("+"))
+                {
+                    ret.chop(1);
+                }
+                ret.append("-");
+            }
+            termString = tempTerm.toLaTeX();
+            ret.append(termString);
+            ret.append("+");
+        }
+        ret.chop(1);
+    }
+    else if(this->isMultiplyOrDivide())
+    {
+        double num = this->getNumericalFactor();
+        int numMinus = mFactors.count(Expression("-1"))+mDivisors.count(Expression("-1"));
+        bool isOdd = (numMinus%2 != 0);
+
+        if(QString::number(num) != "1") {
+            ret.append(QString::number(num)+" ");
+        }
+
+        for(const Expression &factor : mFactors)
+        {
+            if(factor.isNumericalSymbol()) {
+                continue;
+            }
+            QString factString = factor.toLaTeX();
+            if(factor.isAdd() && mFactors.size() > 1)
+            {
+                factString.prepend("(");
+                factString.append(")");
+            }
+            ret.append(factString);
+            ret.append(" ");
+        }
+        if(mFactors.isEmpty())
+        {
+            ret.append("1");
+        }
+        else
+        {
+            ret.chop(1);
+        }
+        if(!mDivisors.isEmpty()) {
+            ret.prepend("\\dfrac{");
+            ret.append("}{"); }
+        for(const Expression &divisor : mDivisors)
+        {
+            QString divString = divisor.toLaTeX();
+            if(divisor.isAdd() && mDivisors.size() > 1)
+            {
+                divString.prepend("(");
+                divString.append(")");
+            }
+            ret.append(divString);
+            ret.append(" ");
+        }
+        if(mDivisors.size() > 0) { ret.chop(1); }
+        if(mDivisors.size() > 0) { ret.append("}"); }
+        ret.replace("*-1.0*","*");
+        ret.remove("-1.0*");
+        ret.remove("*-1.0");
+        if(isOdd) {
+            ret.prepend("-");
+        }
+    }
+    else if(this->isPower())
+    {
+        QString baseStr = mpBase->toLaTeX();
+        if(mpBase->isAdd() || mpBase->isMultiplyOrDivide())
+        {
+            baseStr.prepend("(");
+            baseStr.append(")");
+        }
+        QString powerStr = mpPower->toLaTeX();
+        if(mpPower->isAdd() || mpBase->isMultiplyOrDivide())
+        {
+            powerStr.prepend("(");
+            powerStr.append(")");
+        }
+        if(powerStr.size() > 1) {
+            powerStr.prepend("{");
+            powerStr.append("}");
+        }
+        ret = baseStr+"^"+powerStr;
+        //ret = "pow("+baseStr+","+powerStr+")";
     }
 
     //Simplify output

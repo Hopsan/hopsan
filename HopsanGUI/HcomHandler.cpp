@@ -7261,7 +7261,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             isHcomFunctionCall("removeDivisors", expr) || isHcomFunctionCall("left", expr) ||
             isHcomFunctionCall("right", expr) || isHcomFunctionCall("trapezoid", expr) ||
             isHcomFunctionCall("euler", expr) || isHcomFunctionCall("bdf1", expr) ||
-            isHcomFunctionCall("bdf2", expr)) {
+            isHcomFunctionCall("bdf2", expr) || isHcomFunctionCall("latex", expr)) {
 
         QStringList args = extractFunctionCallExpressionArguments(expr);
         if(args.size() != 1) {
@@ -7371,6 +7371,11 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
                 return;
             }
             mAnsType = Expression;
+            return;
+        }
+        else if(getFunctionName(expr) == "latex") {
+            mAnsWildcard = expr1.toLaTeX();
+            mAnsType = String;
             return;
         }
     }

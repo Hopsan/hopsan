@@ -105,6 +105,7 @@ public:
     void addBy(Expression const term);
     void subtractBy(Expression const term);
     QString toString() const;
+    QString toLaTeX() const;
     void toDelayForm(QList<Expression> &rDelayTerms, QStringList &rDelaySteps);
     double toDouble(bool *ok=0) const;
     bool isPower() const;
