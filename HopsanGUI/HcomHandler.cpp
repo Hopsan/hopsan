@@ -6038,7 +6038,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         }
     }
 
-    if(desiredType != DataVector)
+    if(desiredType != DataVector && desiredType != Expression)
     {
         //Numerical value, return it
         bool ok;
@@ -6083,7 +6083,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         //}
     }
 
-    if(desiredType != Scalar)
+    if(desiredType != Scalar && desiredType != Expression)
     {
         //Data variable, return it
         SharedVectorVariableT data = getLogVariable(expr);
@@ -6091,6 +6091,15 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         {
             mAnsType = DataVector;
             mAnsVector = data;
+            return;
+        }
+    }
+
+    if(desiredType != Scalar && desiredType != DataVector) {
+        //Expression variable, return it
+        if(mLocalExpressions.contains(expr)) {
+            mAnsType = Expression;
+            mAnsExpression = mLocalExpressions[expr];
             return;
         }
     }
@@ -7142,6 +7151,211 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             //Reshape to look like a function call
             QString call = QString("gt(%1,%2)").arg(args[0]).arg(args[1]);
             executeGtBuiltInFunction(call);
+            return;
+        }
+    }
+    else if(desiredType != Scalar && desiredType != DataVector && isHcomFunctionCall("expr", expr)) {
+       QStringList args = extractFunctionCallExpressionArguments(expr);
+       if(args.size() != 1) {
+           HCOMERR("Wrong number of arguments for expr function.\n"+mLocalFunctionDescriptions.find("ddt").value().second);
+           mAnsType = Undefined;
+           return;
+       }
+       bool ok;
+       mAnsExpression = SymHop::Expression(args[0], &ok, SymHop::Expression::NoSimplifications);
+       if(!ok) {
+           for(const auto &msg : mAnsExpression.readErrorMessages()) {
+               HCOMERR(msg);
+           }
+           mAnsType = Undefined;
+           return;
+       }
+       mAnsType = Expression;
+       return;
+    }
+    else if(isHcomFunctionCall("eval", expr)) {
+        QStringList args = extractFunctionCallExpressionArguments(expr);
+        if(args.size() != 1) {
+            HCOMERR("Wrong number of arguments for eval function.\n"+mLocalFunctionDescriptions.find("ddt").value().second);
+            mAnsType = Undefined;
+            return;
+        }
+        if(mLocalExpressions.contains(args[0])) {
+            bool ok;
+            double value = mLocalExpressions[args[0]].evaluate(mLocalVars,&mLocalFunctionoidPtrs, &ok);
+            if(ok) {
+                mAnsScalar = value;
+                mAnsType = Scalar;
+                return;
+            }
+            else {
+                HCOMERR("Failed to evaluate expression \""+args[0]+"\".");
+                mAnsType = Undefined;
+                return;
+            }
+        }
+        else {
+            HCOMERR("Local expression \""+args[0]+"\" not found.");
+            mAnsType = Undefined;
+            return;
+        }
+    }
+    else if(isHcomFunctionCall("der", expr) || isHcomFunctionCall("factor", expr)) {
+        QStringList args = extractFunctionCallExpressionArguments(expr);
+        if(args.size() != 2) {
+            HCOMERR("Wrong number of arguments for \""+getFunctionName(expr)+"\" function (should be 2)");
+            mAnsType = Undefined;
+            return;
+        }
+        SymHop::Expression expr1, expr2;
+        evaluateExpression(args[0]);
+        if(mAnsType != Expression) {
+            HCOMERR("Failed to evaluate expression \""+args[0]+"\".");
+            mAnsType = Undefined;
+            return;
+        }
+        expr1 = mAnsExpression;
+        evaluateExpression(args[1]);
+        if(mAnsType != Expression) {
+            HCOMERR("Failed to evaluate expression \""+args[1]+"\".");
+            mAnsType = Undefined;
+            return;
+        }
+        expr2 = mAnsExpression;
+        if(getFunctionName(expr) == "der") {
+            bool ok;
+            mAnsExpression = mLocalExpressions[args[0]].derivative(mAnsExpression,ok);
+            if(!ok) {
+                HCOMERR("Failed to differentiate expression \""+args[0]+"\" with respect to \""+args[1]+"\"");
+                mAnsType = Undefined;
+                return;
+            }
+            mAnsType = Expression;
+            return;
+        }
+        else if(getFunctionName(expr) == "factor") {
+            mAnsExpression = expr1;
+            mAnsExpression.factor(expr2);
+            mAnsType = Expression;
+            return;
+        }
+    }
+    else if(isHcomFunctionCall("simplify", expr) || isHcomFunctionCall("linearize", expr) ||
+            isHcomFunctionCall("expand", expr) || isHcomFunctionCall("expandPowers", expr) ||
+            isHcomFunctionCall("toLeftSided", expr) || isHcomFunctionCall("factorMostCommonFactor", expr) ||
+            isHcomFunctionCall("removeDivisors", expr) || isHcomFunctionCall("left", expr) ||
+            isHcomFunctionCall("right", expr) || isHcomFunctionCall("trapezoid", expr) ||
+            isHcomFunctionCall("euler", expr) || isHcomFunctionCall("bdf1", expr) ||
+            isHcomFunctionCall("bdf2", expr)) {
+
+        QStringList args = extractFunctionCallExpressionArguments(expr);
+        if(args.size() != 1) {
+            HCOMERR("Wrong number of arguments for \""+getFunctionName(expr)+"\" function (should be 1)");
+            mAnsType = Undefined;
+            return;
+        }
+        evaluateExpression(args[0]);
+        if(mAnsType != Expression) {
+            HCOMERR("Failed to evaluate expression \""+args[0]+"\".");
+            mAnsType = Undefined;
+            return;
+        }
+        SymHop::Expression expr1 = mAnsExpression;
+        if(getFunctionName(expr) == "simplify") {
+            mAnsExpression = expr1;
+            mAnsExpression._simplify(SymHop::Expression::FullSimplification, SymHop::Expression::Recursive);
+            mAnsType = Expression;
+            return;
+        }
+        else if(getFunctionName(expr) == "linearize") {
+            mAnsExpression = expr1;
+            mAnsExpression.linearize();
+            mAnsType = Expression;
+            return;
+        }
+        else if(getFunctionName(expr) == "expand") {
+            mAnsExpression = expr1;
+            mAnsExpression.expand();
+            mAnsType = Expression;
+            return;
+        }
+        else if(getFunctionName(expr) == "expandPowers") {
+            mAnsExpression = expr1;
+            mAnsExpression.expandPowers();
+            mAnsType = Expression;
+            return;
+        }
+        else if(getFunctionName(expr) == "toLeftSided") {
+            mAnsExpression = expr1;
+            mAnsExpression.toLeftSided();
+            mAnsType = Expression;
+            return;
+        }
+        else if(getFunctionName(expr) == "factorMostCommonFactor") {
+            mAnsExpression = expr1;
+            mAnsExpression.factorMostCommonFactor();
+            mAnsType = Expression;
+            return;
+        }
+        else if(getFunctionName(expr) == "removeDivisors") {
+            mAnsExpression = expr1;
+            mAnsExpression.removeDivisors();
+            mAnsType = Expression;
+            return;
+        }
+        else if(getFunctionName(expr) == "left") {
+            mAnsExpression = (*expr1.getLeft());
+            mAnsType = Expression;
+            return;
+        }
+        else if(getFunctionName(expr) == "right") {
+            mAnsExpression = (*expr1.getRight());
+            mAnsType = Expression;
+            return;
+        }
+        else if(getFunctionName(expr) == "trapezoid") {
+            mAnsExpression = expr1;
+            bool ok;
+            mAnsExpression.inlineTransform(SymHop::Expression::Trapezoid, ok);
+            if(!ok) {
+                HCOMERR("Failed to transform expression.");
+                mAnsType = Undefined;
+                return;
+            }
+            mAnsType = Expression;
+            return;
+        }
+        else if(getFunctionName(expr) == "euler") {
+            bool ok;
+            mAnsExpression = expr1.inlineTransform(SymHop::Expression::ExplicitEuler, ok);
+            if(!ok) {
+                HCOMERR("Failed to transform expression.");
+                mAnsType = Undefined;
+                return;
+            }
+            mAnsType = Expression;
+            return;
+        }
+        else if(getFunctionName(expr) == "bdf1") {
+            bool ok;
+            mAnsExpression = expr1.inlineTransform(SymHop::Expression::BDF1, ok);
+            if(!ok) {
+                HCOMERR("Failed to transform expression.");
+                mAnsType = Undefined;
+                return;
+            }
+            mAnsType = Expression;
+            return;
+        }
+        else if(getFunctionName(expr) == "bdf2") {
+            bool ok;
+            mAnsExpression = expr1.inlineTransform(SymHop::Expression::BDF2, ok);
+            if(!ok) {
+                HCOMERR("Failed to transform expression.");
+                mAnsType = Undefined;
+                return;
+            }
+            mAnsType = Expression;
             return;
         }
     }
@@ -8384,6 +8598,10 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
             executeCommand("chpa "+left+" "+mAnsWildcard);
             return true;
         }
+        else if(mAnsType == Expression && pars.isEmpty()) {
+            mLocalExpressions.insert(left, mAnsExpression);
+            return true;
+        }
         else if(mAnsType==Scalar)
         {
             if(!pars.isEmpty())
@@ -8474,6 +8692,10 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
         else if(mAnsType==DataVector)
         {
             HCOMPRINT(mAnsVector.data()->getFullVariableName());
+            return true;
+        }
+        else if(mAnsType==Expression) {
+            HCOMPRINT(mAnsExpression.toString());
             return true;
         }
         else if(mAnsType==String)
