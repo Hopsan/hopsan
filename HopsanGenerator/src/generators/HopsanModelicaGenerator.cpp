@@ -241,14 +241,15 @@ bool HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                 QString init;
                 //Default value can be written with white spaces in different way, test them all
                 if(words.size() == 3)
-                    init = words.at(2).section("=", -1,-1);             //...blabla)=x
+                    init = words.at(2).section("=", -1,-1);                         //"...)=x"
                 else if(words.size() == 4 && !words.at(3).startsWith("="))
-                    init = words.at(3);                                             //...blabla)= x
+                    init = words.at(3);                                             //"...)= x"
                 else if(words.size() == 4 && words.at(3).startsWith("="))
-                    init = words.at(3).section("=", 1);                             //...blabla) =x
+                    init = words.at(3).section("=", 1);                             //"...) =x"
                 else if(words.size() == 5)
-                    init = words.at(4);                                             // ...blabla) = x
+                    init = words.at(4);                                             //"...) = x"
                 init.remove(";");
+
 
                 QString parDisplayName = lines.at(l).section("\"", -2, -2);
 
