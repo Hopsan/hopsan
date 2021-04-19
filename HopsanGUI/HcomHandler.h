@@ -60,7 +60,7 @@ public:
     typedef QMap<QString, double> LocalVarsMapT;
 
     // Enums
-    enum VariableType{Scalar, DataVector, String, Wildcard, Undefined};
+    enum VariableType{Scalar, DataVector, String, Expression, Wildcard, Undefined};
 
     // Constructor
     HcomHandler(TerminalConsole *pConsole);
@@ -113,6 +113,7 @@ public:
     double mAnsScalar;
     QString mAnsWildcard;
     SharedVectorVariableT mAnsVector;
+    SymHop::Expression mAnsExpression;
     VariableType mAnsType;
 
 
@@ -283,6 +284,7 @@ private:
 
     // Local variables
     LocalVarsMapT mLocalVars;
+    QMap<QString, SymHop::Expression> mLocalExpressions;
     QMap<QString, SymHopFunctionoid*> mLocalFunctionoidPtrs;
     QMap<QString, QPair<QString, QString> > mLocalFunctionDescriptions;
 
