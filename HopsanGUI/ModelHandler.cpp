@@ -858,6 +858,12 @@ void ModelHandler::revertCurrentModel()
         pModel->revertModel();
         refreshMainWindowConnections();
     }
+
+    TextEditorWidget *pTextEditor = qobject_cast<TextEditorWidget*>(gpMainWindow->mpCentralTabs->currentWidget());
+    if(pTextEditor)
+    {
+        pTextEditor->reload();
+    }
 }
 
 void ModelHandler::createLabviewWrapperFromCurrentModel()
