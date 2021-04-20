@@ -8604,6 +8604,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
         }
         else if(mAnsType == Expression && pars.isEmpty()) {
             mLocalExpressions.insert(left, mAnsExpression);
+            HCOMPRINT(mAnsExpression.toString());
             return true;
         }
         else if(mAnsType==Scalar)
