@@ -145,10 +145,10 @@ public slots:
     void zoomOut();
     void print();
     void save(SaveTargetEnumT saveAsFlag=ExistingFile);
+    void reload();
 
 private slots:
     void hasChanged();
-    void reload();
 };
 
 #endif // SCRIPTEDITOR_H
