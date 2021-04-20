@@ -75,6 +75,8 @@ ModelHandler::ModelHandler(QObject *parent)
 
     mCurrentIdx = -1;
 
+    mpFileWatcher = new QFileSystemWatcher(gpMainWindowWidget);
+
     connect(this, SIGNAL(checkMessages()),      gpMessageHandler,    SLOT(collectHopsanCoreMessages()), Qt::UniqueConnection);
 }
 
@@ -378,10 +380,13 @@ TextEditorWidget *ModelHandler::loadTextFile(QString fileName)
         }
     }
 
+    mpFileWatcher->addPath(fileName);
     TextEditorWidget *pNewEditor = new TextEditorWidget(QFileInfo(fileName), highlighterForExtension(fileInfo.suffix()), gpCentralTabWidget);
     gpCentralTabWidget->addTab(pNewEditor, fileInfo.fileName());
     gpCentralTabWidget->setCurrentWidget(pNewEditor);
     mTextEditors.append(pNewEditor);
+
+    connect(mpFileWatcher, SIGNAL(fileChanged(QString)), pNewEditor, SLOT(fileChanged(QString)));
 
     return pNewEditor;
 }
@@ -403,6 +408,7 @@ bool ModelHandler::closeModelByTabIndex(int tabIdx, bool force)
     {
         if(editor == gpCentralTabWidget->widget(tabIdx))
         {
+            mpFileWatcher->removePath(editor->getFileInfo().absoluteFilePath());
             return closeScript(mTextEditors.indexOf(editor), force);
         }
     }

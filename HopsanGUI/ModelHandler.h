@@ -37,6 +37,7 @@
 #include <QObject>
 #include <QDomElement>
 #include <QAction>
+#include <QFileSystemWatcher>
 
 #include "GraphicsViewPort.h"
 
@@ -157,6 +158,8 @@ private:
     int mStateInfoIndex;
 
     DebuggerWidget *mpDebugger;
+
+    QFileSystemWatcher *mpFileWatcher;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(ModelHandler::LoadOptions)
