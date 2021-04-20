@@ -263,6 +263,8 @@ QString Component::getHmfTagName() const
 //! @param[in] visible True or False
 void Component::setVisible(bool visible)
 {
+    visible |= mAlwaysVisible;
+
     // Hide show icon
     mpIcon->setVisible(visible);
 

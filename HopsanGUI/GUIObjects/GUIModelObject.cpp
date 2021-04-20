@@ -75,6 +75,7 @@ ModelObject::ModelObject(QPointF position, double rotation, const ModelObjectApp
     mpNameText = nullptr;
     mTextOffset = 5.0;
     mDragCopying = false;
+    mAlwaysVisible = false;
     mNameTextAlwaysVisible = false;
     mNameTextVisible = false;
     mpDialogParentWidget = new QWidget(gpMainWindowWidget);
@@ -1055,6 +1056,9 @@ QDomElement ModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
     QPointF cpos = this->getCenterPos();
     appendPoseTag(xmlGuiStuff, cpos.x(), cpos.y(), rotation(), this->mIsFlipped, 10);
 
+    // Save the alwasys visible setting
+    xmlGuiStuff.setAttribute("visible", mAlwaysVisible);
+
     // Save the text displaying the component name
     QDomElement nametext = appendDomElement(xmlGuiStuff, HMF_NAMETEXTTAG);
     nametext.setAttribute("position", getNameTextPos());
@@ -1339,6 +1343,11 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
         replaceMenu->setEnabled(allowFullEditing);
     }
 
+    QAction *pAlwaysVisbleAction = rMenu.addAction(tr("Always visible"));
+    pAlwaysVisbleAction->setCheckable(true);
+    pAlwaysVisbleAction->setChecked(mAlwaysVisible);
+    pAlwaysVisbleAction->setEnabled(allowLimitedEditing);
+
     QAction *pShowNameAction = rMenu.addAction(tr("Always show name"));
     pShowNameAction->setCheckable(true);
     pShowNameAction->setChecked(mNameTextAlwaysVisible);
@@ -1397,6 +1406,11 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     {
         mpParentSystemObject->getUndoStackPtr()->newPost();
         this->flipHorizontal();
+    }
+    else if (selectedAction == pAlwaysVisbleAction)
+    {
+        mpParentSystemObject->getUndoStackPtr()->newPost();
+        setAlwaysVisible(pAlwaysVisbleAction->isChecked());
     }
     else if (selectedAction == pShowNameAction)
     {
@@ -1822,6 +1836,13 @@ bool ModelObject::isVisible()
 QGraphicsSvgItem *ModelObject::getIcon()
 {
     return mpIcon;
+}
+
+void ModelObject::setAlwaysVisible(const bool visible)
+{
+    mAlwaysVisible = visible;
+
+    mpIcon->setVisible(!mpParentSystemObject->areSignalsHidden());
 }
 
 void ModelObject::setNameTextAlwaysVisible(const bool isVisible)
