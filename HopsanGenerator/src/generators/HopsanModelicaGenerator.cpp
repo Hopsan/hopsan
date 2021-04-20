@@ -163,7 +163,7 @@ bool HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                                                  QList<PortSpecification> &portList, QList<ParameterSpecification> &parametersList,
                                                  QList<VariableSpecification> &variablesList, QString &transform)
 {
-    QStringList lines = code.split("\n");
+    QStringList lines = code.split(QRegExp("[\r\n]"),QString::SkipEmptyParts);
     QStringList portNames;
     QStringList nodeTypes;
     GeneratorNodeInfo::getNodeTypes(nodeTypes);
