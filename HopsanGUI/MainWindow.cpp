@@ -574,8 +574,8 @@ void MainWindow::createActions()
     mpOpenFindWidgetAction->setToolTip("Open the Find Widget (Ctrl+Shift+f)");
     connect(mpOpenFindWidgetAction, SIGNAL(triggered()), this, SLOT(openFindWidget()));
 
-    mpRevertModelAction = new QAction(tr("&Revert model"), this);
-    mpRevertModelAction->setToolTip("Revert model to original state");
+    mpRevertModelAction = new QAction(tr("&Reload file from disk"), this);
+    mpRevertModelAction->setToolTip("Reloads current file from disk");
     connect(mpRevertModelAction, SIGNAL(triggered()), this, SLOT(revertModel()));
 
     mpNumHopAction = new QAction(tr("&NumHop Script"), this);
@@ -990,6 +990,8 @@ void MainWindow::createMenus()
     mpFileMenu->addAction(mpPropertiesAction);
     mpFileMenu->addAction(mpOpenSystemParametersAction);
     mpFileMenu->addSeparator();
+    mpFileMenu->addAction(mpRevertModelAction);
+    mpFileMenu->addSeparator();
     mpFileMenu->addAction(mpCloseAction);
 
     mpSimulationMenu->addAction(mpSimulateAction);
@@ -1030,7 +1032,6 @@ void MainWindow::createMenus()
     mpToolsMenu->addAction(mpOpenDataExplorerAction);
     mpToolsMenu->addAction(mpOpenFindWidgetAction);
     mpToolsMenu->addAction(mpNumHopAction);
-    mpToolsMenu->addAction(mpRevertModelAction);
 
     mpImportMenu->addAction(mpImportDataFileAction);
     mpImportMenu->addAction(mpLoadModelParametersAction);
