@@ -852,6 +852,16 @@ void ModelHandler::restoreState()
 
 void ModelHandler::revertCurrentModel()
 {
+    QMessageBox warningBox(QMessageBox::Warning, QObject::tr("Warning"),
+                                QObject::tr("All changes made to current model or text file will be lost. Do you want to continue?"),
+                                QMessageBox::NoButton, gpMainWindowWidget);
+    warningBox.addButton("Yes", QMessageBox::AcceptRole);
+    warningBox.addButton("No", QMessageBox::RejectRole);
+    warningBox.setWindowIcon(gpMainWindowWidget->windowIcon());
+    if(warningBox.exec() != QMessageBox::AcceptRole) {
+        return;
+    }
+
     ModelWidget *pModel = gpModelHandler->getCurrentModel();
     if (pModel)
     {
