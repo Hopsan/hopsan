@@ -543,11 +543,19 @@ private slots:
 #endif
         bool success = callModelicaGenerator(moFilePath.c_str(), gccPath.c_str(), &generatorMessageCallback, this, true, mHopsanInstallRoot.c_str());
 
+        if(!success) {
+            printMessages();
+        }
+
         QVERIFY2(success, "Failure! Failed to translate Modelica to C++.");
 
         std::string xmlFile = cwd+"/modelica/modelica_lib.xml";
         std::string lflags, cflags;
         success = callComponentLibraryCompiler(xmlFile.c_str(),lflags.c_str(),cflags.c_str(),mHopsanInstallRoot.c_str(),gccPath.c_str(),&generatorMessageCallback, this);
+
+        if(!success) {
+            printMessages();
+        }
 
         QVERIFY2(success, "Failure! Failed to compile Modelica library.");
 
