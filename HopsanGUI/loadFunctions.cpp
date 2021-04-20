@@ -280,6 +280,8 @@ ModelObject* loadModelObject(const QDomElement &domElement, SystemObject* pSyste
     parsePoseTag(guiData.firstChildElement(HMF_POSETAG), posX, posY, target_rotation, isFlipped);
     target_rotation = normDeg360(target_rotation); //Make sure target rotation between 0 and 359.999
 
+    bool alwaysVisible = parseAttributeBool(guiData, "visible", false);
+
     int nameTextPos = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("position").toInt();
     bool nameTextVisible = parseAttributeBool(guiData.firstChildElement(HMF_NAMETEXTTAG), "visible", false);
 
@@ -307,6 +309,7 @@ ModelObject* loadModelObject(const QDomElement &domElement, SystemObject* pSyste
         }
 
         ModelObject* pObj = pSystem->addModelObject(&appearanceData, QPointF(posX, posY), 0, Deselected, nameStatus, undoSettings);
+        pObj->setAlwaysVisible(alwaysVisible);
         pObj->setNameTextPos(nameTextPos);
         pObj->setNameTextAlwaysVisible(nameTextVisible);
         pObj->setSubTypeName(subtype); //!< @todo is this really needed

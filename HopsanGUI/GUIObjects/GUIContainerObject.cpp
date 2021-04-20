@@ -115,7 +115,7 @@ void SystemObject::commonConstructorCode()
     mIsCreatingConnector = false;
     mShowSubComponentPorts = gpMainWindow->mpTogglePortsAction->isChecked();
     mShowSubComponentNames = gpMainWindow->mpToggleNamesAction->isChecked();
-    mSignalsHidden = gpMainWindow->mpToggleSignalsAction->isChecked();
+    mSignalsHidden = !gpMainWindow->mpToggleSignalsAction->isChecked();
     mLossesVisible = false;
     mUndoEnabled = true;
     mGfxType = UserGraphics;

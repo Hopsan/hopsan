@@ -80,6 +80,7 @@ public:
     virtual const SharedModelObjectAppearanceT getLibraryAppearanceData() const;
     bool isVisible();
     QGraphicsSvgItem *getIcon();
+    void setAlwaysVisible(const bool visible);
     void setNameTextAlwaysVisible(const bool isVisible);
 
     // Help methods
@@ -198,6 +199,7 @@ protected:
     double mTextOffset;
     int mNameTextPos;
 
+    bool mAlwaysVisible;
     bool mNameTextAlwaysVisible;
     bool mNameTextVisible;
 
