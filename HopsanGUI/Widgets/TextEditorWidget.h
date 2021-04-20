@@ -111,7 +111,8 @@ public:
     QString getSelectedText();
 
 public slots:
-    void  find(QString text, QTextDocument::FindFlags flags);
+    void find(QString text, QTextDocument::FindFlags flags);
+    void fileChanged(QString filePath);
 
 protected:
     void wheelEvent(QWheelEvent* event);
@@ -130,6 +131,7 @@ private:
     XmlHighlighter *mpXmlHighlighter;
     ModelicaHighlighter *mpModelicaHighlighter;
     PythonHighlighter *mpPythonXmlHighlighter;
+    QWidget *mpFileChangeNotificationWidget;
 
 public slots:
     void saveAs();
@@ -146,6 +148,7 @@ public slots:
 
 private slots:
     void hasChanged();
+    void reload();
 };
 
 #endif // SCRIPTEDITOR_H

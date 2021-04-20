@@ -54,6 +54,7 @@
 #include <QPainter>
 #include <QPrintDialog>
 #include <QMimeData>
+#include <QLabel>
 #include <math.h>
 
 TextEditorWidget::TextEditorWidget(QFileInfo scriptFileInfo, HighlighterTypeEnum highlighter, QWidget *parent) : QWidget(parent)
@@ -87,8 +88,26 @@ TextEditorWidget::TextEditorWidget(QFileInfo scriptFileInfo, HighlighterTypeEnum
         scriptFile.close();
     }
 
+    mpFileChangeNotificationWidget = new QWidget(this);
+    QHBoxLayout *pFileChangeNotifcationLayout = new QHBoxLayout(mpFileChangeNotificationWidget);
+    QLabel *pFileChangeNotificationLabel = new QLabel("The file \""+mFileInfo.fileName()+"\" has changed on disk.");
+    pFileChangeNotificationLabel->setStyleSheet("color: darkred; font-weight:bold;");
+    QPushButton *pIgnoreButton = new QPushButton("Ignore",mpFileChangeNotificationWidget);
+    QPushButton *pReloadButton = new QPushButton("Reload",mpFileChangeNotificationWidget);
+    pReloadButton->setStyleSheet("color: darkred; font-weight:bold;");
+    pFileChangeNotifcationLayout->addWidget(pFileChangeNotificationLabel);
+    pFileChangeNotifcationLayout->addWidget(pReloadButton);
+    pFileChangeNotifcationLayout->addWidget(pIgnoreButton);
+    pFileChangeNotifcationLayout->setStretch(0,1);
+    mpFileChangeNotificationWidget->setVisible(false);
+    connect(pIgnoreButton, SIGNAL(clicked()), mpFileChangeNotificationWidget, SLOT(hide()));
+    connect(pReloadButton, SIGNAL(clicked()), mpFileChangeNotificationWidget, SLOT(hide()));
+    connect(pReloadButton, SIGNAL(clicked()), this, SLOT(reload()));
+
     QGridLayout *pLayout = new QGridLayout(this);
-    pLayout->addWidget(mpEditor,         0,0,1,2);
+    pLayout->addWidget(mpFileChangeNotificationWidget, 0, 1, 1, 2);
+    pLayout->addWidget(mpEditor,         1,1,1,2);
+    pLayout->setRowStretch(1,1);
 
     connect(mpEditor, SIGNAL(textChanged()), this, SLOT(hasChanged()));
 }
@@ -110,6 +129,16 @@ QString TextEditorWidget::getSelectedText()
 void TextEditorWidget::find(QString text, QTextDocument::FindFlags flags)
 {
     mpEditor->find(text,flags);
+}
+
+void TextEditorWidget::fileChanged(QString filePath)
+{
+    qDebug() << "File changed: " << filePath;
+    //We need to add the path again, because some text editors removes the actual file and
+    //creates a new one when saving (e.g. gedit). This makes the watcher stop watching.
+    qobject_cast<QFileSystemWatcher*>(sender())->addPath(filePath);
+
+    mpFileChangeNotificationWidget->setVisible(true);
 }
 
 
@@ -205,6 +234,22 @@ void TextEditorWidget::hasChanged()
         tabName.append("*");
     }
     gpCentralTabWidget->setTabText(gpCentralTabWidget->indexOf(this), tabName);
+}
+
+void TextEditorWidget::reload()
+{
+    if(mFileInfo.exists())
+    {
+        QFile scriptFile(mFileInfo.absoluteFilePath());
+        if(!scriptFile.open(QFile::ReadOnly | QFile::Text))
+        {
+            gpMessageHandler->addErrorMessage("Unable to read from text file: "+mFileInfo.absoluteFilePath());
+            return;
+        }
+        mSavedText = scriptFile.readAll();
+        mpEditor->setPlainText(mSavedText);
+        scriptFile.close();
+    }
 }
 
 
