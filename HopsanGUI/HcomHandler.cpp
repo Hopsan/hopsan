@@ -381,6 +381,21 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     registerInternalFunction("x", "Returns the X-vector of the specified variable.","Usage: x(vector)");
     registerInternalFunction("td", "Converts variable to time domain." "Usage: y = td(x)");
     registerInternalFunction("fd", "Converts variable to frequency domain." "Usage: y = fd(x)");
+    registerInternalFunction("expr", "Defines a new SymHop expression" "Usage: e = expr(...)");
+    registerInternalFunction("eval", "Evaluates a SymHop expression using local variables" "Usage: y = expr(f)");
+    registerInternalFunction("der", "Differentiates a SymHop expression with respect to another one" "Usage: e = der(f1,f2)");
+    registerInternalFunction("factor", "Factors a SymHop expression with respect to another one" "Usage: e = factor(f1,f2)");
+    registerInternalFunction("simplify", "Simplifies a SymHop expression" "Usage: e = simplify(f)");
+    registerInternalFunction("linearize", "Linearizes a SymHop equation by multiplying with all divisors" "Usage: e = linearize(f)");
+    registerInternalFunction("expand", "Expands all parentheses in a SymHop expression" "Usage: e = expand(f)");
+    registerInternalFunction("expandPowers", "Expands all powers in a SymHop expression to multiplications" "Usage: e = expandPowers(f)");
+    registerInternalFunction("removeDivisors", "Removes all divisors in a SymHop expression" "Usage: e = removeDivisors(f)");
+    registerInternalFunction("left", "Returns the left-hand side of a SymHop equation" "Usage: e = left(f)");
+    registerInternalFunction("right", "Returns the right-hand side of a SymHop equation" "Usage: e = right(f)");
+    registerInternalFunction("trapezoid", "Transforms derivatives in a SymHop expression using the trapezoid method" "Usage: e = trapezoid(f)");
+    registerInternalFunction("euler", "Transforms derivatives in a SymHop expression using the forward Euler method" "Usage: e = euler(f)");
+    registerInternalFunction("bdf1", "Transforms derivatives in a SymHop expression using the first order backward differentiation formula (implicit Euler)" "Usage: e = bdf1(f)");
+    registerInternalFunction("bdf2", "Transforms derivatives in a SymHop expression using the second order backward differentiation formula" "Usage: e = bdf2(f)");
 
     //Setup local function pointers (used to evaluate expressions in SymHop)
     registerFunctionoid("aver", new HcomFunctionoidAver(this), "Calculate average value of vector", "Usage: aver(vector)");
