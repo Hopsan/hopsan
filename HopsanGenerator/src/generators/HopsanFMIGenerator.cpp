@@ -1866,7 +1866,11 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     makefileStream << "CXXFLAGS = "+fpicFlag+" -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS -DHOPSANCORE_NOMULTITHREADING";
     makefileStream << "\n";
     makefileStream << "CFLAGS = "+fpicFlag+" -c\n";
+#ifdef _WIN32
+    makefileStream << "LFLAGS = "+fpicFlag+" -w -shared -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic -Wl,--rpath,'$$ORIGIN/.' -Wl,--rpath,'$$ORIGIN/../../resources'";
+#else
     makefileStream << "LFLAGS = "+fpicFlag+" -w -shared -static-libgcc -Wl,--rpath,'$$ORIGIN/.' -Wl,--rpath,'$$ORIGIN/../../resources'";
+#endif
     makefileStream << "\n";
     makefileStream << "CXXINCLUDES = ";
     // Add HopsanCore (and necessary dependency) include paths
