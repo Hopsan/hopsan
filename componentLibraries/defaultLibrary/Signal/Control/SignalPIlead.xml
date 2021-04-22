@@ -6,7 +6,7 @@
             <icon scale="1" path="SignalPIlead.svg" iconrotation="ON" type="iso"/>
         </icons>
 		<help>
-			<md>SIgnalPIlead.md</md>
+			<md>SignalPIlead.md</md>
 		</help>
         <ports>
             <port x="1" y="0.5" a="0" name="u"/>
