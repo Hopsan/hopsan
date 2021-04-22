@@ -7,6 +7,7 @@
 #include "ModelicaAccumulator.hpp"
 #include "ModelicaIfElse.hpp"
 #include "ModelicaCylinderQ.hpp"
+#include "ModelicaElectricMotor.hpp"
 
 using namespace hopsan;
 
@@ -20,6 +21,7 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory,
     pComponentFactory->registerCreatorFunction("ModelicaAccumulator", ModelicaAccumulator::Creator);
     pComponentFactory->registerCreatorFunction("ModelicaIfElse", ModelicaIfElse::Creator);
     pComponentFactory->registerCreatorFunction("ModelicaCylinderQ", ModelicaCylinderQ::Creator);
+    pComponentFactory->registerCreatorFunction("ModelicaElectricMotor", ModelicaElectricMotor::Creator);
 
     //Register custom nodes (if any)
     HOPSAN_UNUSED(pNodeFactory);

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject sourcecode="ModelicaElectricMotor.mo" typename="ModelicaElectricMotor" libpath="" displayname="ModelicaElectricMotor" recompilable="true">
+    <icons>
+        <icon scale="1" path="ModelicaElectricMotor.svg" iconrotation="ON" type="user"/>
+    </icons>
+    <ports>
+      <port a="270" x="0.25" name="P1" y="0"/>
+      <port a="270" x="0.5" name="P2" y="0"/>
+      <port a="270" x="0.75" name="P3" y="0"/>
+      <port a="180" x="0" name="L" y="0.333333"/>
+      <port a="180" x="0" name="R" y="0.666667"/>
+      <port name="Ke" x="0.0" y="0.0" a="0.0"/>
+      <port name="Kt" x="0.0" y="0.0" a="0.0"/>
+    </ports>
+  </modelobject>
+</hopsanobjectappearance>
