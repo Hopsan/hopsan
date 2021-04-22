@@ -20,6 +20,7 @@
   <component>ModelicaAccumulator.hpp</component>
   <component>ModelicaIfElse.hpp</component>
   <component>ModelicaCylinderQ.hpp</component>
+  <component>ModelicaElectricMotor.hpp</component>
 
   <componentxml>ModelicaMass.xml</componentxml>
   <componentxml>ModelicaOrifice.xml</componentxml>
@@ -28,6 +29,7 @@
   <componentxml>ModelicaAccumulator.xml</componentxml>
   <componentxml>ModelicaIfElse.xml</componentxml>
   <componentxml>ModelicaCylinderQ.xml</componentxml>
+  <componentxml>ModelicaElectricMotor.xml</componentxml>
 
   <auxiliary>ModelicaMass.mo</auxiliary>
   <auxiliary>ModelicaOrifice.mo</auxiliary>
@@ -36,5 +38,6 @@
   <auxiliary>ModelicaAccumulator.mo</auxiliary>
   <auxiliary>ModelicaIfElse.mo</auxiliary>
   <auxiliary>ModelicaCylinderQ.mo</auxiliary>
+  <auxiliary>ModelicaElectricMotor.mo</auxiliary>
 
 </hopsancomponentlibrary>
