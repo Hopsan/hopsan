@@ -678,6 +678,24 @@ bool HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         }
     }
 
+    //Identify and replace pure derivatives ("der(x) = y")
+    for(const auto &equation : systemEquations) {
+        if(equation.getLeft()->isSymbol() && equation.getRight()->getFunctionName() == "der" && equation.getRight()->getArgument(0).isSymbol()) {
+            for(auto &equation2 : systemEquations) {
+                if(equation != equation2) {
+                    equation2.replace(*equation.getLeft(), *equation.getRight());
+                }
+            }
+        }
+        else if(equation.getRight()->isSymbol() && equation.getLeft()->getFunctionName() == "der" && equation.getLeft()->getArgument(0).isSymbol()) {
+            for(auto &equation2 : systemEquations) {
+                if(equation != equation2) {
+                    equation2.replace(*equation.getRight(), *equation.getLeft());
+                }
+            }
+        }
+    }
+
     //Sum up all used variables to a single list
     QList<Expression> unknowns;
     for(const auto &variable : variables) {
