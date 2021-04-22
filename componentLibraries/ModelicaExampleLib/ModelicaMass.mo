@@ -11,8 +11,8 @@ model ModelicaMass "ModelicaMass"
     parameter Real xmin(unit="")=0
 
 equation
-    der(der(P2.x))*M + der(P2.x)*(B+P1.Zc+P2.Zc) + P2.x*K = P1.c - P2.c;
     der(P2.v)*M + P2.v*(B+P1.Zc+P2.Zc) + P2.x*K = P1.c - P2.c;
+    der(P2.x) = P2.v;
     P1.v + P2.v = 0;
     P1.x + P2.x = 0;
     P1.f = P1.c + P1.Zc*P1.v;
