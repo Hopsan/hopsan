@@ -1965,12 +1965,17 @@ void SystemObject::replaceComponent(QString name, QString newType)
 
     QPointF pos = obj->getCenterPos();
     double rot = obj->rotation();
+    bool flipped = obj->isFlipped();
 
     deleteModelObject(name);
 
     qDebug() << "Name = " << name;
 
-    ModelObject *newObj = addModelObject(newType, pos, rot);
+    ModelObject *newObj = addModelObject(newType, pos, 0);
+    newObj->rotate(rot);
+    if(flipped) {
+        newObj->flipHorizontal();
+    }
 
     if(!newObj)
     {
