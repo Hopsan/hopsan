@@ -29,7 +29,7 @@ equation
     Bp*vmp = fg;
     Bp*der(xmp) = fg;
     P1.q = -Ap*vmp;
-    pa*pow(limit(SL-xmp,0,SL)*Ap,kappa) = p0*pow((SL*Ap),kappa);
+    pa*pow((SL-xmp)*Ap,kappa) = p0*pow((SL*Ap),kappa);
     Va = (SL-xmp)*Ap;
     P1.p = P1.c + P1.Zc*P1.q;
     limitVariable(xmp,vmp,0,SL);
