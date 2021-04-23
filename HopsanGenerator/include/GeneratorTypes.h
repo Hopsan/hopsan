@@ -221,6 +221,12 @@ public:
     int derEquation;    //Equation where derivative is defined
 };
 
+class CavitationCheck {
+public:
+    QString pressure;
+    QString wave;
+    QString impedance;
+};
 
 
 class ComponentSpecification
