@@ -736,6 +736,9 @@ bool HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
 
     for(auto &algorithm : algorithms) {
         algorithm.replace(":=","=");
+        while(algorithm.endsWith(";")) {
+            algorithm.chop(1);
+        }
         Expression algExpr = Expression(algorithm);
         if(!algExpr.isAssignment()) {
             printErrorMessage("Only assignments are allowed in algorithm sections.");
