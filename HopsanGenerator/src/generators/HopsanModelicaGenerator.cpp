@@ -1092,9 +1092,12 @@ bool HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         comp.initEquations << "mDelay"+QString::number(i)+".initialize("+QString::number(int(delaySteps.at(i).toDouble()))+", "+delayTerms[i].toString()+");";
     }
 
-    comp.initEquations << "//Initial algorithm section";
-    for(const auto &algorithm : initAlgorithms) {
-        comp.initEquations << algorithm+";";
+    if(!comp.initEquations.isEmpty()) {
+        comp.initEquations << "";
+        comp.initEquations << "//Initial algorithm section";
+        for(const auto &algorithm : initAlgorithms) {
+            comp.initEquations << algorithm+";";
+        }
     }
 
     if(!cavitationChecks.isEmpty()) {
@@ -1102,12 +1105,16 @@ bool HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         comp.simEquations << "";
     }
 
-    comp.simEquations << "//Pre-algorithm section";
-    for(int i=0; i<preAlgorithms.size(); ++i)
-    {
-        comp.simEquations << preAlgorithms[i]+";";
+    if(!preAlgorithms.isEmpty()) {
+        comp.simEquations << "";
+        comp.simEquations << "//Pre-algorithm section";
+        for(int i=0; i<preAlgorithms.size(); ++i)
+        {
+            comp.simEquations << preAlgorithms[i]+";";
+        }
+        comp.simEquations << "";
     }
-    comp.simEquations << "";
+
     if(!unknowns.isEmpty()) {
         comp.simEquations << "//Provide Kinsol with updated state variables";
         for(int u=0; u<unknowns.size(); ++u) {
