@@ -623,7 +623,8 @@ bool HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
 
     //Create list of equations
     QList<Expression> systemEquations;
-    QList<VariableLimitation> limitedVariables;;
+    QList<VariableLimitation> limitedVariables;
+    QList<CavitationCheck> cavitationChecks;
     for(int e=0; e<plainEquations.size(); ++e) {
         if(plainEquations[e].trimmed().startsWith("//")) {
             continue;   //Ignore comments
@@ -656,6 +657,19 @@ bool HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
                 return false;
             }
             limitedVariables.append(limit);
+            systemEquations.removeLast();
+            continue;
+        }
+        if(systemEquations.last().getFunctionName() == "preventCavitation") {
+            if(systemEquations.last().getArguments().size() != 3) {
+                printErrorMessage("Wrong number of arguments to preventCavitation() (should be 3).");
+                return false;
+            }
+            CavitationCheck cav;
+            cav.pressure = systemEquations.last().getArguments()[0].toString();
+            cav.wave = systemEquations.last().getArguments()[1].toString();
+            cav.impedance = systemEquations.last().getArguments()[2].toString();
+            cavitationChecks.append(cav);
             systemEquations.removeLast();
             continue;
         }
@@ -785,6 +799,17 @@ bool HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     for(VariableLimitation &limit : limitedVariables) {
         if(!unknowns.contains(limit.var) || (!limit.der.isEmpty() && !unknowns.contains(limit.der))) {
             printErrorMessage("Limited variables not found in model, or are not unknown.");
+            return false;
+        }
+    }
+
+    //Verify cavitation
+    for(const auto &cav : cavitationChecks) {
+        bool foundPressure = unknowns.contains(cav.pressure) || knowns.contains(cav.pressure);
+        bool foundWave= unknowns.contains(cav.wave) || knowns.contains(cav.wave);
+        bool foundImpedance= unknowns.contains(cav.impedance) || knowns.contains(cav.impedance);
+        if(!foundPressure || !foundWave || !foundImpedance) {
+            printErrorMessage("All cavitation variables not found in model.");
             return false;
         }
     }
@@ -1069,6 +1094,11 @@ bool HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         comp.initEquations << algorithm+";";
     }
 
+    if(!cavitationChecks.isEmpty()) {
+        comp.simEquations << "while(true) {";
+        comp.simEquations << "";
+    }
+
     comp.simEquations << "//Pre-algorithm section";
     for(int i=0; i<preAlgorithms.size(); ++i)
     {
@@ -1091,12 +1121,34 @@ bool HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         comp.simEquations << "";
     }
 
-    comp.simEquations << "//Final algorithm section";
-    for(int i=0; i<finalAlgorithms.size(); ++i)
-    {
-        comp.simEquations << finalAlgorithms[i]+";";
+    if(!finalAlgorithms.isEmpty()) {
+        comp.simEquations << "//Final algorithm section";
+        for(int i=0; i<finalAlgorithms.size(); ++i)
+        {
+            comp.simEquations << finalAlgorithms[i]+";";
+        }
+        comp.simEquations << "";
     }
-    comp.simEquations << "";
+
+    if(!cavitationChecks.isEmpty()) {
+        comp.simEquations << "//Handle cavitation checks";
+        comp.simEquations << "bool cav = false;";
+        for(const auto &cav : cavitationChecks) {
+            comp.simEquations << "if("+cav.pressure+" < 0.0)";
+            comp.simEquations << "{";
+            comp.simEquations << "    "+cav.wave+" = 0.0;";
+            comp.simEquations << "    "+cav.impedance+" = 0.0;";
+            comp.simEquations << "    cav = true;";
+            comp.simEquations << "}";
+        }
+        comp.simEquations << "if(!cav) {";
+        comp.simEquations << "    break;";
+        comp.simEquations << "}";
+        comp.simEquations << "}";
+        comp.simEquations << "";
+    }
+
+    comp.simEquations << "//Handle variable limitations";
     if(true) {
         comp.simEquations << "bool reachedLimit = false;";
         for(const auto &limit : limitedVariables) {
@@ -1329,6 +1381,9 @@ bool HopsanModelicaGenerator::verifyModelicaLine(const QString &line, int flags)
         }
         SymHop::Expression expr(line.trimmed().remove(";"));
         if(expr.getFunctionName() == "limitVariable") {
+            return true;
+        }
+        if(expr.getFunctionName() == "preventCavitation") {
             return true;
         }
         if(split.size() == 3 && split.at(0) == "if" && split.at(2) == "then") {
