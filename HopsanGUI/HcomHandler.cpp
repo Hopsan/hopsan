@@ -5819,7 +5819,18 @@ void HcomHandler::changePlotXVariable(const QString varExp)
     {
         bool found=false;
         QStringList variables;
-        getMatchingLogVariableNames(varExp, variables);
+
+        // Check if no generation is given, then specify "current" to avoid costly lookup in all generations
+        QString tempVarName = varExp;
+        bool parseOK;
+        int desiredGen = parseAndChopGenerationSpecifier(tempVarName, parseOK);
+        if (isValidGenerationValue(desiredGen)) {
+            getMatchingLogVariableNames(varExp, variables);
+        }
+        else if (mpModel && mpModel->getLogDataHandler()) {
+            getMatchingLogVariableNames(varExp, variables, false, mpModel->getLogDataHandler()->getCurrentGenerationNumber());
+        }
+
         if (variables.isEmpty())
         {
             evaluateExpression(varExp, DataVector);
