@@ -243,7 +243,7 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
     //Declare ports
     QString portDeclarations;
     if(!comp.portNames.isEmpty()) {
-        portDeclarations.append("        Port ");
+        portDeclarations.append("Port ");
         bool portFound=false;
         for(int i=0; i<comp.portNames.size(); ++i)
         {
@@ -560,7 +560,7 @@ QString HopsanGeneratorBase::generateSourceCodefromComponentSpec(ComponentSpecif
         if(!auxiliaryFunctions.isEmpty()) {
             auxiliaryFunctions.append("        ");
         }
-        auxiliaryFunctions.append("        "+comp.auxiliaryFunctions[i]+"\n");
+        auxiliaryFunctions.append(comp.auxiliaryFunctions[i]+"\n");
     }
     if(auxiliaryFunctions.endsWith("\n")) {
         auxiliaryFunctions.chop(1);
