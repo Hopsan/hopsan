@@ -31,7 +31,7 @@
 
 //!
 //! @file SignalPID2.hpp
-//! @author Peter Nordin <peter.nordin@liu.se>
+//! @author Peter Nordin
 //! @brief PID controller with anti-windup
 //! @ingroup SignalComponents
 //!
@@ -99,19 +99,16 @@ public:
 
     void simulateOneTimestep()
     {
-        double dErr;
-
         // Read input control error
         const double err = (*mpErr);
 
-        // Decide what derivative signal to use, de input or derivative in e input
-        if (mUseDeInput)
-        {
+        // Decide what derivative signal to use, 'de' input or derivative of 'e' input
+        double dErr;
+        if (mUseDeInput) {
             dErr = (*mpDerr);
         }
-        else
-        {
-            dErr = err-mLastErr;
+        else {
+            dErr = (err-mLastErr)/mTimestep;
             mLastErr = err;
         }
 
@@ -120,7 +117,7 @@ public:
         mI = mI + mK * mTimestep/mTi * err;
 
         // Calculate control signal
-        double v = mK*err + mI + mK*mTd/mTimestep * dErr;
+        double v = mK*err + mI + mK*mTd * dErr;
 
         // Adjust integrator when anti-windup limits Umin or Umax are exceeded.
         if (v > mUmax)

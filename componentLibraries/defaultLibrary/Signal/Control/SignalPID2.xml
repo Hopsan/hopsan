@@ -11,7 +11,7 @@
             <port x="0" y="0.9" enabled="true" a="180" name="de" enabled="false"/>
         </ports>
         <help>
-	  <text>Manual implementation of a PID controller using standard form parameters. If you are familiar with other parameters convert according to: K=Kp, Ti=K/Ki, Td=Kd/K. Optional port "de" can be activated and if connected, the derivative signal from that port will be used instead of the actual control error signal.</text> 
+            <text>Manual implementation of a PID controller using standard form parameters. If you are familiar with other parameters, convert according to: K=Kp, Ti=K/Ki, Td=Kd/K. Optional port "de" can be activated and if connected, the derivative signal from that port will be used instead of the actual derivative of the control error.</text>
         </help>
     </modelobject>
 </hopsanobjectappearance>
