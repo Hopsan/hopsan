@@ -7172,7 +7172,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     else if(desiredType != Scalar && desiredType != DataVector && isHcomFunctionCall("expr", expr)) {
        QStringList args = extractFunctionCallExpressionArguments(expr);
        if(args.size() != 1) {
-           HCOMERR("Wrong number of arguments for expr function.\n"+mLocalFunctionDescriptions.find("ddt").value().second);
+           HCOMERR("Wrong number of arguments for expr function.\n"+mLocalFunctionDescriptions.find("expr").value().second);
            mAnsType = Undefined;
            return;
        }
@@ -7191,7 +7191,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     else if(isHcomFunctionCall("eval", expr)) {
         QStringList args = extractFunctionCallExpressionArguments(expr);
         if(args.size() != 1) {
-            HCOMERR("Wrong number of arguments for eval function.\n"+mLocalFunctionDescriptions.find("ddt").value().second);
+            HCOMERR("Wrong number of arguments for eval function.\n"+mLocalFunctionDescriptions.find("eval").value().second);
             mAnsType = Undefined;
             return;
         }
