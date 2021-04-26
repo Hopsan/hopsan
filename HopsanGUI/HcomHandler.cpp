@@ -7239,7 +7239,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         expr2 = mAnsExpression;
         if(getFunctionName(expr) == "der") {
             bool ok;
-            mAnsExpression = mLocalExpressions[args[0]].derivative(mAnsExpression,ok);
+            mAnsExpression = expr1.derivative(expr2,ok);
             if(!ok) {
                 HCOMERR("Failed to differentiate expression \""+args[0]+"\" with respect to \""+args[1]+"\"");
                 mAnsType = Undefined;
