@@ -136,6 +136,10 @@ void TextEditorWidget::fileChanged(QString filePath)
     qDebug() << "File changed: " << filePath;
     //We need to add the path again, because some text editors removes the actual file and
     //creates a new one when saving (e.g. gedit). This makes the watcher stop watching.
+    if(QFileInfo(filePath) != mFileInfo) {
+        return;
+    }
+
     QFileSystemWatcher *pWatcher = qobject_cast<QFileSystemWatcher*>(sender());
     if(pWatcher != nullptr) {
         pWatcher->addPath(filePath);
