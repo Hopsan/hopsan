@@ -58,6 +58,7 @@
 #define UNDO_VERTICALFLIP "verticalflip"
 #define UNDO_HORIZONTALFLIP "horizontalflip"
 #define UNDO_NAMEVISIBILITYCHANGE "namevisibilitychange"
+#define UNDO_ALWAYSVISIBLECHANGE "alwaysvisiblechange"
 #define UNDO_REMOVEDALIASES "removedaliases"
 #define UNDO_PASTE "paste"
 #define UNDO_MOVEDMULTIPLE "movedmultiple"
@@ -121,6 +122,7 @@ public:
     void registerChangedStartValue(QString objectName, QString portName, QString parameterName, QString oldValueTxt, QString newValueTxt);
     void registerNameVisibilityChange(QString objectName, bool isVisible);
     void registerRemovedAliases(QStringList &aliases);
+    void registerAlwaysVisibleChange(QString objectName, bool isVisible);
 
     void registerAddedWidget(Widget *item);
     void registerDeletedWidget(Widget *item);

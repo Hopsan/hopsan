@@ -309,7 +309,9 @@ ModelObject* loadModelObject(const QDomElement &domElement, SystemObject* pSyste
         }
 
         ModelObject* pObj = pSystem->addModelObject(&appearanceData, QPointF(posX, posY), 0, Deselected, nameStatus, undoSettings);
-        pObj->setAlwaysVisible(alwaysVisible);
+        if(pObj->getTypeCQS() == "S") {
+            pObj->setAlwaysVisible(alwaysVisible, NoUndo);
+        }
         pObj->setNameTextPos(nameTextPos);
         pObj->setNameTextAlwaysVisible(nameTextVisible);
         pObj->setSubTypeName(subtype); //!< @todo is this really needed
