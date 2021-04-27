@@ -1838,11 +1838,17 @@ QGraphicsSvgItem *ModelObject::getIcon()
     return mpIcon;
 }
 
-void ModelObject::setAlwaysVisible(const bool visible)
+void ModelObject::setAlwaysVisible(const bool visible, UndoStatusEnumT undoSettings)
 {
+    bool previousStatus = mAlwaysVisible;
     mAlwaysVisible = visible;
 
     mpIcon->setVisible(visible || !mpParentSystemObject->areSignalsHidden());
+
+    if(undoSettings == Undo && previousStatus != visible)
+    {
+        mpParentSystemObject->getUndoStackPtr()->registerAlwaysVisibleChange(this->getName(), visible);
+    }
 }
 
 void ModelObject::setNameTextAlwaysVisible(const bool isVisible)

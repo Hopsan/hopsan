@@ -80,7 +80,7 @@ public:
     virtual const SharedModelObjectAppearanceT getLibraryAppearanceData() const;
     bool isVisible();
     QGraphicsSvgItem *getIcon();
-    void setAlwaysVisible(const bool visible);
+    void setAlwaysVisible(const bool visible, UndoStatusEnumT undoSettings=Undo);
     void setNameTextAlwaysVisible(const bool isVisible);
 
     // Help methods

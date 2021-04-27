@@ -230,6 +230,7 @@ QString UndoWidget::translateTag(QString tag)
     tagMap.insert(UNDO_VERTICALFLIP,            "Flipped Vertical");
     tagMap.insert(UNDO_HORIZONTALFLIP,          "Flipped Horizontal");
     tagMap.insert(UNDO_NAMEVISIBILITYCHANGE,    "Changed Name Visibility");
+    tagMap.insert(UNDO_ALWAYSVISIBLECHANGE,     "Toggle Component Always Visible");
     tagMap.insert(UNDO_PASTE,                   "Paste");
     tagMap.insert(UNDO_MOVEDMULTIPLE,           "Moved Objects");
     tagMap.insert(UNDO_CUT,                     "Cut");

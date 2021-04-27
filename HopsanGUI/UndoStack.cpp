@@ -322,6 +322,12 @@ void UndoStack::undoOneStep()
                 mpParentSystemObject->getModelObject(objectName)->showName(NoUndo);
             }
         }
+        else if(stuffElement.attribute("what") == UNDO_ALWAYSVISIBLECHANGE)
+        {
+            QString objectName = stuffElement.attribute("objectname");
+            bool isVisible = (stuffElement.attribute("isvisible").toInt() == 1);
+            mpParentSystemObject->getModelObject(objectName)->setAlwaysVisible(!isVisible, NoUndo);
+        }
         else if(stuffElement.attribute("what") == UNDO_ADDEDTEXTBOXWIDGET)
         {
             removeTextboxWidget(stuffElement);
@@ -657,6 +663,12 @@ void UndoStack::redoOneStep()
                 mpParentSystemObject->getModelObject(objectName)->hideName(NoUndo);
             }
         }
+        else if(stuffElement.attribute("what") == UNDO_ALWAYSVISIBLECHANGE)
+        {
+            QString objectName = stuffElement.attribute("objectname");
+            bool isVisible = (stuffElement.attribute("isvisible").toInt() == 1);
+            mpParentSystemObject->getModelObject(objectName)->setAlwaysVisible(isVisible, NoUndo);
+        }
         else if(stuffElement.attribute("what") == UNDO_ADDEDTEXTBOXWIDGET)
         {
             addTextboxwidget(stuffElement);
@@ -990,6 +1002,18 @@ void UndoStack::registerRemovedAliases(QStringList &aliases)
             QString fullName = mpParentSystemObject->getFullNameFromAlias(aliases[i]);
             appendDomTextNode(alias, "fullname",fullName );
         }
+    }
+}
+
+void UndoStack::registerAlwaysVisibleChange(QString objectName, bool isVisible)
+{
+    if(mEnabled) {
+        QDomElement currentPostElement = getCurrentPost();
+        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        stuffElement.setAttribute("what", UNDO_ALWAYSVISIBLECHANGE);
+        stuffElement.setAttribute("objectname", objectName);
+        stuffElement.setAttribute("isvisible", isVisible);
+        gpUndoWidget->refreshList();
     }
 }
 
