@@ -280,7 +280,7 @@ ModelObject* loadModelObject(const QDomElement &domElement, SystemObject* pSyste
     parsePoseTag(guiData.firstChildElement(HMF_POSETAG), posX, posY, target_rotation, isFlipped);
     target_rotation = normDeg360(target_rotation); //Make sure target rotation between 0 and 359.999
 
-    bool alwaysVisible = parseAttributeBool(guiData, "visible", false);
+    bool alwaysVisible = parseAttributeBool(guiData, "alwaysvisible", false);
 
     int nameTextPos = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("position").toInt();
     bool nameTextVisible = parseAttributeBool(guiData.firstChildElement(HMF_NAMETEXTTAG), "visible", false);
