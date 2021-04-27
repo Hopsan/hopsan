@@ -1842,7 +1842,7 @@ void ModelObject::setAlwaysVisible(const bool visible)
 {
     mAlwaysVisible = visible;
 
-    mpIcon->setVisible(!mpParentSystemObject->areSignalsHidden());
+    mpIcon->setVisible(visible || !mpParentSystemObject->areSignalsHidden());
 }
 
 void ModelObject::setNameTextAlwaysVisible(const bool isVisible)
