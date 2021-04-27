@@ -1843,7 +1843,7 @@ void ModelObject::setAlwaysVisible(const bool visible, UndoStatusEnumT undoSetti
     bool previousStatus = mAlwaysVisible;
     mAlwaysVisible = visible;
 
-    mpIcon->setVisible(visible || !mpParentSystemObject->areSignalsHidden());
+    mpIcon->setVisible(visible || mpParentSystemObject->areSignalsVisible());
 
     if(undoSettings == Undo && previousStatus != visible)
     {

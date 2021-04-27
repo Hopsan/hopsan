@@ -358,7 +358,7 @@ public slots:
     GraphicsTypeEnumT getGfxType();
     bool areSubComponentPortsShown();
     bool areSubComponentNamesShown();
-    bool areSignalsHidden();
+    bool areSignalsVisible();
 
     //Properties slots
     void openPropertiesDialogSlot();
@@ -470,7 +470,7 @@ protected:
     //Contained object appearance members
     bool mShowSubComponentPorts;
     bool mShowSubComponentNames;
-    bool mSignalsHidden;
+    bool mSignalsVisible;
     GraphicsTypeEnumT mGfxType;
 
     //Undo-redo members
