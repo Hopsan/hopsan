@@ -115,7 +115,7 @@ void SystemObject::commonConstructorCode()
     mIsCreatingConnector = false;
     mShowSubComponentPorts = gpMainWindow->mpTogglePortsAction->isChecked();
     mShowSubComponentNames = gpMainWindow->mpToggleNamesAction->isChecked();
-    mSignalsHidden = !gpMainWindow->mpToggleSignalsAction->isChecked();
+    mSignalsVisible = gpMainWindow->mpToggleSignalsAction->isChecked();
     mLossesVisible = false;
     mUndoEnabled = true;
     mGfxType = UserGraphics;
@@ -239,7 +239,7 @@ void SystemObject::makeMainWindowConnectionsAndRefresh()
     // Update the main window menu and toolbar actions that are system specific
     gpMainWindow->mpTogglePortsAction->setChecked(mShowSubComponentPorts);
     gpMainWindow->mpToggleNamesAction->setChecked(mShowSubComponentNames);
-    gpMainWindow->mpToggleSignalsAction->setChecked(!mSignalsHidden);
+    gpMainWindow->mpToggleSignalsAction->setChecked(mSignalsVisible);
     gpMainWindow->mpEnableUndoAction->setChecked(mUndoEnabled);
     gpMainWindow->mpUndoAction->setEnabled(mUndoEnabled);
     gpMainWindow->mpRedoAction->setEnabled(mUndoEnabled);
@@ -2105,7 +2105,7 @@ void SystemObject::toggleNames(bool value)
 
 void SystemObject::toggleSignals(bool value)
 {
-    mSignalsHidden = !value;
+    mSignalsVisible = value;
     emit showOrHideSignals(value);
 }
 
@@ -2489,9 +2489,9 @@ bool SystemObject::areSubComponentNamesShown()
 
 
 //! @brief Tells whether or not signal components are hidden
-bool SystemObject::areSignalsHidden()
+bool SystemObject::areSignalsVisible()
 {
-    return mSignalsHidden;
+    return mSignalsVisible;
 }
 
 
