@@ -1057,7 +1057,7 @@ QDomElement ModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
     appendPoseTag(xmlGuiStuff, cpos.x(), cpos.y(), rotation(), this->mIsFlipped, 10);
 
     // Save the alwasys visible setting
-    xmlGuiStuff.setAttribute("visible", mAlwaysVisible);
+    xmlGuiStuff.setAttribute("alwaysvisible", mAlwaysVisible);
 
     // Save the text displaying the component name
     QDomElement nametext = appendDomElement(xmlGuiStuff, HMF_NAMETEXTTAG);
