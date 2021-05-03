@@ -396,6 +396,7 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     registerInternalFunction("euler", "Transforms derivatives in a symbolic expression using the forward Euler method", "Usage: e = euler(f)");
     registerInternalFunction("bdf1", "Transforms derivatives in a symbolic expression using the first order backward differentiation formula (implicit Euler)", "Usage: e = bdf1(f)");
     registerInternalFunction("bdf2", "Transforms derivatives in a symbolic expression using the second order backward differentiation formula", "Usage: e = bdf2(f)");
+    registerInternalFunction("latex", "Prints a symbolic expression with LaTeX syntax", "Usage: latex(e)");
 
     //Setup local function pointers (used to evaluate expressions in SymHop)
     registerFunctionoid("aver", new HcomFunctionoidAver(this), "Calculate average value of vector", "Usage: aver(vector)");
