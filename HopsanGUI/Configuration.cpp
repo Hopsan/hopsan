@@ -857,8 +857,7 @@ QColor Configuration::getBackgroundColor() const
 QStringList Configuration::getUserLibs() const
 {
     QStringList ret;
-    Q_FOREACH(const QFileInfo &file, mUserLibs)
-    {
+    for(const QFileInfo &file : mUserLibs) {
         ret << file.absoluteFilePath();
     }
 

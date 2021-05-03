@@ -144,9 +144,7 @@ void PlotTab::openTimeOffsetDialog()
 //! @brief Toggles the axis lock on/off for the enabled axis
 void PlotTab::toggleAxisLock()
 {
-    PlotArea *pArea;
-    Q_FOREACH(pArea, mPlotAreas)
-    {
+    for(PlotArea *pArea : mPlotAreas) {
         pArea->toggleAxisLock();
     }
 }
@@ -154,9 +152,7 @@ void PlotTab::toggleAxisLock()
 void PlotTab::openLegendSettingsDialog()
 {
     //! @todo solve in some smarter way
-    PlotArea *pArea;
-    Q_FOREACH(pArea, mPlotAreas)
-    {
+    for(PlotArea *pArea : mPlotAreas) {
         pArea->openLegendSettingsDialog();
     }
 }
@@ -193,9 +189,7 @@ void PlotTab::addBarChart(QStandardItemModel *pItemModel)
 //! @brief Rescales the axes and the zoomers so that all plot curves will fit
 void PlotTab::rescaleAxesToCurves()
 {
-    PlotArea *pArea;
-    Q_FOREACH(pArea, mPlotAreas)
-    {
+    for(PlotArea *pArea : mPlotAreas) {
         pArea->rescaleAxesToCurves();
     }
 }
@@ -274,11 +268,8 @@ bool PlotTab::isGridVisible() const
 
 void PlotTab::resetXTimeVector()
 {
-    PlotArea *pArea;
-    Q_FOREACH(pArea, mPlotAreas)
-    {
-        if (pArea->hasCustomXData())
-        {
+    for(PlotArea *pArea : mPlotAreas) {
+        if (pArea->hasCustomXData()) {
             pArea->resetXDataVector();
         }
     }
@@ -289,7 +280,6 @@ void PlotTab::resetXTimeVector()
 //! @brief Slot that opens a dialog from where user can export current plot tab to a XML file
 void PlotTab::exportToXml()
 {
-
     //Open a dialog where text and font can be selected
     mpExportXmlDialog = new QDialog(this);
     mpExportXmlDialog->setWindowTitle("Export Plot Tab To XML");
@@ -765,8 +755,7 @@ void PlotTab::exportToHDF5()
     QList<SharedVectorVariableT> xvariables;
     QList<SharedVectorVariableT> timevariables;
     QList<PlotCurve*> curves = getCurves(0);
-    for(PlotCurve *pCurve : curves)
-    {
+    for(PlotCurve *pCurve : curves) {
         SharedVectorVariableT pVar, pToF, pCX;
         pVar = pCurve->getSharedVectorVariable();
         pToF = pCurve->getSharedTimeOrFrequencyVariable();
@@ -793,16 +782,14 @@ void PlotTab::exportToHDF5()
 
 void PlotTab::shiftAllGenerationsDown()
 {
-    Q_FOREACH(PlotArea *pArea, mPlotAreas)
-    {
+    for(PlotArea *pArea : mPlotAreas) {
         pArea->shiftModelGenerationsDown();
     }
 }
 
 void PlotTab::shiftAllGenerationsUp()
 {
-    Q_FOREACH(PlotArea *pArea, mPlotAreas)
-    {
+    for(PlotArea *pArea : mPlotAreas) {
         pArea->shiftModelGenerationsUp();
     }
 }
@@ -810,8 +797,7 @@ void PlotTab::shiftAllGenerationsUp()
 void PlotTab::updateWindowtitleModelNames()
 {
     QStringList names;
-    foreach(PlotArea *pArea, mPlotAreas)
-    {
+    for(PlotArea *pArea : mPlotAreas) {
         names.append(pArea->getModelPaths());
     }
     mpParentPlotWindow->setModelPaths(names);
@@ -820,14 +806,11 @@ void PlotTab::updateWindowtitleModelNames()
 
 void PlotTab::enableZoom(bool value)
 {
-    if(value)
-    {
+    if(value) {
         mpParentPlotWindow->mpArrowButton->setChecked(false);
         mpParentPlotWindow->mpPanButton->setChecked(false);
 
-        PlotArea *pArea;
-        Q_FOREACH(pArea, mPlotAreas)
-        {
+        for(PlotArea *pArea : mPlotAreas) {
             pArea->enableZoom();
         }
     }
@@ -836,22 +819,17 @@ void PlotTab::enableZoom(bool value)
 void PlotTab::resetZoom()
 {
     //! @todo only the one selected
-    PlotArea *pArea;
-    Q_FOREACH(pArea, mPlotAreas)
-    {
+    for(PlotArea *pArea : mPlotAreas) {
         pArea->resetZoom();
     }
 }
 
 void PlotTab::enableArrow(bool value)
 {
-    if(value)
-    {
+    if(value) {
         mpParentPlotWindow->mpZoomButton->setChecked(false);
         mpParentPlotWindow->mpPanButton->setChecked(false);
-        PlotArea *pArea;
-        Q_FOREACH(pArea, mPlotAreas)
-        {
+        for(PlotArea *pArea : mPlotAreas) {
             pArea->enableArrow();
         }
     }
@@ -860,13 +838,10 @@ void PlotTab::enableArrow(bool value)
 
 void PlotTab::enablePan(bool value)
 {
-    if(value)
-    {
+    if(value) {
         mpParentPlotWindow->mpArrowButton->setChecked(false);
         mpParentPlotWindow->mpZoomButton->setChecked(false);
-        PlotArea *pArea;
-        Q_FOREACH(pArea, mPlotAreas)
-        {
+        for(PlotArea *pArea : mPlotAreas) {
             pArea->enablePan();
         }
 
@@ -876,9 +851,7 @@ void PlotTab::enablePan(bool value)
 
 void PlotTab::enableGrid(bool value)
 {
-    PlotArea *pArea;
-    Q_FOREACH(pArea, mPlotAreas)
-    {
+    for(PlotArea *pArea : mPlotAreas) {
         pArea->enableGrid(value);
     }
 }
@@ -887,11 +860,8 @@ void PlotTab::enableGrid(bool value)
 void PlotTab::setBackgroundColor()
 {
     QColor color = QColorDialog::getColor(mPlotAreas.first()->getQwtPlot()->canvasBackground().color(), this);
-    if (color.isValid())
-    {
-        PlotArea *pArea;
-        Q_FOREACH(pArea, mPlotAreas)
-        {
+    if (color.isValid()) {
+        for(PlotArea *pArea : mPlotAreas) {
             pArea->setBackgroundColor(color);
         }
     }
@@ -912,16 +882,14 @@ HopQwtPlot *PlotTab::getQwtPlot(const int subPlotId)
 
 void PlotTab::addCurve(PlotCurve *pCurve, const int subPlotId)
 {
-    if (subPlotId < mPlotAreas.size())
-    {
+    if (subPlotId < mPlotAreas.size()) {
         mPlotAreas[subPlotId]->addCurve(pCurve);
     }
 }
 
 void PlotTab::addCurve(PlotCurve *pCurve, PlotCurveStyle style, const int subPlotId)
 {
-    if (subPlotId < mPlotAreas.size())
-    {
+    if (subPlotId < mPlotAreas.size()) {
         mPlotAreas[subPlotId]->addCurve(pCurve, style);
     }
 }
@@ -929,8 +897,7 @@ void PlotTab::addCurve(PlotCurve *pCurve, PlotCurveStyle style, const int subPlo
 
 int PlotTab::getNumberOfCurves(const int subPlotId) const
 {
-    if (subPlotId < mPlotAreas.size())
-    {
+    if (subPlotId < mPlotAreas.size()) {
         return mPlotAreas[subPlotId]->getNumberOfCurves();
     }
     return 0;
@@ -940,9 +907,7 @@ bool PlotTab::isEmpty() const
 {
     //! @todo this needs to be overloaded for other types of plots that have no curves
     int sum=0;
-    PlotArea *pArea;
-    Q_FOREACH(pArea, mPlotAreas)
-    {
+    for(PlotArea *pArea : mPlotAreas) {
         sum+=pArea->getNumberOfCurves();
     }
     return sum==0;
@@ -966,9 +931,7 @@ bool PlotTab::isPanEnabled() const
 
 void PlotTab::update()
 {
-    PlotArea *pArea;
-    Q_FOREACH(pArea, mPlotAreas)
-    {
+    for(PlotArea *pArea : mPlotAreas) {
         pArea->replot();
     }
 }
@@ -1066,11 +1029,8 @@ bool PlotTab::isBarPlot() const
 
 bool PlotTab::hasCustomXData() const
 {
-    PlotArea *pArea;
-    Q_FOREACH(pArea, mPlotAreas)
-    {
-        if (pArea->hasCustomXData())
-        {
+    for(PlotArea *pArea : mPlotAreas) {
+        if (pArea->hasCustomXData()) {
             return true;
         }
     }
@@ -1080,9 +1040,7 @@ bool PlotTab::hasCustomXData() const
 
 void PlotTab::setLegendsVisible(bool value)
 {
-    PlotArea *pArea;
-    Q_FOREACH(pArea, mPlotAreas)
-    {
+    for(PlotArea *pArea : mPlotAreas) {
         pArea->setLegendsVisible(value);
     }
 }
@@ -1195,7 +1153,7 @@ void PlotTab::exportImage()
     QwtPlotRenderer renderer;
     renderer.setDiscardFlag(QwtPlotRenderer::DiscardBackground,true);
     renderer.setDiscardFlag(QwtPlotRenderer::DiscardCanvasFrame,true);
-    renderer.renderDocument(getQwtPlot(0), mGraphicsExporter.imageFilename(), mGraphicsExporter.calcSizeMM(), mGraphicsExporter.dpi());
+    renderer.renderDocument(getQwtPlot(0), mGraphicsExporter.imageFilename(), mGraphicsExporter.calcSizeMM(), int(mGraphicsExporter.dpi()));
     //! @todo should work for all subplots in plot
 
     // The QwtPlotRenderer code does not check if the file was successfully written, so we can not know for sure.
@@ -1219,7 +1177,7 @@ void PlotTab::exportImageSelectFile()
 void PlotTab::updateMaximumBodeFreqHz(int value)
 {
     mpMaxFrequencyHzSpinBox->blockSignals(true);
-    mpMaxFrequencyHzSpinBox->setValue(value/(2*M_PI));
+    mpMaxFrequencyHzSpinBox->setValue(int(value/(2.0*M_PI)));
     mpMaxFrequencyHzSpinBox->blockSignals(false);
 }
 
@@ -1228,7 +1186,7 @@ void PlotTab::updateMaximumBodeFreqHz(int value)
 void PlotTab::updateMaximumBodeFreqRadSec(int value)
 {
     mpMaxFrequencyRadSecSpinBox->blockSignals(true);
-    mpMaxFrequencyRadSecSpinBox->setValue(value*2*M_PI);
+    mpMaxFrequencyRadSecSpinBox->setValue(int(value*2.0*M_PI));
     mpMaxFrequencyRadSecSpinBox->blockSignals(false);
 }
 
@@ -1268,10 +1226,8 @@ void PlotTab::removePlotArea(const int id)
 
 int PlotTab::getPlotIDForCurve(PlotCurve *pCurve)
 {
-    for (int i=0; i<mPlotAreas.size(); ++i)
-    {
-        if (mPlotAreas[i]->getCurves().contains(pCurve))
-        {
+    for(int i=0; i<mPlotAreas.size(); ++i) {
+        if (mPlotAreas[i]->getCurves().contains(pCurve)) {
             return i;
         }
     }
@@ -1400,7 +1356,7 @@ void PlotTab::openFrequencyAnalysisDialog(PlotCurve *pCurve)
 
     double xdiff = maxX-minX;
     if(0 == xdiff) {
-        gpMessageHandler->addErrorMessage("Minimum and maximum value of X-vector must not be equal when creating frequency spectrum");
+            gpMessageHandler->addErrorMessage("Minimum and maximum value of X-vector must not be equal when creating frequency spectrum");
         return;
     }
 
@@ -1592,13 +1548,13 @@ void PlotTab::openCreateBodePlotDialog()
         QLabel *pMaxFrequencyRadSecUnit = new QLabel("rad/s");
         mpMaxFrequencyHzSpinBox = new QSpinBox(this);
         mpMaxFrequencyHzSpinBox->setMinimum(0);
-        mpMaxFrequencyHzSpinBox->setMaximum(maxFreq);
-        mpMaxFrequencyHzSpinBox->setValue(maxFreq);
+        mpMaxFrequencyHzSpinBox->setMaximum(int(maxFreq));
+        mpMaxFrequencyHzSpinBox->setValue(int(maxFreq));
         mpMaxFrequencyHzSpinBox->setSingleStep(1);
         mpMaxFrequencyRadSecSpinBox = new QSpinBox(this);
         mpMaxFrequencyRadSecSpinBox->setMinimum(0);
-        mpMaxFrequencyRadSecSpinBox->setMaximum(maxFreq*2*M_PI);
-        mpMaxFrequencyRadSecSpinBox->setValue(maxFreq*2*M_PI);
+        mpMaxFrequencyRadSecSpinBox->setMaximum(int(maxFreq*2.0*M_PI));
+        mpMaxFrequencyRadSecSpinBox->setValue(int(maxFreq*2.0*M_PI));
         mpMaxFrequencyRadSecSpinBox->setSingleStep(1);
         connect(mpMaxFrequencyHzSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateMaximumBodeFreqRadSec(int)));
         connect(mpMaxFrequencyRadSecSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateMaximumBodeFreqHz(int)));
@@ -1651,7 +1607,7 @@ void PlotTab::openCreateBodePlotDialog()
         int rc = pBodeDialog->exec();
         if (rc == QDialog::Accepted)
         {
-            PlotCurve *pInputCurve=0, *pOutputCurve=0;
+            PlotCurve *pInputCurve=nullptr, *pOutputCurve=nullptr;
             QMap<QRadioButton *, PlotCurve *>::iterator it;
             for(it=bodeInputButtonToCurveMap.begin(); it!=bodeInputButtonToCurveMap.end(); ++it)
             {
@@ -1670,7 +1626,7 @@ void PlotTab::openCreateBodePlotDialog()
                 }
             }
             //! @todo maybe check that both are time vectors and that both have same time
-            if(pInputCurve == 0 || pOutputCurve == 0)
+            if(pInputCurve == nullptr || pOutputCurve == nullptr)
             {
                 QMessageBox::warning(this, tr("Transfer Function Analysis Failed"), tr("Both input and output vectors must be selected."));
             }
@@ -1687,7 +1643,7 @@ void PlotTab::openCreateBodePlotDialog()
                 else if(pWindowingComboBox->currentIndex() == 1) {
                     function = HannWindow;
                 }
-                else if(pWindowingComboBox->currentIndex() == 2) {
+                else/* if(pWindowingComboBox->currentIndex() == 2)*/ {
                     function = FlatTopWindow;
                 }
 
@@ -1785,8 +1741,7 @@ void PlotGraphicsExporter::openExportDialog()
 
     mpSetImageFormat = new QComboBox(mpDialog);
     mpSetImageFormat->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-    foreach(QString format, mSupportedFormats)
-    {
+    for(const QString &format : mSupportedFormats) {
         mpSetImageFormat->addItem(format);
     }
     mpSetImageFormat->setCurrentIndex(mpSetImageFormat->findText(mImageFormat, Qt::MatchExactly));

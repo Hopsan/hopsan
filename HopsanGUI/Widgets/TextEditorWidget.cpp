@@ -844,21 +844,22 @@ void TextEditor::updateAutoCompleteList()
         int bracketCounter=-1;
 
         QStringList variables;
-        foreach(const QString &line, lines)
-        {
-            if(line.simplified().startsWith("class "))
+        for(const QString &line : lines) {
+            if(line.simplified().startsWith("class ")) {
                 bracketCounter = 0;
+            }
 
             bracketCounter += line.count("{");
             bracketCounter -= line.count("}");
-            if(bracketCounter != 1)
+            if(bracketCounter != 1) {
                 continue;
+            }
 
-            if(line.contains("()")) //Ignore functions
+            if(line.contains("()")) { //Ignore functions
                 continue;
+            }
 
-            if(dataTypes.contains(line.simplified().section(" ",0,0)))
-            {
+            if(dataTypes.contains(line.simplified().section(" ",0,0))) {
                 variables.append(line.section("//",0,0).simplified().split(","));
             }
         }

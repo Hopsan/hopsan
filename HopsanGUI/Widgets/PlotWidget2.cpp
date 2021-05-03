@@ -962,12 +962,9 @@ void VariableTree::getExpandedImportFiles(QStringList &rList)
 
 void VariableTree::expandImportFileItems(const QStringList &rList)
 {
-    QString fName;
-    Q_FOREACH(fName, rList)
-    {
-        QTreeWidgetItem* pItem = mImportedFileItemMap.value(fName,0);
-        if (pItem)
-        {
+    for(const QString &fName : rList) {
+        QTreeWidgetItem* pItem = mImportedFileItemMap.value(fName, nullptr);
+        if (pItem) {
             pItem->setExpanded(true);
         }
     }
@@ -975,10 +972,8 @@ void VariableTree::expandImportFileItems(const QStringList &rList)
 
 void VariableTree::expandFullVariableItems(const QStringList &rList)
 {
-    QString cName;
-    Q_FOREACH(cName, rList)
-    {
-        QTreeWidgetItem* pItem = mFullVariableItemMap.value(cName,0);
+    for(const QString &cName : rList) {
+        QTreeWidgetItem* pItem = mFullVariableItemMap.value(cName, nullptr);
         if (pItem)
         {
             pItem->setExpanded(true);

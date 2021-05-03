@@ -336,20 +336,14 @@ void LibraryWidget::update()
     }
 
     //Expand previously expanded folders
-    foreach(const QStringList &list, expandedItems)
-    {
-        for(int i=0; i<mpTree->topLevelItemCount(); ++i)
-        {
-            if(mpTree->topLevelItem(i)->text(0) == list[0])
-            {
+    for(const QStringList &list : expandedItems) {
+        for(int i=0; i<mpTree->topLevelItemCount(); ++i) {
+            if(mpTree->topLevelItem(i)->text(0) == list[0]) {
                 QTreeWidgetItem *pItem = mpTree->topLevelItem(i);
                 pItem->setExpanded(true);
-                for(int j=1; j<list.size(); ++j)
-                {
-                    for(int k=0; k<pItem->childCount(); ++k)
-                    {
-                        if(pItem->child(k)->text(0) == list[j])
-                        {
+                for(int j=1; j<list.size(); ++j) {
+                    for(int k=0; k<pItem->childCount(); ++k) {
+                        if(pItem->child(k)->text(0) == list[j]) {
                             pItem = pItem->child(k);
                             pItem->setExpanded(true);
                             break;

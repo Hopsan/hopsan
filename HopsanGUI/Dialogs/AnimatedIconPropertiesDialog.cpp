@@ -401,8 +401,7 @@ void AnimatedIconPropertiesDialog::updateValues()
         mpStartThetaLineEdits[i]->setText(QString::number(mpData->movables[i].startTheta));
 
         QStringList tempStr1,tempStr2,tempStr3,tempStr4;
-        foreach(const ModelObjectAnimationMovementData &movement, mpData->movables[i].movementData)
-        {
+        for(const ModelObjectAnimationMovementData &movement : mpData->movables[i].movementData) {
             tempStr1.append(QString::number(movement.x));
             tempStr2.append(QString::number(movement.y));
             tempStr3.append(QString::number(movement.theta));
@@ -424,8 +423,7 @@ void AnimatedIconPropertiesDialog::updateValues()
         tempStr2.clear();
         tempStr3.clear();
         tempStr4.clear();
-        foreach(const ModelObjectAnimationResizeData &resize, mpData->movables[i].resizeData)
-        {
+        for(const ModelObjectAnimationResizeData &resize : mpData->movables[i].resizeData) {
             tempStr1.append(QString::number(resize.x));
             tempStr2.append(QString::number(resize.y));
             tempStr3.append(QString::number(resize.dataIdx1));
@@ -620,8 +618,7 @@ void AnimatedIconPropertiesDialog::resetValues()
 
     //Store icon paths (they are not included in saveToDomElement() )
     QStringList iconPaths;
-    foreach(const ModelObjectAnimationMovableData &m, mpData->movables)
-    {
+    for(const ModelObjectAnimationMovableData &m : mpData->movables) {
         iconPaths << m.iconPath;
     }
 

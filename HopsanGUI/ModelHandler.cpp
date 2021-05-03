@@ -239,8 +239,7 @@ void ModelHandler::loadModel()
     QStringList modelFileNames = QFileDialog::getOpenFileNames(gpMainWindowWidget, tr("Choose Model File"),
                                                          gpConfig->getStringSetting(CFG_LOADMODELDIR),
                                                          tr("Hopsan Model Files (*.hmf *.xml)"));
-    foreach(const QString &modelFileName, modelFileNames)
-    {
+    for(const QString &modelFileName : modelFileNames) {
         loadModel(modelFileName);
         QFileInfo fileInfo = QFileInfo(modelFileName);
         gpConfig->setStringSetting(CFG_LOADMODELDIR, fileInfo.absolutePath());

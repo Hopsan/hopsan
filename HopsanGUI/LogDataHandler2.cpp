@@ -143,61 +143,48 @@ void LogDataHandler2::exportToPlo(const QString &rFilePath, QList<SharedVectorVa
     QList<SharedVectorVariableT> timeVectors;
     QList<SharedVectorVariableT> freqVectors;
     int minLength=INT_MAX;
-    foreach(SharedVectorVariableT var, variables)
-    {
+    for(SharedVectorVariableT var : variables) {
         const int g = var->getGeneration();
-        if (gens.isEmpty() || (gens.last() != g))
-        {
+        if (gens.isEmpty() || (gens.last() != g)) {
             gens.append(g);
         }
 
         const int l = var->getDataSize();
-        if (lengths.isEmpty() || (lengths.last() != l))
-        {
+        if (lengths.isEmpty() || (lengths.last() != l)) {
             lengths.append(l);
             minLength = qMin(minLength, l);
         }
 
         SharedVectorVariableT pToF = var->getSharedTimeOrFrequencyVector();
-        if (pToF)
-        {
-            if (pToF->getDataName() == TIMEVARIABLENAME )
-            {
-                if (timeVectors.isEmpty() || (timeVectors.last() != pToF))
-                {
+        if (pToF) {
+            if (pToF->getDataName() == TIMEVARIABLENAME) {
+                if (timeVectors.isEmpty() || (timeVectors.last() != pToF)) {
                     timeVectors.append(pToF);
                 }
             }
-            else if (pToF->getDataName() == FREQUENCYVARIABLENAME)
-            {
-                if (freqVectors.isEmpty() || (freqVectors.last() != pToF))
-                {
+            else if (pToF->getDataName() == FREQUENCYVARIABLENAME) {
+                if (freqVectors.isEmpty() || (freqVectors.last() != pToF)) {
                     freqVectors.append(pToF);
                 }
             }
         }
     }
 
-    if ( (timeVectors.size() > 0) && (freqVectors.size() > 0) )
-    {
+    if ( (timeVectors.size() > 0) && (freqVectors.size() > 0) ) {
         gpMessageHandler->addErrorMessage(QString("In export PLO: You are mixing time and frequency variables, this is not supported!"));
     }
-    if (gens.size() > 1)
-    {
+    if (gens.size() > 1) {
         gpMessageHandler->addWarningMessage(QString("In export PLO: Data had different generations, time vector may not be correct for all exported data!"));
     }
-    if (lengths.size() > 1)
-    {
+    if (lengths.size() > 1) {
         gpMessageHandler->addWarningMessage(QString("In export PLO: Data had different lengths, truncating to shortest data!"));
     }
 
     // We insert time or frequency last when we know what generation the data had, (to avoid taking last time generation that may belong to imported data)
-    if (timeVectors.size() > 0)
-    {
+    if (timeVectors.size() > 0) {
         variables.prepend(timeVectors.first());
     }
-    else if (freqVectors.size() > 0)
-    {
+    else if (freqVectors.size() > 0) {
         variables.prepend(freqVectors.first());
     }
 
@@ -1211,8 +1198,7 @@ bool LogDataHandler2::collectLogDataFromSystem(SystemObject *pCurrentSystem, con
 
     // Iterate components
     QList<ModelObject*> currentLevelModelObjects = pCurrentSystem->getModelObjects();
-    foreach(ModelObject* pModelObject, currentLevelModelObjects)
-    {
+    for(ModelObject* pModelObject : currentLevelModelObjects) {
         // Ignore "system port model objects" they are not actually a component and will be listed anyway
         if (pModelObject->getTypeName() == HOPSANGUISYSTEMPORTTYPENAME)
         {

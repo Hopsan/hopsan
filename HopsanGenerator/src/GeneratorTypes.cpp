@@ -410,7 +410,7 @@ GeneratorNodeInfo::GeneratorNodeInfo(QString nodeType)
         isValidNode = true;
         niceName = pNode->getNiceName().c_str();
         QStringList qVariableLabels, cVariableLabels;
-        QList<size_t> qVarIdx, cVarIdx;
+        QList<int> qVarIdx, cVarIdx;
         for(size_t i=0; i<pNode->getDataDescriptions()->size(); ++i)
         {
             const hopsan::NodeDataDescription *pVarDesc = pNode->getDataDescription(i);
@@ -443,8 +443,7 @@ void GeneratorNodeInfo::getNodeTypes(QStringList &nodeTypes)
     //! @todo this will only be able to list the default included nodes (which may be a problem in the future)
     hopsan::HopsanEssentials hopsanCore;
     std::vector<hopsan::HString> types = hopsanCore.getRegisteredNodeTypes();
-    Q_FOREACH(const hopsan::HString &type, types)
-    {
+    for(const hopsan::HString &type : types) {
         nodeTypes << type.c_str();
     }
 }
@@ -459,7 +458,7 @@ InterfacePortSpec::InterfacePortSpec(InterfaceTypesEnumT type, QString component
 
     QStringList inputDataNames;
     QStringList outputDataNames;
-    QList<size_t> inputDataIds, outputDataIds;
+    QList<int> inputDataIds, outputDataIds;
 
     switch(type)
     {
@@ -581,12 +580,10 @@ InterfacePortSpec::InterfacePortSpec(InterfaceTypesEnumT type, QString component
         break;
     }
 
-    foreach(const QString &dataName, inputDataNames)
-    {
+    for(const QString &dataName : inputDataNames) {
         vars.append(InterfaceVarSpec(dataName, inputDataIds.takeFirst(), InterfaceVarSpec::Input));
     }
-    foreach(const QString &dataName, outputDataNames)
-    {
+    for(const QString &dataName : outputDataNames) {
         vars.append(InterfaceVarSpec(dataName, outputDataIds.takeFirst(), InterfaceVarSpec::Output));
     }
 }

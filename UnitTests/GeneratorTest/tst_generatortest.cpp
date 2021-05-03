@@ -65,14 +65,11 @@ void removeDir(QString path)
 {
     QDir dir;
     dir.setPath(path);
-    Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst))
-    {
-        if (info.isDir())
-        {
+    for(QFileInfo info : dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst)) {
+        if (info.isDir()) {
             removeDir(info.absoluteFilePath());
         }
-        else
-        {
+        else {
             QFile::remove(info.absoluteFilePath());
         }
     }

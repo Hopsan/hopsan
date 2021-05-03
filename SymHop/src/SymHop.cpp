@@ -180,28 +180,18 @@ Expression::Expression(QStringList symbols, const ExpressionSimplificationT simp
 //FIXED
 Expression::Expression(const double value)
 {
-    mpLeft = 0;
-    mpRight = 0;
-    mpBase = 0;
-    mpPower = 0;
-    mpDividend = 0;
+    mpLeft = nullptr;
+    mpRight = nullptr;
+    mpBase = nullptr;
+    mpPower = nullptr;
+    mpDividend = nullptr;
 
-    if(value < 0)
-    {
+    if(value < 0) {
         this->replaceBy(Expression::fromTwoFactors(Expression("-1"), Expression(-1*value)));
         return;
     }
     mString = QString::number(value, 'f', 20);
     while(mString.endsWith("00")) { mString.chop(1); }
-
-    //Make sure numerical symbols have double precision
-//    bool isInt;
-//    mString.toInt(&isInt);
-//    if(isInt)
-//    {
-//        //mString.append(".0");
-//        mString = QString::number(mString.toDouble(), 'f', 20);
-    //    }
 }
 
 
@@ -219,31 +209,31 @@ void Expression::cleanUp()
     {
         mpLeft->cleanUp();
         delete mpLeft;
-        mpLeft = 0;
+        mpLeft = nullptr;
     }
     if(mpRight)
     {
         mpRight->cleanUp();
         delete mpRight;
-        mpRight = 0;
+        mpRight = nullptr;
     }
     if(mpBase)
     {
         mpBase->cleanUp();
         delete mpBase;
-        mpBase = 0;
+        mpBase = nullptr;
     }
     if(mpPower)
     {
         mpPower->cleanUp();
         delete mpPower;
-        mpPower = 0;
+        mpPower = nullptr;
     }
     if(mpDividend)
     {
         mpDividend->cleanUp();
         delete mpDividend;
-        mpDividend = 0;
+        mpDividend = nullptr;
     }
 }
 
@@ -256,11 +246,11 @@ void Expression::commonConstructorCode(QStringList symbols, bool &ok, const Expr
 {
     ok = true;
 
-    mpLeft = 0;
-    mpRight = 0;
-    mpBase = 0;
-    mpPower = 0;
-    mpDividend = 0;
+    mpLeft = nullptr;
+    mpRight = nullptr;
+    mpBase = nullptr;
+    mpPower = nullptr;
+    mpDividend = nullptr;
 
     //Only one symbol, so parse it as a string
     if(symbols.size() == 1)
@@ -526,7 +516,6 @@ void Expression::commonConstructorCode(QStringList symbols, bool &ok, const Expr
 
 
 //! @brief Equality operator for expressions
-//FIXED
 bool Expression::operator==(const Expression &other) const
 {
     bool functionOk = false;
@@ -561,12 +550,9 @@ bool Expression::operator==(const Expression &other) const
     }
     bool dividendOk = (!mpDividend && !other.getDividends()) || (mpDividend && other.getDividends() && *mpDividend == (*other.getDividends()));
     bool termsOk=true;
-    if(this->isAdd() && other.isAdd())
-    {
-        Q_FOREACH(const Expression &term, mTerms)
-        {
-            if(other.getTerms().count(term) != mTerms.count(term))
-            {
+    if(this->isAdd() && other.isAdd()) {
+        for(const Expression &term : mTerms) {
+            if(other.getTerms().count(term) != mTerms.count(term)) {
                 termsOk=false;
             }
         }
@@ -575,24 +561,18 @@ bool Expression::operator==(const Expression &other) const
     bool stringOk = (mString == other.mString);
 
     bool factorOk = (mFactors.size() == other.mFactors.size());
-    if(this->isMultiplyOrDivide() && other.isMultiplyOrDivide() && factorOk)
-    {
-        Q_FOREACH(const Expression &factor, mFactors)
-        {
-            if(other.getFactors().count(factor) != mFactors.count(factor))
-            {
+    if(this->isMultiplyOrDivide() && other.isMultiplyOrDivide() && factorOk) {
+        for(const Expression &factor : mFactors) {
+            if(other.getFactors().count(factor) != mFactors.count(factor)) {
                 factorOk=false;
             }
         }
     }
 
     bool divisorOk = true;
-    if(this->isMultiplyOrDivide() && other.isMultiplyOrDivide())
-    {
-        Q_FOREACH(const Expression &divisor, mDivisors)
-        {
-            if(other.getDivisors().count(divisor) != mDivisors.count(divisor))
-            {
+    if(this->isMultiplyOrDivide() && other.isMultiplyOrDivide()) {
+        for(const Expression &divisor : mDivisors) {
+            if(other.getDivisors().count(divisor) != mDivisors.count(divisor)) {
                 divisorOk=false;
             }
         }
@@ -769,43 +749,37 @@ Expression Expression::fromEquation(const Expression left, const Expression righ
 //! @returns Evaluated value of expression
 double Expression::evaluate(const QMap<QString, double> &variables, const QMap<QString, SymHopFunctionoid*> *functions, bool *ok) const
 {
-    if(!ok)
+    if(!ok) {
         ok = new bool;
+    }
 
     *ok=true;
 
-    if(isAdd())
-    {
+    if(isAdd()) {
         double retval = 0;
         bool allOk = true;
-        Q_FOREACH(const Expression &term, mTerms)
-        {
+        for(const Expression &term : mTerms) {
             bool thisOk;
             retval += term.evaluate(variables, functions, &thisOk);
             allOk *= thisOk;
         }
-        if(allOk)
-        {
+        if(allOk) {
             return retval;
         }
     }
-    else if(isMultiplyOrDivide())
-    {
+    else if(isMultiplyOrDivide()) {
         double retval = 1;
         bool allOk = true;
         bool thisOk;
-        Q_FOREACH(const Expression &factor, mFactors)
-        {
+        for(const Expression &factor : mFactors) {
             retval *= factor.evaluate(variables, functions, &thisOk);
             allOk *= thisOk;
         }
-        Q_FOREACH(const Expression &divisor, mDivisors)
-        {
+        for(const Expression &divisor : mDivisors) {
             retval /= divisor.evaluate(variables, functions, &thisOk);
             allOk *= thisOk;
         }
-        if(allOk)
-        {
+        if(allOk) {
             return retval;
         }
     }
@@ -846,15 +820,13 @@ double Expression::evaluate(const QMap<QString, double> &variables, const QMap<Q
         if(mArguments.size() == 0)
         {
             bool ok1=true;
-            if(mFunction == "pi") { retval = M_PI; }
-            else
-            {
-                ok1=false;
-            }
-
-            if(ok1)
-            {
+            if(mFunction == "pi") {
+                retval = M_PI;
                 return retval;
+            }
+            else {
+                ok1=false;
+                return 0;
             }
         }
         else if(mArguments.size() == 1)
@@ -891,6 +863,7 @@ double Expression::evaluate(const QMap<QString, double> &variables, const QMap<Q
             else
             {
                 ok1=false;
+                return 0;
             }
 
             if(ok1)
@@ -972,6 +945,7 @@ double Expression::evaluate(const QMap<QString, double> &variables, const QMap<Q
             else
             {
                 ok1=false;
+                return 0;
             }
 
             if(ok1 && ok2)
@@ -1000,6 +974,7 @@ double Expression::evaluate(const QMap<QString, double> &variables, const QMap<Q
             else
             {
                 ok1=false;
+                return 0;
             }
 
             if(ok1 && ok2 && ok3)
@@ -1021,12 +996,13 @@ double Expression::evaluate(const QMap<QString, double> &variables, const QMap<Q
     {
         double retval;
         bool ok1, ok2;
-        if(mpLeft->evaluate(variables, functions, &ok1) == mpRight->evaluate(variables, functions, &ok2))
+        if(mpLeft->evaluate(variables, functions, &ok1) == mpRight->evaluate(variables, functions, &ok2)) {
             retval = 1;
-        else
+        }
+        else {
             retval = 0;
-        if(ok1 && ok2)
-        {
+        }
+        if(ok1 && ok2) {
             return retval;
         }
     }
@@ -1047,7 +1023,6 @@ void Expression::replaceByCopy(const Expression expr)
 
 //! @brief Replaces this expression by another one
 //! @param expr Expression to replace by
-//FIXED
 void Expression::replaceBy(const Expression &expr)
 {
     mString = expr.mString;
@@ -1081,11 +1056,11 @@ void Expression::replaceBy(const Expression &expr)
     }
     mTerms.swap(tempTerms);
 
-    mpBase = 0;
-    mpPower = 0;
-    mpLeft = 0;
-    mpRight = 0;
-    mpDividend = 0;
+    mpBase = nullptr;
+    mpPower = nullptr;
+    mpLeft = nullptr;
+    mpRight = nullptr;
+    mpDividend = nullptr;
     if(expr.getBase())
     {
         //! @todo here (and below) we might have two problems,  first a potential memory leak, we just zero the pointers above
@@ -1129,7 +1104,6 @@ void Expression::divideBy(const Expression div)
 
 //! @brief Multiplies the expression by specified divisor
 //! @param fac Factor expression
-//FIXED
 void Expression::multiplyBy(const Expression fac)
 {
     this->replaceBy(Expression::fromTwoFactors(*this, fac));
@@ -1139,7 +1113,6 @@ void Expression::multiplyBy(const Expression fac)
 
 //! @brief Adds the expression with specified tern
 //! @param tern Term expression
-//FIXED
 void Expression::addBy(const Expression term)
 {
     this->replaceBy(Expression::fromTwoTerms(*this, term));
@@ -1149,7 +1122,6 @@ void Expression::addBy(const Expression term)
 
 //! @brief Subtracts the expression by specified term
 //! @param tern Term expression
-//FIXED
 void Expression::subtractBy(const Expression term)
 {
     Expression subTerm = term;
@@ -1160,17 +1132,14 @@ void Expression::subtractBy(const Expression term)
 
 
 //! @brief Returns the expression converted to a string
-//FIXED
 QString Expression::toString() const
 {
     QString ret;
 
-    if(this->isSymbol())
-    {
+    if(this->isSymbol()) {
         ret = mString;
     }
-    else if(this->isFunction())
-    {
+    else if(this->isFunction()) {
         ret = mFunction+"(";
         for(int i=0; i<mArguments.size(); ++i)
         {
@@ -1181,16 +1150,13 @@ QString Expression::toString() const
         }
         ret.append(")");
     }
-    else if(this->isEquation())
-    {
+    else if(this->isEquation()) {
         QString leftStr =mpLeft->toString();
         QString rightStr = mpRight->toString();
         ret = leftStr + "=" + rightStr;
     }
-    else if(this->isAdd())
-    {
-        Q_FOREACH(const Expression &term, mTerms)
-        {
+    else if(this->isAdd()) {
+        for(const Expression &term : mTerms) {
             Expression tempTerm = term;
             QString termString;
             if(tempTerm.isNegative())
@@ -1208,13 +1174,11 @@ QString Expression::toString() const
         }
         ret.chop(1);
     }
-    else if(this->isMultiplyOrDivide())
-    {
+    else if(this->isMultiplyOrDivide()) {
         int numMinus = mFactors.count(Expression("-1"))+mDivisors.count(Expression("-1"));
         bool isOdd = (numMinus%2 != 0);
 
-        Q_FOREACH(const Expression &factor, mFactors)
-        {
+        for(const Expression &factor : mFactors) {
             QString factString = factor.toString();
             if(factor.isAdd())
             {
@@ -1224,18 +1188,15 @@ QString Expression::toString() const
             ret.append(factString);
             ret.append("*");
         }
-        if(mFactors.isEmpty())
-        {
+        if(mFactors.isEmpty()) {
             ret.append("1");
         }
-        else
-        {
+        else {
             ret.chop(1);
         }
         if(!mDivisors.isEmpty()) { ret.append("/"); }
         if(mDivisors.size() > 1) { ret.append("("); }
-        Q_FOREACH(const Expression &divisor, mDivisors)
-        {
+        for(const Expression &divisor : mDivisors) {
             QString divString = divisor.toString();
             if(divisor.isAdd())
             {
@@ -1377,8 +1338,6 @@ void Expression::toDelayForm(QList<Expression> &rDelayTerms, QStringList &rDelay
     //Simplify
     this->_simplify(Expression::FullSimplification, Recursive);
 
-
-
     if(mpLeft) { mpLeft->toDelayForm(rDelayTerms, rDelaySteps); }
     if(mpRight) { mpRight->toDelayForm(rDelayTerms, rDelaySteps); }
     if(mpBase) { mpBase->toDelayForm(rDelayTerms, rDelaySteps); }
@@ -1395,19 +1354,15 @@ void Expression::toDelayForm(QList<Expression> &rDelayTerms, QStringList &rDelay
 
 //! @brief Converts expression to double if possible
 //! @param ok True if success, false if failed (= not a numerical symbol)
-//FIXED
 double Expression::toDouble(bool *ok) const
 {
-    if(this->isSymbol())
-    {
+    if(this->isSymbol()) {
         return mString.toDouble(ok);
     }
-    else if(this->isMultiplyOrDivide() && mFactors.size() == 2 && mFactors.contains(Expression("-1")))
-    {
+    else if(this->isMultiplyOrDivide() && mFactors.size() == 2 && mFactors.contains(Expression("-1"))) {
         double retval = 1;
         if(ok) { *ok = true; }
-        Q_FOREACH(const Expression &factor, mFactors)
-        {
+        for(const Expression &factor : mFactors) {
             bool ok2;
             retval *= factor.toDouble(&ok2);
             if(!ok2)
@@ -1417,25 +1372,23 @@ double Expression::toDouble(bool *ok) const
         }
         return retval;
     }
-    else
-    {
-        if(ok) { *ok = false; }
+    else {
+        if(ok) {
+            *ok = false;
+        }
         return 0.0;
     }
 }
 
 
-
 //! @brief Tells whether or not this is a power operator
-//FIXED
 bool Expression::isPower() const
 {
-    return !(mpPower == 0);
+    return !(mpPower == nullptr);
 }
 
 
 //! @brief Tells whether or not this is a multiplication or division
-//FIXED
 bool Expression::isMultiplyOrDivide() const
 {
     return !mFactors.isEmpty();
@@ -1443,14 +1396,13 @@ bool Expression::isMultiplyOrDivide() const
 
 
 //! @brief Tells whether or not this is an addition
-//FIXED
 bool Expression::isAdd() const
 {
     return !mTerms.isEmpty();
 }
 
 
-//FIXED
+//! @brief Tells wheter or not this is a function
 bool Expression::isFunction() const
 {
     return !mFunction.isEmpty();
@@ -1458,7 +1410,6 @@ bool Expression::isFunction() const
 
 
 //! @brief Tells whether or not this is a symbol
-//FIXED
 bool Expression::isSymbol() const
 {
     return (!mString.isEmpty());
@@ -1466,7 +1417,6 @@ bool Expression::isSymbol() const
 
 
 //! @brief Tells whether or not this is a numerical symbol
-//FIXED
 bool Expression::isNumericalSymbol() const
 {
     return (!mString.isEmpty() && (mString[0].isNumber() || mString == "-1.0"));
@@ -1474,7 +1424,6 @@ bool Expression::isNumericalSymbol() const
 
 
 //! @brief Tells whether or not this is a variable
-//FIXED
 bool Expression::isVariable() const
 {
     return (!mString.isEmpty() && mString[0].isLetter());
@@ -1482,7 +1431,6 @@ bool Expression::isVariable() const
 
 
 //! @brief Tells whether or not this is an assignment
-//FIXED
 bool Expression::isAssignment() const
 {
     return (this->isEquation() && (mpLeft->isSymbol()));
@@ -1490,15 +1438,13 @@ bool Expression::isAssignment() const
 
 
 //! @brief Tells whether or not this is an equation
-//FIXED
 bool Expression::isEquation() const
 {
-    return (mpLeft != 0);
+    return (mpLeft != nullptr);
 }
 
 
 //! @brief Tells whether or not this is a negative symbol
-//FIXED
 bool Expression::isNegative() const
 {
     if(this->isSymbol() && mString == "-1")
@@ -1513,7 +1459,6 @@ bool Expression::isNegative() const
 }
 
 
-//FIXED
 void Expression::changeSign()
 {
     if(this->isNegative())
@@ -1545,7 +1490,6 @@ void Expression::changeSign()
 //! @brief Returns the derivative of the expression
 //! @param x Expression to differentiate with
 //! @param ok True if successful, otherwise false
-//FIXED
 Expression Expression::derivative(const Expression x, bool &ok) const
 {
     ok = true;
@@ -1837,8 +1781,7 @@ Expression Expression::derivative(const Expression x, bool &ok) const
     else if(isAdd())
     {
         QList<Expression> derSet;
-        Q_FOREACH(const Expression &term, mTerms)
-        {
+        for(const Expression &term : mTerms) {
             derSet << term.derivative(x, ok);
         }
         ret = Expression::fromTerms(derSet);
@@ -1963,60 +1906,45 @@ QStringList Expression::readErrorMessages()
 
 //! @brief Returns whether or not expression contains a sub expression
 //! @param expr Expression to check for
-//FIXED
 bool Expression::contains(const Expression expr) const
 {
-    if(*this == expr)
-    {
+    if(*this == expr) {
         return true;
     }
 
-    Q_FOREACH(const Expression &term, mTerms)
-    {
-        if(term.contains(expr))
-        {
+    for(const Expression &term : mTerms) {
+        if(term.contains(expr)) {
             return true;
         }
     }
-    for(int i=0; i<mArguments.size(); ++i)
-    {
-        if(mArguments[i].contains(expr))
-        {
+    for(int i=0; i<mArguments.size(); ++i) {
+        if(mArguments[i].contains(expr)) {
             return true;
         }
     }
-    Q_FOREACH(const Expression &factor, mFactors)
-    {
-        if(factor.contains(expr))
-        {
+    for(const Expression &factor : mFactors) {
+        if(factor.contains(expr)) {
             return true;
         }
     }
-    Q_FOREACH(const Expression &divisor, mDivisors)
-    {
-        if(divisor.contains(expr))
-        {
+    for(const Expression &divisor : mDivisors) {
+        if(divisor.contains(expr)) {
             return true;
         }
     }
-    if(mpBase && mpBase->contains(expr))
-    {
+    if(mpBase && mpBase->contains(expr)) {
         return true;
     }
-    if(mpPower && mpPower->contains(expr))
-    {
+    if(mpPower && mpPower->contains(expr)) {
         return true;
     }
-    if(mpLeft && mpLeft->contains(expr))
-    {
+    if(mpLeft && mpLeft->contains(expr)) {
         return true;
     }
-    if(mpRight && mpRight->contains(expr))
-    {
+    if(mpRight && mpRight->contains(expr)) {
         return true;
     }
-    if(mpDividend && mpDividend->contains(expr))
-    {
+    if(mpDividend && mpDividend->contains(expr)) {
         return true;
     }
 
@@ -2025,7 +1953,6 @@ bool Expression::contains(const Expression expr) const
 
 
 //! @brief Converts time derivatives (der) in the expression to Z operators with bilinear transform
-//FIXED
 Expression Expression::bilinearTransform() const
 {
     Expression retExpr;
@@ -2105,7 +2032,6 @@ Expression Expression::inlineTransform(const InlineTransformT transform, bool &o
     }
     else if(transform == AdamsMoulton3) {
         transformStr = "(1.0-Z)/(5.0/12.0 + 2.0/3.0*Z - 1.0/12.0*Z*Z)/mTimestep*(%1)";
-                      //(1.0-Z)/(5.0/12.0 + 2.0/3.0*Z - 1.0/12.0*Z*Z)/mTimestep
     }
     else if(transform == AdamsMoulton4) {
         transformStr = "(1.0-Z)/(9.0/24.0 + 19.0/24.0*Z - 5.0/24.0*Z*Z + 1.0/24.0*Z*Z*Z)/mTimestep*(%1)";
@@ -2120,12 +2046,10 @@ Expression Expression::inlineTransform(const InlineTransformT transform, bool &o
     retExpr.replaceBy(*this);
     QStringList res;
 
-    if(this->isAdd())
-    {
+    if(this->isAdd()) {
         QList<Expression> newTerms = mTerms;
         QList<Expression>::iterator it;
-        for(it=newTerms.begin(); it!=newTerms.end(); ++it)
-        {
+        for(it=newTerms.begin(); it!=newTerms.end(); ++it) {
             (*it) = (*it).inlineTransform(transform, ok);
             if(!ok) {
                 return (*this);
@@ -2133,8 +2057,7 @@ Expression Expression::inlineTransform(const InlineTransformT transform, bool &o
         }
         retExpr = Expression::fromTerms(newTerms);
     }
-    else if(this->isEquation())
-    {
+    else if(this->isEquation()) {
         Expression newLeft = *mpLeft;
         Expression newRight = *mpRight;
         newLeft = newLeft.inlineTransform(transform, ok);
@@ -2148,20 +2071,17 @@ Expression Expression::inlineTransform(const InlineTransformT transform, bool &o
 
         retExpr = Expression::fromEquation(newLeft, newRight);
     }
-    else if(this->isMultiplyOrDivide())
-    {
+    else if(this->isMultiplyOrDivide()) {
         QList<Expression> newFactors = mFactors;
         QList<Expression>::iterator it;
-        for(it=newFactors.begin(); it!=newFactors.end(); ++it)
-        {
+        for(it=newFactors.begin(); it!=newFactors.end(); ++it) {
             (*it) = (*it).inlineTransform(transform, ok);
             if(!ok) {
                 return (*this);
             }
         }
         QList<Expression> newDivisors = mDivisors;
-        for(it=newDivisors.begin(); it!=newDivisors.end(); ++it)
-        {
+        for(it=newDivisors.begin(); it!=newDivisors.end(); ++it) {
             (*it) = (*it).inlineTransform(transform, ok);
             if(!ok) {
                 return (*this);
@@ -2169,8 +2089,7 @@ Expression Expression::inlineTransform(const InlineTransformT transform, bool &o
         }
         retExpr = Expression::fromFactorsDivisors(newFactors, newDivisors);
     }
-    else if(this->isFunction())
-    {
+    else if(this->isFunction()) {
         if(mFunction == "delay" && mArguments.size() == 2) {
             QString funcArg = retExpr.getArgument(0).toString();
             int steps = int(retExpr.getArgument(1).toDouble());
@@ -2180,8 +2099,7 @@ Expression Expression::inlineTransform(const InlineTransformT transform, bool &o
             }
             retExpr = retExpr.inlineTransform(transform, ok);
         }
-        if(mFunction == "der")
-        {
+        if(mFunction == "der") {
             QString funcArg = retExpr.getArgument(0).toString();
             retExpr = Expression(transformStr.arg(funcArg));
             retExpr = retExpr.inlineTransform(transform, ok);
@@ -2199,43 +2117,33 @@ QList<Expression> Expression::getVariables() const
 {
     QList<Expression> retval;
 
-    if(this->isAdd())
-    {
-        Q_FOREACH(const Expression &term, mTerms)
-        {
+    if(this->isAdd()) {
+        for(const Expression &term : mTerms) {
             retval.append(term.getVariables());
         }
     }
-    else if(this->isEquation())
-    {
+    else if(this->isEquation()) {
         retval.append(mpLeft->getVariables());
         retval.append(mpRight->getVariables());
     }
-    else if(this->isMultiplyOrDivide())
-    {
-        Q_FOREACH(const Expression &factor, mFactors)
-        {
+    else if(this->isMultiplyOrDivide()) {
+        for(const Expression &factor : mFactors) {
             retval.append(factor.getVariables());
         }
-        Q_FOREACH(const Expression &divisor, mDivisors)
-        {
+        for(const Expression &divisor : mDivisors) {
             retval.append(divisor.getVariables());
         }
     }
-    else if(this->isFunction())
-    {
-        Q_FOREACH(const Expression &argument, mArguments)
-        {
+    else if(this->isFunction()) {
+        for(const Expression &argument : mArguments) {
             retval.append(argument.getVariables());
         }
     }
-    else if(this->isPower())
-    {
+    else if(this->isPower()) {
         retval.append(mpBase->getVariables());
         retval.append(mpPower->getVariables());
     }
-    else if(this->isVariable() && !reservedSymbols.contains(mString))
-    {
+    else if(this->isVariable() && !reservedSymbols.contains(mString)) {
         retval.append(*this);
     }
 
@@ -2250,39 +2158,31 @@ QStringList Expression::getFunctions() const
 {
     QStringList retval;
 
-    if(this->isAdd())
-    {
+    if(this->isAdd()) {
         QList<Expression>::iterator it;
-        Q_FOREACH(const Expression &term, mTerms)
-        {
+        for(const Expression &term : mTerms) {
             retval.append(term.getFunctions());
         }
     }
-    else if(this->isEquation())
-    {
+    else if(this->isEquation()) {
         retval.append(mpLeft->getFunctions());
         retval.append(mpRight->getFunctions());
     }
-    else if(this->isMultiplyOrDivide())
-    {
-        Q_FOREACH(const Expression &factor, mFactors)
-        {
+    else if(this->isMultiplyOrDivide()) {
+        for(const Expression &factor : mFactors) {
             retval.append(factor.getFunctions());
         }
-        Q_FOREACH(const Expression &divisor, mDivisors)
-        {
+        for(const Expression &divisor : mDivisors) {
             retval.append(divisor.getFunctions());
         }
     }
-    else if(this->isPower())
-    {
+    else if(this->isPower()) {
         retval.append(mpBase->getFunctions());
         retval.append(mpPower->getFunctions());
     }
-    else if(this->isFunction())
-    {
+    else if(this->isFunction()) {
         retval.append(mFunction);
-        Q_FOREACH(const Expression &argument, mArguments) {
+        for(const Expression &argument : mArguments) {
             retval.append(argument.getFunctions());
         }
     }
@@ -2476,14 +2376,14 @@ void Expression::expand(const ExpressionSimplificationT simplifications)
     if(!this->isMultiplyOrDivide()) { return; }
 
     bool hasParentheses = false;
-    Q_FOREACH(const Expression &factor, mFactors)
-    {
-        if(factor.isAdd())
-        {
+    for(const Expression &factor : mFactors) {
+        if(factor.isAdd()) {
             hasParentheses=true;
         }
     }
-    if(!hasParentheses) { return; }
+    if(!hasParentheses) {
+        return;
+    }
 
     QList<Expression>::iterator it;
     while(mFactors.size() > 1)
@@ -2507,10 +2407,8 @@ void Expression::expand(const ExpressionSimplificationT simplifications)
         terms2 = factor2.getTerms();
 
         //Multiply each term in the first set with each term in the second set
-        Q_FOREACH(const Expression &exp1, terms1)
-        {
-            Q_FOREACH(const Expression &exp2, terms2)
-            {
+        for(const Expression &exp1 : terms1) {
+            for(const Expression &exp2 : terms2) {
                 Expression newTerm = Expression::fromFactorsDivisors(QList<Expression>() << exp1 << exp2, QList<Expression>());    //Multiplication!
                 newTerm.expand();       //Recurse sub terms
                 multipliedTerms << newTerm;
@@ -2572,7 +2470,6 @@ void Expression::expandPowers()
 
 //! @brief Linearizes the expression by multiplying with all divisors until no divisors remains
 //! @note Should only be used on equations (obviously)
-//FIXED
 void Expression::linearize()
 {
     if(!this->isEquation()) {
@@ -2589,19 +2486,14 @@ void Expression::linearize()
 
     //Generate list with all divisors from all terms
     QList<Expression> allDivisors;
-    Q_FOREACH(const Expression &term, allTerms)
-    {
+    for(const Expression &term : allTerms) {
         QList<Expression> divisors = term.getDivisors();
-        Q_FOREACH(const Expression &exp, divisors)
-        {
-            if(!allDivisors.contains(exp))
-            {
+        for(const Expression &exp : divisors) {
+            if(!allDivisors.contains(exp)) {
                 allDivisors << exp;
             }
-            else
-            {
-                while(allDivisors.count(exp) < divisors.count(exp))     //Make sure the all divisors vector contains at least the same amount of each divisor as the term
-                {
+            else {
+                while(allDivisors.count(exp) < divisors.count(exp)) {    //Make sure the all divisors vector contains at least the same amount of each divisor as the term
                     allDivisors << exp;
                 }
             }
@@ -2639,7 +2531,6 @@ void Expression::linearize()
 
 
 //! @brief Moves all right side expressions to the left side, if this is an equation
-//FIXED
 void Expression::toLeftSided()
 {
     if(!this->isEquation()) {
@@ -3052,15 +2943,19 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
         bool removedFactorOrDivisor=false;
 
         //Cancel out same factors and divisors
-        restart:
-        Q_FOREACH(const Expression &factor, mFactors)
-        {
-            if(mDivisors.contains(factor))
+        bool didSomething = true;
+        while(didSomething) {
+            didSomething = false;
+            for(const Expression &factor : mFactors)
             {
-                mDivisors.removeOne(factor);
-                mFactors.removeOne(factor);
-                removedFactorOrDivisor = true;
-                goto restart;
+                if(mDivisors.contains(factor))
+                {
+                    mDivisors.removeOne(factor);
+                    mFactors.removeOne(factor);
+                    removedFactorOrDivisor = true;
+                    didSomething = true;
+                    break;
+                }
             }
         }
 
@@ -3068,30 +2963,34 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
         else if(removedFactorOrDivisor && mFactors.isEmpty()) { mFactors.append(Expression(1)); }
 
         //Join multiple factors to powers
-        restart2:
-        Q_FOREACH(const Expression &factor, mFactors)
-        {
-            int n = mFactors.count(factor);
-            if(n > 1)
-            {
-                mFactors.removeAll(factor);
-                mFactors.append(Expression::fromBasePower(factor, Expression(n)));
-                goto restart2;
+        didSomething = true;
+        while(didSomething) {
+            didSomething = false;
+            for(const Expression &factor : mFactors) {
+                int n = mFactors.count(factor);
+                if(n > 1) {
+                    mFactors.append(Expression::fromBasePower(factor, Expression(n)));
+                    mFactors.removeAll(factor);
+                    didSomething = true;
+                    break;
+                }
             }
         }
 
         if(mFactors.size() == 1 && mDivisors.isEmpty()) { replaceByCopy(mFactors.first()); }
 
         //Join multiple divisors to powers
-        restart3:
-        Q_FOREACH(const Expression &divisor, mDivisors)
-        {
-            int n = mDivisors.count(divisor);
-            if(n > 1)
-            {
-                mDivisors.removeAll(divisor);
-                mDivisors.append(Expression::fromBasePower(divisor, Expression(n)));
-                goto restart3;
+        didSomething = true;
+        while(didSomething) {
+            didSomething = false;
+            for(const Expression &divisor : mDivisors) {
+                int n = mDivisors.count(divisor);
+                if(n > 1) {
+                    mDivisors.append(Expression::fromBasePower(divisor, Expression(n)));
+                    mDivisors.removeAll(divisor);
+                    didSomething = true;
+                    break;
+                }
             }
         }
     }
@@ -3111,7 +3010,6 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
 }
 
 
-//FIXED
 bool Expression::splitAtSeparator(const QString sep, const QStringList subSymbols, const ExpressionSimplificationT simplifications)
 {
     if(subSymbols.contains(sep) || (sep == "*" && subSymbols.contains("/")))
@@ -3526,15 +3424,12 @@ bool Expression::splitAtSeparator(const QString sep, const QStringList subSymbol
 }
 
 
-//FIXED
 double Expression::countTerm(const Expression &expr) const
 {
     Expression pureTerm = expr.removeNumericalFactors();
     double ret=0;
-    Q_FOREACH(const Expression &term, mTerms)
-    {
-        if(term.removeNumericalFactors() == pureTerm)
-        {
+    for(const Expression &term : mTerms) {
+        if(term.removeNumericalFactors() == pureTerm) {
             ret += term.getNumericalFactor();
         }
     }
@@ -3562,26 +3457,21 @@ void Expression::removeTerm(const Expression &term)
     }
 }
 
-//FIXED
+
 Expression Expression::removeNumericalFactors() const
 {
-    if(!isMultiplyOrDivide())
-    {
+    if(!isMultiplyOrDivide()) {
         return *this;
     }
     Expression ret;
 
-    Q_FOREACH(const Expression &factor, mFactors)
-    {
-        if(!factor.isNumericalSymbol())
-        {
+    for(const Expression &factor : mFactors) {
+        if(!factor.isNumericalSymbol()) {
             ret.mFactors.append(factor);
         }
     }
     ret.mDivisors.append(mDivisors);
 
-    //qDebug() << "ret.toString(): " << ret.toString();
-    //qDebug() << "Ret factors: " << ret.mFactors.size();
     if(ret.mFactors.size() == 1 && ret.mDivisors.isEmpty())
     {
         //Expression expr = Expression(ret.mFactors.first());
@@ -3600,20 +3490,16 @@ Expression Expression::removeNumericalFactors() const
 }
 
 
-//FIXED
 double Expression::getNumericalFactor() const
 {
-    if(!isMultiplyOrDivide())
-    {
+    if(!isMultiplyOrDivide()) {
         return 1;
     }
 
     double ret=1;
 
-    Q_FOREACH(const Expression &factor, mFactors)
-    {
-        if(factor.isNumericalSymbol())
-        {
+    for(const Expression &factor : mFactors) {
+        if(factor.isNumericalSymbol()) {
             ret *= factor.toDouble();
         }
     }
@@ -3650,7 +3536,6 @@ QString SymHop::getFunctionDerivative(const QString &key)
 
 
 //! @brief Returns a list with supported functions for equation-based model generation
-//FIXED
 QStringList SymHop::getSupportedFunctionsList()
 {
     return QStringList() << "div" << "rem" << "mod" << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "atan2" << "sinh" << "cosh" << "tanh" << "log" << "exp" << "sqrt" << "sign" << "abs" << "der" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "integer" << "floor" << "ceil" << "pow" << "min" << "max" << "nonZero" << "turbulentFlow" << "delay" << "equal" << "notEqual" << "greaterThan" << "smallerThan" << "greaterThanOrEqual" << "smallerThanOrEqual";
@@ -3658,7 +3543,6 @@ QStringList SymHop::getSupportedFunctionsList()
 
 
 //! @brief Returns a list of custom Hopsan functions that need to be allowed in the symbolic library
-//FIXED
 QStringList SymHop::getCustomFunctionList()
 {
     return QStringList() << "hopsanLimit" << "hopsanDxLimit" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "nonZero" << "turbulentFlow" << "ifElse";
@@ -3666,7 +3550,6 @@ QStringList SymHop::getCustomFunctionList()
 
 
 //! @brief Finds the first path through a matrix of dependencies, used to sort jacobian matrices
-//FIXED
 bool SymHop::findPath(QList<int> &order, QList<QList<int> > dependencies, int level, QList<int> preferredPath)
 {
     if(level > dependencies.size()-1)
@@ -3717,7 +3600,6 @@ bool SymHop::findPath(QList<int> &order, QList<QList<int> > dependencies, int le
 //! @param stateVars List of state variables
 //! @param limitedVariableEquations Reference to list with indexes for limitation functions
 //! @param limitedDerivativeEquations Reference to list with indexes for derivative limitation functions
-//FIXED
 bool SymHop::sortEquationSystem(QList<Expression> &equations, QList<QList<Expression> > &jacobian, QList<Expression> stateVars, QList<int> &limitedVariableEquations, QList<int> &limitedDerivativeEquations, QList<int> preferredOrder)
 {
 //    qDebug() << "Jacobian:";
@@ -3747,8 +3629,6 @@ bool SymHop::sortEquationSystem(QList<Expression> &equations, QList<QList<Expres
         }
     }
 
-    //qDebug() << "Dependencies: " << dependencies;
-
     //Recurse dependency tree to find a good sorting order
     QList<int> order;
     if(!findPath(order, dependencies, 0, preferredOrder))
@@ -3756,8 +3636,6 @@ bool SymHop::sortEquationSystem(QList<Expression> &equations, QList<QList<Expres
         gSymHopMessages << "In sortEquationSystem(): Failed to find sorting path.";
         return false;
     }
-
-    //qDebug() << "Order: " << order;
 
     //Sort equations to new order
     QList<Expression> sortedEquations;
@@ -3791,14 +3669,11 @@ bool SymHop::sortEquationSystem(QList<Expression> &equations, QList<QList<Expres
 
 //! @brief Removes all duplicates in a list of expressions
 //! @param rList Reference to the list
-//FIXED
 void SymHop::removeDuplicates(QList<Expression> &rSet)
 {
     QList<Expression> tempSet;
-    Q_FOREACH(const Expression &item, rSet)
-    {
-        if(!tempSet.contains(item))
-        {
+    for(const Expression &item : rSet) {
+        if(!tempSet.contains(item)) {
             tempSet.append(item);
         }
     }
@@ -3807,7 +3682,6 @@ void SymHop::removeDuplicates(QList<Expression> &rSet)
 }
 
 
-//FIXED
 bool SymHop::isWhole(const double value)
 {
     return (static_cast<int>(value) == value);
@@ -3816,7 +3690,6 @@ bool SymHop::isWhole(const double value)
 
 //! @brief Checks whether or no the parentheses are correct in a string
 //! @param str String to verify
-//FIXED
 bool Expression::verifyParantheses(const QString str)
 {
     int balance = 0;
@@ -3839,7 +3712,6 @@ bool Expression::verifyParantheses(const QString str)
 //! @brief Splits a string at specified character, but does not split inside parentheses
 //! @param str String to split
 //! @param c Character to split at
-//FIXED
 QStringList Expression::splitWithRespectToParentheses(const QString str, const QChar c)
 {
     if(str.isEmpty())

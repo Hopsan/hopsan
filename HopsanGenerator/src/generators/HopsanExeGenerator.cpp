@@ -155,8 +155,7 @@ bool HopsanExeGenerator::compileAndLinkExe(const QString &buildPath, const QStri
     compileCppBatchStream << "@echo on\n";
     compileCppBatchStream << "g++ -pipe -std=c++11 -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS " << "exe_main.cpp exe_utilities.cpp " << mExtraSourceFiles.join(" ");
     QStringList srcFiles = listHopsanCoreSourceFiles(buildPath) + listInternalLibrarySourceFiles(buildPath);
-    Q_FOREACH(const QString &srcFile, srcFiles)
-    {
+    for(const QString &srcFile : srcFiles) {
         compileCppBatchStream << " " << srcFile;
     }
     // Add HopsanCore (and necessary dependency) include paths
@@ -182,8 +181,7 @@ bool HopsanExeGenerator::compileAndLinkExe(const QString &buildPath, const QStri
     QTextStream compileCppBatchStream(&compileCppBatchFile);
     compileCppBatchStream << mCompilerSelection.path+"g++ -pipe -std=c++11 -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS " << "exe_main.cpp exe_utilities.cpp " << mExtraSourceFiles.join(" ");
     QStringList srcFiles = listHopsanCoreSourceFiles(buildPath) + listInternalLibrarySourceFiles(buildPath);
-    Q_FOREACH(const QString &srcFile, srcFiles)
-    {
+    for(const QString &srcFile : srcFiles) {
         compileCppBatchStream << " " << srcFile;
     }
     // Add HopsanCore (and necessary dependency) include paths
@@ -248,8 +246,7 @@ bool HopsanExeGenerator::compileAndLinkExe(const QString &buildPath, const QStri
     linkBatchStream << "PATH=" << mCompilerSelection.path << ";%PATH%\n";
     linkBatchStream << "@echo on\n";
     linkBatchStream << "g++ -w -static -static-libgcc";
-    Q_FOREACH(const QString &objFile, objectFiles)
-    {
+    for(const QString &objFile : objectFiles) {
         linkBatchStream << " " << objFile;
     }
     linkBatchStream << " -o \""+outputExecutableFile+"\"\n";
@@ -274,8 +271,7 @@ bool HopsanExeGenerator::compileAndLinkExe(const QString &buildPath, const QStri
     //Write the compilation script file
     QTextStream linkBatchStream(&linkBatchFile);
     linkBatchStream << mCompilerSelection.path+"g++ -pthread -w";
-    Q_FOREACH(const QString &objFile, objectFiles)
-    {
+    for(const QString &objFile : objectFiles) {
         linkBatchStream << " " << objFile;
     }
     for(const QString& linkPaths : mLinkPaths) {

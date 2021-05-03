@@ -583,22 +583,12 @@ void removeDir(QString path, qint64 age_seconds)
     }
 
     QDir dir(path);
-    Q_FOREACH(QFileInfo entryInfo, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst))
-    {
-        if (entryInfo.isDir())
-        {
+    for(const QFileInfo &entryInfo : dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst)) {
+        if (entryInfo.isDir()) {
             removeDir(entryInfo.absoluteFilePath(), age_seconds);
         }
-        else
-        {
-//#ifdef _WIN32
-//            QStringList s;
-//            s << "del "+info.absoluteFilePath();
-//            QProcess browser;
-//            browser.start("cmd", s);
-//#else
+        else {
             QFile::remove(entryInfo.absoluteFilePath());
-//#endif
         }
     }
     dir.rmdir(path);
@@ -612,20 +602,16 @@ void copyDir(const QString fromPath, QString toPath)
 {
     QDir toDir(toPath);
     toDir.mkpath(toPath);
-    if (toPath.endsWith('/'))
-    {
+    if (toPath.endsWith('/')) {
         toPath.chop(1);
     }
 
     QDir fromDir(fromPath);
-    foreach(QFileInfo info, fromDir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst))
-    {
-        if (info.isDir())
-        {
+    for(QFileInfo info : fromDir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst)) {
+        if (info.isDir()) {
             copyDir(info.absoluteFilePath(), toPath+"/"+info.fileName());
         }
-        else
-        {
+        else {
             QFile::copy(info.absoluteFilePath(), toPath+"/"+info.fileName());
         }
     }

@@ -268,8 +268,7 @@ void AnimatedComponent::updateAnimation()
             double x = mpAnimationData->movables[m].startX;
             double y = mpAnimationData->movables[m].startY;
             double rot = mpAnimationData->movables[m].startTheta;
-            foreach(const ModelObjectAnimationMovementData &movement, mpAnimationData->movables[m].movementData)
-            {
+            for(const ModelObjectAnimationMovementData &movement : mpAnimationData->movables[m].movementData) {
                 int idx = movement.dataIdx;
                 x -= data[idx]*movement.x*movement.multiplierValue/movement.divisorValue;
                 y -= data[idx]*movement.y*movement.multiplierValue/movement.divisorValue;
@@ -302,8 +301,7 @@ void AnimatedComponent::updateAnimation()
 
                 bool xChanged = false;
                 bool yChanged = false;
-                foreach(const ModelObjectAnimationResizeData &resize, mpAnimationData->movables[m].resizeData)
-                {
+                for(const ModelObjectAnimationResizeData &resize : mpAnimationData->movables[m].resizeData) {
                     int idx1 = resize.dataIdx1;
                     int idx2 = resize.dataIdx2;
                     double scaleData;

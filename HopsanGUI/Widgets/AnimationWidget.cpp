@@ -616,8 +616,7 @@ void AnimationWidget::resetAllAnimationDataToDefault()
 
         //Store icon paths (they are not included in saveToDomElement() )
         QStringList iconPaths;
-        foreach(const ModelObjectAnimationMovableData &m, pComp->getAnimationDataPtr()->movables)
-        {
+        for(const ModelObjectAnimationMovableData &m : pComp->getAnimationDataPtr()->movables) {
             iconPaths << m.iconPath;
         }
 
