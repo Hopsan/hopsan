@@ -1268,7 +1268,6 @@ QString Expression::toString() const
             powerStr.prepend("(");
             powerStr.append(")");
         }
-        //ret = baseStr+"^"+powerStr;
         ret = "pow("+baseStr+","+powerStr+")";
     }
 
@@ -1466,7 +1465,6 @@ QString Expression::toLaTeX() const
             powerStr.append("}");
         }
         ret = baseStr+"^"+powerStr;
-        //ret = "pow("+baseStr+","+powerStr+")";
     }
 
     //Simplify output
@@ -1921,8 +1919,6 @@ Expression Expression::derivative(const Expression x, bool &ok) const
                 Expression factor2 = fromTwoTerms(term1, term2);
 
                 ret = fromTwoFactors(factor1, factor2);
-
-                //ret = "pow("+f+","+g+"-1)*(("+g+")*("+df+")+("+f+")*log(("+f+"))*("+dg+"))";
             }
         }
         else if(func == "max") {
