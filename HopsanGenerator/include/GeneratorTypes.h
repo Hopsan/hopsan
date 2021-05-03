@@ -186,9 +186,9 @@ class GeneratorNodeInfo
         QStringList cVariables;
         QStringList variableLabels;
         QStringList shortNames;
-        QList<size_t> varIdx;
-        QList<size_t> qVariableIds;
-        QList<size_t> cVariableIds;
+        QList<int> varIdx;
+        QList<int> qVariableIds;
+        QList<int> cVariableIds;
 };
 
 class ParameterSpecification

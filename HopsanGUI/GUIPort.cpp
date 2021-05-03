@@ -777,8 +777,7 @@ QStringList Port::getFullVariableNames()
 {
     QStringList names = getVariableNames();
     QStringList names2;
-    Q_FOREACH(QString name, names)
-    {
+    for(const QString &name : names) {
         names2.append(makeFullVariableName(mpParentModelObject->getParentSystemNameHieararchy(), getParentModelObjectName(), getName(), name));
     }
     return names2;

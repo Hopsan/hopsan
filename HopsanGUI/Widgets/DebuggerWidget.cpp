@@ -197,8 +197,7 @@ void DebuggerWidget::updatePortsList(QString component)
     mpPortsList->clear();
     mpVariablesList->clear();
     QList<Port*> ports = mpModel->getTopLevelSystemContainer()->getModelObject(component)->getPortListPtrs();
-    Q_FOREACH(const Port *port, ports)
-    {
+    for(const Port *port : ports) {
         mpPortsList->addItem(port->getName());
     }
     mpPortsList->sortItems();
@@ -352,8 +351,7 @@ void DebuggerWidget::logLastData()
     mpTraceTable->insertRow(mpTraceTable->rowCount());
     QTableWidgetItem *pItem = new QTableWidgetItem(QString::number(getCurrentStep())+": "+QString::number(getCurrentTime()));
     mpTraceTable->setVerticalHeaderItem(mpTraceTable->rowCount()-1, pItem);
-    Q_FOREACH(const QString &var, mVariables)
-    {
+    for(const QString &var : mVariables) {
         QString component = var.split("#").at(0);
         QString port = var.split("#").at(1);
         QString data = var.split("#").at(2);

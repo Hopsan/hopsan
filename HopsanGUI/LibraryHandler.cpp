@@ -1518,8 +1518,7 @@ bool LibraryHandler::isTypeNamesOkToUnload(const QStringList &typeNames)
     {
         bool hasUnloadingComponent=false;
         SystemObject *pSystem = gpModelHandler->getTopLevelSystem(m);
-        Q_FOREACH(const QString &comp, pSystem->getModelObjectNames())
-        {
+        for(const QString &comp : pSystem->getModelObjectNames()) {
             if(typeNames.contains(pSystem->getModelObject(comp)->getTypeName()))
             {
                 hasUnloadingComponent = true;
@@ -1534,8 +1533,7 @@ bool LibraryHandler::isTypeNamesOkToUnload(const QStringList &typeNames)
     if(!models.isEmpty())
     {
         QString msg = "The following models are using components from the library:\n\n";
-        Q_FOREACH(const QString &model, models)
-        {
+        for(const QString &model : models) {
             msg.append(model+"\n");
         }
         msg.append("\nThey must be closed before unloading.");

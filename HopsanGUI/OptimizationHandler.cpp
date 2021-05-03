@@ -200,10 +200,8 @@ void OptimizationHandler::initModels(ModelWidget *pModel, int nModels, QString &
         // Make sure logging is disabled/enabled for same ports as in original model
         //! @todo This code only deals with top-level components and ports and ignores contents of subsystems /Peter
         CoreSystemAccess *pCore = pModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr();
-        foreach(const QString &compName, pModel->getTopLevelSystemContainer()->getModelObjectNames())
-        {
-            foreach(const Port *port, pModel->getTopLevelSystemContainer()->getModelObject(compName)->getPortListPtrs())
-            {
+        for(const QString &compName : pModel->getTopLevelSystemContainer()->getModelObjectNames()) {
+            for(const Port *port : pModel->getTopLevelSystemContainer()->getModelObject(compName)->getPortListPtrs()) {
                 QString portName = port->getName();
                 if (portName.contains(' '))
                 {
@@ -1344,10 +1342,8 @@ void OptimizationHandler::reInitialize(int nModels)
 
         //Make sure logging is disabled/enabled for same ports as in original model
         CoreSystemAccess *pCore = mModelPtrs.first()->getTopLevelSystemContainer()->getCoreSystemAccessPtr();
-        foreach(const QString &compName, mModelPtrs.first()->getTopLevelSystemContainer()->getModelObjectNames())
-        {
-            foreach(const Port *port, mModelPtrs.first()->getTopLevelSystemContainer()->getModelObject(compName)->getPortListPtrs())
-            {
+        for(const QString &compName : mModelPtrs.first()->getTopLevelSystemContainer()->getModelObjectNames()) {
+            for(const Port *port : mModelPtrs.first()->getTopLevelSystemContainer()->getModelObject(compName)->getPortListPtrs()) {
                 QString portName = port->getName();
                 bool enabled = pCore->isLoggingEnabled(compName, portName);
                 SystemObject *pOptSystem = mModelPtrs.last()->getTopLevelSystemContainer();

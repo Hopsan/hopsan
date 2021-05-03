@@ -456,8 +456,7 @@ void ModelObject::showLosses()
         }
         QStringList nodeTypes;
         NodeInfo::getNodeTypes(nodeTypes);
-        Q_FOREACH(const QString &type, nodeTypes)
-        {
+        for(const QString &type : nodeTypes) {
             if(mPortListPtrs[p]->getNodeType() == type && portType != "ReadPortType")
             {
                 //Power port, so we must cycle all connected ports and ask for their data
@@ -1373,12 +1372,10 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     }
 
     // Now select which action was triggered
-    if (selectedAction == parameterAction)
-    {
+    if (selectedAction == parameterAction) {
         openPropertiesDialog();
     }
-    else if(selectedAction == sourceCodeAction)
-    {
+    else if(selectedAction == sourceCodeAction) {
         auto appearance = gpLibraryHandler->getModelObjectAppearancePtr(mModelObjectAppearance.getTypeName());
         QString basePath = appearance->getBasePath();
         if(!basePath.isEmpty()) {
@@ -1387,49 +1384,39 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
         QString fileName = appearance->getSourceCodeFile();
         gpModelHandler->loadTextFile(basePath+fileName);
     }
-    else if (selectedAction == pRotateRightAction)
-    {
+    else if (selectedAction == pRotateRightAction) {
         mpParentSystemObject->getUndoStackPtr()->newPost();
         this->rotate90cw();
     }
-    else if (selectedAction == pRotateLeftAction)
-    {
+    else if (selectedAction == pRotateLeftAction) {
         mpParentSystemObject->getUndoStackPtr()->newPost();
         this->rotate90ccw();
     }
-    else if (selectedAction == pFlipVerticalAction)
-    {
+    else if (selectedAction == pFlipVerticalAction) {
         mpParentSystemObject->getUndoStackPtr()->newPost();
         this->flipVertical();
     }
-    else if (selectedAction == pFlipHorizontalAction)
-    {
+    else if (selectedAction == pFlipHorizontalAction) {
         mpParentSystemObject->getUndoStackPtr()->newPost();
         this->flipHorizontal();
     }
-    else if (selectedAction == pAlwaysVisbleAction)
-    {
+    else if (selectedAction == pAlwaysVisbleAction) {
         mpParentSystemObject->getUndoStackPtr()->newPost();
         setAlwaysVisible(pAlwaysVisbleAction->isChecked());
     }
-    else if (selectedAction == pShowNameAction)
-    {
+    else if (selectedAction == pShowNameAction) {
         mpParentSystemObject->getUndoStackPtr()->newPost();
         setNameTextAlwaysVisible(pShowNameAction->isChecked());
     }
-    else if(selectedAction == pLockedAction)
-    {
+    else if(selectedAction == pLockedAction) {
         this->setIsLocked(pLockedAction->isChecked());
-        foreach(ModelObject *pObj, mpParentSystemObject->getSelectedModelObjectPtrs())
-        {
+        for(ModelObject *pObj : mpParentSystemObject->getSelectedModelObjectPtrs()) {
             pObj->setIsLocked(pLockedAction->isChecked());
         }
     }
-    else if(selectedAction == pDisabledAction)
-    {
+    else if(selectedAction == pDisabledAction) {
       this->setDisabled(pDisabledAction->isChecked());
-      foreach(ModelObject *pObj, mpParentSystemObject->getSelectedModelObjectPtrs())
-      {
+      for(ModelObject *pObj : mpParentSystemObject->getSelectedModelObjectPtrs()) {
           pObj->setDisabled(pDisabledAction->isChecked());
       }
     }

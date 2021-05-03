@@ -294,8 +294,7 @@ void ModelObjectAnimationData::saveToDomElement(QDomElement &rDomElement)
     rDomElement.setAttribute(CAF_FLOWSPEED, flowSpeed);
     rDomElement.setAttribute(CAF_HYDRAULICMINPRESSURE, hydraulicMinPressure);
     rDomElement.setAttribute(CAF_HYDRAULICMAXPRESSURE, hydraulicMaxPressure);
-    foreach(const ModelObjectAnimationMovableData &m, movables)
-    {
+    for(const ModelObjectAnimationMovableData &m : movables) {
         QDomElement movableElement = appendDomElement(rDomElement, CAF_MOVABLE);
 
         //! @note Saving icons is disabled, because it probably makes no sense (paths will not work if moving hmf to other location)

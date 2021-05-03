@@ -1468,8 +1468,7 @@ void ConnectorLine::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         QMenu *pVolunectorComponentsMenu = new QMenu("Change Volunector Component");
         QStringList components;
         components << "HydraulicVolume" << "HydraulicTLMlossless" << "HydraulicHose";
-        foreach(const QString &component, components)
-        {
+        for(const QString &component : components) {
             QString name = gpLibraryHandler->getModelObjectAppearancePtr(component)->getTypeName();
             QIcon icon = gpLibraryHandler->getModelObjectAppearancePtr(component)->getIcon(UserGraphics);
             QAction *pComponentAction = pVolunectorComponentsMenu->addAction(icon, name);

@@ -330,7 +330,7 @@ void SensitivityAnalysisDialog::loadSettings()
     mpUniformDistributionRadioButton->setChecked(mpSettings->distribution == SensitivityAnalysisSettings::UniformDistribution);
     mpNormalDistributionRadioButton->setChecked(mpSettings->distribution == SensitivityAnalysisSettings::NormalDistribution);
 
-    foreach(SensitivityAnalysisParameter par, mpSettings->parameters)
+    for(const SensitivityAnalysisParameter &par : mpSettings->parameters)
     {
         QTreeWidgetItemIterator it(mpParametersList);
         while(*it)
@@ -349,8 +349,7 @@ void SensitivityAnalysisDialog::loadSettings()
         }
     }
 
-    foreach(SensitivityAnalysisVariable var, mpSettings->variables)
-    {
+    for(const SensitivityAnalysisVariable &var : mpSettings->variables) {
         QTreeWidgetItemIterator it(mpOutputList);
         while(*it)
         {

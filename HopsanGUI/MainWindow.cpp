@@ -378,8 +378,7 @@ void MainWindow::initializeWorkspace()
     autoLibsDir.setPath(autoLibsPath);
     if(autoLibsDir.exists())
     {
-        foreach(const QString &libPath, autoLibsDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot))
-        {
+        for(const QString &libPath : autoLibsDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
             qDebug() << "Loading library: " << autoLibsPath+"/"+libPath;
             gpLibraryHandler->loadLibrary(autoLibsPath+"/"+libPath);
         }

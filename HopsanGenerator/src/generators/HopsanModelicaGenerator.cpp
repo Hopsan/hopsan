@@ -1244,11 +1244,9 @@ bool HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
 bool HopsanModelicaGenerator::sortEquationByVariables(QList<Expression> &equations, QList<Expression> &variables, QList<Expression> &knowns)
 {
     //Generate list of variables in equations
-    Q_FOREACH(const Expression &equation, equations)
-    {
+    for(const Expression &equation : equations) {
         QList<Expression> tempVars = equation.getVariables();
-        Q_FOREACH(const Expression var, tempVars)
-        {
+        for(const Expression var : tempVars) {
             if(!variables.contains(var) && !knowns.contains(var))
                 variables.append(var);
         }
@@ -1262,13 +1260,10 @@ bool HopsanModelicaGenerator::sortEquationByVariables(QList<Expression> &equatio
 
     //Generate list of dependencies (i.e. which state variable derivatives exist in each equation)
     QList<QList<Expression> > dependencies;
-    Q_FOREACH(const Expression &equation, equations)
-    {
+    for(const Expression &equation : equations) {
         dependencies.append(QList<Expression>());
-        Q_FOREACH(const Expression &var, variables)
-        {
-            if(equation.contains(var))
-            {
+        for(const Expression &var : variables) {
+            if(equation.contains(var)) {
                 dependencies[equations.indexOf(equation)].append(Expression(var));
             }
         }

@@ -118,18 +118,17 @@ bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
 #ifdef _WIN32
     compileScriptStream << " -DWIN32";      //!< @todo Not sure if this one is needed, the correct macro to check for is _WIN32
 #endif
-    for(const QString includePath : getHopsanCoreIncludePaths()) {
+    for(const QString &includePath : getHopsanCoreIncludePaths()) {
         compileScriptStream << QString(" -I\"%1\"").arg(includePath);
     }
-    for(const QString includePath : includePaths) {
+    for(const QString &includePath : includePaths) {
         compileScriptStream << QString(" -I\"%1\"").arg(includePath);
     }
     QStringList coreSourcefiles = listHopsanCoreSourceFiles(savePath)+listInternalLibrarySourceFiles(savePath);
-    Q_FOREACH(const QString &s, coreSourcefiles)
-    {
+    for(const QString &s : coreSourcefiles) {
         compileScriptStream << " " << s;
     }
-    Q_FOREACH(const QString &s, extraSourceFiles)
+    for(const QString &s : extraSourceFiles)
     {
         compileScriptStream << " " << s;
     }
@@ -137,10 +136,10 @@ bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
 #ifndef _WIN32
     compileScriptStream << "-ldl";
 #endif
-    for(const QString linkPath : linkPaths) {
+    for(const QString &linkPath : linkPaths) {
         compileScriptStream << " -L\"" << linkPath << "\"";
     }
-    for(const QString linkLibrary : linkLibraries) {
+    for(const QString &linkLibrary : linkLibraries) {
         compileScriptStream << " -l" << linkLibrary;
     }
     compileScriptLStream << QString(" -output %1").arg(name);
@@ -155,9 +154,9 @@ bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     QString portLabels, maskPrompts, maskVars, defaultVals;
     QTextStream maskStream(&portLabels);
     int i=1, o=1;
-    foreach(const InterfacePortSpec &spec, interfacePortSpecs)
+    for(const InterfacePortSpec &spec : interfacePortSpecs)
     {
-        foreach(const InterfaceVarSpec &varSpec, spec.vars)
+        for(const InterfaceVarSpec &varSpec : spec.vars)
         {
             QString temp = "."+varSpec.dataName;
             if(varSpec.causality == InterfaceVarSpec::Input)
@@ -236,18 +235,14 @@ bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     i=0;
     o=0;
 
-    foreach(const InterfacePortSpec &spec, interfacePortSpecs)
-    {
-        foreach(const InterfaceVarSpec &varSpec, spec.vars)
-        {
-            if(varSpec.causality == InterfaceVarSpec::Input)
-            {
+    for(const InterfacePortSpec &spec : interfacePortSpecs) {
+        for(const InterfaceVarSpec &varSpec : spec.vars) {
+            if(varSpec.causality == InterfaceVarSpec::Input) {
                 wrapperReplace1.append("    ssSetInputPortWidth(S, " + QString::number(i) + ", DYNAMICALLY_SIZED);		//Input signal " + QString::number(i) + "\n");
                 wrapperReplace1.append("    ssSetInputPortDirectFeedThrough(S, " + QString::number(i) + ", 1);\n");
                 ++i;
             }
-            else
-            {
+            else {
                 wrapperReplace3.append("    ssSetOutputPortWidth(S, " + QString::number(o) + ", DYNAMICALLY_SIZED);		//Output signal " + QString::number(o) + "\n");
                 ++o;
             }
@@ -255,15 +250,14 @@ bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     }
 
     QString wrapperReplace5;
-    if(!disablePortLabels)
-    {
+    if(!disablePortLabels) {
         wrapperReplace5 = "    //Setup block mask (e.g. update icon, graphics etc for Simulink block)\n    mexCallMATLAB(0, 0, 0, 0, \""+name+"MaskSetup\"); //Run the port label script\n";
     }
 
     QString wrapperReplace6;
-    for(int p=0; p<numParameters; ++p)
+    for(const auto &par : *pParameters)
     {
-        QString parname = pParameters->at(p)->getName().c_str();
+        QString parname = par->getName().c_str();
         //wrapperReplace6.append("in = ssGetSFcnParam(S, "+QString::number(p)+");\n");
         wrapperReplace6.append("\nin = mexGetVariable(\"caller\", \""+parname+"\");\n");
         wrapperReplace6.append("if(in == NULL) {\n");
@@ -284,27 +278,22 @@ bool HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     QString wrapperReplace16;
     i=0;
     o=0;
-    foreach(const InterfacePortSpec &portSpec, interfacePortSpecs)
-    {
+    for(const InterfacePortSpec &portSpec : interfacePortSpecs) {
         QList<InterfaceVarSpec> varSpecs = portSpec.vars;
 
         QString path;
-        foreach(const QString &subsystem, portSpec.path)
-        {
+        for(const QString &subsystem : portSpec.path) {
             path.append("->getSubComponentSystem(\""+subsystem+"\")");
         }
 
-        foreach(const InterfaceVarSpec &varSpec, varSpecs)
-        {
-            if(varSpec.causality == InterfaceVarSpec::Input)
-            {
+        for(const InterfaceVarSpec &varSpec : varSpecs) {
+            if(varSpec.causality == InterfaceVarSpec::Input) {
                 wrapperReplace8.append("    (*pInputNode"+QString::number(o)+") = (*uPtrs1[" + QString::number(o) + "]);\n");
                 wrapperReplace15.append("double *pInputNode"+QString::number(o)+";\n");
                 wrapperReplace16.append("    pInputNode"+QString::number(o)+" = pComponentSystem"+path+"->getSubComponent(\""+portSpec.component+"\")->getSafeNodeDataPtr(\""+portSpec.port+"\", "+QString::number(varSpec.dataId)+");\n");
                 ++o;
             }
-            else
-            {
+            else {
                 wrapperReplace7.append("    real_T *y" + QString::number(i) + " = ssGetOutputPortRealSignal(S," + QString::number(i) + ");\n");
                 wrapperReplace12.append("    (*y" + QString::number(i) + ") = (*pOutputNode"+QString::number(i)+");\n");
                 wrapperReplace15.append("double *pOutputNode"+QString::number(i)+";\n");

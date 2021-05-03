@@ -1481,8 +1481,7 @@ bool HopsanGeneratorBase::copyBoostIncludeFilesToDir(const QString &path) const
     saveDir.cd("bin");
     QStringList binFiles = saveDir.entryList(QDir::Files | QDir::NoDotAndDotDot);
 
-    Q_FOREACH(const QString &fileName, binFiles)
-    {
+    for(const QString &fileName : binFiles) {
         QFile file(path+"/include/boost/bin/"+fileName);
         //qDebug() << "File: " << path+"/include/boost/bin/"+fileName;
         file.copy(path+"/"+fileName);
@@ -1542,12 +1541,10 @@ void HopsanGeneratorBase::cleanUp(const QString &path, const QStringList &files,
     printMessage("Cleaning up directory: " + path);
 
     QDir cleanDir(path);
-    Q_FOREACH(const QString &file, files)
-    {
+    for(const QString &file : files) {
         cleanDir.remove(file);
     }
-    Q_FOREACH(const QString &subDir, subDirs)
-    {
+    for(const QString &subDir : subDirs) {
         removeDir(path+"/"+subDir);
     }
 }

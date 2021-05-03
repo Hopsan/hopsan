@@ -1421,8 +1421,7 @@ bool OptimizationScriptWizard::loadObjectiveFunctions()
     }
     files.removeDuplicates();
 
-    Q_FOREACH(const QString fileName, files)
-    {
+    for(const QString &fileName : files) {
         QFile templateFile(fileName);
         templateFile.open(QFile::ReadOnly | QFile::Text);
         QString code = templateFile.readAll();

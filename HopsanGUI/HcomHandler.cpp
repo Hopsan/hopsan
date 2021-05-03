@@ -1405,8 +1405,7 @@ void HcomHandler::executeCommand(QString cmd)
     if(cmd.contains(";"))
     {
         QStringList cmdList = cmd.split(";");
-        foreach(const QString &tempCmd, cmdList)
-        {
+        for(const QString &tempCmd : cmdList) {
             executeCommand(tempCmd);
         }
         return;
@@ -2202,8 +2201,7 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
                 nameFromAlias = nameFromAlias.split("$").last();
                 QString compName = nameFromAlias.section("#",0,0);
                 QString parName = nameFromAlias.right(nameFromAlias.size()-compName.size()-1);
-                foreach(const QString &subsystem, subsystems)
-                {
+                for(const QString &subsystem : subsystems) {
                     pSystem = qobject_cast<SystemObject*>(pSystem->getModelObject(subsystem));
                 }
 
@@ -2394,8 +2392,7 @@ void HcomHandler::executeHelpCommand(QString arg)
 
         QStringList helpLines = help.split("\n");
         int helpLength=0;
-        Q_FOREACH(const QString &line, helpLines)
-        {
+        for(const QString &line : helpLines) {
             if(line.size() > helpLength)
                 helpLength = line.size();
         }
@@ -2416,8 +2413,7 @@ void HcomHandler::executeHelpCommand(QString arg)
     {
         QStringList helpLines = mCmdList[commandId].help.split("\n");
         int helpLength=0;
-        Q_FOREACH(const QString &line, helpLines)
-        {
+        for(const QString &line : helpLines) {
             if(line.size() > helpLength)
                 helpLength = line.size();
         }
@@ -3961,8 +3957,7 @@ void HcomHandler::executeDisableLoggingCommand(const QString cmd)
     //If alias shall be ignored, we must enable all nodes with alias variables again
     if(noAlias)
     {
-        foreach(const QString &aliasName, mpModel->getViewContainerObject()->getAliasNames())
-        {
+        for(const QString &aliasName : mpModel->getViewContainerObject()->getAliasNames()) {
             QString var = mpModel->getViewContainerObject()->getFullNameFromAlias(aliasName);
             QString comp = var.section("#",0,0);
             QString port = var.section("#",1,1);
@@ -3978,14 +3973,13 @@ void HcomHandler::executeEnableLoggingCommand(const QString cmd)
     QStringList args = cmd.split(" ");
 
     QList<Port*> vPortPtrs;
-    foreach(const QString &arg, args)
-    {
+    for(const QString &arg : args) {
         getPorts(arg, vPortPtrs);
     }
 
-    for(int p=0; p<vPortPtrs.size(); ++p)
+    for(const auto &pPort : vPortPtrs)
     {
-        mpModel->getViewContainerObject()->getCoreSystemAccessPtr()->setLoggingEnabled(vPortPtrs.at(p)->getParentModelObjectName(), vPortPtrs.at(p)->getName(), true);
+        mpModel->getViewContainerObject()->getCoreSystemAccessPtr()->setLoggingEnabled(pPort->getParentModelObjectName(), pPort->getName(), true);
     }
 }
 
@@ -4604,8 +4598,7 @@ void HcomHandler::executeLoadModelCommand(const QString cmd)
     QString wildcard = path.right(path.size()-path.lastIndexOf("/")-1);
     QStringList files = QDir(dir).entryList(QStringList() << wildcard,QDir::Files);
 
-    foreach(const QString &file, files)
-    {
+    for(const QString &file : files) {
         path = dir+"/"+file;
         gpModelHandler->loadModel(path);
     }
@@ -4846,18 +4839,14 @@ void HcomHandler::executeCloseModelCommand(const QString cmd)
     }
     bool force=false;
     bool all=false;
-    foreach(const QString &arg, args)
-    {
-        if(arg == "all")
-        {
+    for(const QString &arg : args) {
+        if(arg == "all") {
             all = true;
         }
-        else if(arg == "-f")
-        {
+        else if(arg == "-f") {
             force = true;
         }
-        else
-        {
+        else {
             HCOMERR("Unknown argument: "+args[0]);
             return;
         }
@@ -8006,10 +7995,8 @@ void HcomHandler::getPorts(const QString &rStr, QList<Port*> &rPorts) const
     if (rStr.contains("*"))
     {
         QStringList compNames = pCurrentSystem->getModelObjectNames();
-        Q_FOREACH(const QString &compName, compNames)
-        {
-            for(int p=0; p<pCurrentSystem->getModelObject(compName)->getPortListPtrs().size(); ++p)
-            {
+        for(const QString &compName : compNames) {
+            for(int p=0; p<pCurrentSystem->getModelObject(compName)->getPortListPtrs().size(); ++p) {
                 Port *pPort = pCurrentSystem->getModelObject(compName)->getPortListPtrs().at(p);
                 QString testStr = compName+"."+pPort->getName();
                 QRegExp rx(rStr);
@@ -8034,15 +8021,12 @@ void HcomHandler::getPorts(const QString &rStr, QList<Port*> &rPorts) const
         }
 
         QStringList compNames = pCurrentSystem->getModelObjectNames();
-        Q_FOREACH(const QString &compName, compNames)
-        {
+        for(const QString &compName : compNames) {
             ModelObject *pModel = pCurrentSystem->getModelObject(compName);
             QMapIterator<QString,QString> it(pModel->getVariableAliases());
-            while(it.hasNext())
-            {
+            while(it.hasNext()) {
                 it.next();
-                if(it.value() == rStr)
-                {
+                if(it.value() == rStr) {
                     rPorts.append(pModel->getPort(it.key().section("#",0,0)));
                 }
             }
@@ -8182,21 +8166,17 @@ QString HcomHandler::getParameterValue(QString parameterName, QString &rParamete
 
         // Seek into the correct system
         SystemObject *pContainer;
-        if(searchFromTopLevel)
-        {
+        if(searchFromTopLevel) {
             pContainer = mpModel->getTopLevelSystemContainer();
         }
-        else
-        {
+        else {
             pContainer = mpModel->getViewContainerObject();
         }
-        foreach(const QString &subsystem, subsystems)
-        {
+        for(const QString &subsystem: subsystems) {
             pContainer = qobject_cast<SystemObject*>(pContainer->getModelObject(subsystem));
         }
 
-        if(!pContainer)
-        {
+        if(!pContainer) {
             return "NaN";
         }
 
@@ -8254,23 +8234,20 @@ void HcomHandler::getMatchingLogVariableNamesWithoutLogDataHandler(QString patte
     QStringList unFilteredVariables;
 
     QStringList components = mpModel->getViewContainerObject()->getModelObjectNames();
-    Q_FOREACH(const QString &component, components)
+    for(const QString &component : components)
     {
         ModelObject *pComponent = mpModel->getViewContainerObject()->getModelObject(component);
         QList<Port*> portPtrs = pComponent->getPortListPtrs();
         QStringList ports;
-        Q_FOREACH(const Port *pPort, portPtrs)
-        {
+        for(const Port *pPort : portPtrs) {
             ports.append(pPort->getName());
         }
-        Q_FOREACH(const QString &port, ports)
-        {
+        for(const QString &port : ports) {
             Port *pPort = pComponent->getPort(port);
             NodeInfo nodeInfo(pPort->getNodeType());
             QStringList vars = nodeInfo.shortNames;
 
-            Q_FOREACH(const QString &var, vars)
-            {
+            for(const QString &var : vars) {
                 unFilteredVariables.append(component+"."+port+"."+var);
             }
         }

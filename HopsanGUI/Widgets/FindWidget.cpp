@@ -159,24 +159,19 @@ void FindWidget::findComponent(const QString &rName, const bool centerView, Qt::
         int nFound=0;
         QStringList compNames = mpContainer->getModelObjectNames();
         //!  @todo what about searching in subsystems
-        foreach(QString comp, compNames)
-        {
+        for(QString comp : compNames) {
             bool match;
-            if(wildcard)
-            {
+            if(wildcard) {
                 QRegExp re(rName, caseSensitivity, QRegExp::Wildcard);
                 match = re.exactMatch(comp);
             }
-            else
-            {
+            else {
                 match = comp.contains(rName, caseSensitivity);
             }
 
-            if (match)
-            {
+            if (match) {
                 ModelObject *pMO = mpContainer->getModelObject(comp);
-                if (pMO)
-                {
+                if (pMO) {
                     ++nFound;
                     pMO->highlight();
                     mean += pMO->pos();
@@ -203,29 +198,24 @@ void FindWidget::findAlias(const QString &rName, const bool centerView, Qt::Case
         int nFound=0;
         QStringList aliasNames = mpContainer->getAliasNames();
         //!  @todo what about searching in subsystems
-        foreach(QString alias, aliasNames)
-        {
+        for(QString alias : aliasNames) {
             bool match;
-            if(wildcard)
-            {
+            if(wildcard) {
                 QRegExp re(rName, caseSensitivity, QRegExp::Wildcard);
                 match = re.exactMatch(alias);
             }
-            else
-            {
+            else {
                 match = alias.contains(rName, caseSensitivity);
             }
 
-            if (match)
-            {
+            if (match) {
                 QString fullName = mpContainer->getFullNameFromAlias(alias);
                 QString comp, port, var;
                 QStringList sysHierarchy;
                 splitFullVariableName(fullName, sysHierarchy, comp, port, var);
                 ModelObject *pMO = mpContainer->getModelObject(comp);
                 //! @todo we should actually highlight the port also (and center on the port)
-                if (pMO)
-                {
+                if (pMO) {
                     ++nFound;
                     pMO->highlight();
                     mean += pMO->pos();
@@ -234,8 +224,7 @@ void FindWidget::findAlias(const QString &rName, const bool centerView, Qt::Case
         }
 
         // Now center view over found model objects
-        if (nFound > 0 && centerView)
-        {
+        if (nFound > 0 && centerView) {
             mean /= double(nFound);
             mpContainer->mpModelWidget->getGraphicsView()->centerOn(mean);
         }
@@ -263,13 +252,11 @@ void FindWidget::findSystemParameter(const QStringList &rNames, const bool cente
         QPointF mean;
         int nFound=0;
         const QList<ModelObject*> mops = mpContainer->getModelObjects();
-        foreach(ModelObject* pMO, mops)
-        {
+        for(ModelObject* pMO : mops) {
             bool hasPar = false;
             QVector<CoreParameterData> pars;
             pMO->getParameters(pars);
-            foreach(CoreParameterData par, pars)
-            {
+            for(CoreParameterData par : pars) {
                 QString expression = removeAllSpaces(par.mValue);
 
                 // OK, I cant figure out how to write the regexp to solve this, so I am splitting the string instead

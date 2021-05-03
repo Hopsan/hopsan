@@ -784,12 +784,10 @@ void SystemObject::deleteModelObject(const QString &rObjectName, UndoStatusEnumT
             //First save aliases for component to remove (if any)
             QStringList aliasesToSave;
             QStringList aliases = this->getAliasNames();
-            foreach(const QString &alias, aliases)
-            {
+            for(const QString &alias : aliases) {
                 QString fullName = getFullNameFromAlias(alias);
                 QString compName = fullName.section("#",0,0);
-                if(compName == pModelObject->getName())
-                {
+                if(compName == pModelObject->getName()) {
                     aliasesToSave.append(alias);
                 }
             }

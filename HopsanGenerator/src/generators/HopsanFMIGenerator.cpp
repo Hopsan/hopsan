@@ -67,12 +67,10 @@ void writeTextToFile(QFile& file, const QString& text)
 
 bool fromFmiBoolean(fmi2_boolean_t b)
 {
-    if (b)
-    {
+    if (b) {
         return true;
     }
-    else
-    {
+    else {
         return false;
     }
 }
@@ -126,7 +124,7 @@ typedef struct
     QString unit;
     fmi2_base_type_enu_t dataType;
     fmi2_import_variable_t *pFmiVariable;
-}hopsan_fmi_import_variable_t;
+} hopsan_fmi_import_variable_t;
 
 typedef struct
 {
@@ -138,41 +136,35 @@ typedef struct
     QStringList portVariableCodeVarNames;
     QStringList portVariableFmuVrs;
     QList<size_t> portVariableDataIds;
-    size_t portVariableIOBreakN;
-}hopsan_fmi_import_tlm_port_t;
+    int portVariableIOBreakN;
+} hopsan_fmi_import_tlm_port_t;
 
 
 
 bool replaceFMIVariablesWithTLMPort(QStringList &rPortVarNames, QStringList &rPortVarVars, QStringList &rPortVarRefs, QList<size_t> &rPortVarDataIds,
                                     QList<hopsan_fmi_import_variable_t> &rActualVariables,
-                                    const QStringList &rTags, const QList<size_t> &rDataIds, const QString &rPortName, const QDomElement portElement)
+                                    const QStringList &rTags, const QList<int> &rDataIds, const QString &rPortName, const QDomElement portElement)
 {
-    for(int i=0; i<rTags.size(); ++i)
-    {
+    for(int i=0; i<rTags.size(); ++i) {
         QString name = toValidHopsanVarName(portElement.firstChildElement(rTags[i]).text());
         int idx=-1, j=-1;
-        foreach(const hopsan_fmi_import_variable_t &rVar, rActualVariables)
-        {
+        for(const hopsan_fmi_import_variable_t &rVar : rActualVariables) {
             ++j;
-            if (rVar.name == name)
-            {
+            if(rVar.name == name) {
                 idx = j;
                 break;
             }
         }
 
-        if (idx >= 0)
-        {
+        if (idx >= 0) {
             rPortVarNames.append(name);
             rPortVarVars.append(rPortName+"_"+name);
             rPortVarRefs.append(rActualVariables[idx].fmuVr);
-            rPortVarDataIds.append(rDataIds[i]);
-
+            rPortVarDataIds.append(size_t(rDataIds[i]));
 
             rActualVariables.removeAt(idx);
         }
-        else
-        {
+        else {
             //printErrorMessage("Incorrect variable name given: "+name+". Aborting!");
             return false;
         }
@@ -204,13 +196,11 @@ bool HopsanFMIGenerator::generateFromFmu(const QString &rFmuPath, QString target
 
     QByteArray pathArray = rFmuPath.toLocal8Bit();
     const char* FMUPath = pathArray.data();
-    if (!targetPath.endsWith('/'))
-    {
+    if(!targetPath.endsWith('/')) {
         targetPath.append('/');
     }
     targetPath = targetPath+QFileInfo(rFmuPath).baseName();
-    if(!QFileInfo(targetPath).exists())
-    {
+    if(!QFileInfo(targetPath).exists()) {
         QDir().mkpath(targetPath);
     }
     QByteArray targetArray = targetPath.toLocal8Bit();
@@ -231,24 +221,20 @@ bool HopsanFMIGenerator::generateFromFmu(const QString &rFmuPath, QString target
 
     version = fmi_import_get_fmi_version(context, FMUPath, tmpPath);
 
-    if(version == fmi_version_1_enu)
-    {
+    if(version == fmi_version_1_enu) {
         printMessage("FMU is of version 1.0");
         return generateFromFmu1(rFmuPath, targetPath, rTypeName, rHppPath, callbacks, context);
     }
-    else if(version == fmi_version_2_0_enu)
-    {
+    else if(version == fmi_version_2_0_enu) {
         printMessage("FMU is of version 2.0");
         return generateFromFmu2(rFmuPath, targetPath, rTypeName, rHppPath, callbacks, context);
     }
-    else if(version == fmi_version_unknown_enu)
-    {
+    else if(version == fmi_version_unknown_enu) {
         printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks))+"\n");
         printErrorMessage("FMU version is unknown.");
         return false;
     }
-    else if(version == fmi_version_unsupported_enu)
-    {
+    else if(version == fmi_version_unsupported_enu) {
         printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks))+"\n");
         printErrorMessage("FMU version is unsupported.");
         return false;
@@ -275,15 +261,13 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
 
     fmi1_import_t* fmu = fmi1_import_parse_xml(context, tmpPath);
 
-    if(!fmu)
-    {
+    if(fmu == nullptr) {
         printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks)));
         printErrorMessage("Error parsing XML, exiting");
         return false;
     }
 
-    if(fmi1_import_get_fmu_kind(fmu) == fmi1_fmu_kind_enu_me)
-    {
+    if(fmi1_import_get_fmu_kind(fmu) == fmi1_fmu_kind_enu_me) {
         printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks)));
         printErrorMessage("Only FMUs for co-simulation are supported by this code.");
         return false;
@@ -296,9 +280,8 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
 
     //Loop through variables in FMU and generate the lists
     fmi1_import_variable_list_t *pVarList = fmi1_import_get_variable_list(fmu);
-    for(size_t i=0; i<fmi1_import_get_variable_list_size(pVarList); ++i)
-    {
-        fmi1_import_variable_t *pVar = fmi1_import_get_variable(pVarList, i);
+    for(size_t i=0; i<fmi1_import_get_variable_list_size(pVarList); ++i) {
+        fmi1_import_variable_t *pVar = fmi1_import_get_variable(pVarList, uint(i));
         QString name = fmi1_import_get_variable_name(pVar);
         fmi1_causality_enu_t causality = fmi1_import_get_causality(pVar);
         fmi1_variability_enu_t variability = fmi1_import_get_variability(pVar);
@@ -306,8 +289,7 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
         fmi1_value_reference_t vr = fmi1_import_get_variable_vr(pVar);
         QString description = fmi1_import_get_variable_description(pVar);
         name = toValidHopsanVarName(name);
-        if(causality == fmi1_causality_enu_input && variability == fmi1_variability_enu_parameter)
-        {
+        if(causality == fmi1_causality_enu_input && variability == fmi1_variability_enu_parameter) {
             hopsan_fmi1_import_variable_t par;
             par.name = name;
             par.variableName = "m"+name;
@@ -317,14 +299,12 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
             par.pFmiVariable = pVar;
             pars.append(par);
         }
-        if(causality == fmi1_causality_enu_input && variability != fmi1_variability_enu_parameter)
-        {
+        if(causality == fmi1_causality_enu_input && variability != fmi1_variability_enu_parameter) {
             inputNames.append(name);
             inputVars.append("mp"+name);
             inputRefs.append(QString::number(vr));
         }
-        if(causality == fmi1_causality_enu_output)
-        {
+        if(causality == fmi1_causality_enu_output) {
 
             outputNames.append(name);
             outputVars.append("mp"+name);
@@ -341,14 +321,12 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
     //--------------------------------------------//
 
     //Create <fmuname>.hpp
-    if(!QFileInfo(rTargetPath).exists())
-    {
+    if(!QFileInfo(rTargetPath).exists()) {
         QDir().mkpath(rTargetPath);
     }
     QFile fmuComponentHppFile;
     fmuComponentHppFile.setFileName(rTargetPath+"/"+fmuName+".hpp");
-    if(!fmuComponentHppFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
+    if(!fmuComponentHppFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         printErrorMessage("Import of FMU failed: Could not open "+fmuName+".hpp for writing.");
         removeDir(rTargetPath);
         return false;
@@ -367,8 +345,7 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
     QTextStream t2(&fmuComponentTemplateFile);
     fmuComponentCode = t2.readAll();
     fmuComponentTemplateFile.close();
-    if(fmuComponentCode.isEmpty())
-    {
+    if(fmuComponentCode.isEmpty()) {
         printErrorMessage("Unable to generate code for "+fmuName+".hpp.");
         removeDir(rTargetPath);
         return false;
@@ -380,10 +357,8 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
     QString classParent = "ComponentSignal";
 
     QString localVars;
-    if(!pars.isEmpty())
-    {
-        for(const auto &par : pars)
-        {
+    if(!pars.isEmpty()) {
+        for(const auto &par : pars) {
             if(par.dataType == fmi1_base_type_real) {
                 localVars.append("double ");
             }
@@ -399,27 +374,22 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
             localVars.append(par.variableName+";\n");
         }
     }
-    if(!inputVars.isEmpty()  || !outputVars.isEmpty())
-    {
+    if(!inputVars.isEmpty()  || !outputVars.isEmpty()) {
         localVars.append("double ");
-        foreach(const QString &varName, inputVars)
-        {
+        for(const QString &varName : inputVars) {
             localVars.append("*"+varName+", ");
         }
-        foreach(const QString &varName, outputVars)
-        {
+        for(const QString &varName : outputVars) {
             localVars.append("*"+varName+", ");
         }
-        if(localVars.endsWith(", "))
-        {
+        if(localVars.endsWith(", ")) {
             localVars.chop(2);
         }
         localVars.append(";\n");
     }
 
     QString addConstants;
-    for(const auto &par : pars)
-    {
+    for(const auto &par : pars) {
         addConstants.append("        ");
 
         QString startValueStr;
@@ -449,20 +419,16 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
     }
 
     QString addInputs;
-    for(int i=0; i<inputNames.size(); ++i)
-    {
-        if(i!=0)
-        {
+    for(int i=0; i<inputNames.size(); ++i) {
+        if(i != 0) {
             addInputs.append("        ");
         }
         addInputs.append("addInputVariable(\""+inputNames.at(i)+"\", \"\", \"\", 0, &"+inputVars.at(i)+");\n");
     }
 
     QString addOutputs;
-    for(int i=0; i<outputNames.size(); ++i)
-    {
-        if(i!=0)
-        {
+    for(int i=0; i<outputNames.size(); ++i) {
+        if(i != 0) {
             addOutputs.append("        ");
         }
         addOutputs.append("addOutputVariable(\""+outputNames.at(i)+"\", \"\", \"\", 0, &"+outputVars.at(i)+");\n");
@@ -470,22 +436,18 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
 
     QString setPars;
     QString temp = extractTaggedSection(fmuComponentCode, "setpars");
-    for(const auto &par : pars)
-    {
+    for(const auto &par : pars) {
         QString tempPar = temp;
         tempPar.replace("<<<vr>>>", par.fmuVr);
-        if ( par.dataType == fmi1_base_type_real )
-        {
+        if ( par.dataType == fmi1_base_type_real ) {
             tempPar.replace("<<<var>>>", "&"+par.variableName);
             tempPar.replace("<<<setparfunction>>>","fmi1_import_set_real");
         }
-        else if ( par.dataType == fmi1_base_type_int )
-        {
+        else if ( par.dataType == fmi1_base_type_int ) {
             tempPar.replace("<<<var>>>", "&"+par.variableName);
             tempPar.replace("<<<setparfunction>>>","fmi1_import_set_integer");
         }
-        else if (par.dataType == fmi1_base_type_str )
-        {
+        else if (par.dataType == fmi1_base_type_str ) {
             QString tempPar2 = "        {\n";
             tempPar2.append("        fmi1_string_t buff[1] = {"+par.variableName+".c_str()"+"};\n");
             tempPar2.append(tempPar);
@@ -494,8 +456,7 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
             tempPar2.append("}\n");
             tempPar = tempPar2;
         }
-        else if (par.dataType == fmi1_base_type_bool)
-        {
+        else if (par.dataType == fmi1_base_type_bool) {
             QString tempPar2 = "        {\n";
             tempPar2.append(QString("        fmi1_boolean_t b = %1 ? 1 : 0;\n").arg(par.variableName));
             tempPar2.append(tempPar);
@@ -509,8 +470,7 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
 
     QString readVars;
     temp = extractTaggedSection(fmuComponentCode, "readvars");
-    for(int i=0; i<inputNames.size(); ++i)
-    {
+    for(int i=0; i<inputNames.size(); ++i) {
         QString tempVar = temp;
         tempVar.replace("<<<vr>>>", inputRefs.at(i));
         tempVar.replace("<<<var>>>", inputVars.at(i));
@@ -519,8 +479,7 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
 
     QString writeVars;
     temp = extractTaggedSection(fmuComponentCode, "writevars");
-    for(int i=0; i<outputNames.size(); ++i)
-    {
+    for(int i=0; i<outputNames.size(); ++i) {
         QString tempVar = temp;
         tempVar.replace("<<<vr>>>", outputRefs.at(i));
         tempVar.replace("<<<var>>>", outputVars.at(i));
@@ -564,20 +523,17 @@ bool HopsanFMIGenerator::generateFromFmu1(const QString &rFmuPath, const QString
     double inputPos=0;
     double outputPos=0;
 
-    for(int i=0; i<inputNames.size(); ++i)
-    {
+    for(const auto &name : inputNames) {
         inputPos += inputPosStep;
-        cafSpec.addPort(inputNames.at(i), 0.0, inputPos, 180);
+        cafSpec.addPort(name, 0.0, inputPos, 180);
     }
-    for(int i=0; i<outputNames.size(); ++i)
-    {
+    for(const auto &name : outputNames) {
         outputPos += outputPosStep;
-        cafSpec.addPort(outputNames.at(i), 1.0, outputPos, 0.0);
+        cafSpec.addPort(name, 1.0, outputPos, 0.0);
     }
 
     QString cafPath = rTargetPath+"/"+fmuName+".xml";
-    if(!generateCafFile(cafPath, cafSpec))
-    {
+    if(!generateCafFile(cafPath, cafSpec)) {
         printErrorMessage("Generation of component appearance file (XML) failed.");
         removeDir(rTargetPath);
         return false;
@@ -607,9 +563,8 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     QByteArray targetArray = rTargetPath.toLocal8Bit();
     const char* tmpPath = targetArray.data();
 
-    fmi2_import_t* fmu = fmi2_import_parse_xml(context, tmpPath, 0);
-    if(!fmu)
-    {
+    fmi2_import_t* fmu = fmi2_import_parse_xml(context, tmpPath, nullptr);
+    if(!fmu) {
         printErrorMessage("Last JM error: "+QString(jm_get_last_error(&callbacks))+"\n");
         printErrorMessage("Error parsing XML, exiting\n");
         return false;
@@ -618,8 +573,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     fmi2_fmu_kind_enu_t fmuKind = fmi2_import_get_fmu_kind(fmu);
     // Handle me / cs combo FMUs as cs
     //! @todo The user should be able to choose
-    if (fmuKind == fmi2_fmu_kind_me_and_cs)
-    {
+    if (fmuKind == fmi2_fmu_kind_me_and_cs) {
         fmuKind = fmi2_fmu_kind_cs;
     }
 
@@ -630,8 +584,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
 
     //Loop through variables in FMU and generate the lists
     fmi2_import_variable_list_t *pVarList = fmi2_import_get_variable_list(fmu,0);
-    for(size_t i=0; i<fmi2_import_get_variable_list_size(pVarList); ++i)
-    {
+    for(size_t i=0; i<fmi2_import_get_variable_list_size(pVarList); ++i) {
         hopsan_fmi_import_variable_t varORpar;
         fmi2_import_variable_t *pVar = fmi2_import_get_variable(pVarList, i);
 
@@ -642,29 +595,24 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
         varORpar.description = fmi2_import_get_variable_description(pVar);
         varORpar.dataType = fmi2_import_get_variable_base_type(pVar);
         varORpar.fmuVr = QString::number(fmi2_import_get_variable_vr(pVar));
-        if (varORpar.dataType == fmi2_base_type_real)
-        {
+        if (varORpar.dataType == fmi2_base_type_real) {
             fmi2_import_unit_t *pUnit = fmi2_import_get_real_variable_unit(fmi2_import_get_variable_as_real(pVar));
-            if (pUnit)
-            {
+            if(pUnit) {
                 varORpar.unit = fmi2_import_get_unit_name(pUnit);
             }
         }
         fmi2_causality_enu_t causality = fmi2_import_get_causality(pVar);
 
-        if(causality == fmi2_causality_enu_parameter)
-        {
+        if(causality == fmi2_causality_enu_parameter) {
             varORpar.variableName = "m"+name;
             fmiParameters.append(varORpar);
         }
-        else if(causality == fmi2_causality_enu_input)
-        {
+        else if(causality == fmi2_causality_enu_input) {
 
             varORpar.variableName = "mp"+name;
             fmiInputVariables.append(varORpar);
         }
-        else if(causality == fmi2_causality_enu_output)
-        {
+        else if(causality == fmi2_causality_enu_output) {
             varORpar.variableName = "mp"+name;
             fmiOutputVariables.append(varORpar);
         }
@@ -678,51 +626,41 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     QString tlmFileName = fmuName+"_HopsanTLM.xml";
     QFile tlmFile(rTargetPath+"/"+tlmFileName);
     // Try old obsolete name
-    if (!tlmFile.exists())
-    {
+    if (!tlmFile.exists()) {
         tlmFileName = fmuName+"_TLM.xml";
         tlmFile.setFileName(rTargetPath+"/"+tlmFileName);
     }
-    if (tlmFile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
+    if (tlmFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QDomDocument domDocument;
         QString errorStr;
         int errorLine, errorColumn;
-        if (!domDocument.setContent(&tlmFile, false, &errorStr, &errorLine, &errorColumn))
-        {
+        if(!domDocument.setContent(&tlmFile, false, &errorStr, &errorLine, &errorColumn)) {
             QString lineStr = QString::number(errorLine);
             QString colStr = QString::number(errorColumn);
             printErrorMessage(tlmFileName+": Parse error at line "+lineStr+", column "+colStr+": "+errorStr);
             printMessage(tlmFileName+" ignored.");
         }
-        else
-        {
+        else {
             QDomElement rootElement = domDocument.documentElement();
-            if (rootElement.tagName() != "fmutlm")
-            {
+            if (rootElement.tagName() != "fmutlm") {
                 printErrorMessage("Wrong root tag in "+tlmFileName+": "+rootElement.tagName());
                 printMessage(tlmFileName+" ignored");
             }
-            else
-            {
+            else {
                 bool isQType = true;
                 QDomElement cqtypeElement = rootElement.firstChildElement("tlmcqtype");
-                if (!cqtypeElement.isNull())
-                {
+                if(!cqtypeElement.isNull()) {
                     tlmcqtype = cqtypeElement.text().toLower();
-                    if (tlmcqtype != "c" && tlmcqtype != "q")
-                    {
+                    if (tlmcqtype != "c" && tlmcqtype != "q") {
                         printErrorMessage("Wrong CQ-Type specifed: "+tlmcqtype+" only C or Q supported!");
                         return false;
                     }
                     isQType = (tlmcqtype=="q");
                 }
-                if (isQType)
-                {
+                if (isQType) {
                     printMessage("Generating Q-type component as specified by "+ tlmFile.fileName());
                 }
-                else
-                {
+                else {
                     printMessage("Generating C-type component as specified by "+ tlmFile.fileName());
                 }
 
@@ -735,8 +673,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
 
                 QDomElement portElement = rootElement.firstChildElement("tlmport");
                 int idx = 1;
-                while(!portElement.isNull())
-                {
+                while(!portElement.isNull()) {
                     bool typeOK=true;
 
                     hopsan_fmi_import_tlm_port_t tlmPort;
@@ -745,52 +682,44 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
                     tlmPort.name = portElement.attribute("name");
                     tlmPort.description = portElement.attribute("description");
 
-                    if (tlmPort.name.isEmpty())
-                    {
+                    if (tlmPort.name.isEmpty()) {
                         tlmPort.name = "P"+QString::number(idx);
                         tlmPort.codeVarName = "mpP"+QString::number(idx);
                         ++idx;
                     }
-                    else
-                    {
+                    else {
                         tlmPort.codeVarName = "mp"+tlmPort.name;
                     }
 
                     QStringList outputs, inputs;
-                    QList<size_t> outputDataIds, inputDataIds;
+                    QList<int> outputDataIds, inputDataIds;
 
                     GeneratorNodeInfo gni(tlmPort.type);
-                    if (gni.isValidNode)
-                    {
-                        if (isQType)
-                        {
+                    if(gni.isValidNode) {
+                        if (isQType) {
                             outputs << gni.qVariables;
                             outputDataIds << gni.qVariableIds;
                             inputs << gni.cVariables;
                             inputDataIds << gni.cVariableIds;
                         }
-                        else
-                        {
+                        else {
                             inputs << gni.qVariables;
                             inputDataIds << gni.qVariableIds;
                             outputs << gni.cVariables;
                             outputDataIds << gni.cVariableIds;
                         }
                     }
-                    else
-                    {
+                    else {
                         printErrorMessage("Can not handle port type: "+tlmPort.type+", ignored.");
                         typeOK=false;
                     }
 
-                    if (typeOK)
-                    {
+                    if (typeOK) {
                         // Replace input variables
                         if (!replaceFMIVariablesWithTLMPort(tlmPort.portVariableNames, tlmPort.portVariableCodeVarNames,
                                                             tlmPort.portVariableFmuVrs, tlmPort.portVariableDataIds,
                                                             fmiInputVariables, inputs, inputDataIds,
-                                                            tlmPort.name, portElement))
-                        {
+                                                            tlmPort.name, portElement)) {
                             printErrorMessage("In: "+ tlmFile.fileName()+ " Failed to find one of the specified variables among the FMI input variables");
                             return false;
                         }
@@ -802,8 +731,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
                         if (!replaceFMIVariablesWithTLMPort(tlmPort.portVariableNames, tlmPort.portVariableCodeVarNames,
                                                             tlmPort.portVariableFmuVrs, tlmPort.portVariableDataIds,
                                                             fmiOutputVariables, outputs, outputDataIds,
-                                                            tlmPort.name, portElement))
-                        {
+                                                            tlmPort.name, portElement)) {
                             printErrorMessage("In: "+ tlmFile.fileName()+ " Failed to find one of the specified variables among the FMI output variables");
                             return false;
                         }
@@ -826,14 +754,12 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     //--------------------------------------------//
 
     //Create <fmuname>.hpp
-    if(!QFileInfo(rTargetPath).exists())
-    {
+    if(!QFileInfo(rTargetPath).exists()) {
         QDir().mkpath(rTargetPath);
     }
     QFile fmuComponentHppFile;
     fmuComponentHppFile.setFileName(rTargetPath+"/"+fmuName+".hpp");
-    if(!fmuComponentHppFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
+    if(!fmuComponentHppFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         printErrorMessage("Import of FMU failed: Could not open "+fmuName+".hpp for writing.");
         removeDir(rTargetPath);
         return false;
@@ -845,23 +771,19 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
 
     //Generate HPP file
     QFile fmuComponentTemplateFile;
-    if(fmuKind == fmi2_fmu_kind_me)
-    {
+    if(fmuKind == fmi2_fmu_kind_me) {
         fmuComponentTemplateFile.setFileName(":/templates/fmu2MeImportComponentTemplate.hpp");
     }
-    else
-    {
+    else {
         fmuComponentTemplateFile.setFileName(":/templates/fmu2CsImportComponentTemplate.hpp");
     }
     QString fmuComponentCode;
-    if(fmuComponentTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
+    if(fmuComponentTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QTextStream t2(&fmuComponentTemplateFile);
         fmuComponentCode = t2.readAll();
         fmuComponentTemplateFile.close();
     }
-    if(fmuComponentCode.isEmpty())
-    {
+    if(fmuComponentCode.isEmpty()) {
         printErrorMessage("Unable to generate code for "+fmuName+".hpp.");
         removeDir(rTargetPath);
         return false;
@@ -871,17 +793,14 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     QString className = "FMU_"+fmuName;
     // Lets default FMUs to signal components unless a HopsanTLM port specification xml is present
     QString classParent = "ComponentSignal";
-    if (!tlmPorts.empty())
-    {
+    if (!tlmPorts.empty()) {
         classParent = "ComponentQ";
         // If C-type was specified then overwrite
-        if (tlmcqtype == "c")
-        {
+        if (tlmcqtype == "c") {
             classParent = "ComponentC";
         }
     }
-    else
-    {
+    else {
         printMessage("Generating Signal-type component");
     }
 
@@ -890,61 +809,48 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     // First constant parameter variables
     QString parameterDefinitions;
     QStringList doubleParams, strParams, intParams, boolParams;
-    foreach (const hopsan_fmi_import_variable_t &par , fmiParameters)
-    {
+    for(const hopsan_fmi_import_variable_t &par : fmiParameters) {
         //! @todo support all data types
-        if (par.dataType == fmi2_base_type_real)
-        {
+        if (par.dataType == fmi2_base_type_real) {
             doubleParams.append(par.variableName);
         }
-        else if (par.dataType == fmi2_base_type_str)
-        {
+        else if (par.dataType == fmi2_base_type_str) {
             strParams.append(par.variableName);
         }
-        else if (par.dataType == fmi2_base_type_int)
-        {
+        else if (par.dataType == fmi2_base_type_int) {
             intParams.append(par.variableName);
         }
-        else if (par.dataType == fmi2_base_type_bool)
-        {
+        else if (par.dataType == fmi2_base_type_bool) {
             boolParams.append(par.variableName);
         }
     }
-    if (!doubleParams.isEmpty())
-    {
+    if (!doubleParams.isEmpty()) {
         parameterDefinitions += "double ";
-        foreach (const QString &par, doubleParams)
-        {
+        for(const QString &par : doubleParams) {
             parameterDefinitions += par + ", ";
         }
         parameterDefinitions.chop(2);
         parameterDefinitions += ";\n";
     }
-    if (!strParams.isEmpty())
-    {
+    if (!strParams.isEmpty()) {
         parameterDefinitions += "HString ";
-        foreach (const QString &par, strParams)
-        {
+        for(const QString &par : strParams) {
             parameterDefinitions += par + ", ";
         }
         parameterDefinitions.chop(2);
         parameterDefinitions += ";\n";
     }
-    if (!intParams.isEmpty())
-    {
+    if (!intParams.isEmpty()) {
         parameterDefinitions += "int ";
-        foreach (const QString &par, intParams)
-        {
+        for(const QString &par : intParams) {
             parameterDefinitions += par + ", ";
         }
         parameterDefinitions.chop(2);
         parameterDefinitions += ";\n";
     }
-    if (!boolParams.isEmpty())
-    {
+    if (!boolParams.isEmpty()) {
         parameterDefinitions += "bool ";
-        foreach (const QString &par, boolParams)
-        {
+        for(const QString &par : boolParams) {
             parameterDefinitions += par + ", ";
         }
         parameterDefinitions.chop(2);
@@ -955,12 +861,10 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     QString localVars = parameterDefinitions+"\n";
 
     // Define Input variables node data ptrs
-    if(!fmiInputVariables.isEmpty())
-    {
+    if(!fmiInputVariables.isEmpty()) {
         localVars.append("// Input variable node data ptrs\n");
         localVars.append("double ");
-        foreach(const hopsan_fmi_import_variable_t &var, fmiInputVariables)
-        {
+        for(const hopsan_fmi_import_variable_t &var : fmiInputVariables) {
             localVars.append("*"+var.variableName+", ");
         }
         localVars.chop(2);
@@ -968,12 +872,10 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     }
 
     // Define Output variables node data ptrs
-    if (!fmiOutputVariables.isEmpty())
-    {
+    if (!fmiOutputVariables.isEmpty()) {
         localVars.append("// Output variable node data ptrs\n");
         localVars.append("double ");
-        foreach(const hopsan_fmi_import_variable_t &var, fmiOutputVariables)
-        {
+        for(const hopsan_fmi_import_variable_t &var : fmiOutputVariables) {
             localVars.append("*"+var.variableName+", ");
         }
         localVars.chop(2);
@@ -981,16 +883,13 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     }
 
     // Define power port variable node data ptrs
-    if (!tlmPorts.isEmpty())
-    {
+    if (!tlmPorts.isEmpty()) {
         QString portPointers = "// Port pointers\n";
         portPointers.append("Port ");
         localVars.append("// Power port variable node data ptrs\n");
         localVars.append("double ");
-        foreach(const hopsan_fmi_import_tlm_port_t &tlmPort, tlmPorts)
-        {
-            foreach(const QString &varName, tlmPort.portVariableCodeVarNames)
-            {
+        for(const hopsan_fmi_import_tlm_port_t &tlmPort : tlmPorts) {
+            for(const QString &varName : tlmPort.portVariableCodeVarNames) {
                 localVars.append("*"+varName+", ");     //Power port variables
             }
             portPointers.append("*"+tlmPort.codeVarName+", ");      //Ports
@@ -1003,28 +902,23 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     }
 
     QString addConstants;
-    foreach(const hopsan_fmi_import_variable_t &par, fmiParameters)
-    {
-        if (par.dataType == fmi2_base_type_real)
-        {
+    for(const hopsan_fmi_import_variable_t &par : fmiParameters) {
+        if (par.dataType == fmi2_base_type_real) {
             double startValue = fmi2_import_get_real_variable_start(fmi2_import_get_variable_as_real(par.pFmiVariable));
             addConstants.append(QString("addConstant(\"%1\", \"%2\", \"%3\", %4, %5);\n").arg(par.name)
                                 .arg(par.description).arg(par.unit).arg(startValue).arg(par.variableName));
         }
-        else if (par.dataType == fmi2_base_type_str)
-        {
+        else if (par.dataType == fmi2_base_type_str) {
             QString startValue = fmi2_import_get_string_variable_start(fmi2_import_get_variable_as_string(par.pFmiVariable));
             addConstants.append(QString("addConstant(\"%1\", \"%2\", \"%3\", HString(\"%4\"), %5);\n").arg(par.name)
                                 .arg(par.description).arg(par.unit).arg(startValue).arg(par.variableName));
         }
-        else if (par.dataType == fmi2_base_type_int)
-        {
+        else if (par.dataType == fmi2_base_type_int) {
             int startValue = fmi2_import_get_integer_variable_start(fmi2_import_get_variable_as_integer(par.pFmiVariable));
             addConstants.append(QString("addConstant(\"%1\", \"%2\", \"%3\", %4, %5);\n").arg(par.name)
                                 .arg(par.description).arg(par.unit).arg(startValue).arg(par.variableName));
         }
-        else if (par.dataType == fmi2_base_type_bool)
-        {
+        else if (par.dataType == fmi2_base_type_bool) {
             bool startValue = fromFmiBoolean(fmi2_import_get_boolean_variable_start(fmi2_import_get_variable_as_boolean(par.pFmiVariable)));
             addConstants.append(QString("addConstant(\"%1\", \"%2\", \"%3\", %4, %5);\n").arg(par.name)
                                 .arg(par.description).arg(par.unit).arg(startValue).arg(par.variableName));
@@ -1032,51 +926,42 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     }
 
     QString addInputs;
-    foreach(const hopsan_fmi_import_variable_t &var, fmiInputVariables)
-    {
-        if (var.dataType == fmi2_base_type_real)
-        {
+    for(const hopsan_fmi_import_variable_t &var : fmiInputVariables) {
+        if (var.dataType == fmi2_base_type_real) {
             double startValue = fmi2_import_get_real_variable_start(fmi2_import_get_variable_as_real(var.pFmiVariable));
             addInputs.append(QString("addInputVariable(\"%1\", \"%2\", \"%3\", %4, &%5);\n").arg(var.name)
                              .arg(var.description).arg(var.unit).arg(startValue).arg(var.variableName));
             //addInputs.append("addInputVariable(\""+var.name+"\", \"\", \"\", 0, &"+var.variableName+");\n");
         }
-        else
-        {
+        else {
             printErrorMessage(QString("Input variable: %1 must be of type Real").arg(var.name));
             return false;
         }
     }
 
     QString addOutputs;
-    foreach(const hopsan_fmi_import_variable_t &var, fmiOutputVariables)
-    {
-        if (var.dataType == fmi2_base_type_real)
-        {
+    for(const hopsan_fmi_import_variable_t &var : fmiOutputVariables) {
+        if (var.dataType == fmi2_base_type_real) {
             double startValue = fmi2_import_get_real_variable_start(fmi2_import_get_variable_as_real(var.pFmiVariable));
             addInputs.append(QString("addOutputVariable(\"%1\", \"%2\", \"%3\", %4, &%5);\n").arg(var.name)
                              .arg(var.description).arg(var.unit).arg(startValue).arg(var.variableName));
             //addOutputs.append("addOutputVariable(\""+var.name+"\", \"\", \"\", 0, &"+var.variableName+");\n");
         }
-        else
-        {
+        else {
             printErrorMessage(QString("Output variable: %1 must be of type Real").arg(var.name));
             return false;
         }
     }
 
     QString addPorts;
-    foreach(const hopsan_fmi_import_tlm_port_t &tlmPort, tlmPorts)
-    {
+    for(const hopsan_fmi_import_tlm_port_t &tlmPort : tlmPorts) {
         addPorts += QString("%1 = addPowerPort(\"%2\", \"%3\", \"%4\");\n").arg(tlmPort.codeVarName)
                             .arg(tlmPort.name).arg(tlmPort.type).arg(tlmPort.description);
     }
 
     QString setNodeDataPointers;
-    foreach(const hopsan_fmi_import_tlm_port_t &tlmPort, tlmPorts)
-    {
-        for (int j=0; j<tlmPort.portVariableNames.size(); ++j)
-        {
+    for(const hopsan_fmi_import_tlm_port_t &tlmPort : tlmPorts) {
+        for (int j=0; j<tlmPort.portVariableNames.size(); ++j) {
             setNodeDataPointers.append(QString("%1 = getSafeNodeDataPtr(%2, %3);\n")
                                        .arg(tlmPort.portVariableCodeVarNames.at(j))
                                        .arg(tlmPort.codeVarName)
@@ -1087,22 +972,18 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     // Write set parameter rows
     QString setPars;
     QString temp = extractTaggedSection(fmuComponentCode, "setpars");
-    foreach(const hopsan_fmi_import_variable_t &par, fmiParameters)
-    {
+    for(const hopsan_fmi_import_variable_t &par : fmiParameters) {
         QString tempPar = temp;
         tempPar.replace("<<<vr>>>", par.fmuVr);
-        if ( par.dataType == fmi2_base_type_real )
-        {
+        if(par.dataType == fmi2_base_type_real) {
             tempPar.replace("<<<var>>>", "&"+par.variableName);
             tempPar.replace("<<<setparfunction>>>","fmi2_import_set_real");
         }
-        else if ( par.dataType == fmi2_base_type_int )
-        {
+        else if(par.dataType == fmi2_base_type_int) {
             tempPar.replace("<<<var>>>", "&"+par.variableName);
             tempPar.replace("<<<setparfunction>>>","fmi2_import_set_integer");
         }
-        else if (par.dataType == fmi2_base_type_str )
-        {
+        else if(par.dataType == fmi2_base_type_str) {
             QString tempPar2 = "{\n";
             tempPar2.append("const char* buff[1] = {"+par.variableName+".c_str()"+"};\n");
             tempPar2.append(tempPar);
@@ -1111,8 +992,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
             tempPar2.append("}\n");
             tempPar = tempPar2;
         }
-        else if (par.dataType == fmi2_base_type_bool)
-        {
+        else if (par.dataType == fmi2_base_type_bool) {
             QString tempPar2 = "{\n";
             tempPar2.append("fmi2_boolean_t b;\n");
             tempPar2.append(QString("b = ((%1) ? (fmi2_true) : (fmi2_false));\n").arg(par.variableName));
@@ -1127,19 +1007,16 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
 
     QString readVars;
     temp = extractTaggedSection(fmuComponentCode, "readvars");
-    foreach(const hopsan_fmi_import_variable_t &var, fmiInputVariables)
-    {
+    for(const hopsan_fmi_import_variable_t &var : fmiInputVariables) {
         QString tempVar = temp;
         tempVar.replace("<<<vr>>>", var.fmuVr);
         tempVar.replace("<<<var>>>", var.variableName);
         readVars.append(tempVar+"\n");
     }
-    foreach(const hopsan_fmi_import_tlm_port_t &tlmPort, tlmPorts)
-    {
+    for(const hopsan_fmi_import_tlm_port_t &tlmPort : tlmPorts) {
         QString tempVar;
         int nInputs = tlmPort.portVariableIOBreakN;
-        for(int j=0; j<nInputs; ++j)
-        {
+        for(int j=0; j<nInputs; ++j) {
             tempVar = temp;
             tempVar.replace("<<<vr>>>", tlmPort.portVariableFmuVrs.at(j));
             tempVar.replace("<<<var>>>", tlmPort.portVariableCodeVarNames.at(j));
@@ -1149,19 +1026,16 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
 
     QString writeVars;
     temp = extractTaggedSection(fmuComponentCode, "writevars");
-    foreach(const hopsan_fmi_import_variable_t &var, fmiOutputVariables)
-    {
+    for(const hopsan_fmi_import_variable_t &var : fmiOutputVariables) {
         QString tempVar = temp;
         tempVar.replace("<<<vr>>>", var.fmuVr);
         tempVar.replace("<<<var>>>", var.variableName);
         writeVars.append(tempVar+"\n");
     }
-    foreach(const hopsan_fmi_import_tlm_port_t &tlmPort, tlmPorts)
-    {
+    for(const hopsan_fmi_import_tlm_port_t &tlmPort : tlmPorts) {
         QString tempVar;
         int nInputs = tlmPort.portVariableIOBreakN;
-        for(int j=nInputs; j<tlmPort.portVariableFmuVrs.size(); ++j)
-        {
+        for(int j=nInputs; j<tlmPort.portVariableFmuVrs.size(); ++j) {
             tempVar = temp;
             tempVar.replace("<<<vr>>>", tlmPort.portVariableFmuVrs.at(j));
             tempVar.replace("<<<var>>>", tlmPort.portVariableCodeVarNames.at(j));
@@ -1210,25 +1084,21 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     double outputPos=0;
     double portPos=0;
 
-    foreach(const hopsan_fmi_import_variable_t &var, fmiInputVariables)
-    {
+    for(const hopsan_fmi_import_variable_t &var : fmiInputVariables) {
         inputPos += inputPosStep;
         cafSpec.addPort(var.name, 0.0, inputPos, 180.0);
     }
-    foreach(const hopsan_fmi_import_variable_t &var, fmiOutputVariables)
-    {
+    for(const hopsan_fmi_import_variable_t &var : fmiOutputVariables) {
         outputPos += outputPosStep;
         cafSpec.addPort(var.name, 1.0, outputPos, 0.0);
     }
-    foreach(const hopsan_fmi_import_tlm_port_t &tlmPort, tlmPorts)
-    {
+    for(const hopsan_fmi_import_tlm_port_t &tlmPort : tlmPorts) {
         portPos += portPosStep;
         cafSpec.addPort(tlmPort.name, portPos, 0.0, 270.0);
     }
 
     QString cafPath = rTargetPath+"/"+fmuName+".xml";
-    if(!generateCafFile(cafPath, cafSpec))
-    {
+    if(!generateCafFile(cafPath, cafSpec)) {
         printErrorMessage("Generation of component appearance file (XML) failed.");
         removeDir(rTargetPath);
         return false;
@@ -1321,8 +1191,7 @@ bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     printMessage("Generating "+fmuModelDefinesHeaderFile.fileName());
 
     QString fmuModelDefinesHeaderCode = readTextFromFile(":/templates/"+fmuModelDefinesH);
-    if(fmuModelDefinesHeaderCode.isEmpty())
-    {
+    if(fmuModelDefinesHeaderCode.isEmpty()) {
         printErrorMessage("Unable to read template code for "+fmuModelDefinesH);
         return false;
     }
@@ -1330,18 +1199,15 @@ bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     fmuModelDefinesHeaderCode.replace("<<<n_inputs>>>", QString::number(nInputs));
     fmuModelDefinesHeaderCode.replace("<<<n_outputs>>>", QString::number(nOutputs));
     fmuModelDefinesHeaderCode.replace("<<<guid>>>", guid);
-    if(version == 1)
-    {
+    if(version == 1) {
         fmuModelDefinesHeaderCode.replace("<<<modelname>>>", modelName);
     }
 
-    if(fmuModelDefinesHeaderFile.open(QFile::Text | QFile::WriteOnly))
-    {
+    if(fmuModelDefinesHeaderFile.open(QFile::Text | QFile::WriteOnly)) {
         writeTextToFile(fmuModelDefinesHeaderFile, fmuModelDefinesHeaderCode);
         fmuModelDefinesHeaderFile.close();
     }
-    else
-    {
+    else {
         printErrorMessage(QString("Unable to open %1 for writing").arg(fmuModelDefinesHeaderFile.fileName()));
         return false;
     }
@@ -1354,8 +1220,7 @@ bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     printMessage("Generating "+fmuHopsanSourceFile.fileName());
 
     QString fmuHopsanSourceCode = readTextFromFile(":/templates/fmu_hopsan.cpp");
-    if(fmuHopsanSourceCode.isEmpty())
-    {
+    if(fmuHopsanSourceCode.isEmpty()) {
         printErrorMessage("Unable to read template code for fmu_hopsan.cpp");
         return false;
     }
@@ -1365,13 +1230,10 @@ bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     QList<InterfacePortSpec> interfacePortSpecs;
     QStringList path = QStringList();
     getInterfaces(interfacePortSpecs, pSystem, path);
-    for(const auto &portSpec : interfacePortSpecs)
-    {
-        for(const auto &varSpec : portSpec.vars)
-        {
+    for(const auto &portSpec : interfacePortSpecs) {
+        for(const auto &varSpec : portSpec.vars) {
             QString temp = QString("        dataPtrs[%1] = spCoreComponentSystem").arg(vr);
-            for(const auto &subsystem : portSpec.path)
-            {
+            for(const auto &subsystem : portSpec.path) {
                 temp.append(QString("->getSubComponentSystem(\"%1\")").arg(subsystem));
             }
             temp.append(QString("->getSubComponent(\"%1\")->getSafeNodeDataPtr(\"%2\", %3);\n").arg(portSpec.component).arg(portSpec.port).arg(varSpec.dataId));
@@ -1406,13 +1268,11 @@ bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
         ++vr;
     }
     fmuHopsanSourceCode.replace("<<<addparameterstomap>>>", addParametersToMap);
-    if(fmuHopsanSourceFile.open(QFile::Text | QFile::WriteOnly))
-    {
+    if(fmuHopsanSourceFile.open(QFile::Text | QFile::WriteOnly)) {
         writeTextToFile(fmuHopsanSourceFile, fmuHopsanSourceCode);
         fmuHopsanSourceFile.close();
     }
-    else
-    {
+    else {
         printErrorMessage("Unable to open fmu_hopsan.cpp for writing");
         return false;
     }
@@ -1478,56 +1338,46 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
     tlmSpecFile.setFileName(fileName);
     QDomDocument tlmDomDocument;
     QDomElement tlmRoot;
-    if(tlmSpecFile.exists())
-    {
+    if(tlmSpecFile.exists()) {
         printMessage("Reading TLM specifications from "+tlmSpecFile.fileName()+"...");
         tlmRoot = loadXMLDomDocument(tlmSpecFile, tlmDomDocument, "fmutlm");
         tlmSpecFile.close();
     }
-    else
-    {
+    else {
         printMessage("No TLM specification file found.");
         return true;
     }
 
-    if(tlmRoot == QDomElement())
-    {
+    if(tlmRoot.isNull()) {
         printErrorMessage("Unable to parse TLM specification file.");
         return true;        // Don't abort import, it could still work without the TLM stuff
     }
-    else
-    {
+    else {
         QString type;
         QStringList qVars;
         QStringList cVars;
 
         QDomElement portElement = tlmRoot.firstChildElement("tlmport");
-        while(!portElement.isNull())
-        {
+        while(!portElement.isNull()) {
             type = portElement.attribute("type");
 
             QStringList nodeTypes;
             GeneratorNodeInfo::getNodeTypes(nodeTypes);
-            Q_FOREACH(const QString &nodeType, nodeTypes)
-            {
+            for(const QString &nodeType : nodeTypes) {
                 GeneratorNodeInfo info(nodeType);
                 if(type == info.niceName+"q" || type == info.niceName+"c")
                 {
-                    Q_FOREACH(const QString &var, info.qVariables)
-                    {
+                    for(const QString &var : info.qVariables) {
                         QDomElement element = portElement.firstChildElement(var);
-                        if(element.isNull())
-                        {
+                        if(element.isNull()) {
                             printErrorMessage("Node type does not match variable names.");
                             return false;
                         }
                         qVars.append(element.text());
                     }
-                    Q_FOREACH(const QString &var, info.cVariables)
-                    {
+                    for(const QString &var : info.cVariables) {
                         QDomElement element = portElement.firstChildElement(var);
-                        if(element.isNull())
-                        {
+                        if(element.isNull()) {
                             printErrorMessage("Node type does not match variable names.");
                             return false;
                         }
@@ -1536,17 +1386,13 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
                 }
             }
 
-            Q_FOREACH(const QString &nodeType, nodeTypes)
-            {
+            for(const QString &nodeType : nodeTypes) {
                 GeneratorNodeInfo info(nodeType);
-                if(type == info.niceName+"q")
-                {
+                if(type == info.niceName+"q") {
                     QStringList varNames;
                     tlmPortValueRefs.append(QStringList());
-                    Q_FOREACH(const QString &var, qVars)
-                    {
-                        if(!outVarPortNames.contains(var))
-                        {
+                    for(const QString &var : qVars) {
+                        if(!outVarPortNames.contains(var)) {
                             printErrorMessage("Error in TLM specifications: Specified variable does not exist.");
                             return false;
                         }
@@ -1555,10 +1401,8 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
                         outVarValueRefs.removeAt(outVarPortNames.indexOf(var));
                         outVarPortNames.removeAll(var);
                     }
-                    Q_FOREACH(const QString &var, cVars)
-                    {
-                        if(!inVarPortNames.contains(var))
-                        {
+                    for(const QString &var : cVars) {
+                        if(!inVarPortNames.contains(var)) {
                             printErrorMessage("Error in TLM specifications: Specified variable does not exist.");
                             return false;
                         }
@@ -1570,22 +1414,21 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
 
                     printMessage("Adding "+info.niceName+" port of Q-type");
 
-                    if(cqsType == "Signal" || cqsType == "Q")
+                    if(cqsType == "Signal" || cqsType == "Q") {
                         cqsType = "Q";
-                    else
+                    }
+                    else {
                         cqsType = "";
+                    }
 
                     tlmPortTypes.append(type);
                     tlmPortVarNames.append(varNames);
                 }
-                else if(type == info.niceName+"c")
-                {
+                else if(type == info.niceName+"c") {
                     QStringList varNames;
                     tlmPortValueRefs.append(QStringList());
-                    Q_FOREACH(const QString &var, qVars)
-                    {
-                        if(!inVarPortNames.contains(var))
-                        {
+                    for(const QString &var : qVars) {
+                        if(!inVarPortNames.contains(var)) {
                             printErrorMessage("Error in TLM specifications: Specified variable does not exist.");
                             return false;
                         }
@@ -1594,10 +1437,8 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
                         inVarValueRefs.removeAt(inVarPortNames.indexOf(var));
                         inVarPortNames.removeAll(var);
                     }
-                    Q_FOREACH(const QString &var, cVars)
-                    {
-                        if(!outVarPortNames.contains(var))
-                        {
+                    for(const QString &var : cVars) {
+                        if(!outVarPortNames.contains(var)) {
                             printErrorMessage("Error in TLM specifications: Specified variable does not exist.");
                             return false;
                         }
@@ -1640,13 +1481,11 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
     QDomElement rootElement = domDocument.createElement("fmiModelDescription");
     rootElement.setAttribute("fmiVersion", versionStr);
     rootElement.setAttribute("modelName", modelName);
-    if(version==1)
-    {
+    if(version==1) {
         rootElement.setAttribute("modelIdentifier", modelName);
         rootElement.setAttribute("numberOfContinuousStates", "0");
     }
-    else
-    {
+    else {
         rootElement.setAttribute("variableNamingConvention", "structured");
     }
     rootElement.setAttribute("guid", guid);
@@ -1656,8 +1495,7 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
     rootElement.setAttribute("numberOfEventIndicators", "0");
     domDocument.appendChild(rootElement);
 
-    if(version==2)
-    {
+    if(version==2) {
         QDomElement coSimElement = domDocument.createElement("CoSimulation");
         coSimElement.setAttribute("modelIdentifier",modelName);
         coSimElement.setAttribute("canHandleVariableCommunicationStepSize", "true");
@@ -1675,24 +1513,17 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
     nReals=0;
     nInputs=0;
     nOutputs=0;
-    for(int i=0; i<interfacePortSpecs.size(); ++i)
-    {
-        for(int j=0; j<interfacePortSpecs[i].vars.size(); ++j)
-        {
-            InterfacePortSpec port = interfacePortSpecs[i];
-            InterfaceVarSpec var = port.vars[j];
+    for(const auto &port : interfacePortSpecs) {
+        for(const auto &var : port.vars) {
             QDomElement varElement = domDocument.createElement("ScalarVariable");
             varElement.setAttribute("name", port.component+"_"+port.port+"_"+var.dataName);
             varElement.setAttribute("valueReference", (unsigned int)vr);
-            if(var.causality == InterfaceVarSpec::Input)
-            {
+            if(var.causality == InterfaceVarSpec::Input) {
                 varElement.setAttribute("causality", "input");
                 ++nInputs;
             }
-            else
-            {
-                if(version == 2)
-                {
+            else {
+                if(version == 2) {
                     varElement.setAttribute("initial","exact");
                 }
                 varElement.setAttribute("causality", "output");
@@ -1703,8 +1534,7 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
 
             QDomElement dataElement = domDocument.createElement("Real");    //We only support real data type for now
             dataElement.setAttribute("start", 0);   //! @todo Support start values
-            if(version == 1)
-            {
+            if(version == 1) {
                 dataElement.setAttribute("fixed", "false");
             }
             varElement.appendChild(dataElement);
@@ -1717,13 +1547,11 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
     QList<ParameterSpecification> parameterSpecs;
     getParameters(parameterSpecs, pSystem);
 
-    for(auto &parSpec : parameterSpecs)
-    {
+    for(auto &parSpec : parameterSpecs) {
         QDomElement varElement = domDocument.createElement("ScalarVariable");
         varElement.setAttribute("name", parSpec.name);
         varElement.setAttribute("valueReference", (unsigned int)vr);
-        if(version == 2)
-        {
+        if(version == 2) {
             varElement.setAttribute("causality", "parameter");
             varElement.setAttribute("initial","exact");
             varElement.setAttribute("variability", "fixed");
@@ -1738,8 +1566,7 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
         if(!parSpec.unit.isEmpty()) {
             dataElement.setAttribute("unit", parSpec.unit);
         }
-        if(version == 1)
-        {
+        if(version == 1) {
             dataElement.setAttribute("fixed", "false");
         }
         varElement.appendChild(dataElement);
@@ -1747,8 +1574,7 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
         ++vr;
     }
 
-    if(version == 1)
-    {
+    if(version == 1) {
         QDomElement implElement = domDocument.createElement("Implementation");
         QDomElement coSimElement = domDocument.createElement("CoSimulation_StandAlone");
         QDomElement capabilitiesElement = domDocument.createElement("Capabilities");
@@ -1757,8 +1583,7 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
         implElement.appendChild(coSimElement);
         rootElement.appendChild(implElement);
     }
-    else
-    {
+    else {
         QDomElement structureElement = domDocument.createElement("ModelStructure");
         rootElement.appendChild(structureElement);
     }
@@ -1767,8 +1592,7 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
     domDocument.insertBefore(xmlProcessingInstruction, domDocument.firstChild());
 
     QFile modelDescriptionFile(savePath + "/modelDescription.xml");
-    if(!modelDescriptionFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
+    if(!modelDescriptionFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         printErrorMessage(QString("Failed to open %1 for writing.").arg(modelDescriptionFile.fileName()));
         return false;
     }
@@ -1790,22 +1614,19 @@ void HopsanFMIGenerator::replaceNameSpace(const QString &savePath) const
     QStringList after = QStringList() << "using namespace "+nameSpace+";" << "namespace "+nameSpace+" " << "\n"+nameSpace+"::" << "::"+nameSpace+"::" << " "+nameSpace+"::" << "*"+nameSpace+"::" << "namespace "+nameSpace+"{" << "("+nameSpace+"::" << "<"+nameSpace+"::" << ","+nameSpace+"::";
 
     QStringList srcFiles = listHopsanCoreSourceFiles(savePath)+listInternalLibrarySourceFiles(savePath);
-    Q_FOREACH(const QString &file, srcFiles)
-    {
+    for(const QString &file : srcFiles) {
         if(!replaceInFile(savePath+"/"+file, before, after))
             return;
     }
     QStringList includeFiles = listHopsanCoreIncludeFiles(savePath);
-    Q_FOREACH(const QString &file, includeFiles)
-    {
+    for(const QString &file : includeFiles) {
         if(!replaceInFile(savePath+"/"+file, before, after))
             return;
     }
     QStringList componentFiles;
     findAllFilesInFolderAndSubFolders(savePath+"/componentLibraries/", "hpp", componentFiles);
     findAllFilesInFolderAndSubFolders(savePath+"/componentLibraries/", "h", componentFiles);
-    Q_FOREACH(const QString &file, componentFiles)
-    {
+    for(const QString &file : componentFiles) {
         //qDebug() << "Replacing component file: " << file;
         if(!replaceInFile(file, before, after))
             return;
@@ -1885,8 +1706,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     makefileStream << "OUTPUT = \""+outputLibraryFile+"\"\n\n";
     makefileStream << "CXXSRC = fmu_hopsan.cpp";
     QStringList srcFiles = listHopsanCoreSourceFiles(fmuBuildPath) + listInternalLibrarySourceFiles(fmuBuildPath);
-    for(const QString& srcFile : srcFiles)
-    {
+    for(const QString& srcFile : srcFiles) {
         makefileStream << " " << srcFile;
     }
     makefileStream << "\n";
@@ -1915,8 +1735,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     scriptExt = "sh";
 #endif
     compileScriptFile.setFileName(fmuBuildPath + "/compile."+scriptExt);
-    if(!compileScriptFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
+    if(!compileScriptFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         printErrorMessage("Failed to open compile."+scriptExt+" for writing.");
         return false;
     }
@@ -1971,49 +1790,19 @@ bool HopsanFMIGenerator::compressFiles(const QString &fmuStagePath, const QStrin
     return assertFilesExist(fmuStagePath, fmuDestination);
 }
 
-//bool HopsanFMIGenerator::replaceFMIVariablesWithTLMPort(QStringList &rPortVarNames, QStringList &rPortVarVars, QStringList &rPortVarRefs, QList<size_t> &rPortVarDataIds,
-//                                                        QStringList &rActualNames, QStringList &rActualVars, QStringList &rActualRefs,
-//                                                        const QStringList &rTags, const QList<size_t> &rDataIds, const QString &rPortName, const QDomElement portElement)
-//{
-//    for(size_t i=0; i<rTags.size(); ++i)
-//    {
-//        QString name = toValidVarName(portElement.firstChildElement(rTags[i]).text());
-//        int idx = rActualNames.indexOf(name);
-//        if (idx >= 0)
-//        {
-//            rPortVarNames.append(name);
-//            rPortVarVars.append(rPortName+"_"+name);
-//            rPortVarRefs.append(rActualRefs.at(idx));
-//            rPortVarDataIds.append(rDataIds[i]);
-
-//            rActualVars.removeAt(idx);
-//            rActualRefs.removeAt(idx);
-//            rActualNames.removeAll(name);
-//        }
-//        else
-//        {
-//            printErrorMessage("Incorrect variable name given: "+name+". Aborting!");
-//            return false;
-//        }
-//    }
-//    return true;
-//}
-
 
 void HopsanFMIGenerator::getInterfaceInfo(QString typeName, QString compName,
                                           QStringList &inVars, QStringList &inComps, QStringList &inPorts, QList<int> &inDatatypes,
                                           QStringList &outVars, QStringList &outComps, QStringList &outPorts, QList<int> &outDatatypes,
                                           QList<QStringList> &tlmPorts)
 {
-    if(typeName == "SignalInputInterface")
-    {
+    if(typeName == "SignalInputInterface") {
         inVars.append(compName.remove(' ').remove("-"));
         inComps.append(compName);
         inPorts.append("out");
         inDatatypes.append(0);
     }
-    else if(typeName == "SignalOutputInterface")
-    {
+    else if(typeName == "SignalOutputInterface") {
         outVars.append(compName.remove(' ').remove("-"));
         outComps.append(compName);
         outPorts.append("in");
@@ -2024,24 +1813,21 @@ void HopsanFMIGenerator::getInterfaceInfo(QString typeName, QString compName,
     QString portName = "P1";
     getNodeAndCqTypeFromInterfaceComponent(typeName, nodeType, cqType);
 
-    if(cqType == "c")
-    {
+    if(cqType == "c") {
         QString name=compName;
         name.remove(' ').remove("-");
 
         GeneratorNodeInfo info(nodeType);
 
         tlmPorts.append(QStringList() << info.niceName+"q");
-        Q_FOREACH(const QString &var, info.qVariables)
-        {
+        for(const QString &var : info.qVariables) {
             outVars.append(name+"_"+var+"__");
             outComps.append(compName);
             outPorts.append(portName);
             outDatatypes.append(info.qVariableIds[info.qVariables.indexOf(var)]);
             tlmPorts.last() << var << name+"_"+var+"__";
         }
-        Q_FOREACH(const QString &var, info.cVariables)
-        {
+        for(const QString &var : info.cVariables) {
             inVars.append(name+"_"+var+"__");
             inComps.append(compName);
             inPorts.append("P1");
@@ -2056,16 +1842,14 @@ void HopsanFMIGenerator::getInterfaceInfo(QString typeName, QString compName,
         GeneratorNodeInfo info(nodeType);
 
         tlmPorts.append(QStringList() << info.niceName+"c");
-        Q_FOREACH(const QString &var, info.qVariables)
-        {
+        for(const QString &var : info.qVariables) {
             inVars.append(name+"_"+var+"__");
             inComps.append(compName);
             inPorts.append("P1");
             inDatatypes.append(info.varIdx[info.qVariables.indexOf(var)]);
             tlmPorts.last() << var << name+"_"+var+"__";
         }
-        Q_FOREACH(const QString &var, info.cVariables)
-        {
+        for(const QString &var : info.cVariables) {
             outVars.append(name+"_"+var+"__");
             outComps.append(compName);
             outPorts.append("P1");

@@ -1399,7 +1399,7 @@ void PlotArea::contextMenuEvent(QContextMenuEvent *event)
     {
         mBottomAxisShowOnlySamples = !mBottomAxisShowOnlySamples;
 
-        Q_FOREACH(PlotCurve *pCurve, mPlotCurves)
+        for(PlotCurve *pCurve : mPlotCurves)
         {
             pCurve->setShowVsSamples(mBottomAxisShowOnlySamples);
         }
@@ -2830,11 +2830,9 @@ void PlotArea::updateWindowtitleModelName()
 {
     //! @todo instead of string, maybe should use shared pointers (in the data variables to avoid duplicating the string for variables from same model) /Peter
     mModelPaths.clear();
-    foreach(PlotCurve *pCurve, mPlotCurves)
-    {
+    for(PlotCurve *pCurve : mPlotCurves) {
         const QString &name = pCurve->getSharedVectorVariable()->getModelPath();
-        if (!mModelPaths.contains(name) && !name.isEmpty())
-        {
+        if (!mModelPaths.contains(name) && !name.isEmpty()) {
             mModelPaths.append(name);
         }
     }
@@ -2913,7 +2911,7 @@ void PlotArea::setBackgroundColor(const QColor &rColor)
 void PlotArea::resetXDataVector()
 {
     // Remove any custom x-data
-    Q_FOREACH(PlotCurve *pCurve, mPlotCurves)
+    for(PlotCurve *pCurve : mPlotCurves)
     {
         if (pCurve->hasCustomXData())
         {
