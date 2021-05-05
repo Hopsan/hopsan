@@ -279,12 +279,12 @@ bool MultiDataVectorCache::hasError() const
 
 QString MultiDataVectorCache::getError() const
 {
-    return mError;
+    return mError+"; File: "+getCacheFileInfo().absoluteFilePath();
 }
 
 QString MultiDataVectorCache::getAndClearError()
 {
-    QString error = mError;
+    QString error = getError();
     mError.clear();
     return error;
 }
@@ -349,7 +349,7 @@ CachableDataVector::CachableDataVector(const QVector<double> &rDataVector, Share
         }
         else
         {
-            mError = "MultiCache Error: "+mpMultiCache->getError()+", falling back to RAM storage";
+            mError = "MultiCache Error, falling back to RAM storage: "+mpMultiCache->getError();
             mDataVector = rDataVector;
         }
     }
