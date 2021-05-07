@@ -1,0 +1,38 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+SHELL := /bin/bash
+export QT_SELECT=5
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+#	Prevent auto running cmake, since it is not yet the default build system
+
+override_dh_auto_build:
+#       First build dependencies
+	packaging/fixPythonShebang.sh ./ 3
+	cd dependencies; ./setupFMILibrary.sh
+	cd dependencies; ./setupKatex.sh
+	cd dependencies; ./setupTclap.sh
+
+#       Now build Hopsan using qmake
+	mkdir -p hopsanShadowBuild
+	source dependencies/setHopsanBuildPaths.sh; cd hopsanShadowBuild; $${HOPSAN_BUILD_QT_QMAKE} ../HopsanNG.pro -r -spec linux-g++ -config release
+	make -j8 -C hopsanShadowBuild
+
+override_dh_auto_clean:
+	rm -rf hopsanShadowBuild
+	dh_auto_clean
+
+override_dh_auto_install:
+	packaging/copyInstallHopsan.sh ./ debian/hopsan/opt/hopsan
+	dh_install packaging/HopsanGUI.desktop usr/share/applications/
+	dh_install HopsanGUI/graphics/uiicons/hopsan128x128.png usr/share/icons/hicolor/128x128/apps/
+
+override_dh_shlibdeps:
+	dh_shlibdeps -l/opt/hopsan/bin
