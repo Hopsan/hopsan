@@ -583,6 +583,14 @@ Usage: abs(vector)
 Calculate average value of vector<br>
 Usage: aver(vector)
 
+\subsection bdf1 bdf1()
+Transforms derivatives in a symbolic expression using the first order backward differentiation formula (implicit Euler)<br>
+Usage: e = bdf1(f)
+
+\subsection bdf2 bdf2()
+Transforms derivatives in a symbolic expression using the second order backward differentiation formula<br>
+Usage: e = bdf2(f)
+
 \subsection ceil ceil()
 Rounds the value of each vector element to the smallest integer larger than the value<br>
 Usage: ceil(vector)
@@ -592,22 +600,50 @@ Differentiates vector with respect to time (or to custom vector)<br>
 Usage: ddt(vector)<br>
 Usage: ddt(vector, timevector)
 
+\subsection der der()
+Differentiates a symbolic expression with respect to another one<br>
+Usage: e = der(f1,f2)
+
 \subsection eq eq()
 Index-wise fuzzy equal check between vectors and/or scalars  (equivalent to "==" operator)<br>
 Usage: eq(varName, threshold, eps)<br>
 Usage: eq(var1, var2, eps)
 
+\subsection euler euler()
+Transforms derivatives in a symbolic expression using the forward Euler method<br>
+Usage: e = euler(f)
+
+\subsection eval eval()
+Evaluates a symbolic expression using local variables<br>
+Usage: y = expr(f)
+
 \subsection exists exists()
 Returns whether or not specified component exists in model<br>
 Usage: exists(name)
+
+\subsection expand expand()
+Expands all parentheses in a symbolic expression<br>
+Usage: e = expand(f)
+
+\subsection expandpowers expandPowers()
+Expands all powers in a symbolic expression to multiplications<br>
+Usage: e = expandPowers(f)
+
+\subsection expr expr()
+Defines a new symbolic expression<br>
+Usage: e = expr(...)
+
+\subsection factor factor()
+Factors a symbolic expression with respect to another one<br>
+Usage: e = factor(f1,f2)
 
 \subsection fc fc()
 Fuzzy compare, returns 1 if the values of the arguments are almost the same<br>
 Usage: fc(expr, expr, tolerance)
 
 \subsection fd fd()
-Converts variable to frequency domain.Usage: y = fd(x)<br>
-
+Converts variable to frequency domain.<br>
+Usage: y = fd(x)
 
 \subsection fft fft()
 Generates frequency spectrum plot from vector<br>
@@ -641,6 +677,18 @@ Usage: imin(vector)
 Integrates vector with respect to time (or to custom vector)<br>
 Usage: int(vector)<br>
 Usage: int(vector, timevector)
+
+\subsection latex latex()
+Prints a symbolic expression with LaTeX syntax<br>
+Usage: latex(e)
+
+\subsection left left()
+Returns the left-hand side of a SymHop equation<br>
+Usage: e = left(f)
+
+\subsection linearize linearize()
+Linearizes a SymHop equation by multiplying with all divisors<br>
+Usage: e = linearize(f)
 
 \subsection linspace linspace()
 Linearly spaced vector<br>
@@ -708,21 +756,37 @@ Usage: peek(vector, idx)
 Generates a random value between 0 and 1<br>
 Usage: rand()
 
+\subsection removedivisors removeDivisors()
+Removes all divisors in a symbolic expression<br>
+Usage: e = removeDivisors(f)
+
+\subsection right right()
+Returns the right-hand side of a SymHop equation<br>
+Usage: e = right(f)
+
 \subsection round round()
 Rounds the value of each vector element to closest integer value<br>
 Usage: round(vector)
+
+\subsection simplify simplify()
+Simplifies a symbolic expression<br>
+Usage: e = simplify(f)
 
 \subsection size size()
 Calculate the size of a vector<br>
 Usage: size(vector)
 
 \subsection td td()
-Converts variable to time domain.Usage: y = td(x)<br>
-
+Converts variable to time domain.<br>
+Usage: y = td(x)
 
 \subsection time time()
 Returns last simulation time<br>
 Usage: time()
+
+\subsection trapezoid trapezoid()
+Transforms derivatives in a symbolic expression using the trapezoid method<br>
+Usage: e = trapezoid(f)
 
 \subsection vector vector()
 Create a vector with specified values<br>
