@@ -30,6 +30,64 @@
 ******************************
     Version History
 ******************************
+2.19.0 (2021-05-10)
+
+--- Important Change ---
+
+The HoLC (Hopsan Library Creator) application has been removed.
+Its functionality has been built into HopsanGUI for some time, and can be accessed from the context menu (right-click)
+in the library widget.
+
+----- Enhancements -----
+
+- HopsanC:
+  - Make it possible to get data vectors by alias name in Python, Julia and Matlab
+
+- HopsanGUI:
+  - Make it possible to view XML and source code for default library components by right-clicking in library widget
+  - Highlight connected connectors when hovering a component
+  - HCOM: Support orphan variables in the chpvx command
+  - HCOM: Enables defining and evaluating SymHop expressions
+          Example: >> a=expr(sin(x)+y)
+                   sin(x)+y
+                   >> b=der(a,expr(x))
+                   cos(x)
+  - HCOM: Convert SymHop expressions to LaTeX
+          Example: >> f=expr((a+b)/(c+d))
+                   (a+b)/(c+d)
+                   >> latex(f)
+                   \dfrac{a+b}{c+d}
+  - Monitor text files in editor tabs for external changes
+  - Add "Always visible" setting for GUI components
+    Use the context menu (right-click) on a component
+  
+- HopsanGenerator:
+  - Various improvements in Simulink generator
+    Hopsan S-functions now also support the "fast restart" option in Simulink
+  - Various fixes and improvements to Modelica generator
+  - Statically link to MinGW libraries for FMI export on Windows
+    Removing dependency to correct version of MinGW DLLs in exported FMUs more 
+
+----- Bug Fixes -----
+
+- HopsanGUI:
+  - Use interpolation-based down sampling to reduce vector size
+    There was an error in reduceVectorSize function due to integer division
+    The fix will affect all frequency analysis plots (spectrum, bode and nyquist)
+  - Preserve rotation and flipping of replaced components
+
+----- Component Libraries -----
+
+- Enable end of stroke limitation in all C-type pistons
+- Add moment of inertia quantity and make use of it in components
+- PID2 component, changed the meaning of the 'de' input signal
+  It is now expected to be a derivative input rather then a "error" delta
+  If you have models using this component they may need to be updated
+- Added markdown descriptions with equations for many commonly used default library components
+  Note! Due to the large amount of added documentation, it has not yet been reviewed
+  If you find something that looks odd, take a look at the component source code
+
+--------------------------------------------------------------------------------------------------------------------------------------------
 2.18.0 (2021-02-25)
 
 ----- Enhancements -----
@@ -42,7 +100,7 @@
 ----- Bug Fixes -----
 
 - HopsanGUI:
- - Due to the random bug described below, starting optimization would instantly freeze the program
+  - Due to the random bug described below, starting optimization would instantly freeze the program
 
 - Ops:
   - On the Windows version build with MinGW the random generator would return the same value on each call. It now returns actual random values
