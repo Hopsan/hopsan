@@ -4,7 +4,7 @@ upstream-contact: Peter Nordin <jpn.peter@gmail.com>
 Source: https://github.com/Hopsan/hopsan
 
 Files: hopsan/*
-Copyright: 2009-2019 Hopsan Group <jpn.peter@gmail.com>
+Copyright: 2021 Hopsan Group <jpn.peter@gmail.com>
 License: GPL-3+ and Apache-2.0
 /usr/share/common-licenses/GPL-3
 /usr/share/common-licenses/Apache-2.0
