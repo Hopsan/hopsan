@@ -85,6 +85,9 @@ private:
     bool cleanAndVerifyParameterValue(QString &rValue, const QString type);
     bool setAliasName(const int row);
     ModelObject *mpModelObject;
+
+signals:
+    void refreshInternalPortInfo();
 };
 
 class ComponentPropertiesDialog3 : public QDialog
@@ -284,6 +287,7 @@ class HideShowPortWidget : public QWidget
     Q_OBJECT
 public:
     HideShowPortWidget(const CoreVariameterDescription &rData, ModelObject *pModelObject, QWidget *pParent);
+    void refreshPortToggleState();
     QCheckBox *getCheckBoxPtr() const;
 signals:
     void toggled(bool);

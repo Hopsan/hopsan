@@ -98,7 +98,7 @@ public:
     QVector<Connector*> getAttachedConnectorPtrs() const; //!< @todo should this be virtual also
     virtual QVector<Port *> getConnectedPorts();
 
-    bool isConnected();
+    bool isConnected() const;
     bool isAutoPlaced();
 
     const SharedPortAppearanceT getPortAppearance() const;

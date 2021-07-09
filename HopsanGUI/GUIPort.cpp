@@ -857,7 +857,7 @@ QVector<Connector*> Port::getAttachedConnectorPtrs() const
 
 //! @brief Ask if the port is connected or not
 //! @return if the port is connected or not
-bool Port::isConnected()
+bool Port::isConnected() const
 {
     return (mConnectedConnectors.size() > 0);
 }
