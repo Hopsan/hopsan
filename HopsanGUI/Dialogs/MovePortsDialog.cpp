@@ -48,6 +48,8 @@
 //! @param[in] parent Pointer to the parent widget
 MovePortsDialog::MovePortsDialog(ModelObject *pModelObject, GraphicsTypeEnumT gfxType, QWidget *parent) : QDialog(parent)
 {
+    setWindowTitle(QString("Move ports on component: %1").arg(pModelObject->getName()));
+
     mpView = new QGraphicsView(this);
     mpView->setScene(new QGraphicsScene());
 
