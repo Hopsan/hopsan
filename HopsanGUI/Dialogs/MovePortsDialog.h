@@ -74,14 +74,11 @@ signals:
 protected:
     void clearPortInfo();
 
-    QGraphicsSvgItem *mpSVGComponent;
     PortAppearanceMapT *mpActualPortAppearanceMap;
     QMap<QString,DragPort*> mDragPortMap;
 
     QGraphicsView *mpView;
     double mViewScale;
-    QGridLayout *mpMainLayout;
-    QGridLayout *mpPortEnableLayout;
 
     QLabel *mpPortNameLabel;
 
@@ -102,7 +99,7 @@ class DragPort : public QGraphicsWidget
     Q_OBJECT
 
 public:
-    DragPort(QString name, const PortAppearance &rAppearance, const SharedPortAppearanceT pOriginalAppearance, QGraphicsItem *parentComponent);
+    DragPort(QString name, const SharedPortAppearanceT pAppearance, const SharedPortAppearanceT pOriginalAppearance, QGraphicsItem *pParentComponent);
 
     void setPosOnComponent(double x, double y, double rot);
     QPointF getPosOnComponent();

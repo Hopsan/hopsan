@@ -53,13 +53,13 @@ MovePortsDialog::MovePortsDialog(ModelObject *pModelObject, GraphicsTypeEnumT gf
 
     ModelObjectAppearance *pComponentAppearance = pModelObject->getAppearanceData();
     const SharedModelObjectAppearanceT pLibraryComponentAppearance = pModelObject->getLibraryAppearanceData();
-    mpSVGComponent = new QGraphicsSvgItem(pComponentAppearance->getFullAvailableIconPath(gfxType));
-    mpView->scene()->addRect(mpSVGComponent->boundingRect(), QPen(Qt::DashLine));
-    mpView->scene()->addItem(mpSVGComponent);
+    auto* pSVGComponent = new QGraphicsSvgItem(pComponentAppearance->getFullAvailableIconPath(gfxType));
+    mpView->scene()->addRect(pSVGComponent->boundingRect(), QPen(Qt::DashLine));
+    mpView->scene()->addItem(pSVGComponent);
 
     mpActualPortAppearanceMap = &(pComponentAppearance->getPortAppearanceMap());
 
-    mpPortEnableLayout = new QGridLayout();
+    auto* pPortEnableLayout = new QGridLayout();
 
     PortAppearanceMapT::Iterator it;
     for(it=mpActualPortAppearanceMap->begin(); it != mpActualPortAppearanceMap->end(); ++it)
@@ -72,7 +72,7 @@ MovePortsDialog::MovePortsDialog(ModelObject *pModelObject, GraphicsTypeEnumT gf
 
         const SharedPortAppearanceT portLibraryAppearance = pLibraryComponentAppearance ? pLibraryComponentAppearance->getPortAppearance(rPortName) : nullptr;
 
-        DragPort *pDragPort = new DragPort(rPortName, *rpPortAppearance, portLibraryAppearance, mpSVGComponent);
+        DragPort *pDragPort = new DragPort(rPortName, rpPortAppearance, portLibraryAppearance, pSVGComponent);
 
         pDragPort->setPosOnComponent(rpPortAppearance->x, rpPortAppearance->y, rpPortAppearance->rot);
         mpView->scene()->addItem(pDragPort);
@@ -82,7 +82,7 @@ MovePortsDialog::MovePortsDialog(ModelObject *pModelObject, GraphicsTypeEnumT gf
         QCheckBox *pEnabledCb = new QCheckBox(rPortName, this);
         pEnabledCb->setChecked(portEnabled);
         pEnabledCb->setDisabled(portConnected);
-        mpPortEnableLayout->addWidget(pEnabledCb);
+        pPortEnableLayout->addWidget(pEnabledCb);
 
         connect(pEnabledCb, SIGNAL(stateChanged(int)), pDragPort, SLOT(setEnable(int)), Qt::UniqueConnection);
         connect(pDragPort, SIGNAL(portMoved()), this, SLOT(updatePortInfo()), Qt::UniqueConnection);
@@ -95,8 +95,8 @@ MovePortsDialog::MovePortsDialog(ModelObject *pModelObject, GraphicsTypeEnumT gf
     mpView->scale(mViewScale, mViewScale);
     //mpView->adjustSize();
 
-    mpMainLayout = new QGridLayout(this);
-    mpMainLayout->addWidget(mpView);
+    auto *pMainLayout = new QGridLayout(this);
+    pMainLayout->addWidget(mpView);
     //layout()->setSizeConstraint(QLayout::SetFixedSize);
 
     mpView->setDragMode(QGraphicsView::RubberBandDrag);
@@ -127,8 +127,8 @@ MovePortsDialog::MovePortsDialog(ModelObject *pModelObject, GraphicsTypeEnumT gf
     buttons->addWidget(mpOkButton);
     buttons->addWidget(mpCancelButton);
 
-    mpMainLayout->addLayout(buttons, 2, 0);
-    mpMainLayout->addWidget(mpZoomSlider, 0, 1, 2, 1);
+    pMainLayout->addLayout(buttons, 2, 0);
+    pMainLayout->addWidget(mpZoomSlider, 0, 1, 2, 1);
 
     QHBoxLayout *pPortInfoLayout = new QHBoxLayout();
     pPortInfoLayout->addWidget(new QLabel("Selected port: ", this));
@@ -144,8 +144,8 @@ MovePortsDialog::MovePortsDialog(ModelObject *pModelObject, GraphicsTypeEnumT gf
     pPortInfoLayout->addWidget(mpResetButton);
 
     pPortInfoLayout->addStretch(1);
-    mpMainLayout->addLayout(pPortInfoLayout,1,0);
-    mpMainLayout->addLayout(mpPortEnableLayout, 0, 2, 1, 1);
+    pMainLayout->addLayout(pPortInfoLayout,1,0);
+    pMainLayout->addLayout(pPortEnableLayout, 0, 2, 1, 1);
 
     connect(mpOkButton,      SIGNAL(clicked()),           this, SLOT(okButtonPressed()));
     connect(mpCancelButton,  SIGNAL(clicked()),           this, SLOT(cancelButtonPressed()));
@@ -280,14 +280,14 @@ bool MovePortsDialog::cancelButtonPressed()
 
 
 //! @brief Constructor for the port that can be dragged around
-//! @param[in] appearance Pointer to the port appearance data of the port that should be used
-//! @param[in] name Name of the port
-//! @param[in] parentComponent Pointer to the parent component on which the port is placed on
-DragPort::DragPort(QString name, const PortAppearance &rAppearance, const SharedPortAppearanceT pOriginalAppearance, QGraphicsItem *parentComponent)
-    : QGraphicsWidget(parentComponent), mpOriginalPortAppearance(pOriginalAppearance)
+//! @param[in] pAppearance Pointer to the port appearance data of the port that should be used
+//! @param[in] pOriginalAppearance The original port appearance, for reset (optional)
+//! @param[in] pParentComponent Pointer to the parent component graphics item on which the port is placed
+DragPort::DragPort(QString name, const SharedPortAppearanceT pAppearance, const SharedPortAppearanceT pOriginalAppearance, QGraphicsItem *pParentComponent)
+    : QGraphicsWidget(pParentComponent), mpOriginalPortAppearance(pOriginalAppearance)
 {
-    mPortAppearance = rAppearance;
-    mpParentComponent = parentComponent;
+    mPortAppearance = *pAppearance;
+    mpParentComponent = pParentComponent;
     mpSvg = new QGraphicsSvgItem(mPortAppearance.mMainIconPath, this);
     setGeometry(mpSvg->boundingRect());
     mpName = new QGraphicsTextItem(name, this);
@@ -341,7 +341,8 @@ void DragPort::setPosOnComponent(double x, double y, double rot)
     mpSvg->setTransformOriginPoint(mpSvg->boundingRect().center());
     mpSvg->setRotation(rot);
 
-    setPos(QPointF(mpParentComponent->boundingRect().topLeft().x()+mpParentComponent->boundingRect().width()*x-ox, mpParentComponent->boundingRect().topLeft().y()+mpParentComponent->boundingRect().height()*y-oy));
+    setPos(QPointF(mpParentComponent->boundingRect().topLeft().x()+mpParentComponent->boundingRect().width()*x-ox,
+                   mpParentComponent->boundingRect().topLeft().y()+mpParentComponent->boundingRect().height()*y-oy));
 }
 
 
