@@ -217,6 +217,7 @@ void ComponentPropertiesDialog3::editPortPos()
     //! @todo who owns the dialog, is it ever removed?
     auto *pDialog = new MovePortsDialog(mpModelObject, mpModelObject->getParentSystemObject()->getGfxType());
     connect(pDialog, SIGNAL(finished()), mpModelObject, SLOT(refreshExternalPortsAppearanceAndPosition()), Qt::UniqueConnection);
+    connect(pDialog, &MovePortsDialog::finished, mpVariableTableWidget, &VariableTableWidget::refreshInternalPortInfo);
 }
 
 
@@ -1362,8 +1363,9 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
     // Set the port hide/show button
     if ( (variametertype == InputVaraiable) || (variametertype == OutputVariable))
     {
-        HideShowPortWidget *pWidget = new HideShowPortWidget(rData, mpModelObject, this);
+        auto *pWidget = new HideShowPortWidget(rData, mpModelObject, this);
         connect(pWidget, SIGNAL(toggled(bool)), pValueWidget, SLOT(refreshValueTextStyle()));
+        connect(this, &VariableTableWidget::refreshInternalPortInfo, pWidget, &HideShowPortWidget::refreshPortToggleState);
         this->setIndexWidget(model()->index(row,ShowPort), pWidget);
     }
     else
@@ -1928,6 +1930,13 @@ HideShowPortWidget::HideShowPortWidget(const CoreVariameterDescription &rData, M
     connect(mpCheckBox, SIGNAL(toggled(bool)), this, SIGNAL(toggled(bool)));
 
     mpCheckBox->setDisabled(pPort && pPort->isConnected());
+}
+
+void HideShowPortWidget::refreshPortToggleState()
+{
+    Port *pPort = mpModelObject->getPort(mPortName);
+    QSignalBlocker scopedBlocker(mpCheckBox); // Prevent firing signal if toggled
+    mpCheckBox->setChecked(pPort && pPort->getPortAppearance()->mEnabled);
 }
 
 QCheckBox *HideShowPortWidget::getCheckBoxPtr() const
