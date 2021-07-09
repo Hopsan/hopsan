@@ -214,8 +214,7 @@ void ComponentPropertiesDialog3::openSourceCode()
 
 void ComponentPropertiesDialog3::editPortPos()
 {
-    //! @todo who owns the dialog, is it ever removed?
-    auto *pDialog = new MovePortsDialog(mpModelObject, mpModelObject->getParentSystemObject()->getGfxType());
+    auto *pDialog = new MovePortsDialog(mpModelObject, mpModelObject->getParentSystemObject()->getGfxType(), this);
     connect(pDialog, SIGNAL(finished()), mpModelObject, SLOT(refreshExternalPortsAppearanceAndPosition()), Qt::UniqueConnection);
     connect(pDialog, &MovePortsDialog::finished, mpVariableTableWidget, &VariableTableWidget::refreshInternalPortInfo);
 }
