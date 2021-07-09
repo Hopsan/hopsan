@@ -43,45 +43,45 @@
 #include <algorithm>
 
 //! @brief Constructor for the move port dialog
-//! @param[in] pComponentAppearance Pointer to the component appearance data of the component which has the ports
+//! @param[in] pModelObject Pointer to the model object which has the ports
 //! @param[in] gfxType USER or ISO graphics for the port
 //! @param[in] parent Pointer to the parent widget
-MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, const ModelObjectAppearance *pLibraryComponentAppearance,
-                                 GraphicsTypeEnumT gfxType, QWidget *parent)    : QDialog(parent)
+MovePortsDialog::MovePortsDialog(ModelObject *pModelObject, GraphicsTypeEnumT gfxType, QWidget *parent) : QDialog(parent)
 {
     mpView = new QGraphicsView(this);
     mpView->setScene(new QGraphicsScene());
 
-    mpCompAppearance = pComponentAppearance;
-    mpSVGComponent = new QGraphicsSvgItem(mpCompAppearance->getFullAvailableIconPath(gfxType));
+    ModelObjectAppearance *pComponentAppearance = pModelObject->getAppearanceData();
+    const SharedModelObjectAppearanceT pLibraryComponentAppearance = pModelObject->getLibraryAppearanceData();
+    mpSVGComponent = new QGraphicsSvgItem(pComponentAppearance->getFullAvailableIconPath(gfxType));
     mpView->scene()->addRect(mpSVGComponent->boundingRect(), QPen(Qt::DashLine));
     mpView->scene()->addItem(mpSVGComponent);
 
-    mpActualPortAppearanceMap = &(mpCompAppearance->getPortAppearanceMap());
+    mpActualPortAppearanceMap = &(pComponentAppearance->getPortAppearanceMap());
 
     mpPortEnableLayout = new QGridLayout();
 
     PortAppearanceMapT::Iterator it;
     for(it=mpActualPortAppearanceMap->begin(); it != mpActualPortAppearanceMap->end(); ++it)
     {
-        DragPort *pDragPort;
-        if (pLibraryComponentAppearance)
-        {
-            pDragPort = new DragPort(it.key(), *(it.value()), pLibraryComponentAppearance->getPortAppearance(it.key()), mpSVGComponent);
-        }
-        else
-        {
-            pDragPort = new DragPort(it.key(), *(it.value()), SharedPortAppearanceT(0), mpSVGComponent);
-        }
+        const QString& rPortName = it.key();
+        const SharedPortAppearanceT& rpPortAppearance = it.value();
+        const auto *pPort = pModelObject->getPort(rPortName);
+        const bool portEnabled = rpPortAppearance->mEnabled;
+        const bool portConnected = pPort && pPort->isConnected();
 
-        pDragPort->setPosOnComponent(it.value()->x, it.value()->y, it.value()->rot);
+        const SharedPortAppearanceT portLibraryAppearance = pLibraryComponentAppearance ? pLibraryComponentAppearance->getPortAppearance(rPortName) : nullptr;
+
+        DragPort *pDragPort = new DragPort(rPortName, *rpPortAppearance, portLibraryAppearance, mpSVGComponent);
+
+        pDragPort->setPosOnComponent(rpPortAppearance->x, rpPortAppearance->y, rpPortAppearance->rot);
         mpView->scene()->addItem(pDragPort);
-        mDragPortMap.insert(it.key(), pDragPort);
+        mDragPortMap.insert(rPortName, pDragPort);
 
-        bool enable = it.value()->mEnabled;
-        pDragPort->setVisible(enable);
-        QCheckBox *pEnabledCb = new QCheckBox(it.key(), this);
-        pEnabledCb->setChecked(enable);
+        pDragPort->setVisible(portEnabled);
+        QCheckBox *pEnabledCb = new QCheckBox(rPortName, this);
+        pEnabledCb->setChecked(portEnabled);
+        pEnabledCb->setDisabled(portConnected);
         mpPortEnableLayout->addWidget(pEnabledCb);
 
         connect(pEnabledCb, SIGNAL(stateChanged(int)), pDragPort, SLOT(setEnable(int)), Qt::UniqueConnection);

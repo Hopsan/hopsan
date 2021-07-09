@@ -215,8 +215,8 @@ void ComponentPropertiesDialog3::openSourceCode()
 void ComponentPropertiesDialog3::editPortPos()
 {
     //! @todo who owns the dialog, is it ever removed?
-    MovePortsDialog *dialog = new MovePortsDialog(mpModelObject->getAppearanceData(), mpModelObject->getLibraryAppearanceData().data(), mpModelObject->getParentSystemObject()->getGfxType());
-    connect(dialog, SIGNAL(finished()), mpModelObject, SLOT(refreshExternalPortsAppearanceAndPosition()), Qt::UniqueConnection);
+    auto *pDialog = new MovePortsDialog(mpModelObject, mpModelObject->getParentSystemObject()->getGfxType());
+    connect(pDialog, SIGNAL(finished()), mpModelObject, SLOT(refreshExternalPortsAppearanceAndPosition()), Qt::UniqueConnection);
 }
 
 
@@ -1926,6 +1926,8 @@ HideShowPortWidget::HideShowPortWidget(const CoreVariameterDescription &rData, M
     mpCheckBox->setChecked((pPort && pPort->getPortAppearance()->mEnabled));
     connect(mpCheckBox, SIGNAL(toggled(bool)), this, SLOT(hideShowPort(bool)));
     connect(mpCheckBox, SIGNAL(toggled(bool)), this, SIGNAL(toggled(bool)));
+
+    mpCheckBox->setDisabled(pPort && pPort->isConnected());
 }
 
 QCheckBox *HideShowPortWidget::getCheckBoxPtr() const

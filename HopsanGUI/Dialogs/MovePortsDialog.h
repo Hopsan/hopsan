@@ -24,12 +24,9 @@
 
 //!
 //! @file   MovePortsDialog.h
-//! @author Björn Eriksson <bjorn.eriksson@liu.se>
-//! @date   2011-12-24
 //!
 //! @brief Contains a class for moving ports at GUI model objects
 //!
-//$Id$
 
 #ifndef MOVEPORTSDIALOG_H
 #define MOVEPORTSDIALOG_H
@@ -54,15 +51,14 @@ class QGraphicsSceneMouseEvent;
 
 // Forward declarations
 class DragPort;
-class ModelObjectAppearance;
+class ModelObject;
 
 class MovePortsDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    MovePortsDialog(ModelObjectAppearance *pComponentAppearance, const ModelObjectAppearance *pLibraryComponentAppearance,
-                    GraphicsTypeEnumT gfxType = UserGraphics, QWidget *parent = 0);
+    MovePortsDialog(ModelObject* pModelObject, GraphicsTypeEnumT gfxType = UserGraphics, QWidget *parent = nullptr);
 
 public slots:
     bool okButtonPressed();
@@ -79,7 +75,6 @@ protected:
     void clearPortInfo();
 
     QGraphicsSvgItem *mpSVGComponent;
-    ModelObjectAppearance *mpCompAppearance;
     PortAppearanceMapT *mpActualPortAppearanceMap;
     QMap<QString,DragPort*> mDragPortMap;
 
