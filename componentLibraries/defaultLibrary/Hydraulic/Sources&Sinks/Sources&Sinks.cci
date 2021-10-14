@@ -15,7 +15,7 @@
     limitations under the License.
 
 
- The full license is available in the file LICENSE.
+ The full license is available in the file LICENSE or LICENSE-ALv2.
  For details about the 'Hopsan Group' or information about Authors and
  Contributors see the HOPSANGROUP and AUTHORS files that are located in
  the Hopsan source code root directory.

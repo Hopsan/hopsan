@@ -15,7 +15,7 @@
     limitations under the License.
 
 
- The full license is available in the file LICENSE.
+ The full license is available in the file LICENSE or LICENSE-ALv2.
  For details about the 'Hopsan Group' or information about Authors and
  Contributors see the HOPSANGROUP and AUTHORS files that are located in
  the Hopsan source code root directory.
@@ -31,9 +31,9 @@ pComponentFactory->registerCreatorFunction("MechanicInterfaceC",MechanicInterfac
 pComponentFactory->registerCreatorFunction("MechanicInterfaceQ",MechanicInterfaceQ::Creator);
 pComponentFactory->registerCreatorFunction("MechanicRotationalInterfaceC",MechanicRotationalInterfaceC::Creator);
 pComponentFactory->registerCreatorFunction("MechanicRotationalInterfaceQ",MechanicRotationalInterfaceQ::Creator);
-pComponentFactory->registerCreatorFunction("PneumaticInterfaceC",PneumaticInterfaceC::Creator);
-pComponentFactory->registerCreatorFunction("PneumaticInterfaceQ",PneumaticInterfaceQ::Creator);
 pComponentFactory->registerCreatorFunction("PetriNetInterfaceC",PetriNetInterfaceC::Creator);
 pComponentFactory->registerCreatorFunction("PetriNetInterfaceQ",PetriNetInterfaceQ::Creator);
+pComponentFactory->registerCreatorFunction("PneumaticInterfaceC",PneumaticInterfaceC::Creator);
+pComponentFactory->registerCreatorFunction("PneumaticInterfaceQ",PneumaticInterfaceQ::Creator);
 pComponentFactory->registerCreatorFunction("SignalInputInterface",SignalInputInterface::Creator);
 pComponentFactory->registerCreatorFunction("SignalOutputInterface",SignalOutputInterface::Creator);
