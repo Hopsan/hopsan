@@ -63,8 +63,8 @@ FindWidget::FindWidget(QWidget *parent) :
     pCloseButton->setIcon(QIcon(":graphics/uiicons/svg/Hopsan-Discard.svg"));
 
     QVBoxLayout *pMainLayout = new QVBoxLayout(this);
-    QHBoxLayout *pSubLayout1 = new QHBoxLayout(this);
-    QHBoxLayout *pSubLayout2 = new QHBoxLayout(this);
+    QHBoxLayout *pSubLayout1 = new QHBoxLayout();
+    QHBoxLayout *pSubLayout2 = new QHBoxLayout();
     pMainLayout->addLayout(pSubLayout1);
     pMainLayout->addLayout(pSubLayout2);
     pSubLayout1->addWidget(new QLabel("Find: ", this));

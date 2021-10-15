@@ -23,6 +23,10 @@ if(WIN32)
   target_compile_definitions(${target_name} PRIVATE HOPSANGENERATOR_DLLEXPORT)
   target_compile_definitions(${target_name} INTERFACE HOPSANGENERATOR_DLLIMPORT)
 endif()
+if(NOT CMAKE_BUILD_TYPE MATCHES Debug)
+  # Silence qDebug() for all non Debug configurations
+  target_compile_definitions(${target_name} PRIVATE QT_NO_DEBUG_OUTPUT)
+endif()
 
 target_include_directories(${target_name} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

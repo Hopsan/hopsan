@@ -25,6 +25,10 @@ target_include_directories(${target_name} PRIVATE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../Utilities>)
 
 target_compile_definitions(${target_name} PRIVATE _USE_MATH_DEFINES)
+if(NOT CMAKE_BUILD_TYPE MATCHES Debug)
+  # Silence qDebug() for all non Debug configurations
+  target_compile_definitions(${target_name} PRIVATE QT_NO_DEBUG_OUTPUT)
+endif()
 
 target_link_libraries(${target_name} Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Xml Qt5::Svg Qt5::Network Qt5::Test Qt5::PrintSupport
                       qwt hopsancore hopsangeneratorgui symhop ops)
