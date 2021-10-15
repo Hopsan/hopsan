@@ -142,7 +142,7 @@ typedef struct
 
 
 bool replaceFMIVariablesWithTLMPort(QStringList &rPortVarNames, QStringList &rPortVarVars, QStringList &rPortVarRefs, QList<size_t> &rPortVarDataIds,
-                                    QList<hopsan_fmi_import_variable_t> &rActualVariables,
+                                    QVector<hopsan_fmi_import_variable_t> &rActualVariables,
                                     const QStringList &rTags, const QList<int> &rDataIds, const QString &rPortName, const QDomElement portElement)
 {
     for(int i=0; i<rTags.size(); ++i) {
@@ -578,9 +578,9 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     }
 
     //Declare lists for parameters, input variables and output variables
-    QList<hopsan_fmi_import_variable_t> fmiParameters;
-    QList<hopsan_fmi_import_variable_t> fmiInputVariables;
-    QList<hopsan_fmi_import_variable_t> fmiOutputVariables;
+    QVector<hopsan_fmi_import_variable_t> fmiParameters;
+    QVector<hopsan_fmi_import_variable_t> fmiInputVariables;
+    QVector<hopsan_fmi_import_variable_t> fmiOutputVariables;
 
     //Loop through variables in FMU and generate the lists
     fmi2_import_variable_list_t *pVarList = fmi2_import_get_variable_list(fmu,0);
@@ -807,7 +807,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
     // Define member variables
 
     // First constant parameter variables
-    QString parameterDefinitions;
+    QString parameterDefinitions = "// Variables representing parameters\n";
     QStringList doubleParams, strParams, intParams, boolParams;
     for(const hopsan_fmi_import_variable_t &par : fmiParameters) {
         //! @todo support all data types
@@ -984,8 +984,8 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
             tempPar.replace("<<<setparfunction>>>","fmi2_import_set_integer");
         }
         else if(par.dataType == fmi2_base_type_str) {
-            QString tempPar2 = "{\n";
-            tempPar2.append("const char* buff[1] = {"+par.variableName+".c_str()"+"};\n");
+            QString tempPar2 = "        {\n";
+            tempPar2.append("        const char* buff[1] = {"+par.variableName+".c_str()"+"};\n");
             tempPar2.append(tempPar);
             tempPar2.replace("<<<var>>>", "buff[0]");
             tempPar2.replace("<<<setparfunction>>>","fmi2_import_set_string");

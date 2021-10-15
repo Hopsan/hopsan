@@ -108,7 +108,6 @@ class <<<className>>> : public <<<classParent>>>
 {
 
 private:
-    //Node data pointers
     <<<localvars>>>
 
     jm_callbacks jmCallbacks;

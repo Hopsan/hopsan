@@ -53,10 +53,9 @@ class <<<className>>> : public ComponentSignal
 {
 
 private:
-    //Node data pointers
     <<<localvars>>>
 
-                  fmi2_callback_functions_t callBackFunctions;
+    fmi2_callback_functions_t callBackFunctions;
     jm_callbacks callbacks;
     fmi_import_context_t* context;
     fmi_version_enu_t version;
