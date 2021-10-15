@@ -18,6 +18,7 @@ out/
 *.exe
 moc_*.cpp
 CMakeSettings.json
+CMakeLists.txt.user
 Makefile
 compileWithMinGW.bat
 GPATH
