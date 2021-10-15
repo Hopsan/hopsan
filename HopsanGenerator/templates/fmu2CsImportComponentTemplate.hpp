@@ -221,7 +221,7 @@ public:
         //Set parameters
         fmi2_value_reference_t vr;
   >>>setpars>>>        vr = <<<vr>>>;
-          fmistatus = <<<setparfunction>>>(fmu, &vr, 1, <<<var>>>);
+          fmistatus = <<<setparfunction>>>(fmu, &vr, 1, &<<<var>>>);
         <<<setpars<<<
 
         //Setup experiment

@@ -976,18 +976,18 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
         QString tempPar = temp;
         tempPar.replace("<<<vr>>>", par.fmuVr);
         if(par.dataType == fmi2_base_type_real) {
-            tempPar.replace("<<<var>>>", "&"+par.variableName);
+            tempPar.replace("<<<var>>>", par.variableName);
             tempPar.replace("<<<setparfunction>>>","fmi2_import_set_real");
         }
         else if(par.dataType == fmi2_base_type_int) {
-            tempPar.replace("<<<var>>>", "&"+par.variableName);
+            tempPar.replace("<<<var>>>", par.variableName);
             tempPar.replace("<<<setparfunction>>>","fmi2_import_set_integer");
         }
         else if(par.dataType == fmi2_base_type_str) {
             QString tempPar2 = "{\n";
             tempPar2.append("const char* buff[1] = {"+par.variableName+".c_str()"+"};\n");
             tempPar2.append(tempPar);
-            tempPar2.replace("<<<var>>>", "&buff[0]");
+            tempPar2.replace("<<<var>>>", "buff[0]");
             tempPar2.replace("<<<setparfunction>>>","fmi2_import_set_string");
             tempPar2.append("}\n");
             tempPar = tempPar2;
@@ -997,7 +997,7 @@ bool HopsanFMIGenerator::generateFromFmu2(const QString &rFmuPath, const QString
             tempPar2.append("fmi2_boolean_t b;\n");
             tempPar2.append(QString("b = ((%1) ? (fmi2_true) : (fmi2_false));\n").arg(par.variableName));
             tempPar2.append(tempPar);
-            tempPar2.replace("<<<var>>>", "&b");
+            tempPar2.replace("<<<var>>>", "b");
             tempPar2.replace("<<<setparfunction>>>","fmi2_import_set_boolean");
             tempPar2.append("}\n");
             tempPar = tempPar2;
