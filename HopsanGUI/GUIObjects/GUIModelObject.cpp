@@ -431,6 +431,7 @@ void ModelObject::showLosses()
     QTime time;
 
     mTotalLosses = 0.0;
+    mDomainSpecificLosses.clear();
 
     QString unit = " J";
     double div = 1;
@@ -472,28 +473,36 @@ void ModelObject::showLosses()
                         QString componentName = vConnectedPorts.at(i)->getParentModelObjectName();
                         QString portName = vConnectedPorts.at(i)->getName();
                         QStringList sysHieararchy = vConnectedPorts.at(i)->getParentModelObject()->getParentSystemNameHieararchy();
+                        auto intensityVariableName = makeFullVariableName(sysHieararchy, componentName, portName, NodeInfo(type).intensity);
+                        auto flowVariableName = makeFullVariableName(sysHieararchy, componentName, portName, NodeInfo(type).flow);
                         //! @todo Multiplying intensity with flow will give correct value for all nodes except pneumatics (that use massflow), figure out how to solve this
-                        QVector<double> vIntensity = mpParentSystemObject->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(sysHieararchy, componentName, portName, NodeInfo(type).intensity), generation);
-                        QVector<double> vFlow = mpParentSystemObject->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(sysHieararchy, componentName, portName, NodeInfo(type).flow), generation);
+                        QVector<double> vIntensity = mpParentSystemObject->getLogDataHandler()->copyVariableDataVector(intensityVariableName, generation);
+                        QVector<double> vFlow = mpParentSystemObject->getLogDataHandler()->copyVariableDataVector(flowVariableName, generation);
                         QVector<double> vTime = mpParentSystemObject->getLogDataHandler()->copyTimeVector(generation);
+                        auto& rDomainSpecificLoss = mDomainSpecificLosses[NodeInfo(type).niceName];
                         for(int s=0; s<vIntensity.size()-1; ++s) //Minus one because of integration method
                         {
                             //! @todo here and bellow there is a risk for slowdown when timevector is cached to disk, should copy the vector first (at is the same as peek)
-                            mTotalLosses += vIntensity.at(s) * vFlow.at(s) * (vTime.at(s+1)-vTime.at(s));
-                            mDomainSpecificLosses.insert(NodeInfo(type).niceName, vIntensity.at(s) * vFlow.at(s) * (vTime.at(s+1)-vTime.at(s)));
+                            double value = vIntensity.at(s) * vFlow.at(s) * (vTime.at(s+1) - vTime.at(s));
+                            mTotalLosses += value;
+                            rDomainSpecificLoss += value;
                         }
                     }
                 }
                 else    //Normal port!
                 {
                     //! @todo Multiplying intensity with flow will give correct value for all nodes except pneumatics (that use massflow), figure out how to solve this
-                    QVector<double> vIntensity = mpParentSystemObject->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(getParentSystemNameHieararchy(), getName(), mPortListPtrs[p]->getName(), NodeInfo(type).intensity), generation);
-                    QVector<double> vFlow = mpParentSystemObject->getLogDataHandler()->copyVariableDataVector(makeFullVariableName(getParentSystemNameHieararchy(), getName(), mPortListPtrs[p]->getName(), NodeInfo(type).flow), generation);
+                    auto intensityVariableName = makeFullVariableName(getParentSystemNameHieararchy(), getName(), mPortListPtrs[p]->getName(), NodeInfo(type).intensity);
+                    auto flowVariableName = makeFullVariableName(getParentSystemNameHieararchy(), getName(), mPortListPtrs[p]->getName(), NodeInfo(type).flow);
+                    QVector<double> vIntensity = mpParentSystemObject->getLogDataHandler()->copyVariableDataVector(intensityVariableName, generation);
+                    QVector<double> vFlow = mpParentSystemObject->getLogDataHandler()->copyVariableDataVector(flowVariableName, generation);
                     QVector<double> vTime = mpParentSystemObject->getLogDataHandler()->copyTimeVector(generation);
+                    auto& rDomainSpecificLoss = mDomainSpecificLosses[NodeInfo(type).niceName];
                     for(int s=0; s<vIntensity.size()-1; ++s) //Minus one because of integration method
                     {
-                        mTotalLosses += vIntensity.at(s) * vFlow.at(s) * (vTime.at(s+1) - vTime.at(s));
-                        mDomainSpecificLosses.insert(NodeInfo(type).niceName, vIntensity.at(s) * vFlow.at(s) * (vTime.at(s+1) - vTime.at(s)));
+                        double value = vIntensity.at(s) * vFlow.at(s) * (vTime.at(s+1) - vTime.at(s));
+                        mTotalLosses += value;
+                        rDomainSpecificLoss += value;
                     }
                 }
             }
@@ -502,12 +511,12 @@ void ModelObject::showLosses()
 
     if(mTotalLosses != 0)
     {
-        if(getTypeCQS() == "Q")     //Invert losses for Q components (because positive direction is defined as outwards for Q and inwards for C)
+        // Invert losses for Q components (because positive direction is defined as outwards for Q and inwards for C)
+        if(getTypeCQS() == "Q")
         {
             mTotalLosses *= -1;
             QMap<QString, double>::iterator it;
-            for(it=mDomainSpecificLosses.begin(); it!=mDomainSpecificLosses.end(); ++it)
-            {
+            for(it=mDomainSpecificLosses.begin(); it!=mDomainSpecificLosses.end(); ++it) {
                 it.value() *= -1;
             }
         }
