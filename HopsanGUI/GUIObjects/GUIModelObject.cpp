@@ -428,25 +428,23 @@ void ModelObject::setIconZoom(const double zoom)
 
 void ModelObject::showLosses()
 {
-    QTime time;
+    if(getTypeCQS() == "S") {
+        return;
+    }
 
     mTotalLosses = 0.0;
     mDomainSpecificLosses.clear();
 
+    const int generation = mpParentSystemObject->getLogDataHandler()->getCurrentGenerationNumber();
+
     QString unit = " J";
     double div = 1;
-    if(mpParentSystemObject->mpAvgPwrRadioButton->isChecked())
-    {
+    if(mpParentSystemObject->mpAvgPwrRadioButton->isChecked()) {
         unit = " W";
-        div = mpParentSystemObject->getLogDataHandler()->copyTimeVector(-1).last();
+        auto timeVector = mpParentSystemObject->getLogDataHandler()->copyTimeVector(generation);
+        double timeSpanSeconds = timeVector.last() - timeVector.first();
+        div = timeSpanSeconds;
     }
-
-    if(getTypeCQS() == "S")
-        return;
-
-    int generation = mpParentSystemObject->getLogDataHandler()->getCurrentGenerationNumber();
-
-    time.start();
 
     for(int p=0; p<mPortListPtrs.size(); ++p)
     {
@@ -460,8 +458,8 @@ void ModelObject::showLosses()
         for(const QString &type : nodeTypes) {
             if(mPortListPtrs[p]->getNodeType() == type && portType != "ReadPortType")
             {
-                //Power port, so we must cycle all connected ports and ask for their data
-                if(mPortListPtrs[p]->getPortType() == "PowerMultiportType" || mPortListPtrs[p]->getPortType() == "SIGNALMULTIPORT")
+                // Power port, so we must cycle all connected ports and ask for their data
+                if(mPortListPtrs[p]->getPortType() == "PowerMultiportType")
                 {
                     QVector<Port *> vConnectedPorts = mPortListPtrs[p]->getConnectedPorts();
                     for(int i=0; i<vConnectedPorts.size(); ++i)
@@ -520,21 +518,18 @@ void ModelObject::showLosses()
                 it.value() *= -1;
             }
         }
-        QString totalString;
-        totalString.setNum(mTotalLosses/div);
-        QString totalAddedString;
-        totalAddedString.setNum(-mTotalLosses/div);
 
         QString label;
         if(mTotalLosses > 0)
         {
-            label = "<p><span style=\"background-color:lightyellow; color:red\"><b>&#160;&#160;Total losses: " + totalString + unit+"&#160;&#160;</b>";
+            QString value = QString::number(mTotalLosses/div);
+            label = "<p><span style=\"background-color:lightyellow; color:red\"><b>&#160;&#160;Total losses: " + value + unit+"&#160;&#160;</b>";
         }
         else
         {
-            QString added = "Added energy";
-            if(unit == " W") added = "Added power";
-            label = "<p><span style=\"background-color:lightyellow; color:green\">&#160;&#160;"+added+": <b>" + totalAddedString + unit+"</b>&#160;&#160;";
+            QString addedWhat = (unit == " W") ? "Added power" : "Added energy";
+            QString value = QString::number(-mTotalLosses/div);
+            label = "<p><span style=\"background-color:lightyellow; color:green\">&#160;&#160;"+addedWhat+": <b>" + value + unit+"</b>&#160;&#160;";
         }
 
         QMap<QString, double>::iterator it;
@@ -546,9 +541,9 @@ void ModelObject::showLosses()
             }
             else if(it.value() < 0 && it.value() != mTotalLosses)
             {
-                QString energyOrPower = "energy";
-                if(unit == " W") energyOrPower = "power";
-                label.append("<br><font color=\"green\">&#160;&#160;Added " + QString::number(it.value()/div) + " "+energyOrPower+": <b>" + QString::number(it.value()) + unit+"</b>&#160;&#160;</font>");
+                QString energyOrPower = (unit == " W") ? "power" : "energy";
+                QString value = QString::number(-it.value()/div);
+                label.append("<br><font color=\"green\">&#160;&#160;Added " +it.key()+" "+energyOrPower+": <b>" + value + unit+"</b>&#160;&#160;</font>");
             }
         }
 
