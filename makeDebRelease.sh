@@ -18,8 +18,8 @@ devversion=2.19.1
 # Pbuilder dists and archs
 debianDistArchArray=( buster:amd64:qt5py3_buster   buster:i386:qt5py3_buster \
                       stretch:amd64:qt5py27        stretch:i386:qt5py27 )
-ubuntuDistArchArray=( hirsute:amd64:hirsute
-                      groovy:amd64:focal
+ubuntuDistArchArray=( impish:amd64:hirsute
+                      hirsute:amd64:hirsute
                       focal:amd64:focal
                       bionic:amd64:qt5py3_1        bionic:i386:qt5py3_1 )
 
