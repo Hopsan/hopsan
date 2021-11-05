@@ -30,6 +30,22 @@
 ******************************
     Version History
 ******************************
+2.19.1 (2021-11-05)
+
+----- Bug Fixes -----
+
+- HopsanGenerator
+  - FMU, S-Function and EXE export all failed to compile due to missing default library source code files
+    They were not included due to a bug in packaging in 2.19.0
+  - FMI ModelExchange import would not compile due to errors in the template code parameter type handling
+
+- HopsanGUI
+  - Energy loss calculation showed wrong value for domain-specific losses, and alternated between runs
+    Also clarified added energy text
+  - HopsanGUI would crash when a connected input variable port was disabled (removed)
+    The checkbox is now disabled for connected ports
+
+--------------------------------------------------------------------------------------------------------------------------------------------
 2.19.0 (2021-05-10)
 
 --- Important Change ---
