@@ -16,10 +16,11 @@ name=hopsan
 devversion=2.19.1
 
 # Pbuilder dists and archs
-debianDistArchArray=( buster:amd64:qt5py3_buster   buster:i386:qt5py3_buster \
+debianDistArchArray=( bullseye:amd64:bullseye      bullseye:i386:bullseye
+                      buster:amd64:qt5py3_buster   buster:i386:qt5py3_buster
                       stretch:amd64:qt5py27        stretch:i386:qt5py27 )
-ubuntuDistArchArray=( impish:amd64:hirsute
-                      hirsute:amd64:hirsute
+ubuntuDistArchArray=( impish:amd64:bullseye
+                      hirsute:amd64:bullseye
                       focal:amd64:focal
                       bionic:amd64:qt5py3_1        bionic:i386:qt5py3_1 )
 
