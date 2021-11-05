@@ -16,6 +16,11 @@ if sys.version_info.major == 2:
     import urllib
 else:
     import urllib.request
+if platform.system() == 'Windows':
+    # Disable SSL verification on Windows, for some reason connections to Sourceforge will fail
+    # The downloaded files are checksum verified so this should be safe
+    import ssl
+    ssl._create_default_https_context = ssl._create_unverified_context
 
 
 def match_platform(platform_name):
