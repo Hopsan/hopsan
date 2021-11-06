@@ -242,7 +242,8 @@ class DependenciesXML:
                             depfile['url'].append(url)
                         url = depfile['url'][0]
                         fname = decide_file_name(dep_name, url)
-                        depfile['dest-filename'] = 'dependencies/'+fname
+                        depfile['dest-filename'] = fname
+                        depfile['dest'] = 'dependencies'
                         dep_files.append(depfile)
             if len(dep_files) > 0:
                 data = dict()
