@@ -81,12 +81,12 @@ fi
 
 # If selected, make changes to compile defaultLibrary into Hopsan Core
 # Deprecated, we should not do this anymore
-if [[ $doBuildInComponents == true ]]; then
-  sed 's|.*DEFINES \*= HOPSAN_INTERNALDEFAULTCOMPONENTS|DEFINES *= HOPSAN_INTERNALDEFAULTCOMPONENTS|g' -i Common.prf
-  sed 's|#INTERNALCOMPLIB.CPP#|../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cpp \\|g' -i HopsanCore/HopsanCore.pro
-  sed '/.*<lib>.*/d' -i componentLibraries/defaultLibrary/defaultComponentLibrary.xml
-  sed 's|componentLibraries||g' -i HopsanNG.pro
-fi
+#if [[ $doBuildInComponents == true ]]; then
+#  sed 's|.*DEFINES \*= HOPSAN_INTERNALDEFAULTCOMPONENTS|DEFINES *= HOPSAN_INTERNALDEFAULTCOMPONENTS|g' -i Common.prf
+#  sed 's|#INTERNALCOMPLIB.CPP#|../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cpp \\|g' -i HopsanCore/HopsanCore.pro
+#  sed '/.*<lib>.*/d' -i componentLibraries/defaultLibrary/defaultComponentLibrary.xml
+#  sed 's|componentLibraries||g' -i HopsanNG.pro
+#fi
 
 # Build user documentation
-./buildDocumentation.sh
+#./buildDocumentation.sh
