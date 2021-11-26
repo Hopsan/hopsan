@@ -8881,7 +8881,9 @@ void HcomHandler::executeLtBuiltInFunction(QString fnc_call)
             pVar2 = mAnsVector;
         }
 
-        LogDataHandler2 *pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler().data();
+        LogDataHandler2 *pLogDataHandler = 0;
+        if(mpModel)
+            pLogDataHandler = mpModel->getViewContainerObject()->getLogDataHandler().data();
 
         // Handle both scalars
         if (arg1IsDouble && arg2IsDouble)
@@ -9066,7 +9068,7 @@ void HcomHandler::executeEqBuiltInFunction(QString fnc_call)
     }
     else
     {
-        HCOMERR(QString("Wrong number of arguments provided for lt function.\n"+mLocalFunctionDescriptions.find("lt").value().second));
+        HCOMERR(QString("Wrong number of arguments provided for eq function.\n"+mLocalFunctionDescriptions.find("lt").value().second));
         mAnsType = Undefined;
         return;
     }
