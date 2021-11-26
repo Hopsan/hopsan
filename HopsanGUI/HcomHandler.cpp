@@ -7820,10 +7820,13 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
                 HCOMERR("If requires one condition expression");
                 return "";
             }
-            QString condition = args.front();
-            QStringList ifCode;
+            QList<QString> conditions;
+            conditions.append(args.front());
+            QList<QStringList> ifCodes;
+            ifCodes.append(QStringList());
             QStringList elseCode;
             bool inElse=false;
+            int depth=1;
             while(true)
             {
                 ++l;
@@ -7833,17 +7836,37 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
                     return QString();
                 }
                 lines[l] = lines[l].trimmed();
-                if(lines[l].startsWith("endif"))
-                {
-                    break;
+                if(lines[l].startsWith("if")) {
+                    ++depth;
                 }
-                if(lines[l].startsWith("else"))
+                else if(lines[l] == "endif")
+                {
+                    if(depth > 1) {
+                        --depth;
+                    }
+                    else {
+                        break;
+                    }
+                }
+                else if(lines[l].startsWith("elseif") && depth == 1) {
+                    QStringList args = extractFunctionCallExpressionArguments(lines[l]);
+                    if (args.size() != 1)
+                    {
+                        HCOMERR("If requires one condition expression");
+                        return "";
+                    }
+                    conditions.append(args.front());
+                    ifCodes.append(QStringList());
+                    continue;
+                }
+                else if(lines[l] == "else" && depth == 1)
                 {
                     inElse=true;
+                    continue;
                 }
-                else if(!inElse)
+                if(!inElse)
                 {
-                    ifCode.append(lines[l]);
+                    ifCodes.last().append(lines[l]);
                 }
                 else
                 {
@@ -7851,25 +7874,30 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
                 }
             }
 
-            evaluateExpression(condition, Scalar);
-            if(mAnsType != Scalar)
-            {
-                HCOMERR("Evaluation of if-statement argument failed.");
-                return QString();
-            }
-            if(mAnsScalar > 0)
-            {
-                QString gotoLabel = runScriptCommands(ifCode, pAbort);
-                if(*pAbort)
+            bool oneConditionWasTrue = false;
+            for(int i=0; i<conditions.size(); ++i) {
+                evaluateExpression(conditions[i], Scalar);
+                if(mAnsType != Scalar)
                 {
-                    return "";
+                    HCOMERR("Evaluation of if-statement argument failed.");
+                    return QString();
                 }
-                if(!gotoLabel.isEmpty())
+                if(mAnsScalar > 0)
                 {
-                    return gotoLabel;
+                    oneConditionWasTrue = true;
+                    QString gotoLabel = runScriptCommands(ifCodes[i], pAbort);
+                    if(*pAbort)
+                    {
+                        return "";
+                    }
+                    if(!gotoLabel.isEmpty())
+                    {
+                        return gotoLabel;
+                    }
+                    break;
                 }
             }
-            else
+            if(!oneConditionWasTrue)
             {
                 QString gotoLabel = runScriptCommands(elseCode, pAbort);
                 if(*pAbort)
