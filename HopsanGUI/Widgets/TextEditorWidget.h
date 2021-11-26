@@ -125,6 +125,7 @@ private:
     TextEditor *mpEditor;
     QFileInfo mFileInfo;
     bool mIsSaved = true;
+    bool mIgnoreNextFileChangeNotification = false;
     QString mSavedText;
     HcomHighlighter *mpHcomHighlighter;
     CppHighlighter *mpCppHighlighter;

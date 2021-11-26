@@ -133,7 +133,11 @@ void TextEditorWidget::find(QString text, QTextDocument::FindFlags flags)
 
 void TextEditorWidget::fileChanged(QString filePath)
 {
-    qDebug() << "File changed: " << filePath;
+    if(mIgnoreNextFileChangeNotification) {
+        mIgnoreNextFileChangeNotification = false;
+        return;
+    }
+
     //We need to add the path again, because some text editors removes the actual file and
     //creates a new one when saving (e.g. gedit). This makes the watcher stop watching.
     if(QFileInfo(filePath) != mFileInfo) {
@@ -223,6 +227,9 @@ void TextEditorWidget::save(SaveTargetEnumT saveAsFlag)
     gpCentralTabWidget->setTabText(gpCentralTabWidget->indexOf(this), mFileInfo.fileName());
 
     mIsSaved = true;
+
+    //This will ignore the next warning that the file has changed on disk - it has obviously changed since we just saved it :)
+    mIgnoreNextFileChangeNotification = true;
 }
 
 void TextEditorWidget::hasChanged()
