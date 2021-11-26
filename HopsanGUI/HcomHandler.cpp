@@ -3032,7 +3032,10 @@ void HcomHandler::executeDefineAliasCommand(const QString cmd)
     QString alias = splitCmd[1];
     variable.remove("\"");
     toLongDataNames(variable);
-    if(mpModel->getViewContainerObject()->setVariableAlias(variable, alias))
+    QStringList hierarchy = variable.section("#",0).split("$");
+    hierarchy.removeLast();
+    SystemObject *pSystem = searchIntoSubsystem(mpModel->getViewContainerObject(),hierarchy);
+    if(pSystem->setVariableAlias(variable, alias))
     {
         HCOMINFO(QString("Sucessfully assigned variable alias %1").arg(alias));
     }
