@@ -192,6 +192,11 @@ bool Component::setParameterValue(QString name, QString value, bool force)
 
         //Refresh appearance
         this->refreshAppearance();
+
+        QStringList defaultParameterNames = getParameterNames();
+        for(int i=0; i<defaultParameterNames.size(); ++i) {
+            mDefaultParameterValues.insert(defaultParameterNames.at(i), getParameterValue(defaultParameterNames.at(i)));
+        }
     }
 
     return retval;
