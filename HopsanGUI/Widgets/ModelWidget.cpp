@@ -945,6 +945,7 @@ void ModelWidget::openCurrentContainerInNewTab()
             pContainer->setModelFile("");
             lockModelEditingFull(true);
             mpExternalSystemWarningWidget->setVisible(false);
+            pContainer->setSubTypeName("");
             break;
         }
     }
