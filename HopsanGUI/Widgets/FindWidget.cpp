@@ -47,6 +47,8 @@ FindWidget::FindWidget(QWidget *parent) :
     QWidget(parent)
 {
     mpFindLineEdit = new QLineEdit(this);
+    mpReplaceLabel = new QLabel("Replace: ", this);
+    mpReplaceLineEdit = new QLineEdit(this);
     mpFindWhatComboBox = new QComboBox(this);
     mpFindWhatComboBox->addItem("Component");
     mpFindWhatComboBox->addItem("System Parameter");
@@ -57,31 +59,39 @@ FindWidget::FindWidget(QWidget *parent) :
     mpPreviousButton->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Enter));
     mpNextButton = new QPushButton("Find Next", this);
     mpNextButton->setShortcut(QKeySequence(Qt::Key_Enter));
+    mpReplaceButton = new QPushButton("Replace", this);
+    mpReplaceAndFindButton = new QPushButton("Replace & Find", this);
+    mpReplaceAllButton = new QPushButton("Replace All", this);
     QToolButton *pCloseButton = new QToolButton(this);
     mpCaseSensitivityCheckBox = new QCheckBox("Case Sensitive", this);
     mpWildcardCheckBox = new QCheckBox("Match Wildcards (*)", this);
     pCloseButton->setIcon(QIcon(":graphics/uiicons/svg/Hopsan-Discard.svg"));
 
-    QVBoxLayout *pMainLayout = new QVBoxLayout(this);
-    QHBoxLayout *pSubLayout1 = new QHBoxLayout();
-    QHBoxLayout *pSubLayout2 = new QHBoxLayout();
-    pMainLayout->addLayout(pSubLayout1);
-    pMainLayout->addLayout(pSubLayout2);
-    pSubLayout1->addWidget(new QLabel("Find: ", this));
-    pSubLayout1->addWidget(mpFindLineEdit);
-    pSubLayout1->addWidget(mpFindWhatComboBox);
-    pSubLayout1->addWidget(mpFindButton);
-    pSubLayout1->addWidget(mpPreviousButton);
-    pSubLayout1->addWidget(mpNextButton);
-    pSubLayout1->addWidget(pCloseButton);
-    pSubLayout1->setStretch(1,1);
-    pSubLayout2->addWidget(mpCaseSensitivityCheckBox);
-    pSubLayout2->addWidget(mpWildcardCheckBox);
-    pSubLayout2->addWidget(new QWidget(this), 1);
-    connect(mpFindButton, SIGNAL(clicked()), this, SLOT(findInContainer()));
-    connect(mpPreviousButton, SIGNAL(clicked()), this, SLOT(findPrevious()));
-    connect(mpNextButton, SIGNAL(clicked()), this, SLOT(findNext()));
-    connect(pCloseButton, SIGNAL(clicked()), this, SLOT(close()));
+    QGridLayout *pLayout = new QGridLayout(this);
+    pLayout->addWidget(new QLabel("Find: ", this),      0, 0);
+    pLayout->addWidget(mpFindLineEdit,                  0, 1, 1, 2);
+    pLayout->addWidget(mpFindWhatComboBox,              0, 3);
+    pLayout->addWidget(mpFindButton,                    0, 4);
+    pLayout->addWidget(mpPreviousButton,                0, 3);
+    pLayout->addWidget(mpNextButton,                    0, 4);
+    pLayout->addWidget(pCloseButton,                    0, 5);
+    pLayout->setColumnStretch(1,1);
+    pLayout->addWidget(mpReplaceLabel,                  1, 0);
+    pLayout->addWidget(mpReplaceLineEdit,               1, 1);
+    pLayout->addWidget(mpReplaceButton,                 1, 2);
+    pLayout->addWidget(mpReplaceAndFindButton,          1, 3);
+    pLayout->addWidget(mpReplaceAllButton,              1, 4);
+    pLayout->addWidget(mpCaseSensitivityCheckBox,       2, 0);
+    pLayout->addWidget(mpWildcardCheckBox,              2, 1);
+
+    connect(mpFindButton,           SIGNAL(clicked()),          this, SLOT(findInContainer()));
+    connect(mpPreviousButton,       SIGNAL(clicked()),          this, SLOT(findPrevious()));
+    connect(mpNextButton,           SIGNAL(clicked()),          this, SLOT(findNext()));
+    connect(pCloseButton,           SIGNAL(clicked()),          this, SLOT(close()));
+    connect(mpReplaceButton,        SIGNAL(clicked()),          this, SLOT(replace()));
+    connect(mpReplaceAndFindButton, SIGNAL(clicked()),          this, SLOT(replaceAndFind()));
+    connect(mpReplaceAllButton,     SIGNAL(clicked()),          this, SLOT(replaceAll()));
+    connect(mpFindLineEdit,         SIGNAL(returnPressed()),    this, SLOT(findNext()));
 
     resize(600, height());
     setWindowTitle("Find Widget");
@@ -96,6 +106,11 @@ void FindWidget::setContainer(SystemObject *pContainer)
     mpPreviousButton->setVisible(false);
     mpNextButton->setVisible(false);
     mpFindButton->setVisible(true);
+    mpReplaceLabel->setVisible(false);
+    mpReplaceLineEdit->setVisible(false);
+    mpReplaceButton->setVisible(false);
+    mpReplaceAndFindButton->setVisible(false);
+    mpReplaceAllButton->setVisible(false);
 }
 
 void FindWidget::setTextEditor(TextEditorWidget *pEditor)
@@ -107,6 +122,11 @@ void FindWidget::setTextEditor(TextEditorWidget *pEditor)
     mpPreviousButton->setVisible(true);
     mpNextButton->setVisible(true);
     mpFindButton->setVisible(false);
+    mpReplaceLabel->setVisible(true);
+    mpReplaceLineEdit->setVisible(true);
+    mpReplaceButton->setVisible(true);
+    mpReplaceAndFindButton->setVisible(true);
+    mpReplaceAllButton->setVisible(true);
 }
 
 void FindWidget::findPrevious()
@@ -314,6 +334,43 @@ void FindWidget::findAny(const QString &rName)
     //Not yet implemented
 }
 
+void FindWidget::replace()
+{
+    if(mpTextEditor->getSelectedText() == mpFindLineEdit->text()) {
+        mpTextEditor->replaceSelectedText(mpReplaceLineEdit->text());
+    }
+}
+
+void FindWidget::replaceAndFind()
+{
+    if(mpTextEditor->getSelectedText() == mpFindLineEdit->text()) {
+        mpTextEditor->replaceSelectedText(mpReplaceLineEdit->text());
+    }
+    QTextDocument::FindFlags flags;
+    if(mpCaseSensitivityCheckBox->isChecked()) {
+        flags |= QTextDocument::FindCaseSensitively;
+    }
+    mpTextEditor->find(mpFindLineEdit->text(), flags);
+}
+
+void FindWidget::replaceAll()
+{
+    //Search backward
+    findPrevious();
+    while(mpTextEditor->getSelectedText() == mpFindLineEdit->text()) {
+        mpTextEditor->replaceSelectedText(mpReplaceLineEdit->text());
+        findPrevious();
+    }
+
+    //Search forward
+    findNext();
+    while(mpTextEditor->getSelectedText() == mpFindLineEdit->text()) {
+        mpTextEditor->replaceSelectedText(mpReplaceLineEdit->text());
+        findNext();
+    }
+
+}
+
 void FindWidget::setVisible(bool visible)
 {
     //If text is selected in current editor, update it in find widget
@@ -329,6 +386,7 @@ void FindWidget::setVisible(bool visible)
     if(visible)
     {
         this->mpFindLineEdit->setFocus();
+        this->mpFindLineEdit->selectAll();
     }
 }
 

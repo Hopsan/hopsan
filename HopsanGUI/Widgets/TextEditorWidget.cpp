@@ -126,6 +126,11 @@ QString TextEditorWidget::getSelectedText()
     return mpEditor->textCursor().selectedText();
 }
 
+void TextEditorWidget::replaceSelectedText(QString newText)
+{
+    mpEditor->textCursor().insertText(newText);
+}
+
 void TextEditorWidget::find(QString text, QTextDocument::FindFlags flags)
 {
     mpEditor->find(text,flags);
