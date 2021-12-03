@@ -34,6 +34,7 @@
 #include <QComboBox>
 #include <QPushButton>
 #include <QCheckBox>
+#include <QLabel>
 
 // Forward declaration
 class SystemObject;
@@ -57,6 +58,9 @@ public slots:
     void findSystemParameter(const QString &rName, const bool centerView=true, Qt::CaseSensitivity caseSensitivity=Qt::CaseInsensitive, bool wildcard=true);
     void findSystemParameter(const QStringList &rNames, const bool centerView=true, Qt::CaseSensitivity caseSensitivity=Qt::CaseInsensitive, bool wildcard=true);
     void findAny(const QString &rName);
+    void replace();
+    void replaceAndFind();
+    void replaceAll();
 
 public slots:
     virtual void setVisible(bool visible);
@@ -65,12 +69,17 @@ public slots:
 private:
     void clearHighlights();
     QLineEdit* mpFindLineEdit;
+    QLabel* mpReplaceLabel;
+    QLineEdit* mpReplaceLineEdit;
     QComboBox* mpFindWhatComboBox;
     QPushButton* mpFindButton;
     QCheckBox* mpCaseSensitivityCheckBox;
     QCheckBox* mpWildcardCheckBox;
     QPushButton *mpPreviousButton;
     QPushButton *mpNextButton;
+    QPushButton *mpReplaceButton;
+    QPushButton *mpReplaceAndFindButton;
+    QPushButton *mpReplaceAllButton;
 
     QPointer<SystemObject> mpContainer;
     QPointer<TextEditorWidget> mpTextEditor;
