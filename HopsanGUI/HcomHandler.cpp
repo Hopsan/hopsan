@@ -7900,7 +7900,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
                     break;
                 }
             }
-            if(!oneConditionWasTrue)
+            if(!oneConditionWasTrue && !elseCode.isEmpty())
             {
                 QString gotoLabel = runScriptCommands(elseCode, pAbort);
                 if(*pAbort)
@@ -8903,7 +8903,7 @@ void HcomHandler::executeLtBuiltInFunction(QString fnc_call)
             return;
         }
         // Handle arg1 is double
-        else if (arg1IsDouble && pVar2)
+        else if (arg1IsDouble && pVar2 && pLogDataHandler)
         {
             QVector<double> res;
             pVar2->elementWiseGt(res, arg1AsDouble);
@@ -8913,7 +8913,7 @@ void HcomHandler::executeLtBuiltInFunction(QString fnc_call)
             return;
         }
         // Handle arg2 is double
-        else if (arg2IsDouble && pVar1)
+        else if (arg2IsDouble && pVar1 && pLogDataHandler)
         {
             QVector<double> res;
             pVar1->elementWiseLt(res, arg2AsDouble);
@@ -8923,7 +8923,7 @@ void HcomHandler::executeLtBuiltInFunction(QString fnc_call)
             return;
         }
         // Handle both vectors
-        else if (pVar1 && pVar2)
+        else if (pVar1 && pVar2 && pLogDataHandler)
         {
             //! @todo this assumes that both vectors have the same type
             if (pVar1->getDataSize() != pVar2->getDataSize())
