@@ -7900,16 +7900,21 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
                     break;
                 }
             }
-            if(!oneConditionWasTrue && !elseCode.isEmpty())
+            if(!oneConditionWasTrue)
             {
-                QString gotoLabel = runScriptCommands(elseCode, pAbort);
-                if(*pAbort)
-                {
-                    return "";
+                if(!elseCode.isEmpty()) {
+                    QString gotoLabel = runScriptCommands(elseCode, pAbort);
+                    if(*pAbort)
+                    {
+                        return QString();
+                    }
+                    if(!gotoLabel.isEmpty())
+                    {
+                        return gotoLabel;
+                    }
                 }
-                if(!gotoLabel.isEmpty())
-                {
-                    return gotoLabel;
+                else {
+                    return QString();
                 }
             }
         }

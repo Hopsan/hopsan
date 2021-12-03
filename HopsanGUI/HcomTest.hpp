@@ -106,27 +106,40 @@ private slots:
     void testControlFlowIf() {
         QString script = R"(
                 if (a > 4)
-                  b = 1
+                  if (b > 2)
+                    c = 1
+                  elseif (b < 0)
+                    c = 2
+                  endif
                 else
-                  b = 0
+                  c = 3
                 endif
                 )";
 
         mpHcom->executeCommand("a = 5");
+        mpHcom->executeCommand("b = 3");
         bool abort=false;
         QStringList lines = script.split("\n");
         mpHcom->runScriptCommands(lines, &abort);
-        mpHcom->executeCommand("b");
+        mpHcom->executeCommand("c");
         QCOMPARE(mpHcom->mAnsType, HcomHandler::Scalar);
         QCOMPARE(mpHcom->mAnsScalar, 1.0);
+
+        mpHcom->executeCommand("b = -1");
+        abort=false;
+        lines = script.split("\n");
+        mpHcom->runScriptCommands(lines, &abort);
+        mpHcom->executeCommand("c");
+        QCOMPARE(mpHcom->mAnsType, HcomHandler::Scalar);
+        QCOMPARE(mpHcom->mAnsScalar, 2.0);
 
         mpHcom->executeCommand("a = 3");
         abort=false;
         lines = script.split("\n");
         mpHcom->runScriptCommands(lines, &abort);
-        mpHcom->executeCommand("b");
+        mpHcom->executeCommand("c");
         QCOMPARE(mpHcom->mAnsType, HcomHandler::Scalar);
-        QCOMPARE(mpHcom->mAnsScalar, 0.0);
+        QCOMPARE(mpHcom->mAnsScalar, 3.0);
     }
 
     void testControlFlowForeach() {
