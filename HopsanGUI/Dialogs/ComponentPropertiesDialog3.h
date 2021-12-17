@@ -101,6 +101,7 @@ signals:
     void setLimitedModelEditingLock(bool);
 
 protected slots:
+    void showEvent(QShowEvent *event);
     void okPressed();
     void applyAndSimulatePressed();
     void applyPressed();

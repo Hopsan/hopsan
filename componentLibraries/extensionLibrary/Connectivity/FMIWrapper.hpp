@@ -138,6 +138,7 @@ private:
     fmi2_import_t* fmu;
     double mTolerance = 1e-4;
     HString mVisibleOutputs;
+    HString mTempPath;
 
 public:
     static Component *Creator()
@@ -201,6 +202,9 @@ public:
         }
 
         addDebugMessage("Using temporary directory: "+mpTempDir->path());
+
+        mTempPath = mpTempDir->path();
+        addConstant("temppath", "", "", mTempPath, mTempPath);
 
         version = fmi_import_get_fmi_version(context, mFmuPath.c_str(), mpTempDir->path().c_str());
         if(version != fmi_version_2_0_enu) {
