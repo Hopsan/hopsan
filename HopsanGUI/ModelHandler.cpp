@@ -705,7 +705,7 @@ void ModelHandler::disconnectMainWindowConnections(ModelWidget *pModel)
     disconnect(gpMainWindow->mpToggleRemoteCoreSimAction,   SIGNAL(triggered(bool)),        pModel,  SLOT(setUseRemoteSimulation(bool)));
     disconnect(gpMainWindow->mpSaveAction,                  SIGNAL(triggered()),            pModel,  SLOT(save()));
     disconnect(gpMainWindow->mpSaveAsAction,                SIGNAL(triggered()),            pModel,  SLOT(saveAs()));
-    disconnect(gpMainWindow->mpExportModelParametersAction, SIGNAL(triggered()),            pModel,  SLOT(exportModelParameters()));
+    disconnect(gpMainWindow->mpExportModelParametersActionToHpf, SIGNAL(triggered()),            pModel,  SLOT(exportModelParameters()));
     disconnect(gpMainWindow->mpExportSimulationStateAction, SIGNAL(triggered()),            pModel,  SLOT(exportSimulationStates()));
 
     connect(pModel,                                         SIGNAL(modelSaved(ModelWidget*)),           SIGNAL(modelChanged(ModelWidget*)));
@@ -741,12 +741,13 @@ void ModelHandler::connectMainWindowConnections(ModelWidget *pModel)
     connect(gpMainWindow->mpSimulationTimeEdit, SIGNAL(simulationTimeChanged(QString,QString,QString)), pModel, SLOT(setTopLevelSimulationTime(QString,QString,QString)), Qt::UniqueConnection);
     connect(pModel, SIGNAL(simulationTimeChanged(QString,QString,QString)), gpMainWindow->mpSimulationTimeEdit, SLOT(displaySimulationTime(QString,QString,QString)), Qt::UniqueConnection);
 
-    connect(gpMainWindow,                                   SIGNAL(simulateKeyPressed()),   pModel,    SLOT(simulate_nonblocking()), Qt::UniqueConnection);
-    connect(gpMainWindow->mpToggleRemoteCoreSimAction,      SIGNAL(triggered(bool)),        pModel,    SLOT(setUseRemoteSimulation(bool)), Qt::UniqueConnection);
-    connect(gpMainWindow->mpSaveAction,                     SIGNAL(triggered()),            pModel,    SLOT(save()), Qt::UniqueConnection);
-    connect(gpMainWindow->mpSaveAsAction,                   SIGNAL(triggered()),            pModel,    SLOT(saveAs()), Qt::UniqueConnection);
-    connect(gpMainWindow->mpExportModelParametersAction,    SIGNAL(triggered()),            pModel,    SLOT(exportModelParameters()), Qt::UniqueConnection);
-    connect(gpMainWindow->mpExportSimulationStateAction,    SIGNAL(triggered()),            pModel,    SLOT(exportSimulationStates()), Qt::UniqueConnection);
+    connect(gpMainWindow,                                       SIGNAL(simulateKeyPressed()),   pModel,    SLOT(simulate_nonblocking()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpToggleRemoteCoreSimAction,          SIGNAL(triggered(bool)),        pModel,    SLOT(setUseRemoteSimulation(bool)), Qt::UniqueConnection);
+    connect(gpMainWindow->mpSaveAction,                         SIGNAL(triggered()),            pModel,    SLOT(save()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpSaveAsAction,                       SIGNAL(triggered()),            pModel,    SLOT(saveAs()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpExportModelParametersActionToHpf,   SIGNAL(triggered()),            pModel,    SLOT(exportModelParametersToHpf()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpExportModelParametersActionToSsv,   SIGNAL(triggered()),            pModel,    SLOT(exportModelParametersToSsv()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpExportSimulationStateAction,        SIGNAL(triggered()),            pModel,    SLOT(exportSimulationStates()), Qt::UniqueConnection);
 
     connect(pModel,                                         SIGNAL(modelSaved(ModelWidget*)),           SIGNAL(modelChanged(ModelWidget*)));
 }

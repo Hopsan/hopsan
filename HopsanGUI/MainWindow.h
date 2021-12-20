@@ -151,7 +151,8 @@ public:
     QAction *mpNewScriptAction;
     QAction *mpOpenTextFileAction;
     QAction *mpExportSimulationStateAction;
-    QAction *mpExportModelParametersAction;
+    QAction *mpExportModelParametersActionToSsv;
+    QAction *mpExportModelParametersActionToHpf;
     QAction *mpImportFMUAction;
     QAction *mpImportDataFileAction;
     QAction *mpExportToSimulinkAction;
@@ -272,6 +273,7 @@ private:
 
     QToolButton *mpExportToFMUMenuButton;
     QToolButton *mpExportToExeMenuButton;
+    QToolButton *mpExportModelParametersMenuButton;
 
     // Dialogs
     OptionsDialog *mpOptionsDialog;
@@ -310,6 +312,7 @@ private:
     QMenu *mpHelpMenu;
     QMenu *mpExamplesMenu;
     QMenu *mpTestModelsMenu;
+    QMenu *mpExportModelParametersMenu;
 
     // Buttons
     QToolButton *mpImportButton;

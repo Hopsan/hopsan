@@ -516,11 +516,21 @@ void MainWindow::createActions()
     mpExportSimulationStateAction = new QAction(QIcon(QString(ICONPATH) + "svg/Hopsan-ExportParameters.pvg"), tr("&Export Simulation State"), this);
     mpExportSimulationStateAction->setToolTip(tr("Export simulation state"));
 
-    mpExportModelParametersAction = new QAction(QIcon(QString(ICONPATH) + "svg/Hopsan-ExportParameters.svg"), tr("&Export Model Parameters"), this);
-    mpExportModelParametersAction->setShortcut(QKeySequence("Ctrl+Alt+E"));
-    mpExportModelParametersAction->setToolTip(tr("Export Model Parameters (Ctrl+Alt+P)"));
-    connect(mpExportModelParametersAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
-    mHelpPopupTextMap.insert(mpExportModelParametersAction, "Export model parameter set to XML.");
+    mpExportModelParametersActionToHpf = new QAction(QIcon(QString(ICONPATH) + "svg/Hopsan-ExportParameters.svg"), tr("&Export Model Parameters to HPF"), this);
+    mpExportModelParametersActionToHpf->setToolTip(tr("Export Model Parameters to HPF"));
+    connect(mpExportModelParametersActionToHpf, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpExportModelParametersActionToHpf, "Export model parameter set to HPF.");
+
+    mpExportModelParametersActionToSsv = new QAction(QIcon(QString(ICONPATH) + "svg/Hopsan-ExportParameters.svg"), tr("&Export Model Parameters to SSV"), this);
+    mpExportModelParametersActionToSsv->setShortcut(QKeySequence("Ctrl+Alt+E"));
+    mpExportModelParametersActionToSsv->setToolTip(tr("Export Model Parameters to SSV (Ctrl+Alt+E)"));
+    connect(mpExportModelParametersActionToSsv, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mHelpPopupTextMap.insert(mpExportModelParametersActionToSsv, "Export model parameter set to SSV.");
+
+    mpExportModelParametersMenu = new QMenu("Export Model Parameteres");
+    mpExportModelParametersMenu->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-ExportParameters.svg"));
+    mpExportModelParametersMenu->addAction(mpExportModelParametersActionToSsv);
+    mpExportModelParametersMenu->addAction(mpExportModelParametersActionToHpf);
 
     mpCloseAction = new QAction(this);
     mpCloseAction->setText("Close");
@@ -1038,7 +1048,7 @@ void MainWindow::createMenus()
     mpImportMenu->addAction(mpImportFMUAction);
 
     mpExportMenu->addAction(mpExportSimulationStateAction);
-    mpExportMenu->addAction(mpExportModelParametersAction);
+    mpExportMenu->addMenu(mpExportModelParametersMenu);
     mpExportMenu->addSeparator();
     mpExportMenu->addAction(mpExportToSimulinkAction);
     mpExportMenu->addAction(mpExportToLabviewAction);
@@ -1089,7 +1099,12 @@ void MainWindow::createToolbars()
     mpConnectivityToolBar = addToolBar(tr("Import/Export Toolbar)"));
     mpConnectivityToolBar->setAllowedAreas(Qt::TopToolBarArea | Qt::LeftToolBarArea | Qt::RightToolBarArea);
     mpConnectivityToolBar->setAttribute(Qt::WA_MouseTracking);
-    mpConnectivityToolBar->addAction(mpExportModelParametersAction);
+    mpExportModelParametersMenuButton = new QToolButton(this);
+    mpExportModelParametersMenuButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-ExportParameters.svg"));
+    mpExportModelParametersMenuButton->setPopupMode(QToolButton::InstantPopup);
+    mpExportModelParametersMenuButton->setMouseTracking(true);
+    mpExportModelParametersMenuButton->setMenu(mpExportModelParametersMenu);
+    mpConnectivityToolBar->addWidget(mpExportModelParametersMenuButton);
     mpConnectivityToolBar->addAction(mpLoadModelParametersAction);
     mpConnectivityToolBar->addSeparator();
     mpConnectivityToolBar->addAction(mpExportPDFAction);
@@ -1412,7 +1427,8 @@ void MainWindow::updateToolBarsToNewTab()
     mpSaveAsAction->setEnabled(modelTab || editorTab);
     mpSaveAndRunAction->setEnabled(editorTab && pEditor->getFileInfo().suffix() == "hcom");
     mpExportSimulationStateAction->setEnabled(modelTab);
-    mpExportModelParametersAction->setEnabled(modelTab);
+    mpExportModelParametersMenu->setEnabled(modelTab);
+    mpExportModelParametersMenuButton->setEnabled(modelTab);
     mpCutAction->setEnabled(modelTab || editorTab);
     mpCopyAction->setEnabled(modelTab || editorTab);
     mpPasteAction->setEnabled(modelTab || editorTab);
