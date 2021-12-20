@@ -121,7 +121,8 @@ public slots:
     bool simulate_blocking();
     void save();
     void saveAs();
-    void exportModelParameters();
+    void exportModelParametersToHpf();
+    void exportModelParametersToSsv();
     void importModelParameters(QString parameterFile="");
     void exportSimulationStates();
     void handleSystemLock(bool isExternal, bool hasLocalLock);

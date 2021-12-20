@@ -698,9 +698,170 @@ void ModelWidget::saveAs()
     saveModel(NewFile);
 }
 
-void ModelWidget::exportModelParameters()
+void ModelWidget::exportModelParametersToHpf()
 {
     saveModel(NewFile, ParametersOnly);
+}
+
+void ModelWidget::exportModelParametersToSsv()
+{
+    QMap<QString, QString> dataTypeTranslator{{"double", "Real"}, {"integer", "Integer"}, {"bool", "Boolean"}, {"string", "String"}, {"textblock", "String"}, {"filepath", "Strig"}, {"conditional", "Integer"}};
+
+    QStringList names, values, dataTypes, quantities, units;
+    getTopLevelSystemContainer()->getAllParametersAndValuesRecursively("", names, values, dataTypes, quantities, units);
+
+    QString saveDirectory = gpConfig->getStringSetting(CFG_PARAMETEREXPORTDIR);
+    QString ssvFile = QFileDialog::getSaveFileName(gpMainWindowWidget, tr("Save Parameters to SSV"),
+                                                     saveDirectory,
+                                                     tr("System Structure Parameter Values (*.ssv)"));
+    if(ssvFile.isEmpty()) {
+        return;
+    }
+    gpConfig->setStringSetting(CFG_PARAMETEREXPORTDIR, QFileInfo(ssvFile).absolutePath());
+
+    //! @todo Don't assume all parameters to be of real type
+
+    QDomDocument ssvDocument;
+    appendRootXMLProcessingInstruction(ssvDocument);
+    QDomElement ssvParameterSetElement = ssvDocument.createElement("ssv:ParameterSet");
+    ssvDocument.appendChild(ssvParameterSetElement);
+    ssvParameterSetElement.setAttribute("version", "1.0");
+    ssvParameterSetElement.setAttribute("name", this->getTopLevelSystemContainer()->getName());
+    ssvParameterSetElement.setAttribute("xmlns:ssv", "http://ssp-standard.org/SSP1/SystemStructureParameterValues");
+    QDomElement ssvParametersElement = appendDomElement(ssvParameterSetElement, "ssv:Parameters");
+    for(int i=0; i<names.size(); ++i) {
+        QDomElement ssvParameterElement = appendDomElement(ssvParametersElement,"ssv:Parameter");
+        ssvParameterElement.setAttribute("name", names[i]);
+        QDomElement ssvRealElement = appendDomElement(ssvParameterElement,"ssv:"+dataTypeTranslator[dataTypes[i]]);
+        ssvRealElement.setAttribute("value", values[i]);
+        ssvRealElement.setAttribute("unit", units[i]);
+    }
+
+    QDomElement ssvUnitsElement = appendDomElement(ssvParameterSetElement, "ssv:Units");
+    QList<QPair<QString, QString> > usedUnits;
+    for(int i=0; i<units.size(); ++i) {
+        QString quantity = quantities[i];
+        if(quantity.isEmpty()) {
+            quantity = gpConfig->getQuantitiesForUnit(units[i])[0]; //Picking the first quantity is the best we can do without more knowledge
+        }
+        if(usedUnits.contains(qMakePair(units[i], quantity)) || quantity.isEmpty()) {
+            continue;
+        }
+        usedUnits.append(qMakePair(units[i], quantity));
+        QString baseUnit = gpConfig->getBaseUnit(quantity);
+        UnitConverter converter;
+        gpConfig->getUnitScale(quantity, units[i], converter);
+        double scale = converter.scaleToDouble();
+        double offset = converter.offsetToDouble();
+        QDomElement ssvUnitElement = appendDomElement(ssvUnitsElement, "ssv:Unit");
+        ssvUnitElement.setAttribute("name", units[i]);
+
+        QDomElement ssvBaseUnitElement = appendDomElement(ssvUnitElement, "ssv:BaseUnit");
+        ssvBaseUnitElement.setAttribute("factor", scale);
+        ssvBaseUnitElement.setAttribute("offset", offset);
+
+        //! @todo We should maybe derive base units in this way everywhere to conform with e.g. FMI and SSP standards, instead of hard-coding it here
+        if(baseUnit == "m") {
+            ssvBaseUnitElement.setAttribute("m", 1);
+        }
+        else if(baseUnit == "m/s") {
+            ssvBaseUnitElement.setAttribute("m", 1);
+            ssvBaseUnitElement.setAttribute("s", -1);
+        }
+        else if(baseUnit == "V") {
+            ssvBaseUnitElement.setAttribute("kg", 1);
+            ssvBaseUnitElement.setAttribute("m", 2);
+            ssvBaseUnitElement.setAttribute("A", -1);
+            ssvBaseUnitElement.setAttribute("s", -3);
+        }
+        else if(baseUnit == "A") {
+            ssvBaseUnitElement.setAttribute("A", 1);
+        }
+        else if(baseUnit == "s") {
+            ssvBaseUnitElement.setAttribute("s", 1);
+        }
+        else if(baseUnit == "rad/s") {
+            ssvBaseUnitElement.setAttribute("rad", 1);
+            ssvBaseUnitElement.setAttribute("s", -1);
+        }
+        else if(baseUnit == "rad") {
+            ssvBaseUnitElement.setAttribute("rad", 1);
+        }
+        else if(baseUnit == "m^3/s") {
+            ssvBaseUnitElement.setAttribute("m", 3);
+            ssvBaseUnitElement.setAttribute("s", -1);
+        }
+        else if(baseUnit == "N") {
+            ssvBaseUnitElement.setAttribute("kg", 1);
+            ssvBaseUnitElement.setAttribute("m", 1);
+            ssvBaseUnitElement.setAttribute("s", -2);
+        }
+        else if(baseUnit == "Nm") {
+            ssvBaseUnitElement.setAttribute("kg", 1);
+            ssvBaseUnitElement.setAttribute("m", 2);
+            ssvBaseUnitElement.setAttribute("s", -2);
+        }
+        else if(baseUnit == "Pa") {
+            ssvBaseUnitElement.setAttribute("kg", 1);
+            ssvBaseUnitElement.setAttribute("m", -1);
+            ssvBaseUnitElement.setAttribute("s", -2);
+        }
+        else if(baseUnit == "m^2") {
+            ssvBaseUnitElement.setAttribute("m", 2);
+        }
+        else if(baseUnit == "m^3") {
+            ssvBaseUnitElement.setAttribute("m", 3);
+        }
+        else if(baseUnit == "m^3/rev") {
+            ssvBaseUnitElement.setAttribute("m", 3);
+        }
+        else if(baseUnit == "K") {
+            ssvBaseUnitElement.setAttribute("K", 1);
+        }
+        else if(baseUnit == "kg/m^3") {
+            ssvBaseUnitElement.setAttribute("kg", 1);
+            ssvBaseUnitElement.setAttribute("m", -3);
+        }
+        else if(baseUnit == "kg m/s") {
+            ssvBaseUnitElement.setAttribute("kg", 1);
+            ssvBaseUnitElement.setAttribute("m", 1);
+            ssvBaseUnitElement.setAttribute("s", -1);
+        }
+        else if(baseUnit == "J") {
+            ssvBaseUnitElement.setAttribute("kg", 1);
+            ssvBaseUnitElement.setAttribute("m", 2);
+            ssvBaseUnitElement.setAttribute("s", -2);
+        }
+        else if(baseUnit == "J/s") {
+            ssvBaseUnitElement.setAttribute("kg", 1);
+            ssvBaseUnitElement.setAttribute("m", 2);
+            ssvBaseUnitElement.setAttribute("s", -3);
+        }
+        else if(baseUnit == "kg") {
+            ssvBaseUnitElement.setAttribute("kg", 1);
+        }
+        else if(baseUnit == "ohm") {
+            ssvBaseUnitElement.setAttribute("kg", 1);
+            ssvBaseUnitElement.setAttribute("m", 2);
+            ssvBaseUnitElement.setAttribute("A", -2);
+            ssvBaseUnitElement.setAttribute("s", -3);
+        }
+        else if(baseUnit == "(m^3/s)/Pa") {
+            ssvBaseUnitElement.setAttribute("m", 2);
+            ssvBaseUnitElement.setAttribute("s", -3);
+            ssvBaseUnitElement.setAttribute("kg", 1);
+        }
+    }
+
+    QFile file;
+    file.setFileName(ssvFile);   //Create a QFile object
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        gpMessageHandler->addErrorMessage("Failed to open file for writing: " + ssvFile);
+        return;
+    }
+    QTextStream fileStream(&file);
+    ssvDocument.save(fileStream, XMLINDENTATION);
+    file.close();
 }
 
 void ModelWidget::importModelParameters(QString parameterFile)
@@ -1314,3 +1475,4 @@ bool ModelWidget::saveTo(const QString& path, SaveContentsEnumT contents)
 
     return saveXmlFile(path, mpMessageHandler, saveFunction);
 }
+

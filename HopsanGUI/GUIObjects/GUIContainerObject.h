@@ -217,6 +217,7 @@ public:
     virtual bool setOrAddParameter(const CoreParameterData &rParameter, bool force=false);
     virtual bool renameParameter(const QString oldName, const QString newName);
     void loadParameterValuesFromFile(QString parameterFile = {}) override;
+    void getAllParametersAndValuesRecursively(QString prefix, QStringList &names, QStringList &values, QStringList &dataTypes, QStringList &quantities, QStringList &units);
 
     // NumHop Methods
     void setNumHopScript(const QString &rScript);
