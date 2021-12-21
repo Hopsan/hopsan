@@ -104,7 +104,8 @@ public slots:
     void loadModel(QAction *action);
     void newTextFile();
     void loadTextFile();
-    void loadModelParameters();
+    void loadModelParametersFromHpf();
+    void loadModelParametersFromSsv();
     bool closeModelByTabIndex(int tabIdx, bool force=false);
     bool closeModel(int idx, bool force=false);
     bool closeScript(int idx, bool force=false);

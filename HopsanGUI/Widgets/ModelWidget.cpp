@@ -864,9 +864,169 @@ void ModelWidget::exportModelParametersToSsv()
     file.close();
 }
 
-void ModelWidget::importModelParameters(QString parameterFile)
+void ModelWidget::importModelParametersFromHpf(QString parameterFile)
 {
     mpToplevelSystem->loadParameterValuesFromFile(parameterFile);
+}
+
+void ModelWidget::importModelParametersFromSsv()
+{
+    //Let user choose SSV file
+    QString openLocation = gpConfig->getStringSetting(CFG_PARAMETERIMPORTDIR);
+    if (openLocation.isEmpty()) {
+        openLocation = gpConfig->getStringSetting(CFG_LOADMODELDIR);
+    }
+    QString parameterFile = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Load Parameters from SSV File"),
+                                                 openLocation,
+                                                 tr("System Structure Parameter Values (*.ssv)"));
+    if(!parameterFile.isEmpty()) {
+        gpConfig->setStringSetting(CFG_PARAMETERIMPORTDIR,  QFileInfo(parameterFile).absolutePath());
+    }
+
+    //This map translates data type names from Hopsan to SSV
+    QMap<QString, QString> dataTypeTranslator{{"double", "Real"}, {"integer", "Integer"}, {"bool", "Boolean"}, {"string", "String"}, {"textblock", "String"}, {"filepath", "Strig"}, {"conditional", "Integer"}};
+
+    //Read from SSV file (XML)
+    QFile file(parameterFile);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        gpMessageHandler->addErrorMessage("Unable to open "+file.fileName()+" for reading.");
+        return;
+    }
+    QDomDocument domDocument;
+    QString errorStr;
+    int errorLine, errorColumn;
+    if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn)) {
+        gpMessageHandler->addErrorMessage(file.fileName()+QString(": Parse error at line %1, column %2:\n%3").arg(errorLine).arg(errorColumn).arg(errorStr));
+        return;
+    }
+
+    QDomElement configRoot = domDocument.documentElement();
+    if (configRoot.tagName() != "ssv:ParameterSet") {
+        gpMessageHandler->addErrorMessage(file.fileName()+": Incorrect root tag name: "+configRoot.tagName()+" != ssv:ParameterSet");
+        return;
+    }
+
+    QDomElement parametersElement = configRoot.firstChildElement("ssv:Parameters");
+
+    //Loop through all <ssv:Parameter> elements
+    QDomElement parameterElement = parametersElement.firstChildElement("ssv:Parameter");
+    while(!parameterElement.isNull()) {
+        QString ssvName, ssvDataType, ssvValue, ssvUnit;
+
+        ssvName = parameterElement.attribute("name");
+
+        //Read data subelement (name = ssv:[datatype])
+        QDomElement dataElement = parameterElement.firstChildElement();
+        ssvDataType = dataElement.nodeName();
+        ssvDataType.remove("ssv:");
+        ssvUnit = dataElement.attribute("unit");
+        ssvValue = dataElement.attribute("value");
+
+        //Now find corresponding parameter in model
+        //ssvName = system1|system2|component.parameter (component parameters)
+        //ssvName = system1|system2|parameter           (system paramters)
+        QStringList systemHierarchy;
+        QString componentName, parameterName;
+        systemHierarchy = ssvName.split("|");
+        if(systemHierarchy.last().contains(".")) {
+            componentName = systemHierarchy.last().split(".")[0];  //Component parameter
+            parameterName = systemHierarchy.last().split(".")[1];
+        }
+        else {
+            parameterName = systemHierarchy.last();                 //System parameter
+        }
+        systemHierarchy.removeLast();
+        SystemObject *pSystem = getTopLevelSystemContainer();
+        for(int s=0; s<systemHierarchy.size(); ++s) {               //Recurse subsystems
+            pSystem = qobject_cast<SystemObject*>(pSystem->getModelObject(systemHierarchy[s]));
+            if(pSystem == nullptr) {
+                gpMessageHandler->addWarningMessage("Could not find subsystem: "+systemHierarchy[s]+", ignoring all its parameters.");
+                parameterElement = parameterElement.nextSiblingElement("ssv:Parameter");
+                continue;
+            }
+        }
+        if(componentName.isEmpty()) {                               //Set system parameter
+            CoreParameterData parameter;
+            pSystem->getParameter(parameterName, parameter);
+            if(dataTypeTranslator[parameter.mType] != ssvDataType) {
+                gpMessageHandler->addWarningMessage("Wrong data type for unit: \""+ssvName+"\", ignoring value. ("+dataTypeTranslator[parameter.mType]+" != "+ssvDataType+")");
+            }
+            else if(parameter.mType == "Real") {    //Handle units for "Real" type parameters only
+                if(parameter.mUnit == ssvUnit) {
+                    pSystem->setParameterValue(parameterName, ssvValue);
+                }
+                else {
+                    QStringList quantities = gpConfig->getQuantitiesForUnit(ssvUnit);
+                    if(quantities.isEmpty()) {
+                        gpMessageHandler->addWarningMessage("Unit is not supported by Hopsan: "+ssvUnit+". Setting parameter without unit conversion.");
+                        pSystem->setParameterValue(parameterName, ssvValue);
+                    }
+                    else {
+                        QString ssvQuantity, hopsanUnit, hopsanQuantity;
+                        ssvQuantity = quantities[0];    //Guessing for first quantity is the best we can do
+                        hopsanUnit = parameter.mUnit;
+                        if(parameter.mQuantity.isEmpty()) {
+                            hopsanQuantity = gpConfig->getQuantitiesForUnit(parameter.mUnit)[0];
+                        }
+                        else {
+                            hopsanQuantity = parameter.mQuantity;
+                        }
+                        UnitConverter uc1 = gpConfig->getUnitScaleUC(ssvQuantity, ssvUnit);         //Converts between SSV unit and base unit
+                        UnitConverter uc2 = gpConfig->getUnitScaleUC(hopsanQuantity, parameter.mUnit); //Converts between Hopsan unit and base unit
+                        pSystem->setParameterValue(parameterName, uc2.convertFromBase(uc1.convertToBase(ssvValue)));
+                    }
+                }
+            }
+            else {
+                pSystem->setParameterValue(parameterName, ssvValue);   //Ignore units for non-Real parameters
+            }
+        }
+        else {                               //Set component parameter
+            ModelObject *pComponent = pSystem->getModelObject(componentName);
+            if(pComponent == nullptr) {
+                gpMessageHandler->addWarningMessage("Could not find component: "+componentName+", ignoring parameter "+parameterName);
+                parameterElement = parameterElement.nextSiblingElement("ssv:Parameter");
+                continue;
+            }
+            CoreParameterData parameter;
+            pComponent->getParameter(parameterName, parameter);
+            if(dataTypeTranslator[parameter.mType] != ssvDataType) {
+                gpMessageHandler->addWarningMessage("Wrong data type for unit: \""+ssvName+"\", ignoring value.");
+            }
+            else if(dataTypeTranslator[parameter.mType] == "Real") {
+                if(parameter.mUnit == ssvUnit) {
+                    pComponent->setParameterValue(parameterName, ssvValue);
+                }
+                else {
+                    QStringList quantities = gpConfig->getQuantitiesForUnit(ssvUnit);
+                    if(quantities.isEmpty()) {
+                        gpMessageHandler->addWarningMessage("Unit is not supported by Hopsan: "+ssvUnit+". Setting parameter without unit conversion.");
+                        pComponent->setParameterValue(parameterName, ssvValue);
+                    }
+                    else {
+                        QString ssvQuantity, hopsanUnit, hopsanQuantity;
+                        ssvQuantity = quantities[0];    //Guessing for first quantity is the best we can do
+                        hopsanUnit = parameter.mUnit;
+                        if(parameter.mQuantity.isEmpty()) {
+                            hopsanQuantity = gpConfig->getQuantitiesForUnit(parameter.mUnit)[0];
+                        }
+                        else {
+                            hopsanQuantity = parameter.mQuantity;
+                        }
+                        UnitConverter uc1 = gpConfig->getUnitScaleUC(ssvQuantity, ssvUnit);         //Converts between SSV unit and base unit
+                        UnitConverter uc2 = gpConfig->getUnitScaleUC(hopsanQuantity, parameter.mUnit); //Converts between Hopsan unit and base unit
+                        pComponent->setParameterValue(parameterName, uc2.convertFromBase(uc1.convertToBase(ssvValue)));
+                    }
+                }
+            }
+            else {
+                pComponent->setParameterValue(parameterName, ssvValue);   //Ignore units for non-Real parameters
+            }
+        }
+        parameterElement = parameterElement.nextSiblingElement("ssv:Parameter");
+    }
+    emit getTopLevelSystemContainer()->systemParametersChanged();
 }
 
 void ModelWidget::exportSimulationStates()

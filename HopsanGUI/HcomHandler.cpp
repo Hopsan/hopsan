@@ -4572,7 +4572,7 @@ void HcomHandler::executeLoadParametersCommand(const QString cmd)
         }
     }
     else {
-       mpModel->importModelParameters(path);
+       mpModel->importModelParametersFromHpf(path);
     }
 }
 

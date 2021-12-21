@@ -842,9 +842,18 @@ void MainWindow::createActions()
     mHelpPopupTextMap.insert(mpExportToLabviewAction, "Export model to LabVIEW Veristand.");
     connect(mpExportToLabviewAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpLoadModelParametersAction = new QAction(QIcon(QString(ICONPATH) + "svg/Hopsan-LoadModelParameters.svg"), tr("Load Model Parameters"), this);
-    mHelpPopupTextMap.insert(mpLoadModelParametersAction, "Load model parameter set from XML.");
-    connect(mpLoadModelParametersAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mpLoadModelParametersFromSsvAction = new QAction(QIcon(QString(ICONPATH) + "svg/Hopsan-LoadModelParameters.svg"), tr("Load Model Parameters from SSV"), this);
+    mHelpPopupTextMap.insert(mpLoadModelParametersFromSsvAction, "Load model parameter set from SSV.");
+    connect(mpLoadModelParametersFromSsvAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+
+    mpLoadModelParametersFromHpfAction = new QAction(QIcon(QString(ICONPATH) + "svg/Hopsan-LoadModelParameters.svg"), tr("Load Model Parameters from HPF"), this);
+    mHelpPopupTextMap.insert(mpLoadModelParametersFromHpfAction, "Load model parameter set from HPF.");
+    connect(mpLoadModelParametersFromHpfAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+
+    mpImportModelParametersMenu = new QMenu("Import Model Parameteres");
+    mpImportModelParametersMenu->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-LoadModelParameters.svg"));
+    mpImportModelParametersMenu->addAction(mpLoadModelParametersFromSsvAction);
+    mpImportModelParametersMenu->addAction(mpLoadModelParametersFromHpfAction);
 
     mpAboutAction = new QAction(this);
     mpAboutAction->setText("About");
@@ -1043,7 +1052,8 @@ void MainWindow::createMenus()
     mpToolsMenu->addAction(mpNumHopAction);
 
     mpImportMenu->addAction(mpImportDataFileAction);
-    mpImportMenu->addAction(mpLoadModelParametersAction);
+    mpImportMenu->addAction(mpLoadModelParametersFromHpfAction);
+    mpImportMenu->addAction(mpLoadModelParametersFromSsvAction);
     mpImportMenu->addSeparator();
     mpImportMenu->addAction(mpImportFMUAction);
 
@@ -1105,7 +1115,12 @@ void MainWindow::createToolbars()
     mpExportModelParametersMenuButton->setMouseTracking(true);
     mpExportModelParametersMenuButton->setMenu(mpExportModelParametersMenu);
     mpConnectivityToolBar->addWidget(mpExportModelParametersMenuButton);
-    mpConnectivityToolBar->addAction(mpLoadModelParametersAction);
+    mpImportModelParametersMenuButton = new QToolButton(this);
+    mpImportModelParametersMenuButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-LoadModelParameters.svg"));
+    mpImportModelParametersMenuButton->setPopupMode(QToolButton::InstantPopup);
+    mpImportModelParametersMenuButton->setMouseTracking(true);
+    mpImportModelParametersMenuButton->setMenu(mpImportModelParametersMenu);
+    mpConnectivityToolBar->addWidget(mpImportModelParametersMenuButton);
     mpConnectivityToolBar->addSeparator();
     mpConnectivityToolBar->addAction(mpExportPDFAction);
     mpConnectivityToolBar->addAction(mpExportPNGAction);
@@ -1207,16 +1222,17 @@ void MainWindow::createToolbars()
     mpToolsToolBar->addAction(mpFlipHorizontalAction);
     mpToolsToolBar->addAction(mpFlipVerticalAction);
 
-    connect(mpImportFMUAction,              SIGNAL(triggered()), gpLibraryHandler,  SLOT(importFmu()));
-    connect(mpExportToSimulinkAction,       SIGNAL(triggered()), mpModelHandler,    SLOT(exportCurrentModelToSimulink()));
-    connect(mpExportToFMU1_32Action,        SIGNAL(triggered()), mpModelHandler,    SLOT(exportCurrentModelToFMU1_32()));
-    connect(mpExportToFMU1_64Action,        SIGNAL(triggered()), mpModelHandler,    SLOT(exportCurrentModelToFMU1_64()));
-    connect(mpExportToFMU2_32Action,        SIGNAL(triggered()), mpModelHandler,    SLOT(exportCurrentModelToFMU2_32()));
-    connect(mpExportToFMU2_64Action,        SIGNAL(triggered()), mpModelHandler,    SLOT(exportCurrentModelToFMU2_64()));
-    connect(mpExportToLabviewAction,        SIGNAL(triggered()), mpModelHandler,    SLOT(createLabviewWrapperFromCurrentModel()));
-    connect(mpExportToExe_32Action,         SIGNAL(triggered()), mpModelHandler,    SLOT(exportCurrentModelToExe_32()));
-    connect(mpExportToExe_64Action,         SIGNAL(triggered()), mpModelHandler,    SLOT(exportCurrentModelToExe_64()));
-    connect(mpLoadModelParametersAction,    SIGNAL(triggered()), mpModelHandler,    SLOT(loadModelParameters()));
+    connect(mpImportFMUAction,                  SIGNAL(triggered()), gpLibraryHandler,  SLOT(importFmu()));
+    connect(mpExportToSimulinkAction,           SIGNAL(triggered()), mpModelHandler,    SLOT(exportCurrentModelToSimulink()));
+    connect(mpExportToFMU1_32Action,            SIGNAL(triggered()), mpModelHandler,    SLOT(exportCurrentModelToFMU1_32()));
+    connect(mpExportToFMU1_64Action,            SIGNAL(triggered()), mpModelHandler,    SLOT(exportCurrentModelToFMU1_64()));
+    connect(mpExportToFMU2_32Action,            SIGNAL(triggered()), mpModelHandler,    SLOT(exportCurrentModelToFMU2_32()));
+    connect(mpExportToFMU2_64Action,            SIGNAL(triggered()), mpModelHandler,    SLOT(exportCurrentModelToFMU2_64()));
+    connect(mpExportToLabviewAction,            SIGNAL(triggered()), mpModelHandler,    SLOT(createLabviewWrapperFromCurrentModel()));
+    connect(mpExportToExe_32Action,             SIGNAL(triggered()), mpModelHandler,    SLOT(exportCurrentModelToExe_32()));
+    connect(mpExportToExe_64Action,             SIGNAL(triggered()), mpModelHandler,    SLOT(exportCurrentModelToExe_64()));
+    connect(mpLoadModelParametersFromHpfAction, SIGNAL(triggered()), mpModelHandler,    SLOT(loadModelParametersFromHpf()));
+    connect(mpLoadModelParametersFromSsvAction, SIGNAL(triggered()), mpModelHandler,    SLOT(loadModelParametersFromSsv()));
 }
 
 void MainWindow::buildModelActionsMenu(QMenu *pParentMenu, QDir dir)
@@ -1429,6 +1445,8 @@ void MainWindow::updateToolBarsToNewTab()
     mpExportSimulationStateAction->setEnabled(modelTab);
     mpExportModelParametersMenu->setEnabled(modelTab);
     mpExportModelParametersMenuButton->setEnabled(modelTab);
+    mpExportModelParametersActionToSsv->setEnabled(modelTab);
+    mpExportModelParametersActionToHpf->setEnabled(modelTab);
     mpCutAction->setEnabled(modelTab || editorTab);
     mpCopyAction->setEnabled(modelTab || editorTab);
     mpPasteAction->setEnabled(modelTab || editorTab);
@@ -1467,7 +1485,9 @@ void MainWindow::updateToolBarsToNewTab()
     mpExportToFMU2_32Action->setEnabled(modelTab);
     mpExportToLabviewAction->setEnabled(modelTab);
     mpExportToSimulinkAction->setEnabled(modelTab);
-    mpLoadModelParametersAction->setEnabled(modelTab);
+    mpImportModelParametersMenuButton->setEnabled(modelTab);
+    mpLoadModelParametersFromHpfAction->setEnabled(modelTab);
+    mpLoadModelParametersFromSsvAction->setEnabled(modelTab);
 
     if(gpFindWidget) {
         gpFindWidget->setEnabled(modelTab || editorTab);
