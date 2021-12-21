@@ -123,7 +123,8 @@ public slots:
     void saveAs();
     void exportModelParametersToHpf();
     void exportModelParametersToSsv();
-    void importModelParameters(QString parameterFile="");
+    void importModelParametersFromHpf(QString parameterFile="");
+    void importModelParametersFromSsv();
     void exportSimulationStates();
     void handleSystemLock(bool isExternal, bool hasLocalLock);
     void lockModelEditingFull(bool lock);

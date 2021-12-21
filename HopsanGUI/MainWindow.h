@@ -163,7 +163,8 @@ public:
     QAction *mpExportToLabviewAction;
     QAction *mpExportToExe_32Action;
     QAction *mpExportToExe_64Action;
-    QAction *mpLoadModelParametersAction;
+    QAction *mpLoadModelParametersFromSsvAction;
+    QAction *mpLoadModelParametersFromHpfAction;
     QAction *mpCloseAction;
     QAction *mpUndoAction;
     QAction *mpRedoAction;
@@ -274,6 +275,7 @@ private:
     QToolButton *mpExportToFMUMenuButton;
     QToolButton *mpExportToExeMenuButton;
     QToolButton *mpExportModelParametersMenuButton;
+    QToolButton *mpImportModelParametersMenuButton;
 
     // Dialogs
     OptionsDialog *mpOptionsDialog;
@@ -313,6 +315,7 @@ private:
     QMenu *mpExamplesMenu;
     QMenu *mpTestModelsMenu;
     QMenu *mpExportModelParametersMenu;
+    QMenu *mpImportModelParametersMenu;
 
     // Buttons
     QToolButton *mpImportButton;

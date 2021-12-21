@@ -294,11 +294,19 @@ void ModelHandler::newTextFile()
 }
 
 
-void ModelHandler::loadModelParameters()
+void ModelHandler::loadModelParametersFromHpf()
 {
     auto pModel = getCurrentModel();
     if (pModel) {
-        pModel->importModelParameters();
+        pModel->importModelParametersFromHpf();
+    }
+}
+
+void ModelHandler::loadModelParametersFromSsv()
+{
+    auto pModel = getCurrentModel();
+    if (pModel) {
+        pModel->importModelParametersFromSsv();
     }
 }
 
