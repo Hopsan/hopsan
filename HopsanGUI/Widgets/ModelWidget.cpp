@@ -761,96 +761,16 @@ void ModelWidget::exportModelParametersToSsv()
         ssvBaseUnitElement.setAttribute("offset", offset);
 
         //! @todo We should maybe derive base units in this way everywhere to conform with e.g. FMI and SSP standards, instead of hard-coding it here
-        if(baseUnit == "m") {
-            ssvBaseUnitElement.setAttribute("m", 1);
-        }
-        else if(baseUnit == "m/s") {
-            ssvBaseUnitElement.setAttribute("m", 1);
-            ssvBaseUnitElement.setAttribute("s", -1);
-        }
-        else if(baseUnit == "V") {
-            ssvBaseUnitElement.setAttribute("kg", 1);
-            ssvBaseUnitElement.setAttribute("m", 2);
-            ssvBaseUnitElement.setAttribute("A", -1);
-            ssvBaseUnitElement.setAttribute("s", -3);
-        }
-        else if(baseUnit == "A") {
-            ssvBaseUnitElement.setAttribute("A", 1);
-        }
-        else if(baseUnit == "s") {
-            ssvBaseUnitElement.setAttribute("s", 1);
-        }
-        else if(baseUnit == "rad/s") {
-            ssvBaseUnitElement.setAttribute("rad", 1);
-            ssvBaseUnitElement.setAttribute("s", -1);
-        }
-        else if(baseUnit == "rad") {
-            ssvBaseUnitElement.setAttribute("rad", 1);
-        }
-        else if(baseUnit == "m^3/s") {
-            ssvBaseUnitElement.setAttribute("m", 3);
-            ssvBaseUnitElement.setAttribute("s", -1);
-        }
-        else if(baseUnit == "N") {
-            ssvBaseUnitElement.setAttribute("kg", 1);
-            ssvBaseUnitElement.setAttribute("m", 1);
-            ssvBaseUnitElement.setAttribute("s", -2);
-        }
-        else if(baseUnit == "Nm") {
-            ssvBaseUnitElement.setAttribute("kg", 1);
-            ssvBaseUnitElement.setAttribute("m", 2);
-            ssvBaseUnitElement.setAttribute("s", -2);
-        }
-        else if(baseUnit == "Pa") {
-            ssvBaseUnitElement.setAttribute("kg", 1);
-            ssvBaseUnitElement.setAttribute("m", -1);
-            ssvBaseUnitElement.setAttribute("s", -2);
-        }
-        else if(baseUnit == "m^2") {
-            ssvBaseUnitElement.setAttribute("m", 2);
-        }
-        else if(baseUnit == "m^3") {
-            ssvBaseUnitElement.setAttribute("m", 3);
-        }
-        else if(baseUnit == "m^3/rev") {
-            ssvBaseUnitElement.setAttribute("m", 3);
-        }
-        else if(baseUnit == "K") {
-            ssvBaseUnitElement.setAttribute("K", 1);
-        }
-        else if(baseUnit == "kg/m^3") {
-            ssvBaseUnitElement.setAttribute("kg", 1);
-            ssvBaseUnitElement.setAttribute("m", -3);
-        }
-        else if(baseUnit == "kg m/s") {
-            ssvBaseUnitElement.setAttribute("kg", 1);
-            ssvBaseUnitElement.setAttribute("m", 1);
-            ssvBaseUnitElement.setAttribute("s", -1);
-        }
-        else if(baseUnit == "J") {
-            ssvBaseUnitElement.setAttribute("kg", 1);
-            ssvBaseUnitElement.setAttribute("m", 2);
-            ssvBaseUnitElement.setAttribute("s", -2);
-        }
-        else if(baseUnit == "J/s") {
-            ssvBaseUnitElement.setAttribute("kg", 1);
-            ssvBaseUnitElement.setAttribute("m", 2);
-            ssvBaseUnitElement.setAttribute("s", -3);
-        }
-        else if(baseUnit == "kg") {
-            ssvBaseUnitElement.setAttribute("kg", 1);
-        }
-        else if(baseUnit == "ohm") {
-            ssvBaseUnitElement.setAttribute("kg", 1);
-            ssvBaseUnitElement.setAttribute("m", 2);
-            ssvBaseUnitElement.setAttribute("A", -2);
-            ssvBaseUnitElement.setAttribute("s", -3);
-        }
-        else if(baseUnit == "(m^3/s)/Pa") {
-            ssvBaseUnitElement.setAttribute("m", 2);
-            ssvBaseUnitElement.setAttribute("s", -3);
-            ssvBaseUnitElement.setAttribute("kg", 1);
-        }
+        int kg, m, s, A, K, mol, cd, rad;
+        gpConfig->getBaseUnitSIExponents(quantity, kg, m, s, A, K, mol, cd, rad);
+        ssvBaseUnitElement.setAttribute("kg",  kg);
+        ssvBaseUnitElement.setAttribute("m",   m);
+        ssvBaseUnitElement.setAttribute("s",   s);
+        ssvBaseUnitElement.setAttribute("A",   A);
+        ssvBaseUnitElement.setAttribute("K",   K);
+        ssvBaseUnitElement.setAttribute("mol", mol);
+        ssvBaseUnitElement.setAttribute("cd",  cd);
+        ssvBaseUnitElement.setAttribute("rad", rad);
     }
 
     QFile file;

@@ -249,6 +249,14 @@ void Configuration::saveToXml()
             {
                 xmlQuantity.setAttribute(CFG_BASEUNIT, baseunit);
             }
+            xmlQuantity.setAttribute(CFG_KG, qit.value().kg);
+            xmlQuantity.setAttribute(CFG_KG, qit.value().m);
+            xmlQuantity.setAttribute(CFG_KG, qit.value().s);
+            xmlQuantity.setAttribute(CFG_KG, qit.value().A);
+            xmlQuantity.setAttribute(CFG_KG, qit.value().K);
+            xmlQuantity.setAttribute(CFG_KG, qit.value().mol);
+            xmlQuantity.setAttribute(CFG_KG, qit.value().cd);
+            xmlQuantity.setAttribute(CFG_KG, qit.value().rad);
 
             // Save the default selected display unit
             QMap<QString, QString>::iterator itdu = mSelectedDefaultUnits.find(qit.key());
@@ -665,6 +673,14 @@ void Configuration::loadUnitSettings(QDomElement &rDomElement, bool tagAsBuiltIn
     {
         QString quantity = xmlQuantity.attribute(HMF_NAMETAG);
         QString baseunit = xmlQuantity.attribute(CFG_BASEUNIT);
+        int kg = parseAttributeInt(xmlQuantity, CFG_KG, 0);
+        int m = parseAttributeInt(xmlQuantity, CFG_M, 0);
+        int s = parseAttributeInt(xmlQuantity, CFG_S, 0);
+        int A = parseAttributeInt(xmlQuantity, CFG_A, 0);
+        int K = parseAttributeInt(xmlQuantity, CFG_K, 0);
+        int mol = parseAttributeInt(xmlQuantity, CFG_MOL, 0);
+        int cd = parseAttributeInt(xmlQuantity, CFG_CD, 0);
+        int rad = parseAttributeInt(xmlQuantity, CFG_RAD, 0);
         QString deafdisplayunit = xmlQuantity.attribute(CFG_DEFAULTDISPALYUNIT, baseunit);
         if (!deafdisplayunit.isEmpty())
         {
@@ -681,6 +697,14 @@ void Configuration::loadUnitSettings(QDomElement &rDomElement, bool tagAsBuiltIn
         if (!baseunit.isEmpty() && !qit.value().builtInUnitconversions.contains(baseunit))
         {
             qit.value().baseunit = baseunit;
+            qit.value().kg = kg;
+            qit.value().m = m;
+            qit.value().s = s;
+            qit.value().A = A;
+            qit.value().K = K;
+            qit.value().mol = mol;
+            qit.value().cd = cd;
+            qit.value().rad = rad;
             qit.value().customUnits.insert(baseunit, UnitConverter(quantity, baseunit, "1.0", ""));
             if (tagAsBuiltIn)
             {
@@ -983,6 +1007,19 @@ QStringList Configuration::getQuantitiesForUnit(const QString &rUnit) const
 QString Configuration::getBaseUnit(const QString &rQuantity)
 {
     return  mUnitScales.value(rQuantity, QuantityUnitScale()).baseunit;
+}
+
+void Configuration::getBaseUnitSIExponents(const QString &rQuantity, int &kg, int &m, int &s, int &A, int &K, int &mol, int &cd, int &rad)
+{
+    QuantityUnitScale us = mUnitScales.value(rQuantity, QuantityUnitScale());
+    kg = us.kg;
+    m = us.m;
+    s = us.s;
+    A = us.A;
+    K = us.K;
+    mol = us.mol;
+    cd = us.cd;
+    rad = us.rad;
 }
 
 bool Configuration::isRegisteredBaseUnit(const QString &rUnitName) const

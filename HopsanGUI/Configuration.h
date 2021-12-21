@@ -112,6 +112,15 @@
 #define CFG_UNITSETTINGS "unitsettings"
 #define CFG_QUANTITY "quantity"
 
+#define CFG_KG "kg"
+#define CFG_M "m"
+#define CFG_S "s"
+#define CFG_A "A"
+#define CFG_K "K"
+#define CFG_MOL "mol"
+#define CFG_CD "cd"
+#define CFG_RAD "rad"
+
 #define CFG_BASEUNIT "baseunit"
 #define CFG_UNIT "unit"
 #define CFG_UNITS "units"
@@ -228,6 +237,7 @@ public:
     UnitConverter getUnitScaleUC(const QString &rPhysicalQuantity, const QString &rUnit) const;
     QStringList getQuantitiesForUnit(const QString &rUnit) const;
     QString getBaseUnit(const QString &rQuantity);
+    void getBaseUnitSIExponents(const QString &rQuantity, int &kg, int &m, int &s, int &A, int &K, int &mol, int &cd, int &rad);
     bool isRegisteredBaseUnit(const QString &rUnitName) const;
     void removeUnitScale(const QString &rQuantity, const QString &rUnit);
     bool haveQuantity(const QString &rQuantity) const;
@@ -256,6 +266,14 @@ private:
     {
     public:
         QString baseunit;
+        int kg;
+        int m;
+        int s;
+        int A;
+        int K;
+        int mol;
+        int cd;
+        int rad;
         QString selectedDefaultUnit;
         QStringList builtInUnitconversions;
         QMap<QString, UnitConverter> customUnits;
