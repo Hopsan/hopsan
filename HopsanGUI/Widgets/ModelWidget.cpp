@@ -742,7 +742,10 @@ void ModelWidget::exportModelParametersToSsv()
     for(int i=0; i<units.size(); ++i) {
         QString quantity = quantities[i];
         if(quantity.isEmpty()) {
-            quantity = gpConfig->getQuantitiesForUnit(units[i])[0]; //Picking the first quantity is the best we can do without more knowledge
+            QStringList unitQuantities = gpConfig->getQuantitiesForUnit(units[i]);
+            if(!unitQuantities.isEmpty()) {
+                quantity = unitQuantities.first();  //Picking the first quantity is the best we can do without more knowledge
+            }
         }
         if(usedUnits.contains(qMakePair(units[i], quantity)) || quantity.isEmpty()) {
             continue;
