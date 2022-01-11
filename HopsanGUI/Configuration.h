@@ -112,14 +112,18 @@
 #define CFG_UNITSETTINGS "unitsettings"
 #define CFG_QUANTITY "quantity"
 
-#define CFG_KG "kg"
-#define CFG_M "m"
-#define CFG_S "s"
-#define CFG_A "A"
-#define CFG_K "K"
-#define CFG_MOL "mol"
-#define CFG_CD "cd"
-#define CFG_RAD "rad"
+namespace cfg {
+    namespace siunits {
+        constexpr auto kg = "kg";
+        constexpr auto m = "m";
+        constexpr auto s = "s";
+        constexpr auto A = "A";
+        constexpr auto K = "K";
+        constexpr auto mol = "mol";
+        constexpr auto cd = "cd";
+        constexpr auto rad = "rad";
+    }
+}
 
 #define CFG_BASEUNIT "baseunit"
 #define CFG_UNIT "unit"

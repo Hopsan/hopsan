@@ -249,14 +249,14 @@ void Configuration::saveToXml()
             {
                 xmlQuantity.setAttribute(CFG_BASEUNIT, baseunit);
             }
-            xmlQuantity.setAttribute(CFG_KG, qit.value().kg);
-            xmlQuantity.setAttribute(CFG_KG, qit.value().m);
-            xmlQuantity.setAttribute(CFG_KG, qit.value().s);
-            xmlQuantity.setAttribute(CFG_KG, qit.value().A);
-            xmlQuantity.setAttribute(CFG_KG, qit.value().K);
-            xmlQuantity.setAttribute(CFG_KG, qit.value().mol);
-            xmlQuantity.setAttribute(CFG_KG, qit.value().cd);
-            xmlQuantity.setAttribute(CFG_KG, qit.value().rad);
+            xmlQuantity.setAttribute(cfg::siunits::kg, qit.value().kg);
+            xmlQuantity.setAttribute(cfg::siunits::m, qit.value().m);
+            xmlQuantity.setAttribute(cfg::siunits::s, qit.value().s);
+            xmlQuantity.setAttribute(cfg::siunits::A, qit.value().A);
+            xmlQuantity.setAttribute(cfg::siunits::K, qit.value().K);
+            xmlQuantity.setAttribute(cfg::siunits::mol, qit.value().mol);
+            xmlQuantity.setAttribute(cfg::siunits::cd, qit.value().cd);
+            xmlQuantity.setAttribute(cfg::siunits::rad, qit.value().rad);
 
             // Save the default selected display unit
             QMap<QString, QString>::iterator itdu = mSelectedDefaultUnits.find(qit.key());
@@ -673,14 +673,14 @@ void Configuration::loadUnitSettings(QDomElement &rDomElement, bool tagAsBuiltIn
     {
         QString quantity = xmlQuantity.attribute(HMF_NAMETAG);
         QString baseunit = xmlQuantity.attribute(CFG_BASEUNIT);
-        int kg = parseAttributeInt(xmlQuantity, CFG_KG, 0);
-        int m = parseAttributeInt(xmlQuantity, CFG_M, 0);
-        int s = parseAttributeInt(xmlQuantity, CFG_S, 0);
-        int A = parseAttributeInt(xmlQuantity, CFG_A, 0);
-        int K = parseAttributeInt(xmlQuantity, CFG_K, 0);
-        int mol = parseAttributeInt(xmlQuantity, CFG_MOL, 0);
-        int cd = parseAttributeInt(xmlQuantity, CFG_CD, 0);
-        int rad = parseAttributeInt(xmlQuantity, CFG_RAD, 0);
+        int kg = parseAttributeInt(xmlQuantity, cfg::siunits::kg, 0);
+        int m = parseAttributeInt(xmlQuantity, cfg::siunits::m, 0);
+        int s = parseAttributeInt(xmlQuantity, cfg::siunits::s, 0);
+        int A = parseAttributeInt(xmlQuantity, cfg::siunits::A, 0);
+        int K = parseAttributeInt(xmlQuantity, cfg::siunits::K, 0);
+        int mol = parseAttributeInt(xmlQuantity, cfg::siunits::mol, 0);
+        int cd = parseAttributeInt(xmlQuantity, cfg::siunits::cd, 0);
+        int rad = parseAttributeInt(xmlQuantity, cfg::siunits::rad, 0);
         QString deafdisplayunit = xmlQuantity.attribute(CFG_DEFAULTDISPALYUNIT, baseunit);
         if (!deafdisplayunit.isEmpty())
         {
