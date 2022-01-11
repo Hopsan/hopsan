@@ -241,7 +241,7 @@ public:
     UnitConverter getUnitScaleUC(const QString &rPhysicalQuantity, const QString &rUnit) const;
     QStringList getQuantitiesForUnit(const QString &rUnit) const;
     QString getBaseUnit(const QString &rQuantity);
-    void getBaseUnitSIExponents(const QString &rQuantity, int &kg, int &m, int &s, int &A, int &K, int &mol, int &cd, int &rad);
+    void getBaseUnitSIExponents(const QString &rQuantity, int &rKg, int &rM, int &rS, int &rA, int &rK, int &rMol, int &rCd, int &rRad);
     bool isRegisteredBaseUnit(const QString &rUnitName) const;
     void removeUnitScale(const QString &rQuantity, const QString &rUnit);
     bool haveQuantity(const QString &rQuantity) const;
