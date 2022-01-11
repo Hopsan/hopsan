@@ -4904,16 +4904,17 @@ void SystemObject::getAllParametersAndValuesRecursively(QString prefix, QStringL
     for(ModelObject *modelObject : getModelObjects()) {
         if(modelObject->getTypeName() == "Subsystem") {
             qobject_cast<SystemObject*>(modelObject)->getAllParametersAndValuesRecursively(prefix+modelObject->getName()+"|", names, values, dataTypes, quantities, units);
-            continue;
         }
-        QVector<CoreParameterData> parameters;
-        modelObject->getParameters(parameters);
-        for(const CoreParameterData &parameter : parameters) {
-            names.append(prefix+modelObject->getName()+"."+parameter.mName);
-            values.append(parameter.mValue);
-            dataTypes.append(parameter.mType);
-            quantities.append(parameter.mQuantity);
-            units.append(parameter.mUnit);
+        else {
+            QVector<CoreParameterData> parameters;
+            modelObject->getParameters(parameters);
+            for(const CoreParameterData &parameter : parameters) {
+                names.append(prefix+modelObject->getName()+"."+parameter.mName);
+                values.append(parameter.mValue);
+                dataTypes.append(parameter.mType);
+                quantities.append(parameter.mQuantity);
+                units.append(parameter.mUnit);
+            }
         }
     }
 }
