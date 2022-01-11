@@ -705,8 +705,6 @@ void ModelWidget::exportModelParametersToHpf()
 
 void ModelWidget::exportModelParametersToSsv()
 {
-    QMap<QString, QString> dataTypeTranslator{{"double", "Real"}, {"integer", "Integer"}, {"bool", "Boolean"}, {"string", "String"}, {"textblock", "String"}, {"filepath", "String"}, {"conditional", "Integer"}};
-
     QStringList names, values, dataTypes, quantities, units;
     getTopLevelSystemContainer()->getAllParametersAndValuesRecursively("", names, values, dataTypes, quantities, units);
 
@@ -723,21 +721,21 @@ void ModelWidget::exportModelParametersToSsv()
 
     QDomDocument ssvDocument;
     appendRootXMLProcessingInstruction(ssvDocument);
-    QDomElement ssvParameterSetElement = ssvDocument.createElement("ssv:ParameterSet");
+    QDomElement ssvParameterSetElement = ssvDocument.createElement(ssv::parameterSet);
     ssvDocument.appendChild(ssvParameterSetElement);
-    ssvParameterSetElement.setAttribute("version", "1.0");
-    ssvParameterSetElement.setAttribute("name", this->getTopLevelSystemContainer()->getName());
-    ssvParameterSetElement.setAttribute("xmlns:ssv", "http://ssp-standard.org/SSP1/SystemStructureParameterValues");
-    QDomElement ssvParametersElement = appendDomElement(ssvParameterSetElement, "ssv:Parameters");
+    ssvParameterSetElement.setAttribute(ssv::attr::version, "1.0");
+    ssvParameterSetElement.setAttribute(ssv::attr::name, this->getTopLevelSystemContainer()->getName());
+    ssvParameterSetElement.setAttribute(ssv::attr::xmlns, ssv::url);
+    QDomElement ssvParametersElement = appendDomElement(ssvParameterSetElement, ssv::parameters);
     for(int i=0; i<names.size(); ++i) {
-        QDomElement ssvParameterElement = appendDomElement(ssvParametersElement,"ssv:Parameter");
-        ssvParameterElement.setAttribute("name", names[i]);
-        QDomElement ssvRealElement = appendDomElement(ssvParameterElement,"ssv:"+dataTypeTranslator[dataTypes[i]]);
-        ssvRealElement.setAttribute("value", values[i]);
-        ssvRealElement.setAttribute("unit", units[i]);
+        QDomElement ssvParameterElement = appendDomElement(ssvParametersElement, ssv::parameter);
+        ssvParameterElement.setAttribute(ssv::attr::name, names[i]);
+        QDomElement ssvRealElement = appendDomElement(ssvParameterElement,ssv::dataTypeTranslator[dataTypes[i]]);
+        ssvRealElement.setAttribute(ssv::attr::value, values[i]);
+        ssvRealElement.setAttribute(ssv::attr::unit, units[i]);
     }
 
-    QDomElement ssvUnitsElement = appendDomElement(ssvParameterSetElement, "ssv:Units");
+    QDomElement ssvUnitsElement = appendDomElement(ssvParameterSetElement, ssv::units);
     QList<QPair<QString, QString> > usedUnits;
     for(int i=0; i<units.size(); ++i) {
         QString quantity = quantities[i];
@@ -756,24 +754,24 @@ void ModelWidget::exportModelParametersToSsv()
         gpConfig->getUnitScale(quantity, units[i], converter);
         double scale = converter.scaleToDouble();
         double offset = converter.offsetToDouble();
-        QDomElement ssvUnitElement = appendDomElement(ssvUnitsElement, "ssv:Unit");
-        ssvUnitElement.setAttribute("name", units[i]);
+        QDomElement ssvUnitElement = appendDomElement(ssvUnitsElement, ssv::unit);
+        ssvUnitElement.setAttribute(ssv::attr::name, units[i]);
 
-        QDomElement ssvBaseUnitElement = appendDomElement(ssvUnitElement, "ssv:BaseUnit");
-        ssvBaseUnitElement.setAttribute("factor", scale);
-        ssvBaseUnitElement.setAttribute("offset", offset);
+        QDomElement ssvBaseUnitElement = appendDomElement(ssvUnitElement, ssv::baseUnit);
+        ssvBaseUnitElement.setAttribute(ssv::attr::factor, scale);
+        ssvBaseUnitElement.setAttribute(ssv::attr::offset, offset);
 
         //! @todo We should maybe derive base units in this way everywhere to conform with e.g. FMI and SSP standards, instead of hard-coding it here
         int kg, m, s, A, K, mol, cd, rad;
         gpConfig->getBaseUnitSIExponents(quantity, kg, m, s, A, K, mol, cd, rad);
-        ssvBaseUnitElement.setAttribute("kg",  kg);
-        ssvBaseUnitElement.setAttribute("m",   m);
-        ssvBaseUnitElement.setAttribute("s",   s);
-        ssvBaseUnitElement.setAttribute("A",   A);
-        ssvBaseUnitElement.setAttribute("K",   K);
-        ssvBaseUnitElement.setAttribute("mol", mol);
-        ssvBaseUnitElement.setAttribute("cd",  cd);
-        ssvBaseUnitElement.setAttribute("rad", rad);
+        ssvBaseUnitElement.setAttribute(ssv::attr::kg,  kg);
+        ssvBaseUnitElement.setAttribute(ssv::attr::m,   m);
+        ssvBaseUnitElement.setAttribute(ssv::attr::s,   s);
+        ssvBaseUnitElement.setAttribute(ssv::attr::A,   A);
+        ssvBaseUnitElement.setAttribute(ssv::attr::K,   K);
+        ssvBaseUnitElement.setAttribute(ssv::attr::mol, mol);
+        ssvBaseUnitElement.setAttribute(ssv::attr::cd,  cd);
+        ssvBaseUnitElement.setAttribute(ssv::attr::rad, rad);
     }
 
     QFile file;
@@ -806,9 +804,6 @@ void ModelWidget::importModelParametersFromSsv()
         gpConfig->setStringSetting(CFG_PARAMETERIMPORTDIR,  QFileInfo(parameterFile).absolutePath());
     }
 
-    //This map translates data type names from Hopsan to SSV
-    QMap<QString, QString> dataTypeTranslator{{"double", "Real"}, {"integer", "Integer"}, {"bool", "Boolean"}, {"string", "String"}, {"textblock", "String"}, {"filepath", "String"}, {"conditional", "Integer"}};
-
     //Read from SSV file (XML)
     QFile file(parameterFile);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -825,26 +820,25 @@ void ModelWidget::importModelParametersFromSsv()
     }
 
     QDomElement configRoot = domDocument.documentElement();
-    if (configRoot.tagName() != "ssv:ParameterSet") {
-        gpMessageHandler->addErrorMessage(file.fileName()+": Incorrect root tag name: "+configRoot.tagName()+" != ssv:ParameterSet");
+    if (configRoot.tagName() != ssv::parameterSet) {
+        gpMessageHandler->addErrorMessage(file.fileName()+": Incorrect root tag name: "+configRoot.tagName()+" != "+ssv::parameterSet);
         return;
     }
 
-    QDomElement parametersElement = configRoot.firstChildElement("ssv:Parameters");
+    QDomElement parametersElement = configRoot.firstChildElement(ssv::parameters);
 
     //Loop through all <ssv:Parameter> elements
-    QDomElement parameterElement = parametersElement.firstChildElement("ssv:Parameter");
+    QDomElement parameterElement = parametersElement.firstChildElement(ssv::parameter);
     while(!parameterElement.isNull()) {
         QString ssvName, ssvDataType, ssvValue, ssvUnit;
 
-        ssvName = parameterElement.attribute("name");
+        ssvName = parameterElement.attribute(ssv::attr::name);
 
         //Read data subelement (name = ssv:[datatype])
         QDomElement dataElement = parameterElement.firstChildElement();
         ssvDataType = dataElement.nodeName();
-        ssvDataType.remove("ssv:");
-        ssvUnit = dataElement.attribute("unit");
-        ssvValue = dataElement.attribute("value");
+        ssvUnit = dataElement.attribute(ssv::attr::unit);
+        ssvValue = dataElement.attribute(ssv::attr::value);
 
         //Now find corresponding parameter in model
         //ssvName = system1|system2|component.parameter (component parameters)
@@ -865,17 +859,17 @@ void ModelWidget::importModelParametersFromSsv()
             pSystem = qobject_cast<SystemObject*>(pSystem->getModelObject(systemHierarchy[s]));
             if(pSystem == nullptr) {
                 gpMessageHandler->addWarningMessage("Could not find subsystem: "+systemHierarchy[s]+", ignoring all its parameters.");
-                parameterElement = parameterElement.nextSiblingElement("ssv:Parameter");
+                parameterElement = parameterElement.nextSiblingElement(ssv::parameter);
                 continue;
             }
         }
         if(componentName.isEmpty()) {                               //Set system parameter
             CoreParameterData parameter;
             pSystem->getParameter(parameterName, parameter);
-            if(dataTypeTranslator[parameter.mType] != ssvDataType) {
-                gpMessageHandler->addWarningMessage("Wrong data type for unit: \""+ssvName+"\", ignoring value. ("+dataTypeTranslator[parameter.mType]+" != "+ssvDataType+")");
+            if(ssv::dataTypeTranslator[parameter.mType] != ssvDataType) {
+                gpMessageHandler->addWarningMessage("Wrong data type for unit: \""+ssvName+"\", ignoring value. ("+ssv::dataTypeTranslator[parameter.mType]+" != "+ssvDataType+")");
             }
-            else if(parameter.mType == "Real") {    //Handle units for "Real" type parameters only
+            else if(parameter.mType == ssv::datatype::real) {    //Handle units for "Real" type parameters only
                 if(parameter.mUnit == ssvUnit) {
                     pSystem->setParameterValue(parameterName, ssvValue);
                 }
@@ -909,15 +903,15 @@ void ModelWidget::importModelParametersFromSsv()
             ModelObject *pComponent = pSystem->getModelObject(componentName);
             if(pComponent == nullptr) {
                 gpMessageHandler->addWarningMessage("Could not find component: "+componentName+", ignoring parameter "+parameterName);
-                parameterElement = parameterElement.nextSiblingElement("ssv:Parameter");
+                parameterElement = parameterElement.nextSiblingElement(ssv::parameter);
                 continue;
             }
             CoreParameterData parameter;
             pComponent->getParameter(parameterName, parameter);
-            if(dataTypeTranslator[parameter.mType] != ssvDataType) {
+            if(ssv::dataTypeTranslator[parameter.mType] != ssvDataType) {
                 gpMessageHandler->addWarningMessage("Wrong data type for unit: \""+ssvName+"\", ignoring value.");
             }
-            else if(dataTypeTranslator[parameter.mType] == "Real") {
+            else if(ssv::dataTypeTranslator[parameter.mType] == ssv::datatype::real) {
                 if(parameter.mUnit == ssvUnit) {
                     pComponent->setParameterValue(parameterName, ssvValue);
                 }
@@ -947,7 +941,7 @@ void ModelWidget::importModelParametersFromSsv()
                 pComponent->setParameterValue(parameterName, ssvValue);   //Ignore units for non-Real parameters
             }
         }
-        parameterElement = parameterElement.nextSiblingElement("ssv:Parameter");
+        parameterElement = parameterElement.nextSiblingElement(ssv::parameter);
     }
     emit getTopLevelSystemContainer()->systemParametersChanged();
 }
