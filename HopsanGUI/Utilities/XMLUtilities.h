@@ -245,4 +245,49 @@ void updateRenamedComponentName(QDomElement &rDomElement, const QString oldName,
 #define XML_RECENTMODEL "recentmodel"
 #define XML_RECENTGENERATORMODEL "recentgeneratormodel"
 
+namespace ssv {
+    constexpr auto parameterSet = "ssv:ParameterSet";
+    constexpr auto parameters = "ssv:Parameters";
+    constexpr auto parameter = "ssv:Parameter";
+    constexpr auto units = "ssv:Units";
+    constexpr auto unit = "ssv:Unit";
+    constexpr auto baseUnit = "ssv:BaseUnit";
+    constexpr auto name = "name";
+    constexpr auto offset = "offset";
+    constexpr auto url = "http://ssp-standard.org/SSP1/SystemStructureParameterValues";
+
+    namespace datatype {
+        constexpr auto real = "ssv:Real";
+        constexpr auto integer = "ssv:Integer";
+        constexpr auto boolean = "ssv:Boolean";
+        constexpr auto string = "ssv:String";
+    }
+
+    namespace attr {
+        constexpr auto name = "name";
+        constexpr auto value = "value";
+        constexpr auto factor = "factor";
+        constexpr auto offset = "offset";
+        constexpr auto unit = "unit";
+        constexpr auto version = "version";
+        constexpr auto xmlns = "xmlns:ssv";
+        constexpr auto kg =  "kg";
+        constexpr auto m = "m";
+        constexpr auto s = "s";
+        constexpr auto A = "A";
+        constexpr auto K = "K";
+        constexpr auto mol = "mol";
+        constexpr auto cd = "cd";
+        constexpr auto rad = "rad";
+    }
+
+    static QMap<QString, QString> dataTypeTranslator{{"double",      ssv::datatype::real},
+                                                     {"integer",     ssv::datatype::integer},
+                                                     {"bool",        ssv::datatype::boolean},
+                                                     {"string",      ssv::datatype::string},
+                                                     {"textblock",   ssv::datatype::string},
+                                                     {"filepath",    ssv::datatype::string},
+                                                     {"conditional", ssv::datatype::integer}};
+}
+
 #endif // XMLUTILITIES_H
