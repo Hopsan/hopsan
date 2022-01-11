@@ -1009,17 +1009,17 @@ QString Configuration::getBaseUnit(const QString &rQuantity)
     return  mUnitScales.value(rQuantity, QuantityUnitScale()).baseunit;
 }
 
-void Configuration::getBaseUnitSIExponents(const QString &rQuantity, int &kg, int &m, int &s, int &A, int &K, int &mol, int &cd, int &rad)
+void Configuration::getBaseUnitSIExponents(const QString &rQuantity, int &rKg, int &rM, int &rS, int &rA, int &rK, int &rMol, int &rCd, int &rRad)
 {
     QuantityUnitScale us = mUnitScales.value(rQuantity, QuantityUnitScale());
-    kg = us.kg;
-    m = us.m;
-    s = us.s;
-    A = us.A;
-    K = us.K;
-    mol = us.mol;
-    cd = us.cd;
-    rad = us.rad;
+    rKg = us.kg;
+    rM = us.m;
+    rS = us.s;
+    rA = us.A;
+    rK = us.K;
+    rMol = us.mol;
+    rCd = us.cd;
+    rRad = us.rad;
 }
 
 bool Configuration::isRegisteredBaseUnit(const QString &rUnitName) const
