@@ -705,7 +705,7 @@ void ModelWidget::exportModelParametersToHpf()
 
 void ModelWidget::exportModelParametersToSsv()
 {
-    QMap<QString, QString> dataTypeTranslator{{"double", "Real"}, {"integer", "Integer"}, {"bool", "Boolean"}, {"string", "String"}, {"textblock", "String"}, {"filepath", "Strig"}, {"conditional", "Integer"}};
+    QMap<QString, QString> dataTypeTranslator{{"double", "Real"}, {"integer", "Integer"}, {"bool", "Boolean"}, {"string", "String"}, {"textblock", "String"}, {"filepath", "String"}, {"conditional", "Integer"}};
 
     QStringList names, values, dataTypes, quantities, units;
     getTopLevelSystemContainer()->getAllParametersAndValuesRecursively("", names, values, dataTypes, quantities, units);
@@ -807,7 +807,7 @@ void ModelWidget::importModelParametersFromSsv()
     }
 
     //This map translates data type names from Hopsan to SSV
-    QMap<QString, QString> dataTypeTranslator{{"double", "Real"}, {"integer", "Integer"}, {"bool", "Boolean"}, {"string", "String"}, {"textblock", "String"}, {"filepath", "Strig"}, {"conditional", "Integer"}};
+    QMap<QString, QString> dataTypeTranslator{{"double", "Real"}, {"integer", "Integer"}, {"bool", "Boolean"}, {"string", "String"}, {"textblock", "String"}, {"filepath", "String"}, {"conditional", "Integer"}};
 
     //Read from SSV file (XML)
     QFile file(parameterFile);
