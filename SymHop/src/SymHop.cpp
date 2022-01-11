@@ -380,9 +380,11 @@ void Expression::commonConstructorCode(QStringList symbols, bool &ok, const Expr
                 }
             }
             else if(var && !(str.at(i).isLetterOrNumber() || str.at(i) == '|' || str.at(i) == '_' || str.at(i) == '.' || str.at(i) == ':'  || str.at(i) == '@' || str.at(i) == '"' ||
-                             (i>1 && str.size() > i+2 && str.at(i) == '+' && str.at(i+1) == '-' && str.at(i-1) == 'e' && str.at(i+2).isNumber()) ||
-                             (i>0 && str.size() > i+1 && str.at(i) == '-' && str.at(i-1) == '+' && str.at(i-2) == 'e' && str.at(i+1).isNumber()) ||
-                             (i>0 && str.size() > i+1 && str.at(i) == '+' && str.at(i-1) == 'e' && str.at(i+1).isNumber())))     //End of variable, append it to symbols (last two checks makes sure that Xe+Y and Xe-Y are treated as one symbol)
+                             (i>1 && str.size() > i+2 && str.at(i-2).isNumber() && str.at(i-1) == 'e' && str.at(i) == '+' && str.at(i+1) == '-' && str.at(i+2).isNumber()) ||
+                             (i>1 && str.size() > i+2 && str.at(i-2).isNumber() && str.at(i-1) == 'e' && str.at(i) == '-' && str.at(i+1) == '+' && str.at(i+2).isNumber()) ||
+                             (i>1 && str.size() > i+1 && str.at(i-2).isNumber() && str.at(i-1) == 'e' && str.at(i) == '+' && str.at(i+1).isNumber()) ||
+                             (i>2 && str.size() > i+1 && str.at(i-3).isNumber() && str.at(i-2) == "e" && str.at(i-1) == '+' && str.at(i) == '-' && str.at(i+1).isNumber()) ||
+                             (i>2 && str.size() > i+1 && str.at(i-3).isNumber() && str.at(i-2) == "e" && str.at(i-1) == '-' && str.at(i) == '+' && str.at(i+1).isNumber())))     //End of variable, append it to symbols (last two checks makes sure that Xe+Y and Xe-Y are treated as one symbol)
             {
                 var = false;
                 symbols.append(str.mid(start, i-start));
