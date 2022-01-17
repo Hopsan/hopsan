@@ -749,7 +749,6 @@ void ModelWidget::exportModelParametersToSsv()
             continue;
         }
         usedUnits.append(qMakePair(units[i], quantity));
-        QString baseUnit = gpConfig->getBaseUnit(quantity);
         UnitConverter converter;
         gpConfig->getUnitScale(quantity, units[i], converter);
         double scale = converter.scaleToDouble();
