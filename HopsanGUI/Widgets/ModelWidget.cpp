@@ -882,8 +882,9 @@ void ModelWidget::importModelParametersFromSsv()
                         QString ssvQuantity, hopsanUnit, hopsanQuantity;
                         ssvQuantity = quantities[0];    //Guessing for first quantity is the best we can do
                         hopsanUnit = parameter.mUnit;
-                        if(parameter.mQuantity.isEmpty()) {
-                            hopsanQuantity = gpConfig->getQuantitiesForUnit(parameter.mUnit)[0];
+                        QStringList hopsanQuantities = gpConfig->getQuantitiesForUnit(parameter.mUnit);
+                        if(parameter.mQuantity.isEmpty() && !hopsanQuantities.isEmpty()) {
+                            hopsanQuantity = hopsanQuantities[0];
                         }
                         else {
                             hopsanQuantity = parameter.mQuantity;
@@ -921,11 +922,11 @@ void ModelWidget::importModelParametersFromSsv()
                         pComponent->setParameterValue(parameterName, ssvValue);
                     }
                     else {
-                        QString ssvQuantity, hopsanUnit, hopsanQuantity;
+                        QString ssvQuantity, hopsanQuantity;
                         ssvQuantity = quantities[0];    //Guessing for first quantity is the best we can do
-                        hopsanUnit = parameter.mUnit;
-                        if(parameter.mQuantity.isEmpty()) {
-                            hopsanQuantity = gpConfig->getQuantitiesForUnit(parameter.mUnit)[0];
+                        QStringList hopsanQuantities = gpConfig->getQuantitiesForUnit(parameter.mUnit);
+                        if(parameter.mQuantity.isEmpty() && !hopsanQuantities.isEmpty()) {
+                            hopsanQuantity = hopsanQuantities[0];
                         }
                         else {
                             hopsanQuantity = parameter.mQuantity;
