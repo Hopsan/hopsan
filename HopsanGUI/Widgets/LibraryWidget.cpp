@@ -423,12 +423,14 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
         QAction *pOpenFolderAction = contextMenu.addAction("Open Containing Folder");
         QAction *pEditXMLAction = contextMenu.addAction("Edit XML Description");
         QAction *pEditCodeAction = contextMenu.addAction("Edit Source Code");
+        QAction *pOpenModelAction = contextMenu.addAction("Open Model File");
 
         pUnloadAllAction->setVisible(false);
         pUnloadAction->setVisible(false);
         pOpenFolderAction->setVisible(false);
         pEditXMLAction->setVisible(false);
         pEditCodeAction->setVisible(false);
+        pOpenModelAction->setVisible(false);
         pRecompileAction->setVisible(false);
         pReloadAction->setVisible(false);
         pCheckConsistenceAction->setVisible(false);
@@ -461,7 +463,12 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
         {
             pRecompileAction->setVisible(true);
             pEditXMLAction->setVisible(true);
-            pEditCodeAction->setVisible(true);
+            if(!gpLibraryHandler->getEntry(mItemToTypeNameMap.find(item).value()).pAppearance->getSourceCodeFile().isEmpty()) {
+                pEditCodeAction->setVisible(true);
+            }
+            if(!gpLibraryHandler->getEntry(mItemToTypeNameMap.find(item).value()).pAppearance->getHmfFile().isEmpty()) {
+                pOpenModelAction->setVisible(true);
+            }
             pUnloadAction->setVisible(true);
             pReloadAction->setVisible(true);
             pCheckConsistenceAction->setVisible(true);
@@ -482,8 +489,10 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
             pOpenFolderAction->setVisible(true);
             pEditXMLAction->setVisible(true);
             pEditXMLAction->setText("View XML Description");
-            pEditCodeAction->setVisible(true);
-            pEditCodeAction->setText("View Source Code");
+            if(!gpLibraryHandler->getEntry(mItemToTypeNameMap.find(item).value()).pAppearance->getSourceCodeFile().isEmpty()) {
+                pEditCodeAction->setVisible(true);
+                pEditCodeAction->setText("View Source Code");
+            }
         }
 
         if(isComponentItem(item) && gpLibraryHandler->getEntry(mItemToTypeNameMap.find(item).value()).displayPath.startsWith(componentlibrary::roots::externalLibraries)) {
@@ -650,6 +659,21 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
                 }
             }
         }
+        else if(pReply == pOpenModelAction) {
+            //Edit component source file
+            auto appearance = gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(item).value());
+            QString basePath = appearance->getBasePath();
+            if(!basePath.isEmpty()) {
+                basePath.append("/");
+            }
+            QString modelFile = appearance->getHmfFile();
+            if(modelFile.isEmpty()) {
+                gpMessageHandler->addErrorMessage("Model file is not available for this component.");
+            }
+            else {
+                gpModelHandler->loadModel(basePath+modelFile);
+            }
+        }
         else if(pReply == pNewLibraryAction) {
             gpLibraryHandler->createNewLibrary();
         }
@@ -696,7 +720,13 @@ void LibraryWidget::handleItemDoubleClick(QTreeWidgetItem *item, int column)
                 basePath.append("/");
             }
             QString sourceFile = appearance->getSourceCodeFile();
-            gpModelHandler->loadTextFile(basePath+sourceFile);
+            if(!sourceFile.isEmpty()) {
+                gpModelHandler->loadTextFile(basePath+sourceFile);
+            }
+            QString modelFile = appearance->getHmfFile();
+            if(!modelFile.isEmpty()) {
+                gpModelHandler->loadModel(basePath+modelFile);
+            }
         }
     }
 }
