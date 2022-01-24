@@ -713,7 +713,7 @@ void ModelHandler::disconnectMainWindowConnections(ModelWidget *pModel)
     disconnect(gpMainWindow->mpToggleRemoteCoreSimAction,   SIGNAL(triggered(bool)),        pModel,  SLOT(setUseRemoteSimulation(bool)));
     disconnect(gpMainWindow->mpSaveAction,                  SIGNAL(triggered()),            pModel,  SLOT(save()));
     disconnect(gpMainWindow->mpSaveAsAction,                SIGNAL(triggered()),            pModel,  SLOT(saveAs()));
-    disconnect(gpMainWindow->mpExportModelParametersActionToHpf, SIGNAL(triggered()),            pModel,  SLOT(exportModelParameters()));
+    disconnect(gpMainWindow->mpExportModelParametersActionToHpf, SIGNAL(triggered()),       pModel,  SLOT(exportModelParametersToHpf()));
     disconnect(gpMainWindow->mpExportSimulationStateAction, SIGNAL(triggered()),            pModel,  SLOT(exportSimulationStates()));
 
     connect(pModel,                                         SIGNAL(modelSaved(ModelWidget*)),           SIGNAL(modelChanged(ModelWidget*)));
