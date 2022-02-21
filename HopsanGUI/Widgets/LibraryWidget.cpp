@@ -709,8 +709,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
 void LibraryWidget::handleItemDoubleClick(QTreeWidgetItem *item, int column)
 {
     if(item != nullptr &&
-        mItemToTypeNameMap.contains(item) &&
-        gpLibraryHandler->getEntry(mItemToTypeNameMap.find(item).value()).displayPath.startsWith(componentlibrary::roots::externalLibraries))
+        mItemToTypeNameMap.contains(item))
     {
         //Edit component source file
         auto appearance = gpLibraryHandler->getModelObjectAppearancePtr(mItemToTypeNameMap.find(item).value());
