@@ -76,6 +76,13 @@ protected:
 private:
     void getAllSubTreeItems(QTreeWidgetItem *pParentItem, QList<QTreeWidgetItem *> &rSubItems);
     bool isComponentItem(QTreeWidgetItem *item);
+    bool isExternalLibrariesItem(QTreeWidgetItem *item);
+    bool isExternalLibraryItem(QTreeWidgetItem *item);
+    bool isFmuLibrariesItem(QTreeWidgetItem *item);
+    bool isExternalComponentItem(QTreeWidgetItem *item);
+    bool hasSourceCode(QTreeWidgetItem *item);
+    bool hasModelFile(QTreeWidgetItem *item);
+    bool isFmuLibraryItem(QTreeWidgetItem *item);
     QTreeWidgetItem *getLibraryItem(QSharedPointer<GUIComponentLibrary> pLibrary);
 
     //GUI Stuff
