@@ -245,7 +245,7 @@ void LibraryWidget::update()
                     QTreeWidgetItem *pTopItem = pItem;
                     while(pTopItem->parent())
                         pTopItem = pTopItem->parent();
-                    if( pTopItem->text(0) == componentlibrary::roots::externalLibraries || pTopItem->text(0) == componentlibrary::roots::fmus)
+                    if( isExternalLibrariesItem(pTopItem) || isFmuLibrariesItem(pTopItem))
                         pNewItem->setIcon(0, QIcon(QString(ICONPATH) + "svg/Hopsan-FolderExternal.svg"));
                     else
                         pNewItem->setIcon(0, QIcon(QString(ICONPATH) + "svg/Hopsan-Folder.svg"));
@@ -283,7 +283,7 @@ void LibraryWidget::update()
     while(*itt)
     {
 
-        if((*itt)->childCount() > 0 && (*itt)->text(0) != componentlibrary::roots::externalLibraries)
+        if((*itt)->childCount() > 0 && !isExternalLibrariesItem(*itt))
         {
             (*itt)->setText(0, "0000000000"+(*itt)->text(0));       //Prepends a lot of zeros to subfolders, to make sure they are sorted on top (REALLY ugly, but it works)
         }
@@ -292,7 +292,7 @@ void LibraryWidget::update()
     pExternalItem = nullptr;
     for(int t=0; t<mpTree->topLevelItemCount(); ++t)
     {
-        if(mpTree->topLevelItem(t)->text(0) == componentlibrary::roots::externalLibraries)
+        if(isExternalLibrariesItem(mpTree->topLevelItem(t)))
         {
             pExternalItem = mpTree->takeTopLevelItem(t);
             break;
@@ -308,7 +308,7 @@ void LibraryWidget::update()
     QTreeWidgetItemIterator itt2(mpTree);
     while(*itt2)
     {
-        if((*itt2)->childCount() > 0 && (*itt2)->text(0) != componentlibrary::roots::externalLibraries)
+        if((*itt2)->childCount() > 0 && !isExternalLibrariesItem(*itt2))
         {
             (*itt2)->setText(0, (*itt2)->text(0).remove(0,10)); //Remove the extra zeros from subfolders (see above)
         }
@@ -441,8 +441,6 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
 
         QTreeWidgetItem *pFirstSubComponentItem = item;
 
-        QStringList typeNames;
-
         while(!isComponentItem(pFirstSubComponentItem)) {
             if(nullptr == pFirstSubComponentItem) {
                 break;
@@ -451,22 +449,23 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
         }
 
         //Enable unload all only for top-level external libraries folder
-        if(item->text(0) == componentlibrary::roots::externalLibraries) {
+        if(isExternalLibrariesItem(item)) {
             pUnloadAllAction->setVisible(true);
             pNewLibraryAction->setVisible(true);
         }
 
         //Enable external library actions (also for empty libraries)
-        if(item->text(0) != componentlibrary::roots::externalLibraries &&
-                (item->parent() != nullptr && item->parent()->text(0) == componentlibrary::roots::externalLibraries ||
-                 (pFirstSubComponentItem != nullptr && gpLibraryHandler->getEntry(mItemToTypeNameMap.find(pFirstSubComponentItem).value()).displayPath.startsWith(componentlibrary::roots::externalLibraries))))
+        if(isExternalLibraryItem(item))
         {
             pRecompileAction->setVisible(true);
             pEditXMLAction->setVisible(true);
-            if(!gpLibraryHandler->getEntry(mItemToTypeNameMap.find(item).value()).pAppearance->getSourceCodeFile().isEmpty()) {
+            if( (item->parent() != nullptr && isExternalLibrariesItem(item->parent()))){
                 pEditCodeAction->setVisible(true);
             }
-            if(!gpLibraryHandler->getEntry(mItemToTypeNameMap.find(item).value()).pAppearance->getHmfFile().isEmpty()) {
+            if(hasSourceCode(item)) {
+                pEditCodeAction->setVisible(true);
+            }
+            if(hasModelFile(item)) {
                 pOpenModelAction->setVisible(true);
             }
             pUnloadAction->setVisible(true);
@@ -477,25 +476,23 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
         }
 
         //Enable unloading of FMUs
-        if(pFirstSubComponentItem != nullptr &&
-                item->text(0) != componentlibrary::roots::fmus &&
-                gpLibraryHandler->getEntry(mItemToTypeNameMap.find(pFirstSubComponentItem).value()).displayPath.startsWith(componentlibrary::roots::fmus)) {
+        if(isFmuLibraryItem(item)) {
             pUnloadAction->setVisible(true);
         }
 
         if(item &&
-           item->text(0) != componentlibrary::roots::externalLibraries &&
-           item->text(0) != componentlibrary::roots::fmus) {
+           !isExternalLibrariesItem(item) &&
+           !isFmuLibrariesItem(item)) {
             pOpenFolderAction->setVisible(true);
             pEditXMLAction->setVisible(true);
             pEditXMLAction->setText("View XML Description");
-            if(!gpLibraryHandler->getEntry(mItemToTypeNameMap.find(item).value()).pAppearance->getSourceCodeFile().isEmpty()) {
+            if(hasSourceCode(item)) {
                 pEditCodeAction->setVisible(true);
                 pEditCodeAction->setText("View Source Code");
             }
         }
 
-        if(isComponentItem(item) && gpLibraryHandler->getEntry(mItemToTypeNameMap.find(item).value()).displayPath.startsWith(componentlibrary::roots::externalLibraries)) {
+        if(isExternalComponentItem(item)) {
             pRemoveComponentAction->setVisible(true);
         }
 
@@ -592,7 +589,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
         else if(pReply == pAddComponentAction) {
             SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
             QStringList folders;
-            while(item->parent() != nullptr && item->parent()->text(0) != componentlibrary::roots::externalLibraries) {
+            while(item->parent() != nullptr && isExternalLibrariesItem(item->parent())) {
                 folders.prepend(item->text(0));
                 item = item->parent();
             }
@@ -750,11 +747,59 @@ bool LibraryWidget::isComponentItem(QTreeWidgetItem *item)
     return mItemToTypeNameMap.contains(item);
 }
 
+bool LibraryWidget::isExternalLibrariesItem(QTreeWidgetItem *item)
+{
+    return (item->text(0) == componentlibrary::roots::externalLibraries);
+}
+
+bool LibraryWidget::isExternalLibraryItem(QTreeWidgetItem *item)
+{
+    QTreeWidgetItem *parent = item;
+    while(parent->parent() != nullptr) {
+        parent = parent->parent();
+    }
+    return parent != nullptr && !isComponentItem(item) && !isExternalLibrariesItem(item) && isExternalLibrariesItem(parent);
+}
+
+bool LibraryWidget::isFmuLibrariesItem(QTreeWidgetItem *item)
+{
+    return (item->text(0) == componentlibrary::roots::fmus);
+}
+
+bool LibraryWidget::isExternalComponentItem(QTreeWidgetItem *item)
+{
+    if(!isComponentItem(item)) {
+        return false;
+    }
+    QString typeName = mItemToTypeNameMap.find(item).value();
+    ComponentLibraryEntry entry = gpLibraryHandler->getEntry(typeName);
+    return entry.displayPath.startsWith(componentlibrary::roots::externalLibraries);
+}
+
+bool LibraryWidget::hasSourceCode(QTreeWidgetItem *item)
+{
+    return (isComponentItem(item) && !gpLibraryHandler->getEntry(mItemToTypeNameMap.find(item).value()).pAppearance->getSourceCodeFile().isEmpty());
+}
+
+bool LibraryWidget::hasModelFile(QTreeWidgetItem *item)
+{
+    return (isComponentItem(item) && !gpLibraryHandler->getEntry(mItemToTypeNameMap.find(item).value()).pAppearance->getHmfFile().isEmpty());
+}
+
+bool LibraryWidget::isFmuLibraryItem(QTreeWidgetItem *item)
+{
+    QTreeWidgetItem *parent = item;
+    while(parent->parent() != nullptr) {
+        parent = parent->parent();
+    }
+    return parent != nullptr && parent != item && !isComponentItem(item) && !isExternalLibrariesItem(item) && isFmuLibrariesItem(parent);
+}
+
 QTreeWidgetItem *LibraryWidget::getLibraryItem(QSharedPointer<GUIComponentLibrary> pLibrary)
 {
     QTreeWidgetItemIterator it(mpTree);
     while (*it) {
-        if ((*it)->text(0) == pLibrary->name && (*it)->parent()->text(0) == componentlibrary::roots::externalLibraries) {
+        if ((*it)->text(0) == pLibrary->name && isExternalLibrariesItem((*it)->parent())) {
             return (*it);
         }
         ++it;
