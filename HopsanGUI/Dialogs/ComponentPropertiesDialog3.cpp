@@ -279,6 +279,51 @@ void ComponentPropertiesDialog3::openDescription()
     pDescriptionWindow->show();
 }
 
+
+//! @brief Applies the parameter set selected in the drop-down menu by reading its SSV file
+void ComponentPropertiesDialog3::applyParameterSet()
+{
+    //Read from SSV file (XML)
+    QString fileName = mpModelObject->getParameterSets().value(mpSetsComboBox->currentText());
+    QList<SsvParameter> ssvParameters;
+    readFromSsv(mpModelObject->getAppearanceData()->getBasePath()+"/"+fileName, ssvParameters);
+
+    for(const auto &ssvParameter : ssvParameters) {
+        CoreParameterData parameter;
+        mpModelObject->getParameter(ssvParameter.name, parameter);
+        QString hopsanUnit = mpVariableTableWidget->getSelectedUnit(ssvParameter.name);
+        if(ssvParameter.dataType == ssv::datatype::real) {
+            if(hopsanUnit == ssvParameter.unit) {
+                this->mpVariableTableWidget->setValue(ssvParameter.name, ssvParameter.value);
+            }
+            else {
+                QStringList quantities = gpConfig->getQuantitiesForUnit(ssvParameter.unit);
+                if(quantities.isEmpty()) {
+                    gpMessageHandler->addWarningMessage("Unit is not supported by Hopsan: "+ssvParameter.unit+". Setting parameter without unit conversion.");
+                    this->mpVariableTableWidget->setValue(ssvParameter.name, ssvParameter.value);
+                }
+                else {
+                    QString ssvQuantity, hopsanQuantity;
+                    ssvQuantity = quantities[0];    //Guessing for first quantity is the best we can do
+                    QStringList hopsanQuantities = gpConfig->getQuantitiesForUnit(hopsanUnit);
+                    if(parameter.mQuantity.isEmpty() && !hopsanQuantities.isEmpty()) {
+                        hopsanQuantity = hopsanQuantities[0];
+                    }
+                    else {
+                        hopsanQuantity = parameter.mQuantity;
+                    }
+                    UnitConverter uc1 = gpConfig->getUnitScaleUC(ssvQuantity, ssvParameter.unit);         //Converts between SSV unit and base unit
+                    UnitConverter uc2 = gpConfig->getUnitScaleUC(hopsanQuantity, hopsanUnit); //Converts between Hopsan unit and base unit
+                    this->mpVariableTableWidget->setValue(ssvParameter.name, uc2.convertFromBase(uc1.convertToBase(ssvParameter.value)));
+                }
+            }
+        }
+        else {
+            this->mpVariableTableWidget->setValue(ssvParameter.name, ssvParameter.value);
+        }
+    }
+}
+
 QGridLayout* ComponentPropertiesDialog3::createNameAndTypeEdit()
 {
     QGridLayout *pNameTypeLayout = new QGridLayout();
@@ -844,6 +889,27 @@ void ComponentPropertiesDialog3::createEditStuff()
     //------------------------------------------------------------------------------------------------------------------------------
     ++row;
 
+    // Add list with parameter sets (if provided by component)
+    //------------------------------------------------------------------------------------------------------------------------------
+    QMap<QString, QString> sets = mpModelObject->getParameterSets();
+    if(!sets.isEmpty()) {
+        qDebug() << "Adding parameter sets to dialog";
+        QHBoxLayout *pParameterSetsLayout = new QHBoxLayout();
+        QLabel *pSetsLabel = new QLabel("Parameter Sets:",this);
+        mpSetsComboBox = new QComboBox(this);
+        mpSetsComboBox->addItems(sets.keys());
+        QPushButton *pApplySetButton = new QPushButton("Apply");
+        connect(pApplySetButton, SIGNAL(clicked(bool)), this, SLOT(applyParameterSet()));
+        pParameterSetsLayout->addWidget(pSetsLabel);
+        pParameterSetsLayout->addWidget(mpSetsComboBox);
+        pParameterSetsLayout->addWidget(pApplySetButton);
+        pParameterSetsLayout->addWidget(new QWidget(this));
+        pParameterSetsLayout->setStretch(3,1);
+        pPropertiesLayout->addLayout(pParameterSetsLayout, row, 0, 1, 1);
+    }
+    //------------------------------------------------------------------------------------------------------------------------------
+    ++row;
+
     // Add Parameter settings table
     //------------------------------------------------------------------------------------------------------------------------------
     mpVariableTableWidget = new VariableTableWidget(mpModelObject,this);
@@ -1178,6 +1244,38 @@ bool VariableTableWidget::setAliasNames()
         }
     }
     return true;
+}
+
+
+//! @brief Sets the value in the parameter value line edit
+//!
+//! Actual parameter value is not affected until "Apply" or "Ok" buttons are presed.
+//!
+//! @param rName[in] Name of parameter
+//! @param rValue[in] New value for parameter
+void VariableTableWidget::setValue(const QString &rName, const QString &rValue)
+{
+    for(int row=0; row<rowCount(); ++row) {
+        ParameterValueSelectionWidget *pValueWidget = qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)));
+        if(pValueWidget != nullptr && pValueWidget->getName() == rName) {
+            pValueWidget->setValueText(rValue);
+            pValueWidget->refreshValueTextStyle();
+        }
+    }
+}
+
+
+//! @brief Returns currently selected unit for specified parameter
+//! @param[in] rName Name of parameter
+//! @returns Currently selected unit in drop-down menu
+QString VariableTableWidget::getSelectedUnit(const QString &rName)
+{
+    for(int row=0; row<rowCount(); ++row) {
+        ParameterValueSelectionWidget *pValueWidget = qobject_cast<ParameterValueSelectionWidget*>(cellWidget(row, int(VariableTableWidget::Value)));
+        if(pValueWidget != nullptr && pValueWidget->getName() == rName) {
+            return pValueWidget->getUnitSelectionWidget()->getSelectedUnit();
+        }
+    }
 }
 
 bool VariableTableWidget::focusNextPrevChild(bool next)

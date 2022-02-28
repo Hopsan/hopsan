@@ -74,6 +74,8 @@ public:
     bool setStartValues();
     //bool setCustomPlotScaleValues();
     bool setAliasNames();
+    void setValue(const QString &rName, const QString &rValue);
+    QString getSelectedUnit(const QString &rName);
 
 protected:
     virtual bool focusNextPrevChild(bool next);
@@ -109,6 +111,7 @@ protected slots:
     void editPortPos();
     virtual void reject();
     void openDescription();
+    void applyParameterSet();
 
 protected:
     bool setAliasNames();
@@ -128,6 +131,7 @@ private:
     VariableTableWidget *mpVariableTableWidget;
     SystemProperties *mpSystemProperties=nullptr;
     bool mAllowEditing=false;
+    QComboBox *mpSetsComboBox;
 };
 
 // Help class declarations

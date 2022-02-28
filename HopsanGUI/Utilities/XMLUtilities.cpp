@@ -792,3 +792,51 @@ void updateHmfSystemProperties(QDomElement &systemElement, const QString hmfVers
         }
     }
 }
+
+
+//! @brief Reads a System Structure Parameter Values (SSV) file
+//! @param filePath[in] Full path to .ssv file
+//! @param rParameters[out] List of parameter specifications
+void readFromSsv(const QString filePath, QList<SsvParameter> &rParameters)
+{
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        gpMessageHandler->addErrorMessage("Unable to open "+file.fileName()+" for reading.");
+        return;
+    }
+
+    QDomDocument domDocument;
+    QString errorStr;
+    int errorLine, errorColumn;
+    if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn)) {
+        gpMessageHandler->addErrorMessage(file.fileName()+QString(": Parse error at line %1, column %2:\n%3").arg(errorLine).arg(errorColumn).arg(errorStr));
+        return;
+    }
+
+
+    QDomElement configRoot = domDocument.documentElement();
+    if (configRoot.tagName() != ssv::parameterSet) {
+        gpMessageHandler->addErrorMessage(file.fileName()+": Incorrect root tag name: "+configRoot.tagName()+" != "+ssv::parameterSet);
+        return;
+    }
+
+    QDomElement parametersElement = configRoot.firstChildElement(ssv::parameters);
+
+    //Loop through all <ssv:Parameter> elements
+    QDomElement parameterElement = parametersElement.firstChildElement(ssv::parameter);
+    while(!parameterElement.isNull()) {
+        SsvParameter parameter;
+        parameter.name = parameterElement.attribute(ssv::attr::name);
+
+        //Read data subelement (name = ssv:[datatype])
+        QDomElement dataElement = parameterElement.firstChildElement();
+        parameter.dataType = dataElement.nodeName();
+        parameter.unit = dataElement.attribute(ssv::attr::unit);
+        parameter.value = dataElement.attribute(ssv::attr::value);
+        rParameters.append(parameter);
+
+        parameterElement = parameterElement.nextSiblingElement(ssv::parameter);
+    }
+
+    file.close();
+}
