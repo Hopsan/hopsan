@@ -289,6 +289,10 @@ void ComponentPropertiesDialog3::applyParameterSet()
     readFromSsv(mpModelObject->getAppearanceData()->getBasePath()+"/"+fileName, ssvParameters);
 
     for(const auto &ssvParameter : ssvParameters) {
+        if(!mpModelObject->hasParameter(ssvParameter.name)) {
+            gpMessageHandler->addWarningMessage("Parameter not found in component: "+ssvParameter.name+" (ignored)");
+            continue;
+        }
         CoreParameterData parameter;
         mpModelObject->getParameter(ssvParameter.name, parameter);
         QString hopsanUnit = mpVariableTableWidget->getSelectedUnit(ssvParameter.name);
@@ -1276,6 +1280,7 @@ QString VariableTableWidget::getSelectedUnit(const QString &rName)
             return pValueWidget->getUnitSelectionWidget()->getSelectedUnit();
         }
     }
+    return QString();   //Parameter not found, return empty string
 }
 
 bool VariableTableWidget::focusNextPrevChild(bool next)
