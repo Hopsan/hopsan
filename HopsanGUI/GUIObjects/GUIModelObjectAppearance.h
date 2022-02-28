@@ -259,6 +259,7 @@ public:
     QString getSourceCodeFile() const;
     QString getLibPath() const;
     bool isRecompilable() const;
+    QMap<QString, QString> getParameterSets() const;
 
     ModelObjectAnimationData *getAnimationDataPtr();
 
@@ -296,6 +297,7 @@ private:
     QString mDefaultMissingIconPath;
     QPointF mNameTextPos;
     QStringList mReplacementObjects;
+    QMap<QString, QString> mParameterSets;
 
     PortAppearanceMapT mPortAppearanceMap;
     ModelObjectAnimationData mAnimationData;

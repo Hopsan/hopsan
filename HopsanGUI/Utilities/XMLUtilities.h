@@ -96,6 +96,16 @@ void updateRenamedPort(QDomElement &rDomElement, const QString componentType, co
 void updateRenamedParameter(QDomElement &rDomElement, const QString componentType, const QString oldName, const QString newName);
 void updateRenamedComponentName(QDomElement &rDomElement, const QString oldName, const QString newName);
 
+//SSV help functions
+class SsvParameter {
+public:
+    QString name;
+    QString dataType;
+    QString unit;
+    QString value;
+};
+void readFromSsv(const QString filePath, QList<SsvParameter> &rParameters);
+
 //Save Load Definitions
 //! @todo clean up this list and give some smarter names, remove TAG from end, also make sure we use theses defines where appropriate instead of hardcoded strings
 #define HPF_ROOTTAG "hopsanparameterfile"

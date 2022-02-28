@@ -689,6 +689,13 @@ void ModelObject::loadParameterValuesFromFile(QString parameterFile)
     // Nothing by default
 }
 
+//! @brief Returns a list of available parameter sets for model object
+//! @returns Map with names and corresponding SSV file paths
+QMap<QString, QString> ModelObject::getParameterSets() const
+{
+    return mModelObjectAppearance.getParameterSets();
+}
+
 bool ModelObject::isLossesDisplayVisible()
 {
     return mpLossesDisplay->isVisible();

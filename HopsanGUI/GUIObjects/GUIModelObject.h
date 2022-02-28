@@ -111,6 +111,8 @@ public:
     void saveParameterValuesToFile(QString parameterFile = {});
     virtual void loadParameterValuesFromFile(QString parameterFile = {});
 
+    virtual QMap<QString, QString> getParameterSets() const;
+
     // VariableAlias method
     //! @todo parameters and port variables should be more similar in the future, so that we do not need handle them separately
     virtual QMap<QString, QString> getVariableAliases(const QString &rPortName="") const;

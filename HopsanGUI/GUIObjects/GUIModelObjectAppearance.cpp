@@ -73,6 +73,12 @@
 #define CAF_HELPHTML "html"
 #define CAF_HELPMARKDOWN "md"
 
+namespace caf {
+    constexpr auto name = "name";
+    constexpr auto path = "path";
+    constexpr auto parametersets = "parametersets";
+    constexpr auto parameterset = "parameterset";
+}
 
 #define CAF_PARAMETERS "defaultparameters"
 #define CAF_PARAMETER "parameter"
@@ -475,6 +481,7 @@ ModelObjectAppearance &ModelObjectAppearance::operator=(const ModelObjectAppeara
     mDefaultMissingIconPath = other.mDefaultMissingIconPath;
     mNameTextPos = other.mNameTextPos;
     mReplacementObjects = other.mReplacementObjects;
+    mParameterSets = other.mParameterSets;
 
     // OK, this is a hack, the port appearance map is actually a map of shared pointers,
     // but we want a "deep copy" so lets fix that
@@ -756,6 +763,13 @@ bool ModelObjectAppearance::isRecompilable() const
     return mIsRecompilable;
 }
 
+//! @brief Returns a list of available parameter sets for model object
+//! @returns Map with names and corresponding SSV file paths
+QMap<QString, QString> ModelObjectAppearance::getParameterSets() const
+{
+    return mParameterSets;
+}
+
 
 ModelObjectAnimationData *ModelObjectAppearance::getAnimationDataPtr()
 {
@@ -895,6 +909,20 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
         if (!xmlHelpMD.isNull())
         {
             mHelpHtmlPath = xmlHelpMD.text();
+        }
+    }
+
+    //Read parameter sets (name and .ssv file)
+    QDomElement xmlParameterSets = domElement.firstChildElement(caf::parametersets);
+    if(!xmlParameterSets.isNull())
+    {
+        QDomElement xmlParameterSet = xmlParameterSets.firstChildElement(caf::parameterset);
+        while(!xmlParameterSet.isNull())
+        {
+            QString name = xmlParameterSet.attribute(caf::name);
+            QString path = xmlParameterSet.attribute(caf::path);
+            mParameterSets.insert(name, path);
+            xmlParameterSet = xmlParameterSet.nextSiblingElement(caf::parameterset);
         }
     }
 
