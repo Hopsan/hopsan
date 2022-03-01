@@ -858,9 +858,11 @@ private Q_SLOTS:
         double x = 5.1;
         double y = 32.12;
         double z = 12.13;
+        double a_b = 3;
         variables.insert("x", x);
         variables.insert("y", y);
         variables.insert("z", z);
+        variables.insert("a_b", a_b);
         QTest::newRow("0") << Expression("sin(x)") << variables << sin(x) << true;
         QTest::newRow("1") << Expression("floor(x)") << variables << floor(x) << true;
         QTest::newRow("2") << Expression("limit(x,0,4)") << variables << 4.0 << true;
@@ -900,6 +902,7 @@ private Q_SLOTS:
         QTest::newRow("35") << Expression("2.61-1.44") << variables << 1.17 << true;
         QTest::newRow("36") << Expression("3.1415/4*15e-3^2*7800*.05") << variables << 0.068916656 << true;
         QTest::newRow("37") << Expression("x*y*y") << variables << x*y*y << true;
+        QTest::newRow("38") << Expression("a_b^2") << variables << pow(a_b,2) << true;
     }
 
 
