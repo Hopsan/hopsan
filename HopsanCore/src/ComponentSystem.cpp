@@ -701,66 +701,63 @@ bool ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVec
     }
 #else
     bool didSomething = true;
-    while(didSomething)
-    {
+    while(didSomething) {
         didSomething = false;
 
         // Loop through the unsorted component vector
-        for(size_t c=0; c<rComponentVector.size(); ++c)
-        {
+        for(size_t c=0; c<rComponentVector.size(); ++c) {
             // A pointer to an unsorted component
             Component* pUnsrtComp = rComponentVector[c];
             //Ignore components that are already added to the new vector
-            if(!vectorContains<Component*>(newComponentVector, pUnsrtComp))
-            {
+            if(!vectorContains<Component*>(newComponentVector, pUnsrtComp)) {
                 bool readyToAdd=true;
                 std::vector<Port*> portVector = pUnsrtComp->getPortPtrVector();
                 // Ask each read port for its node, then ask the node for its write port component
-                for(size_t p=0; p<portVector.size(); ++p)
-                {
+                for(size_t p=0; p<portVector.size(); ++p) {
                     // Take the port pointer (To make code easier to read)
                     Port *pPort = portVector[p];
-                    Component* pRequiredComponent=0;
+                    std::vector<Component*> pRequiredComponents;
 
                     SortHintEnumT sortHint = pPort->getSortHint();
                     if ((pUnsrtComp->getTypeName() == HOPSAN_BUILTIN_TYPENAME_SUBSYSTEM) ||
-                        (pUnsrtComp->getTypeName() == HOPSAN_BUILTIN_TYPENAME_CONDITIONALSUBSYSTEM))
-                    {
+                        (pUnsrtComp->getTypeName() == HOPSAN_BUILTIN_TYPENAME_CONDITIONALSUBSYSTEM)) {
                         sortHint = pPort->getInternalSortHint();
                     }
 
-                    if ( (sortHint == Destination) && pPort->isConnected() )
-                    {
-                        Port *pSourcePort = pPort->getNodePtr()->getSortOrderSourcePort();
-                        if (pSourcePort && pSourcePort->getComponent())
-                        {
-                            pRequiredComponent = pSourcePort->getComponent();
+                    if ( (sortHint == Destination) && pPort->isConnected() ) {
+                        std::vector<Port *> sourcePorts;
+                        for(int s=0; s<pPort->getNumPorts(); ++s) {
+                            sourcePorts.push_back(pPort->getNodePtr(s)->getSortOrderSourcePort());
                         }
-                    }
-                    if(pRequiredComponent /*&& (pRequiredComponent->getTypeName() != "SignalUnitDelay")*/)
-                    {
-                        if(pRequiredComponent->mpSystemParent == this)
-                        {
-                            if(!vectorContains<Component*>(newComponentVector, pRequiredComponent) &&
-                                    vectorContains<Component*>(rComponentVector, pRequiredComponent))
-                            {
-                                readyToAdd = false;     //Depending on normal component which has not yet been added
+                        for(size_t p=0; p<sourcePorts.size(); ++p) {
+                            if (sourcePorts[p] && sourcePorts[p]->getComponent()) {
+                                pRequiredComponents.push_back(sourcePorts[p]->getComponent());
                             }
                         }
-                        else
-                        {
-                            if(!vectorContains<Component*>(newComponentVector, pRequiredComponent->mpSystemParent) &&
-                                    (pRequiredComponent->mpSystemParent->getTypeCQS() == pPort->getComponent()->getTypeCQS()) &&
-                                    vectorContains<Component*>(rComponentVector,pRequiredComponent->mpSystemParent))
-                            {
-                                readyToAdd = false;     //Depending on subsystem component which has not yet been added
+                    }
+                    if(!pRequiredComponents.empty()) {
+                        for(size_t r=0; r<pRequiredComponents.size(); ++r) {
+                            Component *pRequiredComponent = pRequiredComponents[r];
+                            if(pRequiredComponent->mpSystemParent == this) {
+                                if(!vectorContains<Component*>(newComponentVector, pRequiredComponent) &&
+                                        vectorContains<Component*>(rComponentVector,pRequiredComponent)) {
+                                    readyToAdd = false;     //Depending on normal component which has not yet been added
+                                    break;
+                                }
+                            }
+                            else {
+                                if(!vectorContains<Component*>(newComponentVector, pRequiredComponent->mpSystemParent) &&
+                                        (pRequiredComponent->mpSystemParent->getTypeCQS() == pPort->getComponent()->getTypeCQS()) &&
+                                        vectorContains<Component*>(rComponentVector,pRequiredComponent->mpSystemParent)) {
+                                    readyToAdd = false;     //Depending on subsystem component which has not yet been added
+                                    break;
+                                }
                             }
                         }
                     }
                 }
                 // Add the component if all required write port components was already added
-                if(readyToAdd)
-                {
+                if(readyToAdd) {
                     newComponentVector.push_back(pUnsrtComp);
                     didSomething = true;
                 }
