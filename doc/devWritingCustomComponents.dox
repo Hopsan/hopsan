@@ -260,6 +260,10 @@ Information about the component for the graphical interface, such as icon, port 
       <port name="P2" x="0.0" y="0.5" a="180" visible="true"/>
       <port name="Kc" x="0.5" y="0.0" a="270" visible="false"/>
     </ports>
+	  <parametersets>
+        <parameterset name="First parameter set" path="firstparameterset.ssv"/>
+        <parameterset name="Second parameter set" path="secondparameterset.ssv"/>
+    </parametersets>
   </modelobject>
 </hopsanobjectappearance>
 \endverbatim
@@ -289,6 +293,9 @@ The first line contains basic information about the XML code, and should always 
   - \b y Y-position fraction of component icon height (0 = top, 1 = bottom)
   - \b a Angle of port, 0 = right, 90 = down, 180 = left, 270 = up, ports shall normally point outwards from the component
   - \b visible If the port is visible by default, \e true or \e false. (If omitted defaults to true)
+- \b parametersets Defines available pre-defined parameter sets for the component in [System Structure Parameter Values](https://ssp-standard.org/) format
+  - \b name Name of each parameter set
+  - \b path Relative path from the .xml file to the parameter set (.ssv)
   
  \page devWritingCppComponentsPageMarkdownHelp Markdown help with LaTeX equation support
  You can write component help documentation in markdown with additional support for LaTeX equations.
