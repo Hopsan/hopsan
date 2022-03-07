@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ssv:ParameterSet version="1.0" name="SmallVolume" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues">
+	<ssv:Parameters>
+		<ssv:Parameter name="V#Value">
+			<ssv:Real value="1" unit="l"/>
+		</ssv:Parameter>
+	</ssv:Parameters>
+	<ssv:Units>
+		<ssv:Unit name="l">
+			<ssv:BaseUnit m="3" factor="0.001"/>
+		</ssv:Unit>
+	</ssv:Units>
+</ssv:ParameterSet>

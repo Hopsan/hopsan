@@ -8,5 +8,10 @@
             <port x="0" y="0.5" a="0" name="P1"/>
             <port x="1" y="0.5" a="0" name="P2"/>
         </ports>
+		<parametersets>
+            <parameterset name="Small volume (1 l)" path="smallvolume.ssv"/>
+            <parameterset name="Medium volume (2 l) " path="mediumvolume.ssv"/>
+			<parameterset name="Large volume (5 l) " path="largevolume.ssv"/>
+        </parametersets>
     </modelobject>
 </hopsanobjectappearance>
