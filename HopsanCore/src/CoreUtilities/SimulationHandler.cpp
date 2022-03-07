@@ -102,6 +102,16 @@ bool SimulationHandler::simulateSystem(const double startT, const double stopT, 
     return false;
 }
 
+bool SimulationHandler::startRealtimeSimulation(ComponentSystem *pSystem, double realtimeFactor)
+{
+    return pSystem->startRealtimeSimulation(realtimeFactor);
+}
+
+void SimulationHandler::stopRealtimeSimulation(ComponentSystem *pSystem)
+{
+    pSystem->stopSimulation();
+}
+
 void SimulationHandler::finalizeSystem(ComponentSystem* pSystem)
 {
     pSystem->finalize();

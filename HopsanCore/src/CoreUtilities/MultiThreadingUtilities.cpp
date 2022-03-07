@@ -36,6 +36,13 @@
 #include <unistd.h>
 #endif
 
+#if __cplusplus >= 201103L
+#include <mutex>
+#include <chrono>
+#include <ctime>
+#include <thread>
+#endif
+
 #include "CoreUtilities/MultiThreadingUtilities.h"
 #include "ComponentSystem.h"
 
@@ -615,6 +622,41 @@ void simWholeSystems(std::vector<ComponentSystem *> systemPtrs, double stopTime)
     {
         systemPtrs[i]->simulate(stopTime);
     }
+}
+
+//! @brief Function for simulating whole systems multi-threaded
+//! @param systemPtrs Vector with pointers to the systems to simulate
+//! @param stopTime Stop time of simulation
+void simWholeSystemInRealtime(double realTimeFactor, volatile bool *pStopSimulation, double *pTime, double timeStep, std::vector<Component*> signalComponentPtrs, std::vector<Component*> cComponentPtrs, std::vector<Component*> qComponentPtrs)
+{
+#if (__cplusplus >= 201103L)
+    auto wallTime = std::chrono::steady_clock::now();
+
+    while(!(*pStopSimulation)) {
+        *pTime += timeStep; //mTime is updated here before the simulation,
+        //mTime is the current time during the simulateOneTimestep
+
+        //Signal components
+        for(const auto &sComponent : signalComponentPtrs) {
+            sComponent->simulate(*pTime);
+        }
+
+        //C components
+        for(const auto &cComponent : cComponentPtrs) {
+            cComponent->simulate(*pTime);
+        }
+
+        //Q components
+        for(const auto &qComponent : qComponentPtrs) {
+            qComponent->simulate(*pTime);
+        }
+
+        wallTime += std::chrono::microseconds(int(1000000*timeStep/realTimeFactor));
+        std::this_thread::sleep_until(wallTime);
+    }
+#else
+    return;
+#endif
 }
 
 #endif //Multithreading

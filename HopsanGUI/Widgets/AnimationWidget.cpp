@@ -56,6 +56,7 @@
 #include "MainWindow.h"
 #include "LibraryHandler.h"
 #include "MessageHandler.h"
+#include "SimulationThreadHandler.h"
 
 //! @brief Constructor for the animation widget class
 //! @param [in] parent Pointer to parent widget
@@ -65,6 +66,7 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     //Define public member pointer variables
     mpContainer = gpModelHandler->getCurrentViewContainerObject();
     mpAnimationData = mpContainer->getAppearanceData()->getAnimationDataPtr();
+    mpCoreSimulationHandler = new CoreSimulationHandler();
 
     //Set palette
     this->setPalette(gpConfig->getPalette());
@@ -106,12 +108,14 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
 
     mpStopButton = new QToolButton(this);
     mpStopButton->setIcon(QIcon(QString(QString(ICONPATH) + "svg/Hopsan-Stop.svg")));
+    mpStopButton->setDisabled(true);
 
     mpRewindButton = new QToolButton(this);
     mpRewindButton->setIcon(QIcon(QString(QString(ICONPATH) + "svg/Hopsan-Rewind.svg")));
 
     mpPauseButton = new QToolButton(this);
     mpPauseButton->setIcon(QIcon(QString(QString(ICONPATH) + "svg/Hopsan-Pause.svg")));
+    mpPauseButton->setDisabled(true);
 
     mpPlayButton = new QToolButton(this);
     mpPlayButton->setIcon(QIcon(QString(QString(ICONPATH) + "svg/Hopsan-Play.svg")));
@@ -162,7 +166,7 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     mpFpsAdjustClock = new QTime();
 
     //Set default values for animation variables
-    mRealTime=true;
+    mRealTime = false;
     mCurrentAnimationTime = 0;
     mLastAnimationTime = 0;
     mSimulationSpeed = mpSpeedSpinBox->value();
@@ -404,6 +408,8 @@ void AnimationWidget::rewind()
 //! @brief Slot that pauses the animation
 void AnimationWidget::pause()
 {
+    mpPlayButton->setDisabled(mpPlotData->isEmpty());
+    mpRewindButton->setDisabled(mpPlotData->isEmpty());
     mpAnimationStepTrigger->stop();
 }
 
@@ -424,6 +430,11 @@ void AnimationWidget::play()
         mpFpsAdjustClock->start();
         //mpTime->setHMS(0,0,0,mpTimeDisplay->text().toDouble()*1000);
     }
+
+    mpPlayButton->setDisabled(true);
+    mpPlayRealTimeButton->setDisabled(true);
+    mpStopButton->setDisabled(false);
+    mpPauseButton->setDisabled(false);
 }
 
 
@@ -446,6 +457,11 @@ void AnimationWidget::playRT()
         return;
     }
 
+    if(!mpContainer->mpModelWidget->startRealtimeSimulation(mpSpeedSpinBox->value())) {
+        gpMessageHandler->addErrorMessage("Could not start real-time animation.");
+        return;
+    }
+
     mRealTime = true;
     mpTimeSlider->setValue(1);
     changeIndex(0);
@@ -463,7 +479,13 @@ void AnimationWidget::playRT()
         //mpTime->setHMS(0,0,0,mpTimeDisplay->text().toDouble()*1000);
     }
 
-    //updateAnimationSpeed(1);
+    mpPauseButton->setDisabled(true);
+    mpSpeedSpinBox->setDisabled(true);
+    mpTimeSlider->setDisabled(true);
+    mpPlayRealTimeButton->setDisabled(true);
+    mpPlayButton->setDisabled(true);
+    mpRewindButton->setDisabled(true);
+    mpStopButton->setDisabled(false);
 }
 
 
@@ -529,14 +551,8 @@ void AnimationWidget::updateAnimation()
     // Real-time simulation
     if(mRealTime)
     {
-        //Calculate time to simulate (equals interval of animation timer)
-        double dT = mSimulationSpeed/double(mFps);
-
-        //Simulate one interval (does NOT equal one time step, time step is usually much smaller)
-        mpContainer->getCoreSystemAccessPtr()->simulate(mLastAnimationTime, mLastAnimationTime+dT, -1, true);
-
         //Update last animation time
-        mLastAnimationTime = mLastAnimationTime+dT;
+        mLastAnimationTime = mpContainer->getCoreSystemAccessPtr()->getCurrentTime();
         mpTimeDisplay->setText(QString::number(mLastAnimationTime));
 
         //Update animated connectors and components
@@ -657,9 +673,19 @@ void AnimationWidget::adjustFps()
 
 void AnimationWidget::stop()
 {
+    if(mRealTime) {
+        mpContainer->mpModelWidget->stopRealtimeSimulation();
+    }
     mLastAnimationTime = 0.0;
     mRealTime=false;
     mpAnimationStepTrigger->stop();
+
+    mpPauseButton->setDisabled(true);
+    mpSpeedSpinBox->setDisabled(false);
+    mpTimeSlider->setDisabled(false);
+    mpPlayRealTimeButton->setDisabled(false);
+    mpPlayButton->setDisabled(mpPlotData->isEmpty());
+    mpRewindButton->setDisabled(mpPlotData->isEmpty());
 }
 
 

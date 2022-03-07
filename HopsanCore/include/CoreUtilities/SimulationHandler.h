@@ -62,6 +62,9 @@ public:
     bool simulateSystem(const double startT, const double stopT, const int nDesiredThreads, ComponentSystem* pSystem, bool noChanges=false, ParallelAlgorithmT algorithm=OfflineSchedulingAlgorithm);
     bool simulateSystem(const double startT, const double stopT, const int nDesiredThreads, std::vector<ComponentSystem*> &rSystemVector, bool noChanges=false, ParallelAlgorithmT algorithm=OfflineSchedulingAlgorithm);
 
+    bool startRealtimeSimulation(ComponentSystem *pSystem, double realtimeFactor=1);
+    void stopRealtimeSimulation(ComponentSystem *pSystem);
+
     void finalizeSystem(ComponentSystem* pSystem);
     void finalizeSystem(std::vector<ComponentSystem*> &rSystemVector);
 
