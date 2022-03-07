@@ -107,6 +107,8 @@ HOPSANCORE_DLLAPI void simSlave(ComponentSystem *pSystem, std::vector<Component*
                                 double timeStep, size_t numSimSteps, BarrierLock *pBarrier_S,
                                 BarrierLock *pBarrier_C, BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N);
 
+HOPSANCORE_DLLAPI void simWholeSystemInRealtime(double realTimeFactor, volatile bool *pStopSimulation, double *pTime, double timeStep, std::vector<Component *> signalComponentPtrs, std::vector<Component *> cComponentPtrs, std::vector<Component *> qComponentPtrs);
+
 HOPSANCORE_DLLAPI void simWholeSystems(std::vector<ComponentSystem *> systemPtrs, double stopTime);
 
 

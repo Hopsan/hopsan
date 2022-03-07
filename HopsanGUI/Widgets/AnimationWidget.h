@@ -58,6 +58,7 @@ class MainWindow;
 class ModelObject;
 class LogDataHandler2;
 class ModelObjectAnimationData;
+class CoreSimulationHandler;
 
 class QGraphicsScene;
 class QTextEdit;
@@ -180,6 +181,8 @@ private:
     int mFps;
     double mTotalTime;
     double mnSamples;
+
+    CoreSimulationHandler *mpCoreSimulationHandler;
 
 public slots:
     void changeSpeed(double newSpeed);

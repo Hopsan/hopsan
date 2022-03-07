@@ -200,6 +200,16 @@ bool CoreSimulationHandler::simulate(const double startTime, const double stopTi
     return gHopsanCore.getSimulationHandler()->simulateSystem(startTime, stopTime, nThreads, coreSystems, modelHasNotChanged, algorithm);
 }
 
+bool CoreSimulationHandler::startRealtimeSimumlation(CoreSystemAccess *pCoreSystemAccess, double realtimeFactor)
+{
+    return gHopsanCore.getSimulationHandler()->startRealtimeSimulation(pCoreSystemAccess->getCoreSystemPtr(), realtimeFactor);
+}
+
+void CoreSimulationHandler::stopRealtimeSimulation(CoreSystemAccess *pCoreSystemAccess)
+{
+    return gHopsanCore.getSimulationHandler()->stopRealtimeSimulation(pCoreSystemAccess->getCoreSystemPtr());
+}
+
 void CoreSimulationHandler::finalize(CoreSystemAccess* pCoreSystemAccess)
 {
     gHopsanCore.getSimulationHandler()->finalizeSystem(pCoreSystemAccess->getCoreSystemPtr());

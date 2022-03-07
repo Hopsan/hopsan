@@ -37,6 +37,7 @@
 #include <iostream>
 #include <algorithm>
 #include <map>
+#include <time.h>
 
 #include "ComponentSystem.h"
 #include "HopsanEssentials.h"
@@ -54,6 +55,8 @@ using namespace std;
 #if (__cplusplus >= 201103L)
 #ifdef _WIN32
 #include <windows.h>
+#else
+#include <unistd.h>
 #endif
 #include <functional>
 #include <chrono>
@@ -3345,8 +3348,7 @@ void ComponentSystem::simulate(const double stopT)
     //Simulate
     for (size_t i=0; i<numSimulationSteps; ++i)
     {
-        if (mStopSimulation)
-        {
+        if (mStopSimulation) {
             break;
         }
 
@@ -3376,6 +3378,18 @@ void ComponentSystem::simulate(const double stopT)
 
         logTimeAndNodes(mTotalTakenSimulationSteps);
     }
+}
+
+bool ComponentSystem::startRealtimeSimulation(double realTimeFactor)
+{
+#if (__cplusplus >= 201103L)
+    std::thread rtThread(simWholeSystemInRealtime, realTimeFactor, &mStopSimulation, &mTime, mTimestep, mComponentSignalptrs, mComponentCptrs, mComponentQptrs);
+    rtThread.detach();
+    return true;
+#else
+    stopSimulation("Real-time simulation requires C++11 or above.");
+    return false;
+#endif
 }
 
 

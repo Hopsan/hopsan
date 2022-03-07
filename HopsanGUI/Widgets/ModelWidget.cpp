@@ -682,6 +682,23 @@ bool ModelWidget::simulate_blocking()
 
 }
 
+bool ModelWidget::startRealtimeSimulation(const double realtimeFactor)
+{
+    if(!mSimulateMutex.tryLock()) {
+        gpMessageHandler->addErrorMessage("Simulation mutex is locked. Aborting.");
+        return false;
+    }
+    CoreSimulationHandler mCoreSimulationHandler;
+    mCoreSimulationHandler.startRealtimeSimumlation(mpToplevelSystem->getCoreSystemAccessPtr(), realtimeFactor);
+}
+
+void ModelWidget::stopRealtimeSimulation()
+{
+    CoreSimulationHandler mCoreSimulationHandler;
+    mCoreSimulationHandler.stopRealtimeSimulation(mpToplevelSystem->getCoreSystemAccessPtr());
+    mSimulateMutex.unlock();
+}
+
 
 //! Slot that saves current project to old file name if it exists.
 //! @see saveModel(int index)
