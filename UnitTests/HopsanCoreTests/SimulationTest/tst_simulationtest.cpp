@@ -212,6 +212,7 @@ private slots:
         QTest::newRow("74") << HString("SignalInputInterface");
         QTest::newRow("75") << HString("SignalOutputInterface");
         QTest::newRow("76") << HString("SignalAnimationSwitch");
+        QTest::newRow("77") << HString("SignalSteadyStateIdentifier");
         //! @todo Add all non-signal and non-connectivity components here
     }
 

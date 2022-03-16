@@ -42,7 +42,7 @@ namespace hopsan {
     class HOPSANCORE_DLLAPI WhiteGaussianNoise
     {
     public:
-        double getValue();
+        static double getValue();
     };
 }
 

@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="SignalSteadyStateIdentifier.hpp" typename="SignalSteadyStateIdentifier" displayname="Steady State Identifier">
+        <icons>
+            <icon scale="1" path="SignalSteadyStateIdentifier.svg" iconrotation="OFF" type="user"/>
+        </icons>
+        <help>
+            <md>SignalSteadyStateIdentifier.md</md>
+        </help>
+        <ports>
+            <port x="0" y="0.5" a="180" name="in"/>
+            <port x="1" y="0.5" a="0" name="out"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>
