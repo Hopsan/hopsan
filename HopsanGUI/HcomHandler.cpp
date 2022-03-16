@@ -9855,5 +9855,6 @@ double HcomFunctionoidHg::operator()(QString &str, bool &ok)
         mpHandler->mpConsole->printErrorMessage("No model is open", "", false);
         return 0;
     }
+    ok = true;
     return mpHandler->getModelPtr()->getLogDataHandler()->getHighestGenerationNumber()+1;
 }
