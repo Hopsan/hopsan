@@ -263,6 +263,7 @@ HEADERS +=  \
  $${PWD}/Signal/Logic/SignalOr.hpp \ 
  $${PWD}/Signal/Logic/SignalSRlatch.hpp \ 
  $${PWD}/Signal/Logic/SignalSmallerThan.hpp \ 
+ $${PWD}/Signal/Logic/SignalSteadyStateIdentifier.hpp \ 
  $${PWD}/Signal/Logic/SignalStopSimulation.hpp \ 
  $${PWD}/Signal/Logic/SignalXor.hpp \ 
  $${PWD}/Signal/MathFunctions/MathFunctions.h \ 

@@ -31,5 +31,6 @@ pComponentFactory->registerCreatorFunction("SignalNot",SignalNot::Creator);
 pComponentFactory->registerCreatorFunction("SignalOr",SignalOr::Creator);
 pComponentFactory->registerCreatorFunction("SignalSRlatch",SignalSRlatch::Creator);
 pComponentFactory->registerCreatorFunction("SignalSmallerThan",SignalSmallerThan::Creator);
+pComponentFactory->registerCreatorFunction("SignalSteadyStateIdentifier",SignalSteadyStateIdentifier::Creator);
 pComponentFactory->registerCreatorFunction("SignalStopSimulation",SignalStopSimulation::Creator);
 pComponentFactory->registerCreatorFunction("SignalXor",SignalXor::Creator);

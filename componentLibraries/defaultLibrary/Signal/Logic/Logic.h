@@ -31,5 +31,6 @@
 #include "SignalOr.hpp"
 #include "SignalSRlatch.hpp"
 #include "SignalSmallerThan.hpp"
+#include "SignalSteadyStateIdentifier.hpp"
 #include "SignalStopSimulation.hpp"
 #include "SignalXor.hpp"
