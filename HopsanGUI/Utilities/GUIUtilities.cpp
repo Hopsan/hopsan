@@ -688,7 +688,10 @@ double firstTimeAt(QVector<double> vData, QVector<double> vTime, double value)
 //! @param sigma Standard deviation of normal distribution
 double normalDistribution(double average, double sigma)
 {
-    double U1 = (double)rand() / (double)RAND_MAX;
+    double U1 = 0;
+    while(U1 == 0) {
+        U1 = (double)rand() / (double)RAND_MAX;
+    }
     double U2 = (double)rand() / (double)RAND_MAX;
     return average + sigma*sqrt(-2*log(U1))*cos(2*M_PI*U2);
 }

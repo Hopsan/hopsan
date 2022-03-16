@@ -397,6 +397,8 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     registerInternalFunction("bdf1", "Transforms derivatives in a symbolic expression using the first order backward differentiation formula (implicit Euler)", "Usage: e = bdf1(f)");
     registerInternalFunction("bdf2", "Transforms derivatives in a symbolic expression using the second order backward differentiation formula", "Usage: e = bdf2(f)");
     registerInternalFunction("latex", "Prints a symbolic expression with LaTeX syntax", "Usage: latex(e)");
+    registerInternalFunction("cut", "Removes all samples x[i] for which y[i]<0.5", "Usage: cut(x, y)");
+    registerInternalFunction("ssi", "Identifies steady-state for specified variable", "Usage: ssi(vector, method, arguments)\n       Method 0 (rectangular window):\n         ssi(vector, 0, tolerance, windowlength)\n       Method 1 (ratio of differently estimated variances):\n         ssi(vector, 1, tolerance, windowlength, noiseamplitude\n       Method 2 (ratio of differently estimated variances using weighted moving average):\n         ssi(vector, 2, tolerance, lambda1, lambda2, lambda3, noiseamplitude)");
 
     //Setup local function pointers (used to evaluate expressions in SymHop)
     registerFunctionoid("aver", new HcomFunctionoidAver(this), "Calculate average value of vector", "Usage: aver(vector)");
@@ -7381,6 +7383,16 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             return;
         }
     }
+    else if(desiredType != Scalar && isHcomFunctionCall("cut", expr))
+    {
+        executeCutBuiltInFunction(expr);
+        return;
+    }
+    else if(desiredType != Scalar && isHcomFunctionCall("ssi", expr))
+    {
+        executeSsiBuiltInFunction(expr);
+        return;
+    }
     //timer.toc("Vector functions", 1);
 
     //Evaluate expression using SymHop
@@ -8755,9 +8767,9 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
     return false;
 }
 
-void HcomHandler::executeGtBuiltInFunction(QString fnc_call)
+void HcomHandler::executeGtBuiltInFunction(QString functionCall)
 {
-    QStringList args = extractFunctionCallExpressionArguments(fnc_call);
+    QStringList args = extractFunctionCallExpressionArguments(functionCall);
     if(args.size()==2)
     {
         const QString &arg1 = args[0];
@@ -8862,9 +8874,9 @@ void HcomHandler::executeGtBuiltInFunction(QString fnc_call)
     }
 }
 
-void HcomHandler::executeLtBuiltInFunction(QString fnc_call)
+void HcomHandler::executeLtBuiltInFunction(QString functionCall)
 {
-    QStringList args = extractFunctionCallExpressionArguments(fnc_call);
+    QStringList args = extractFunctionCallExpressionArguments(functionCall);
     if(args.size()==2)
     {
         const QString &arg1 = args[0];
@@ -8969,10 +8981,10 @@ void HcomHandler::executeLtBuiltInFunction(QString fnc_call)
     }
 }
 
-void HcomHandler::executeEqBuiltInFunction(QString fnc_call)
+void HcomHandler::executeEqBuiltInFunction(QString functionCall)
 {
     double eps = 1e-3;
-    QStringList args = extractFunctionCallExpressionArguments(fnc_call);
+    QStringList args = extractFunctionCallExpressionArguments(functionCall);
 
     if (args.size() == 3)
     {
@@ -9087,6 +9099,197 @@ void HcomHandler::executeEqBuiltInFunction(QString fnc_call)
     {
         HCOMERR(QString("Wrong number of arguments provided for eq function.\n"+mLocalFunctionDescriptions.find("lt").value().second));
         mAnsType = Undefined;
+        return;
+    }
+}
+
+void HcomHandler::executeCutBuiltInFunction(QString functionCall)
+{
+    QStringList args = extractFunctionCallExpressionArguments(functionCall);
+    if(args.size() != 2) {
+        HCOMERR("Wrong number of arguments (should be 2)");
+        mAnsType = Undefined;
+        return;
+    }
+
+    //Find first vector
+    evaluateExpression(args[0], DataVector);
+    if (mAnsType != DataVector)
+    {
+        mAnsType = Undefined;
+        HCOMERR(QString("Variable: %1 was not found!").arg(args[0]));
+        return;
+    }
+    SharedVectorVariableT pVar1 = mAnsVector;
+
+    //Find second vector
+    evaluateExpression(args[1], DataVector);
+    if (mAnsType != DataVector)
+    {
+        HCOMERR(QString("Variable: %1 was not found!").arg(args[1]));
+        mAnsType = Undefined;
+        return;
+    }
+    SharedVectorVariableT pVar2 = mAnsVector;
+
+    if(pVar1->getDataSize() != pVar2->getDataSize()) {
+        HCOMERR("Variables must be of same length.");
+        mAnsType = Undefined;
+        return;
+    }
+
+    VariableTypeT type1 = pVar1->getVariableType();
+    VariableTypeT type2 = pVar2->getVariableType();
+    if(type2 == ComplexType) {
+        HCOMERR("Second variable must not be of complex type.");
+        mAnsType = Undefined;
+        return;
+    }
+
+    mAnsVector = mpModel->getLogDataHandler()->createOrphanVariable(pVar1->getFullVariableName()+"_cut", type1);
+
+    QVector<double> data2 = pVar2->getDataVectorCopy();
+
+    if(type1 == VectorType) {
+        QVector<double> data1 = pVar1->getDataVectorCopy();
+        for(int i=0; i<data1.size(); ++i) {
+            if(data2[i] > 0.5) {
+                mAnsVector->append(data1[i]);
+            }
+        }
+    }
+    else if(type1 == TimeDomainType || type1 == FrequencyDomainType) {
+        QVector<double> data1 = pVar1->getDataVectorCopy();
+        QVector<double> time = pVar1->getSharedTimeOrFrequencyVector()->getDataVectorCopy();
+        for(int i=0; i<data1.size(); ++i) {
+            if(data2[i] > 0.5) {
+                mAnsVector->append(time[i], data1[i]);
+            }
+        }
+    }
+    else {
+        HCOMERR("Unsupported data type for first variable.");
+        mAnsType = Undefined;
+        return;
+    }
+
+    mAnsType = DataVector;
+    return;
+}
+
+void HcomHandler::executeSsiBuiltInFunction(QString functionCall)
+{
+    QStringList args = extractFunctionCallExpressionArguments(functionCall);
+
+    //Find vector
+    evaluateExpression(args[0], DataVector);
+    if (mAnsType != DataVector)
+    {
+        mAnsType = Undefined;
+        HCOMERR(QString("Variable: %1 was not found!").arg(args[0]));
+        return;
+    }
+
+    bool ok;
+    int methodArg = getNumber(args[1], &ok);
+    if(!ok) {
+        HCOMERR("Argument 2 should be a numerical value");
+        mAnsType = Undefined;
+        return;
+    }
+
+    double tol = getNumber(args[2], &ok);
+    if(!ok) {
+        HCOMERR("Argument 3 should be a numerical value");
+        mAnsType = Undefined;
+        return;
+    }
+
+    double win = 0;
+    double stdev = 0;
+    double l1 = 0;
+    double l2 = 0;
+    double l3 = 0;
+    SteadyStateIdentificationMethodEnumT method;
+    if(methodArg == 0) {
+        if(args.size() != 4) {
+            HCOMERR("Wrong number of arguments (should be 4)");
+            mAnsType = Undefined;
+            return;
+        }
+        method = RectangularWindowTest;
+        win = getNumber(args[3], &ok);
+        if(!ok) {
+            HCOMERR("Argument 4 should be a numerical value");
+            mAnsType = Undefined;
+            return;
+        }
+    }
+    else if(methodArg == 1) {
+        if(args.size() != 5) {
+            HCOMERR("Wrong number of arguments (should be 5)");
+            mAnsType = Undefined;
+            return;
+        }
+        method = VarianceRatioTest;
+        win = getNumber(args[3], &ok);
+        if(!ok) {
+            HCOMERR("Argument 4 should be a numerical value");
+            mAnsType = Undefined;
+            return;
+        }
+
+        stdev = getNumber(args[4], &ok);
+        if(!ok) {
+            HCOMERR("Argument 5 should be a numerical value");
+            mAnsType = Undefined;
+            return;
+        }
+    }
+    else if(methodArg == 2) {
+        if(args.size() != 7) {
+            HCOMERR("Wrong number of arguments (should be 7)");
+            mAnsType = Undefined;
+            return;
+        }
+        method = MovingAverageVarianceRatioTest;
+        l1 = getNumber(args[3], &ok);
+        if(!ok) {
+            HCOMERR("Argument 4 should be a numerical value");
+            mAnsType = Undefined;
+            return;
+        }
+
+        l2 = getNumber(args[4], &ok);
+        if(!ok) {
+            HCOMERR("Argument 5 should be a numerical value");
+            mAnsType = Undefined;
+            return;
+        }
+
+        l3 = getNumber(args[5], &ok);
+        if(!ok) {
+            HCOMERR("Argument 6 should be a numerical value");
+            mAnsType = Undefined;
+            return;
+        }
+
+        stdev = getNumber(args[6], &ok);
+        if(!ok) {
+            HCOMERR("Argument 7 should be a numerical value");
+            mAnsType = Undefined;
+            return;
+        }
+    }
+
+    SharedVectorVariableT pRetVar = mAnsVector->identifySteadyState(method, tol, win, stdev, l1, l2, l3);
+    if(pRetVar == nullptr) {
+        mAnsType = Undefined;
+        return;
+    }
+    else {
+        mAnsVector = pRetVar;
+        mAnsType = DataVector;
         return;
     }
 }

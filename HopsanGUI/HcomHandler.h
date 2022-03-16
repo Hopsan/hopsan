@@ -254,9 +254,11 @@ private:
 
     bool evaluateArithmeticExpression(QString cmd);
 
-    void executeGtBuiltInFunction(QString fnc_call);
-    void executeLtBuiltInFunction(QString fnc_call);
-    void executeEqBuiltInFunction(QString fnc_call);
+    void executeGtBuiltInFunction(QString functionCall);
+    void executeLtBuiltInFunction(QString functionCall);
+    void executeEqBuiltInFunction(QString functionCall);
+    void executeCutBuiltInFunction(QString functionCall);
+    void executeSsiBuiltInFunction(QString functionCall);
 
     QString getDirectory(const QString &cmd) const;
     double getNumber(const QString &rStr, bool *pOk);

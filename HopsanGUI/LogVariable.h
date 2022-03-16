@@ -72,6 +72,8 @@ QString variableSourceTypeAsShortString(const VariableSourceTypeT type);
 enum VariableTypeT {VectorType, TimeDomainType, FrequencyDomainType, RealFrequencyDomainType, ImaginaryFrequencyDomainType, AmplitudeFrequencyDomainType, PhaseFrequencyDomainType, ComplexType, UndefinedVariableType};
 QString variableTypeAsString(const VariableTypeT type);
 
+enum SteadyStateIdentificationMethodEnumT {RectangularWindowTest, VarianceRatioTest, MovingAverageVarianceRatioTest};
+
 typedef QSharedPointer<QStringList> SharedSystemHierarchyT;
 
 //! @class VariableCommonDescription
@@ -189,6 +191,7 @@ public:
     // Functions that only read data but that require reimplementation in derived classes
     virtual const SharedVectorVariableT getSharedTimeOrFrequencyVector() const;
     virtual SharedVectorVariableT toFrequencySpectrum(const SharedVectorVariableT pTime, const FrequencySpectrumEnumT type, const WindowingFunctionEnumT windowingFunction=RectangularWindow, double minTime=-std::numeric_limits<double>::max(), double maxTime=std::numeric_limits<double>::max());
+    virtual SharedVectorVariableT identifySteadyState(const SteadyStateIdentificationMethodEnumT method, double tol, double win=0, double stdev=0, double l1=0, double l2=0, double l3=0);
 
     // Functions that modify the data
     void assignFrom(const QVector<double> &rSrc);
