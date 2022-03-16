@@ -806,6 +806,139 @@ SharedVectorVariableT VectorVariable::toFrequencySpectrum(const SharedVectorVari
 }
 
 
+//! @brief Identifies steady-state conditions of a vector
+//! @param[in] method Steady-state identification method to use
+//! @param[in] tol Tolerance for steady-state
+//! @param[in] win Length of moving window (used by RectangularWindowTest and VarianceRatioTest methods)
+//! @param[in] stdev Standard deviation of white noise (used by VarianceRatioTest and MovingAverageVarianceRatioTest methods)
+//! @param[in] l1 Filter coefficient (used by MovingAverageVarianceRatioTest method)
+//! @param[in] l2 Filter coefficient (used by MovingAverageVarianceRatioTest method)
+//! @param[in] l3 Filter coefficient (used by MovingAverageVarianceRatioTest method)
+SharedVectorVariableT VectorVariable::identifySteadyState(const SteadyStateIdentificationMethodEnumT method, double tol, double win, double stdev, double l1, double l2, double l3)
+{
+    SharedVectorVariableT pRetVar = mpParentLogDataHandler->createOrphanVariable(this->getFullVariableName()+"_ss", TimeDomainType);
+
+    SharedVectorVariableT pTime = this->getSharedTimeOrFrequencyVector();
+    QVector<double> time = pTime->getDataVectorCopy();
+    QVector<double> data = this->getDataVectorCopy();
+
+    if(method == RectangularWindowTest) {
+        int nw = 0;
+        for(int i=0; i<time.size(); ++i) {
+            if(time[i] < win) {
+                pRetVar->append(time[i], 0);
+                nw = i+1;  //Update number of samples for window
+                continue;
+            }
+
+            //Compute first variance
+            double xmax = data[i-nw];
+            double xmin = data[i-nw];
+            for(int j=i-nw+1; j<i; ++j) {
+                if(data[j] > xmax) {
+                    xmax = data[j];
+                }
+                else if(data[j] < xmin) {
+                    xmin = data[j];
+                }
+            }
+
+            if(xmax-xmin < tol) {
+                pRetVar->append(time[i], 1);
+            }
+            else {
+                pRetVar->append(time[i], 0);
+            }
+        }
+    }
+    else if(method == VarianceRatioTest) {
+
+        //Create randomized data vector
+        QVector<double> x;
+        x.resize(data.size());
+        for(int i=0; i<data.size(); ++i) {
+            x[i] = normalDistribution(data[i], stdev);
+        }
+
+        int nw = 0;
+        for(int i=0; i<time.size(); ++i) {
+            if(time[i] < win) {
+                pRetVar->append(time[i], 0);
+                nw = i+1;  //Update number of samples for window
+                continue;
+            }
+
+
+            //Compute average of window
+            double mean = 0;
+            for(int j=i-nw; j<i; ++j) {
+                mean += x[j];
+            }
+            mean /= nw;
+
+            //Compute first variance
+            double s1 = 0;
+            for(int j=i-nw; j<i; ++j) {
+                s1 += (x[j]-mean)*(x[j]-mean);
+            }
+            s1 /= (nw-1.0);
+
+            //Compute second variance
+            double s2 = 0;
+            for(int j=i-nw; j<i-1; ++j) {
+                s2 += (x[j+1]-x[j])*(x[j+1]-x[j]);
+            }
+            s2 /= (nw-1.0);
+
+            //Avoid division by zero
+            s1 = fmax(std::numeric_limits<double>::min(), fabs(s1));
+            s2 = fmax(std::numeric_limits<double>::min(), fabs(s2));
+
+            if(s1/s2 < tol) {
+                pRetVar->append(time[i], 1);
+            }
+            else {
+                pRetVar->append(time[i], 0);
+            }
+        }
+    }
+    else if(method == MovingAverageVarianceRatioTest) {
+        double xf = 0;
+        double df = 0;
+        double xold = data[0];
+        pRetVar->append(time[0], 0);
+        for(int i=1; i<time.size(); ++i) {
+            double x = normalDistribution(data[i], stdev);
+
+            double vf = l2*(x-xf)*(x-xf);
+
+            xf = l1*x+(1.0-l1)*xf;
+
+            double s1 = (2.0-l1)/2.0*vf;
+
+            df = l3*(x-xold)*(x-xold) + (1-l3)*df;
+            double s2 = df/2.0;
+
+            //Avoid division by zero
+            s1 = fmax(std::numeric_limits<double>::min(), fabs(s1));
+            s2 = fmax(std::numeric_limits<double>::min(), fabs(s2));
+
+            if(s1/s2 < tol) {
+                pRetVar->append(time[i], 1);
+            }
+            else {
+                pRetVar->append(time[i], 0);
+            }
+            xold = x;
+        }
+    }
+    else {
+        return nullptr;
+    }
+    return pRetVar;
+}
+
+
 void VectorVariable::assignFrom(const SharedVectorVariableT pOther)
 {
     mpCachedDataVector->replaceData(pOther->getDataVectorCopy());
