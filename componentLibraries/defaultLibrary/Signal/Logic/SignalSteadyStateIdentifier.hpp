@@ -68,7 +68,7 @@ namespace hopsan {
             addOutputVariable("out", "1 if steadystate, else 0", "", &mpOut);
 
             std::vector<HString> methods;
-            methods.push_back("1: Sliding window");
+            methods.push_back("1: Rectangular sliding window");
             methods.push_back("2: Variance ratio test (F-test)");
             methods.push_back("3: Exponentially weighted moving average (R-test)");
 
@@ -103,7 +103,7 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            if(mMethod == 0) {  //Sliding window
+            if(mMethod == 0) {  //Rectangular sliding window
                 mWindow[mWindowId] = *mpIn;
                 mWindowId++;
                 if(mWindowId > mWindow.size()-1) {
