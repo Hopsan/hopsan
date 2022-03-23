@@ -589,7 +589,7 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
         else if(pReply == pAddComponentAction) {
             SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
             QStringList folders;
-            while(item->parent() != nullptr && isExternalLibrariesItem(item->parent())) {
+            while(item->parent() != nullptr && !isExternalLibrariesItem(item->parent())) {
                 folders.prepend(item->text(0));
                 item = item->parent();
             }
