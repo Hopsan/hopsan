@@ -10,7 +10,7 @@
 
 buildRoot="packaging/mac-app/"
 name="hopsan"
-baseversion=2.19.1
+baseversion=2.20.0
 releaserevision=20190827.1035 # TODO use getGitInfoScript
 fullversionname=${baseversion}.${releaserevision}
 doDevRelease=true
