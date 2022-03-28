@@ -38,6 +38,9 @@ CONFIG += c++14
 # Enable the use of M_PI and such
 DEFINES *= _USE_MATH_DEFINES
 
+# Enable fmi4c dependency
+DEFINES *= USEFMI4C
+
 # -------------------------------------------------
 # Project files
 # -------------------------------------------------
@@ -50,3 +53,4 @@ SOURCES += \
 OTHER_FILES += \
 
 include(Components.pri)
+include($${PWD}/../../dependencies/fmi4c.pri)

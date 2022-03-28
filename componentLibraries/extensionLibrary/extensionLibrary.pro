@@ -31,5 +31,3 @@ include($${PWD}/../exampleComponentLib/hopsanDebugReleaseCompile.pri)
 SOURCES += extensionLibrary.cpp
 
 include(Components.pri)
-
-include($${PWD}/../../dependencies/fmilibrary.pri)
