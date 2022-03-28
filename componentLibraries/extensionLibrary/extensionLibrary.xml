@@ -18,8 +18,6 @@
     <cflags>-I./someLib/include</cflags>
     <lflags>-L./someLib/bin -lsomeLib</lflags>
     <lflags os="win64">-lWs2_32</lflags> -->
-	<cflags>-I../../dependencies/fmilibrary/include</cflags>
-	<lflags>-L../../dependencies/fmilibrary/lib -lfmilib_shared</lflags>
   </buildflags>
   <component>Mechanical/MechanicalSeparator.hpp</component>
   <component>Mechanical/MechanicForceTransformerQ.hpp</component>
@@ -30,7 +28,6 @@
   <component>Hydraulic/HydraulicVariableVolumeLength.hpp</component>
   <component>Hydraulic/HydraulicVariableVolumeLengthMP.hpp</component>
   <component>Electrical/ElectricInductanceC.hpp</component>
-  <component>Connectivity/FMIWrapper.hpp</component>
   <componentxml>Mechanical/MechanicalSeparator.xml</componentxml>
   <componentxml>Mechanical/MechanicForceTransformerQ.xml</componentxml>
   <componentxml>Mechanical/MechanicFreeFixWall.xml</componentxml>
@@ -59,5 +56,4 @@
   <componentxml>Grafcet/Synchronization_end3Steps.xml</componentxml>
   <componentxml>Grafcet/Transition.xml</componentxml>
   <componentxml>Electrical/ElectricInductanceC.xml</componentxml>
-  <componentxml>Connectivity/FMIWrapper.xml</componentxml>
 </hopsancomponentlibrary>
