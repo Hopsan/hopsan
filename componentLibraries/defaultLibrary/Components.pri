@@ -17,6 +17,7 @@ HEADERS +=  \
  $${PWD}/Connectivity/PneumaticInterfaceQ.hpp \ 
  $${PWD}/Connectivity/SignalInputInterface.hpp \ 
  $${PWD}/Connectivity/SignalOutputInterface.hpp \ 
+ $${PWD}/Connectivity/FMIWrapper.hpp \
  $${PWD}/Electric/Controllers&Switches/Controllers&Switches.h \ 
  $${PWD}/Electric/Controllers&Switches/ElectricIcontroller.hpp \ 
  $${PWD}/Electric/Controllers&Switches/ElectricPWMdceq.hpp \ 

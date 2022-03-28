@@ -3,8 +3,7 @@
 
 HEADERS +=  \
  $${PWD}/Connectivity/Connectivity.h \
- $${PWD}/Connectivity/FMIWrapper.hpp \
- $${PWD}/Electrical/ElectricInductanceC.hpp \ 
+ $${PWD}/Electrical/ElectricInductanceC.hpp \
  $${PWD}/Electrical/Electrical.h \ 
  $${PWD}/Hydraulic/Hydraulic.h \ 
  $${PWD}/Hydraulic/HydraulicLosslessTLMPipe.hpp \ 
