@@ -812,13 +812,23 @@ void MainWindow::createActions()
     mHelpPopupTextMap.insert(mpExportToFMU2_64Action, "FMU 2.0 (64-bit)");
     connect(mpExportToFMU2_64Action, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
+    mpExportToFMU3_32Action = new QAction(tr("FMU 3.0 (32-bit)"), this);
+    mHelpPopupTextMap.insert(mpExportToFMU3_32Action, "FMU 3.0 (32-bit)");
+    connect(mpExportToFMU3_32Action, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+
+    mpExportToFMU3_64Action = new QAction(tr("FMU 3.0 (64-bit)"), this);
+    mHelpPopupTextMap.insert(mpExportToFMU3_64Action, "FMU 3.0 (64-bit)");
+    connect(mpExportToFMU3_64Action, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+
     mpExportToFMUMenu = new QMenu("Export to Functional Mock-Up Interface (FMI)");
     mpExportToFMUMenu->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-ExportFmu.svg"));
 #ifdef _WIN32
     mpExportToFMUMenu->addAction(mpExportToFMU1_32Action);
     mpExportToFMUMenu->addAction(mpExportToFMU2_32Action);
+    mpExportToFMUMenu->addAction(mpExportToFMU3_32Action);
     mpExportToFMUMenu->addAction(mpExportToFMU1_64Action);
     mpExportToFMUMenu->addAction(mpExportToFMU2_64Action);
+    mpExportToFMUMenu->addAction(mpExportToFMU3_64Action);
 #elif __i386__
     mpExportToFMUMenu->addAction(mpExportToFMU1_32Action);
     mpExportToFMUMenu->addAction(mpExportToFMU2_32Action);
@@ -1228,6 +1238,8 @@ void MainWindow::createToolbars()
     connect(mpExportToFMU1_64Action,            SIGNAL(triggered()), mpModelHandler,    SLOT(exportCurrentModelToFMU1_64()));
     connect(mpExportToFMU2_32Action,            SIGNAL(triggered()), mpModelHandler,    SLOT(exportCurrentModelToFMU2_32()));
     connect(mpExportToFMU2_64Action,            SIGNAL(triggered()), mpModelHandler,    SLOT(exportCurrentModelToFMU2_64()));
+    connect(mpExportToFMU3_32Action,            SIGNAL(triggered()), mpModelHandler,    SLOT(exportCurrentModelToFMU3_32()));
+    connect(mpExportToFMU3_64Action,            SIGNAL(triggered()), mpModelHandler,    SLOT(exportCurrentModelToFMU3_64()));
     connect(mpExportToLabviewAction,            SIGNAL(triggered()), mpModelHandler,    SLOT(createLabviewWrapperFromCurrentModel()));
     connect(mpExportToExe_32Action,             SIGNAL(triggered()), mpModelHandler,    SLOT(exportCurrentModelToExe_32()));
     connect(mpExportToExe_64Action,             SIGNAL(triggered()), mpModelHandler,    SLOT(exportCurrentModelToExe_64()));

@@ -23,7 +23,7 @@ public:
     void setAutoCloseWidgetsOnSuccess(bool doAutoClose);
 
     enum class FmuKindT {ModelExchange, CoSimulation};
-    enum class FmuVersionT {One=1, Two=2};
+    enum class FmuVersionT {One=1, Two=2, Three=3};
     enum class TargetArchitectureT {x86, x64};
     enum class CompileT {DoCompile, DoNotCompile};
     enum class UsePortlablesT {EnablePortLabels, DisablePortLables};

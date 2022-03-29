@@ -910,6 +910,16 @@ void ModelHandler::exportCurrentModelToFMU2_64()
     qobject_cast<SystemObject*>(getCurrentViewContainerObject())->exportToFMU2_64();
 }
 
+void ModelHandler::exportCurrentModelToFMU3_32()
+{
+    qobject_cast<SystemObject*>(getCurrentViewContainerObject())->exportToFMU3_32();
+}
+
+void ModelHandler::exportCurrentModelToFMU3_64()
+{
+    qobject_cast<SystemObject*>(getCurrentViewContainerObject())->exportToFMU3_64();
+}
+
 void ModelHandler::exportCurrentModelToSimulink()
 {
     qobject_cast<SystemObject*>(getCurrentViewContainerObject())->exportToSimulink();

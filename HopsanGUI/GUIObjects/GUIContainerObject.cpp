@@ -3287,6 +3287,15 @@ void SystemObject::exportToFMU2_64()
     exportToFMU("", 2, ArchitectureEnumT::x64);
 }
 
+void SystemObject::exportToFMU3_32()
+{
+    exportToFMU("", 3, ArchitectureEnumT::x86);
+}
+
+void SystemObject::exportToFMU3_64()
+{
+    exportToFMU("", 3, ArchitectureEnumT::x64);
+}
 
 
 
