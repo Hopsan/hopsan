@@ -28,6 +28,7 @@
 #include "HopsanEssentials.h"
 #include "Port.h"
 #include "Parameters.h"
+#include "Nodes.h"
 
 #include <QDir>
 #include <QFile>
@@ -668,7 +669,115 @@ void getInterfaces(QList<InterfacePortSpec> &interfaces, hopsan::ComponentSystem
     }
 }
 
+void getModelVariables(hopsan::ComponentSystem *pSystem, QList<ModelVariableSpecification> &vars, QStringList &systemHierarchy) {
+    std::vector<hopsan::HString> names = pSystem->getSubComponentNames();
+    for(size_t i=0; i<names.size(); ++i)
+    {
+        hopsan::Component *pComponent = pSystem->getSubComponent(names[i]);
+        hopsan::HString typeName = pComponent->getTypeName();
 
+        if(typeName == "SignalInputInterface")
+        {
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "out", "y", hopsan::NodeSignal::Value, pSystem->getSubComponent(names[i])->getPort("out")->getStartValue(hopsan::NodeSignal::Value), ModelVariableCausality::Input));
+        }
+        else if(typeName == "SignalOutputInterface")
+        {
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "in", "y", hopsan::NodeSignal::Value, pSystem->getSubComponent(names[i])->getPort("in")->getStartValue(hopsan::NodeSignal::Value), ModelVariableCausality::Output));
+        }
+        else if(typeName == "MechanicInterfaceQ")
+        {
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "f", hopsan::NodeMechanic::Force, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeMechanic::Force), ModelVariableCausality::Input));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "x", hopsan::NodeMechanic::Position, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeMechanic::Position), ModelVariableCausality::Input));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "v", hopsan::NodeMechanic::Velocity, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeMechanic::Velocity), ModelVariableCausality::Input));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "c", hopsan::NodeMechanic::WaveVariable, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeMechanic::WaveVariable), ModelVariableCausality::Output));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "Zc", hopsan::NodeMechanic::CharImpedance, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeMechanic::CharImpedance), ModelVariableCausality::Output));
+        }
+        else if(typeName == "MechanicInterfaceC")
+        {
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "f", hopsan::NodeMechanic::Force, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeMechanic::Force), ModelVariableCausality::Output));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "x", hopsan::NodeMechanic::Position, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeMechanic::Position), ModelVariableCausality::Output));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "v", hopsan::NodeMechanic::Velocity, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeMechanic::Velocity), ModelVariableCausality::Output));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "c", hopsan::NodeMechanic::WaveVariable, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeMechanic::WaveVariable), ModelVariableCausality::Output));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "Zc", hopsan::NodeMechanic::CharImpedance, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeMechanic::CharImpedance), ModelVariableCausality::Output));
+        }
+        else if(typeName == "MechanicRotationalInterfaceQ")
+        {
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "T", hopsan::NodeMechanicRotational::Torque, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeMechanicRotational::Torque), ModelVariableCausality::Input));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "a", hopsan::NodeMechanicRotational::Angle, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeMechanicRotational::Angle), ModelVariableCausality::Input));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "w", hopsan::NodeMechanicRotational::AngularVelocity, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeMechanicRotational::AngularVelocity), ModelVariableCausality::Input));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "c", hopsan::NodeMechanicRotational::WaveVariable, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeMechanicRotational::WaveVariable), ModelVariableCausality::Output));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "Zc", hopsan::NodeMechanicRotational::CharImpedance, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeMechanicRotational::CharImpedance), ModelVariableCausality::Output));
+        }
+        else if(typeName == "MechanicRotationalInterfaceC")
+        {
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "T", hopsan::NodeMechanicRotational::Torque, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeMechanicRotational::Torque), ModelVariableCausality::Output));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "a", hopsan::NodeMechanicRotational::Angle, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeMechanicRotational::Angle), ModelVariableCausality::Output));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "w", hopsan::NodeMechanicRotational::AngularVelocity, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeMechanicRotational::AngularVelocity), ModelVariableCausality::Output));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "c", hopsan::NodeMechanicRotational::WaveVariable, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeMechanicRotational::WaveVariable), ModelVariableCausality::Input));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "Zc", hopsan::NodeMechanicRotational::CharImpedance, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeMechanicRotational::CharImpedance), ModelVariableCausality::Input));
+        }
+        else if(typeName == "HydraulicInterfaceQ")
+        {
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "p", hopsan::NodeHydraulic::Pressure, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeHydraulic::Pressure), ModelVariableCausality::Input));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "q", hopsan::NodeHydraulic::Flow, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeHydraulic::Flow), ModelVariableCausality::Input));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "c", hopsan::NodeHydraulic::WaveVariable, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeHydraulic::WaveVariable), ModelVariableCausality::Output));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "Zc", hopsan::NodeHydraulic::CharImpedance, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeHydraulic::CharImpedance), ModelVariableCausality::Output));
+        }
+        else if(typeName == "HydraulicInterfaceC")
+        {
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "p", hopsan::NodeHydraulic::Pressure, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeHydraulic::Pressure), ModelVariableCausality::Output));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "q", hopsan::NodeHydraulic::Flow, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeHydraulic::Flow), ModelVariableCausality::Output));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "c", hopsan::NodeHydraulic::WaveVariable, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeHydraulic::WaveVariable), ModelVariableCausality::Input));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "Zc", hopsan::NodeHydraulic::CharImpedance, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeHydraulic::CharImpedance), ModelVariableCausality::Input));
+        }
+        else if(typeName == "PneumaticInterfaceQ")
+        {
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "p", hopsan::NodePneumatic::Pressure, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodePneumatic::Pressure), ModelVariableCausality::Input));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "mdot", hopsan::NodePneumatic::MassFlow, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodePneumatic::MassFlow), ModelVariableCausality::Input));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "Qdot", hopsan::NodePneumatic::EnergyFlow, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodePneumatic::EnergyFlow), ModelVariableCausality::Input));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "T", hopsan::NodePneumatic::Temperature, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodePneumatic::Temperature), ModelVariableCausality::Input));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "c", hopsan::NodePneumatic::WaveVariable, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodePneumatic::WaveVariable), ModelVariableCausality::Output));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "Zc", hopsan::NodePneumatic::CharImpedance, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodePneumatic::CharImpedance), ModelVariableCausality::Output));
+        }
+        else if(typeName == "PneumaticInterfaceC")
+        {
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "p", hopsan::NodePneumatic::Pressure, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodePneumatic::Pressure), ModelVariableCausality::Output));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "mdot", hopsan::NodePneumatic::MassFlow, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodePneumatic::MassFlow), ModelVariableCausality::Output));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "Qdot", hopsan::NodePneumatic::EnergyFlow, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodePneumatic::EnergyFlow), ModelVariableCausality::Output));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "T", hopsan::NodePneumatic::Temperature, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodePneumatic::Temperature), ModelVariableCausality::Output));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "c", hopsan::NodePneumatic::WaveVariable, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodePneumatic::WaveVariable), ModelVariableCausality::Input));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "Zc", hopsan::NodePneumatic::CharImpedance, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodePneumatic::CharImpedance), ModelVariableCausality::Input));
+        }
+        else if(typeName == "ElectricInterfaceQ")
+        {
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "U", hopsan::NodeElectric::Voltage, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeElectric::Voltage), ModelVariableCausality::Input));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "I", hopsan::NodeElectric::Current, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeElectric::Current), ModelVariableCausality::Input));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "c", hopsan::NodeElectric::WaveVariable, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeElectric::WaveVariable), ModelVariableCausality::Output));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "Zc", hopsan::NodeElectric::CharImpedance, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeElectric::CharImpedance), ModelVariableCausality::Output));
+        }
+        else if(typeName == "ElectricInterfaceC")
+        {
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "U", hopsan::NodeElectric::Voltage, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeElectric::Voltage), ModelVariableCausality::Output));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "I", hopsan::NodeElectric::Current, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeElectric::Current), ModelVariableCausality::Output));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "c", hopsan::NodeElectric::WaveVariable, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeElectric::WaveVariable), ModelVariableCausality::Input));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "Zc", hopsan::NodeElectric::CharImpedance, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodeElectric::CharImpedance), ModelVariableCausality::Input));
+        }
+        else if(typeName == "PetriNetInterfaceQ")
+        {
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "s", hopsan::NodePetriNet::State, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodePetriNet::State), ModelVariableCausality::Input));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "q", hopsan::NodePetriNet::Flow, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodePetriNet::Flow), ModelVariableCausality::Output));
+        }
+        else if(typeName == "PetriNetInterfaceC")
+        {
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "s", hopsan::NodePetriNet::State, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodePetriNet::State), ModelVariableCausality::Output));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), "P1", "q", hopsan::NodePetriNet::Flow, pSystem->getSubComponent(names[i])->getPort("P1")->getStartValue(hopsan::NodePetriNet::Flow), ModelVariableCausality::Input));
+        }
+        else if(typeName == "Subsystem")
+        {
+            getModelVariables(dynamic_cast<hopsan::ComponentSystem *>(pComponent), vars, systemHierarchy << pComponent->getName().c_str());
+        }
+    }
+}
 
 BuildFlags::BuildFlags(const QStringList &cflags, const QStringList &lflags) : mCompilerFlags(cflags), mLinkerFlags(lflags) {}
 
@@ -765,4 +874,15 @@ void getParameters(QList<ParameterSpecification> &parameters, hopsan::ComponentS
         spec.unit = par->getUnit().c_str();
         parameters.append(spec);
     }
+}
+
+ModelVariableSpecification::ModelVariableSpecification(QStringList systemHierarchy, QString componentName, QString portName, QString dataName, int dataId, double startValue, ModelVariableCausality causality)
+{
+    this->systemHierarchy = systemHierarchy;
+    this->componentName = componentName;
+    this->portName = portName;
+    this->dataName = dataName;
+    this->dataId = dataId;
+    this->startValue = startValue;
+    this->causality = causality;
 }

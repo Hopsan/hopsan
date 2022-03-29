@@ -28,5 +28,6 @@
         <file>templates/exe_main.cpp</file>
         <file>templates/exe_utilities.cpp</file>
         <file>templates/exe_utilities.h</file>
+        <file>templates/fmu3_model.c</file>
     </qresource>
 </RCC>

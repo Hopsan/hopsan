@@ -122,6 +122,8 @@ public slots:
     void exportCurrentModelToFMU1_64();
     void exportCurrentModelToFMU2_32();
     void exportCurrentModelToFMU2_64();
+    void exportCurrentModelToFMU3_32();
+    void exportCurrentModelToFMU3_64();
     void exportCurrentModelToSimulink();
     void exportCurrentModelToExe_32();
     void exportCurrentModelToExe_64();

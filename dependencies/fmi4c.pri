@@ -1,4 +1,4 @@
-INCLUDEPATH *= $${PWD}/fmi4c-code/include
+INCLUDEPATH *= $${PWD}/fmi4c/include
 LIBS *= -L$${PWD}/fmi4c -lfmi4c
 
 macx {

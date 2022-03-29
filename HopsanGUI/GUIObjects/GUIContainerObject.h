@@ -294,6 +294,8 @@ public:
     void exportToFMU1_64();
     void exportToFMU2_32();
     void exportToFMU2_64();
+    void exportToFMU3_32();
+    void exportToFMU3_64();
     void exportToFMU(QString savePath, int version, ArchitectureEnumT arch);
     void exportToSimulink();
     void exportToExecutableModel(QString savePath, ArchitectureEnumT arch);

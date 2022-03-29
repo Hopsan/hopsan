@@ -160,6 +160,8 @@ public:
     QAction *mpExportToFMU1_64Action;
     QAction *mpExportToFMU2_32Action;
     QAction *mpExportToFMU2_64Action;
+    QAction *mpExportToFMU3_32Action;
+    QAction *mpExportToFMU3_64Action;
     QAction *mpExportToLabviewAction;
     QAction *mpExportToExe_32Action;
     QAction *mpExportToExe_64Action;

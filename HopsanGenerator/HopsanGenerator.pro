@@ -19,6 +19,7 @@ include($${PWD}/../dependencies/fmilibrary.pri)
 #--------------------------------------------------
 # Add the include path to our self, (HopsanGenerator)
 INCLUDEPATH *= $${PWD}/include/
+INCLUDEPATH *= $${PWD}/dependencies/
 #--------------------------------------------------
 
 #--------------------------------------------------
