@@ -32,6 +32,8 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QUrl>
+#include <QXmlStreamWriter>
+#include <QDebug>
 
 #include <stddef.h>
 
@@ -1174,109 +1176,163 @@ bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     //Copy source files from templates
     //------------------------------------------------------------------//
 
-    bool c1 = copyFile(":/templates/fmu"+vStr+"_model.h", fmuBuildPath+"/fmu"+vStr+"_model.h");
-    bool c2 = copyFile(":/templates/fmu"+vStr+"_model.c", fmuBuildPath+"/fmu"+vStr+"_model.c");
-    bool c3 = copyFile(":/templates/fmu"+vStr+"_model_cs.c", fmuBuildPath+"/fmu"+vStr+"_model_cs.c");
-    bool c4 = copyFile(":/templates/fmu_hopsan.h", fmuBuildPath+"/fmu_hopsan.h");
-    if (!(c1 && c2 && c3 && c4)) {
-        printErrorMessage("Failed to copy template file(s)");
-        return false;
+    if(version != 3) {
+        bool c1 = copyFile(":/templates/fmu"+vStr+"_model.h", fmuBuildPath+"/fmu"+vStr+"_model.h");
+        bool c3 = copyFile(":/templates/fmu"+vStr+"_model_cs.c", fmuBuildPath+"/fmu"+vStr+"_model_cs.c");
+        bool c2 = copyFile(":/templates/fmu"+vStr+"_model.c", fmuBuildPath+"/fmu"+vStr+"_model.c");
+        bool c4 = copyFile(":/templates/fmu_hopsan.h", fmuBuildPath+"/fmu_hopsan.h");
+        if (!(c1 && c2 && c3 && c4)) {
+            printErrorMessage("Failed to copy template file(s)");
+            return false;
+        }
+    }
+    else {
+        QString fmuHopsanSourceCode = readTextFromFile(":/templates/fmu3_model.c");
+        if(fmuHopsanSourceCode.isEmpty()) {
+            printErrorMessage("Unable to read template code for fmu3_model.c");
+            return false;
+        }
+        QString dataStr;
+        dataStr.append("#define TIMESTEP "+QString::number(pSystem->getDesiredTimeStep()));
+
+        //Get list of interface variables
+        QList<ModelVariableSpecification> vars;
+        QStringList systemHierarchy = QStringList();
+        getModelVariables(pSystem, vars, systemHierarchy);
+
+        //Get list of system parameters
+        QList<ParameterSpecification> pars;
+        getParameters(pars, pSystem);
+
+        dataStr.append("\n#define NUMDATAPTRS "+QString::number(vars.size()+pars.size()));
+        dataStr.append("\n#define INITDATAPTRS ");
+        int vr = 0;
+        for(const auto &var : vars) {
+            dataStr.append("\\\nfmu->dataPtrs["+QString::number(vr)+"] = fmu->pSystem");
+            for(const auto &system : var.systemHierarchy) {
+                dataStr.append("->getSubComponentSystem(\""+system+"\")");
+            }
+            dataStr.append("->getSubComponent(\""+var.componentName+"\")->getSafeNodeDataPtr(\""+var.portName+"\","+QString::number(var.dataId)+");");
+            dataStr.append("\\\nfmu->parNames["+QString::number(vr)+"] = NULL;");
+            ++vr;
+        }
+        for(const auto &par : pars) {
+            dataStr.append("\\\nfmu->dataPtrs["+QString::number(vr)+"] = NULL;");
+            dataStr.append("\\\nfmu->parNames["+QString::number(vr)+"] = \""+par.name+"\";");
+            ++vr;
+        }
+
+        fmuHopsanSourceCode = replaceTag(fmuHopsanSourceCode, "data", dataStr);
+
+        QFile fmuHopsanSourceFile(fmuBuildPath+"/fmu3_model.c");
+        printMessage("Generating "+fmuHopsanSourceFile.fileName());
+
+        if(fmuHopsanSourceFile.open(QFile::Text | QFile::WriteOnly)) {
+            writeTextToFile(fmuHopsanSourceFile, fmuHopsanSourceCode);
+            fmuHopsanSourceFile.close();
+        }
+        else {
+            printErrorMessage(QString("Unable to open %1 for writing").arg(fmuHopsanSourceFile.fileName()));
+            return false;
+        }
     }
 
     //------------------------------------------------------------------//
     // Generate fmu_model_defines.h
     //------------------------------------------------------------------//
-    const auto fmuModelDefinesH = QString("fmu%1_model_defines.h").arg(vStr);
-    QFile fmuModelDefinesHeaderFile(fmuBuildPath+"/"+fmuModelDefinesH);
-    printMessage("Generating "+fmuModelDefinesHeaderFile.fileName());
+    if(version != 3) {
+        const auto fmuModelDefinesH = QString("fmu%1_model_defines.h").arg(vStr);
+        QFile fmuModelDefinesHeaderFile(fmuBuildPath+"/"+fmuModelDefinesH);
+        printMessage("Generating "+fmuModelDefinesHeaderFile.fileName());
 
-    QString fmuModelDefinesHeaderCode = readTextFromFile(":/templates/"+fmuModelDefinesH);
-    if(fmuModelDefinesHeaderCode.isEmpty()) {
-        printErrorMessage("Unable to read template code for "+fmuModelDefinesH);
-        return false;
-    }
-    fmuModelDefinesHeaderCode.replace("<<<n_reals>>>", QString::number(nReals));
-    fmuModelDefinesHeaderCode.replace("<<<n_inputs>>>", QString::number(nInputs));
-    fmuModelDefinesHeaderCode.replace("<<<n_outputs>>>", QString::number(nOutputs));
-    fmuModelDefinesHeaderCode.replace("<<<guid>>>", guid);
-    if(version == 1) {
-        fmuModelDefinesHeaderCode.replace("<<<modelname>>>", modelName);
-    }
+        QString fmuModelDefinesHeaderCode = readTextFromFile(":/templates/"+fmuModelDefinesH);
+        if(fmuModelDefinesHeaderCode.isEmpty()) {
+            printErrorMessage("Unable to read template code for "+fmuModelDefinesH);
+            return false;
+        }
+        fmuModelDefinesHeaderCode.replace("<<<n_reals>>>", QString::number(nReals));
+        fmuModelDefinesHeaderCode.replace("<<<n_inputs>>>", QString::number(nInputs));
+        fmuModelDefinesHeaderCode.replace("<<<n_outputs>>>", QString::number(nOutputs));
+        fmuModelDefinesHeaderCode.replace("<<<guid>>>", guid);
+        if(version == 1) {
+            fmuModelDefinesHeaderCode.replace("<<<modelname>>>", modelName);
+        }
 
-    if(fmuModelDefinesHeaderFile.open(QFile::Text | QFile::WriteOnly)) {
-        writeTextToFile(fmuModelDefinesHeaderFile, fmuModelDefinesHeaderCode);
-        fmuModelDefinesHeaderFile.close();
+        if(fmuModelDefinesHeaderFile.open(QFile::Text | QFile::WriteOnly)) {
+            writeTextToFile(fmuModelDefinesHeaderFile, fmuModelDefinesHeaderCode);
+            fmuModelDefinesHeaderFile.close();
+        }
+        else {
+            printErrorMessage(QString("Unable to open %1 for writing").arg(fmuModelDefinesHeaderFile.fileName()));
+            return false;
+        }
     }
-    else {
-        printErrorMessage(QString("Unable to open %1 for writing").arg(fmuModelDefinesHeaderFile.fileName()));
-        return false;
-    }
-
 
     //------------------------------------------------------------------//
     // Generate fmu_hopsan.cpp
     //------------------------------------------------------------------//
-    QFile fmuHopsanSourceFile(fmuBuildPath+"/fmu_hopsan.cpp");
-    printMessage("Generating "+fmuHopsanSourceFile.fileName());
+    if(version != 3) {
+        QFile fmuHopsanSourceFile(fmuBuildPath+"/fmu_hopsan.cpp");
+        printMessage("Generating "+fmuHopsanSourceFile.fileName());
 
-    QString fmuHopsanSourceCode = readTextFromFile(":/templates/fmu_hopsan.cpp");
-    if(fmuHopsanSourceCode.isEmpty()) {
-        printErrorMessage("Unable to read template code for fmu_hopsan.cpp");
-        return false;
-    }
+        QString fmuHopsanSourceCode = readTextFromFile(":/templates/fmu_hopsan.cpp");
+        if(fmuHopsanSourceCode.isEmpty()) {
+            printErrorMessage("Unable to read template code for fmu_hopsan.cpp");
+            return false;
+        }
 
-    QString setDataPtrsString;
-    size_t vr=0;
-    QList<InterfacePortSpec> interfacePortSpecs;
-    QStringList path = QStringList();
-    getInterfaces(interfacePortSpecs, pSystem, path);
-    for(const auto &portSpec : interfacePortSpecs) {
-        for(const auto &varSpec : portSpec.vars) {
-            QString temp = QString("        dataPtrs[%1] = spCoreComponentSystem").arg(vr);
-            for(const auto &subsystem : portSpec.path) {
-                temp.append(QString("->getSubComponentSystem(\"%1\")").arg(subsystem));
+        QString setDataPtrsString;
+        size_t vr=0;
+        QList<InterfacePortSpec> interfacePortSpecs;
+        QStringList path = QStringList();
+        getInterfaces(interfacePortSpecs, pSystem, path);
+        for(const auto &portSpec : interfacePortSpecs) {
+            for(const auto &varSpec : portSpec.vars) {
+                QString temp = QString("        dataPtrs[%1] = spCoreComponentSystem").arg(vr);
+                for(const auto &subsystem : portSpec.path) {
+                    temp.append(QString("->getSubComponentSystem(\"%1\")").arg(subsystem));
+                }
+                temp.append(QString("->getSubComponent(\"%1\")->getSafeNodeDataPtr(\"%2\", %3);\n").arg(portSpec.component).arg(portSpec.port).arg(varSpec.dataId));
+                setDataPtrsString.append(temp);
+                ++vr;
             }
-            temp.append(QString("->getSubComponent(\"%1\")->getSafeNodeDataPtr(\"%2\", %3);\n").arg(portSpec.component).arg(portSpec.port).arg(varSpec.dataId));
-            setDataPtrsString.append(temp);
+        }
+        fmuHopsanSourceCode.replace("<<<nports>>>", QString::number(nReals));
+        fmuHopsanSourceCode.replace("<<<setdataptrs>>>", setDataPtrsString);
+        fmuHopsanSourceCode.replace("<<<timestep>>>", QString::number(pSystem->getDesiredTimeStep()));
+
+        QList<ParameterSpecification> parSpecs;
+        getParameters(parSpecs, pSystem);
+        QString addParametersToMap;
+        for(const auto &parSpec : parSpecs) {
+            QString dataType;
+            if(parSpec.type == "Real") {
+                addParametersToMap.append(QString("        realParametersMap.insert(std::pair<int,hopsan::HString>(%1,\"%2\"));\n").arg(vr).arg(parSpec.name.toStdString().c_str()));
+            }
+            else if(parSpec.type == "Integer") {
+                addParametersToMap.append(QString("        intParametersMap.insert(std::pair<int,hopsan::HString>(%1,\"%2\"));\n").arg(vr).arg(parSpec.name));
+            }
+            else if(parSpec.type == "Boolean") {
+                addParametersToMap.append(QString("        boolParametersMap.insert(std::pair<int,hopsan::HString>(%1,\"%2\"));\n").arg(vr).arg(parSpec.name));
+            }
+            else if(parSpec.type == "String") {
+                addParametersToMap.append(QString("        stringParametersMap.insert(std::pair<int,hopsan::HString>(%1,\"%2\"));\n").arg(vr).arg(parSpec.name));
+            }
+            else {
+                continue;   //Illegal data type, should never happen
+            }
             ++vr;
         }
-    }
-    fmuHopsanSourceCode.replace("<<<nports>>>", QString::number(nReals));
-    fmuHopsanSourceCode.replace("<<<setdataptrs>>>", setDataPtrsString);
-    fmuHopsanSourceCode.replace("<<<timestep>>>", QString::number(pSystem->getDesiredTimeStep()));
-
-    QList<ParameterSpecification> parSpecs;
-    getParameters(parSpecs, pSystem);
-    QString addParametersToMap;
-    for(const auto &parSpec : parSpecs) {
-        QString dataType;
-        if(parSpec.type == "Real") {
-            addParametersToMap.append(QString("        realParametersMap.insert(std::pair<int,hopsan::HString>(%1,\"%2\"));\n").arg(vr).arg(parSpec.name.toStdString().c_str()));
-        }
-        else if(parSpec.type == "Integer") {
-            addParametersToMap.append(QString("        intParametersMap.insert(std::pair<int,hopsan::HString>(%1,\"%2\"));\n").arg(vr).arg(parSpec.name));
-        }
-        else if(parSpec.type == "Boolean") {
-            addParametersToMap.append(QString("        boolParametersMap.insert(std::pair<int,hopsan::HString>(%1,\"%2\"));\n").arg(vr).arg(parSpec.name));
-        }
-        else if(parSpec.type == "String") {
-            addParametersToMap.append(QString("        stringParametersMap.insert(std::pair<int,hopsan::HString>(%1,\"%2\"));\n").arg(vr).arg(parSpec.name));
+        fmuHopsanSourceCode.replace("<<<addparameterstomap>>>", addParametersToMap);
+        if(fmuHopsanSourceFile.open(QFile::Text | QFile::WriteOnly)) {
+            writeTextToFile(fmuHopsanSourceFile, fmuHopsanSourceCode);
+            fmuHopsanSourceFile.close();
         }
         else {
-            continue;   //Illegal data type, should never happen
+            printErrorMessage("Unable to open fmu_hopsan.cpp for writing");
+            return false;
         }
-        ++vr;
     }
-    fmuHopsanSourceCode.replace("<<<addparameterstomap>>>", addParametersToMap);
-    if(fmuHopsanSourceFile.open(QFile::Text | QFile::WriteOnly)) {
-        writeTextToFile(fmuHopsanSourceFile, fmuHopsanSourceCode);
-        fmuHopsanSourceFile.close();
-    }
-    else {
-        printErrorMessage("Unable to open fmu_hopsan.cpp for writing");
-        return false;
-    }
-
 
     //------------------------------------------------------------------//
     // Generate model file and export assets, replacing asset paths in model
@@ -1295,7 +1351,7 @@ bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     // Replacing namespace
     //------------------------------------------------------------------//
 
-    replaceNameSpace(fmuBuildPath);
+    replaceNameSpace(fmuBuildPath, version);
 
     //------------------------------------------------------------------//
     // Compiling and linking
@@ -1320,9 +1376,9 @@ bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     //------------------------------------------------------------------//
 
     //Clean up temporary files
-   // cleanUp(savePath, QStringList() << "compile.bat" << modelName+".c" << modelName+".dll" << modelName+".so" << modelName+".o" << modelName+".hmf" <<
-   //         "fmiModelFunctions.h" << "fmiModelTypes.h" << "fmuTemplate.c" << "fmuTemplate.h" << "HopsanFMU.cpp" << "HopsanFMU.h" << "model.hpp" <<
-   //         "modelDescription.xml", QStringList() << "componentLibraries" << "fmu" << "HopsanCore");
+    cleanUp(savePath, QStringList() << "compile.bat" << modelName+".c" << modelName+".dll" << modelName+".so" << modelName+".o" << modelName+".hmf" <<
+            "fmiModelFunctions.h" << "fmiModelTypes.h" << "fmuTemplate.c" << "fmuTemplate.h" << "HopsanFMU.cpp" << "HopsanFMU.h" << "model.hpp" <<
+            "modelDescription.xml", QStringList() << "componentLibraries" << "fmu" << "HopsanCore");
 
     printMessage("Finished.");
     return true;
@@ -1470,142 +1526,244 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
 
 bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSystem, QString savePath, QString guid, int version, size_t &nReals, size_t &nInputs, size_t &nOutputs)
 {
-    QString versionStr = QString::number(version, 'f', 1);
-    QString dateAndTime = QDateTime::currentDateTime().toUTC().toString(Qt::ISODate);
-    QString modelName = pSystem->getName().c_str();
+    if(version == 3) {
+        QString versionStr = "3.0-beta.3";
+        QString dateAndTime = QDateTime::currentDateTime().toUTC().toString(Qt::ISODate);
+        QString modelName = pSystem->getName().c_str();
 
-    printMessage("Generating modelDescription.xml for FMI "+versionStr);
+        QFile mdFile(savePath + "/modelDescription.xml");
+        if (!mdFile.open(QIODevice::WriteOnly)) {
+            printErrorMessage("Unable to write to: "+savePath+"/modelDescription.xml");
+            return false;
+        }
+        QXmlStreamWriter mdWriter(&mdFile);
+        mdWriter.setAutoFormatting(true);
+        mdWriter.writeStartDocument();
+        mdWriter.writeStartElement("fmiModelDescription");
+        mdWriter.writeAttribute("modelName", modelName);
+        mdWriter.writeAttribute("fmiVersion", versionStr);
+        mdWriter.writeAttribute("generationTool", "Hopsan");    //!< We should inclure version number, but not sure which one (gui/cli/core)?
+        mdWriter.writeAttribute("generationDateAndTime", dateAndTime);
+        mdWriter.writeAttribute("variableNamingConvention", "structured");
+        mdWriter.writeAttribute("instantiationToken", guid);
 
-    //Write modelDescription.xml
-    QDomDocument domDocument;
-    QDomElement rootElement = domDocument.createElement("fmiModelDescription");
-    rootElement.setAttribute("fmiVersion", versionStr);
-    rootElement.setAttribute("modelName", modelName);
-    if(version==1) {
-        rootElement.setAttribute("modelIdentifier", modelName);
-        rootElement.setAttribute("numberOfContinuousStates", "0");
-    }
-    else {
-        rootElement.setAttribute("variableNamingConvention", "structured");
-    }
-    rootElement.setAttribute("guid", guid);
-    rootElement.setAttribute("description", "");
-    rootElement.setAttribute("generationTool", "HopsanGenerator");
-    rootElement.setAttribute("generationDateAndTime", dateAndTime);
-    rootElement.setAttribute("numberOfEventIndicators", "0");
-    domDocument.appendChild(rootElement);
+        mdWriter.writeStartElement("CoSimulation");
+        mdWriter.writeAttribute("modelIdentifier", modelName);
+        mdWriter.writeAttribute("providesIntermediateUpdate", "false");
+        mdWriter.writeAttribute("canHandleVariableCommunicationStepSize", "true");
+        mdWriter.writeAttribute("hasEventMode", "false");
+        mdWriter.writeEndElement(); //CoSimulation
 
-    if(version==2) {
-        QDomElement coSimElement = domDocument.createElement("CoSimulation");
-        coSimElement.setAttribute("modelIdentifier",modelName);
-        coSimElement.setAttribute("canHandleVariableCommunicationStepSize", "true");
-        rootElement.appendChild(coSimElement);
-    }
+        mdWriter.writeStartElement("DefaultExperiment");
+        mdWriter.writeAttribute("startTime", QString::number(pSystem->getTime()));
+        mdWriter.writeAttribute("stepSize", QString::number(pSystem->getDesiredTimeStep()));
+        mdWriter.writeEndElement(); //DefaultExperiment
 
-    QDomElement varsElement = domDocument.createElement("ModelVariables");
-    rootElement.appendChild(varsElement);
+        mdWriter.writeStartElement("ModelVariables");
 
-    QList<InterfacePortSpec> interfacePortSpecs;
-    QStringList path = QStringList();
-    getInterfaces(interfacePortSpecs, pSystem, path);
+        QList<ModelVariableSpecification> vars;
+        QStringList systemHierarchy = QStringList();
+        getModelVariables(pSystem, vars, systemHierarchy);
 
-    size_t vr=0;
-    nReals=0;
-    nInputs=0;
-    nOutputs=0;
-    for(const auto &port : interfacePortSpecs) {
-        for(const auto &var : port.vars) {
-            QDomElement varElement = domDocument.createElement("ScalarVariable");
-            varElement.setAttribute("name", port.component+"_"+port.port+"_"+var.dataName);
-            varElement.setAttribute("valueReference", (unsigned int)vr);
-            if(var.causality == InterfaceVarSpec::Input) {
-                varElement.setAttribute("causality", "input");
-                ++nInputs;
+        nReals=0;
+        nInputs=0;
+        nOutputs=0;
+        long vr = 0;
+        for(const auto &var : vars) {
+            mdWriter.writeStartElement("Float64");
+            if(var.systemHierarchy.isEmpty()) {
+                mdWriter.writeAttribute("name", var.componentName+"."+var.portName+"."+var.dataName);
             }
             else {
-                if(version == 2) {
-                    varElement.setAttribute("initial","exact");
-                }
-                varElement.setAttribute("causality", "output");
-                ++nOutputs;
+                mdWriter.writeAttribute("name", var.systemHierarchy.join(".")+"."+var.componentName+"."+var.portName+"."+var.dataName);
             }
-            ++nReals;
-            varElement.setAttribute("description", "");
+            mdWriter.writeAttribute("valueReference", QString::number(vr));
+            mdWriter.writeAttribute("variability", "continuous");
+            if(var.causality == ModelVariableCausality::Input) {
+                mdWriter.writeAttribute("causality", "input");
+            }
+            else {
+                mdWriter.writeAttribute("causality", "output");
+            }
+            mdWriter.writeAttribute("start", QString::number(var.startValue));  //! @todo Support start values
+            ++vr;
+            mdWriter.writeEndElement(); //Float64
+        }
 
-            QDomElement dataElement = domDocument.createElement("Real");    //We only support real data type for now
-            dataElement.setAttribute("start", 0);   //! @todo Support start values
+        QList<ParameterSpecification> parameterSpecs;
+        getParameters(parameterSpecs, pSystem);
+
+        for(auto &parSpec : parameterSpecs) {
+            if(parSpec.type == "Real") {
+                mdWriter.writeStartElement("Float64");
+            }
+            else if(parSpec.type == "Integer") {
+                mdWriter.writeStartElement("Int32");
+            }
+            else if(parSpec.type == "Boolean") {
+                mdWriter.writeStartElement("Boolean");
+            }
+            else if(parSpec.type == "String") {
+                mdWriter.writeStartElement("String");
+            }
+            else {
+                printErrorMessage("Unknown data type: "+parSpec.type);
+                return false;   // Should never happen
+            }
+            mdWriter.writeAttribute("name", parSpec.name);
+            mdWriter.writeAttribute("valueReference", QString::number(vr));
+            mdWriter.writeAttribute("causality", "parameter");
+            mdWriter.writeAttribute("variability", "fixed");
+            mdWriter.writeAttribute("start", parSpec.init);
+            mdWriter.writeAttribute("description", parSpec.description);
+            mdWriter.writeAttribute("unit", parSpec.unit);
+            mdWriter.writeEndElement(); //Float64/Int32/Boolean/String
+            ++vr;
+        }
+        mdWriter.writeEndElement(); //ModelVariables
+        mdWriter.writeEndElement(); //fmiModelDescription
+        mdWriter.writeEndDocument();
+        mdFile.close();
+    }
+    else {
+
+        QString versionStr = QString::number(version, 'f', 1);
+        QString dateAndTime = QDateTime::currentDateTime().toUTC().toString(Qt::ISODate);
+        QString modelName = pSystem->getName().c_str();
+
+        printMessage("Generating modelDescription.xml for FMI "+versionStr);
+
+        //Write modelDescription.xml
+        QDomDocument domDocument;
+        QDomElement rootElement = domDocument.createElement("fmiModelDescription");
+        rootElement.setAttribute("fmiVersion", versionStr);
+        rootElement.setAttribute("modelName", modelName);
+        if(version==1) {
+            rootElement.setAttribute("modelIdentifier", modelName);
+            rootElement.setAttribute("numberOfContinuousStates", "0");
+        }
+        else {
+            rootElement.setAttribute("variableNamingConvention", "structured");
+        }
+        rootElement.setAttribute("guid", guid);
+        rootElement.setAttribute("description", "");
+        rootElement.setAttribute("generationTool", "HopsanGenerator");
+        rootElement.setAttribute("generationDateAndTime", dateAndTime);
+        rootElement.setAttribute("numberOfEventIndicators", "0");
+        domDocument.appendChild(rootElement);
+
+        if(version==2) {
+            QDomElement coSimElement = domDocument.createElement("CoSimulation");
+            coSimElement.setAttribute("modelIdentifier",modelName);
+            coSimElement.setAttribute("canHandleVariableCommunicationStepSize", "true");
+            rootElement.appendChild(coSimElement);
+        }
+
+        QDomElement varsElement = domDocument.createElement("ModelVariables");
+        rootElement.appendChild(varsElement);
+
+        QList<InterfacePortSpec> interfacePortSpecs;
+        QStringList path = QStringList();
+        getInterfaces(interfacePortSpecs, pSystem, path);
+
+        size_t vr=0;
+        nReals=0;
+        nInputs=0;
+        nOutputs=0;
+        for(const auto &port : interfacePortSpecs) {
+            for(const auto &var : port.vars) {
+                QDomElement varElement = domDocument.createElement("ScalarVariable");
+                varElement.setAttribute("name", port.component+"_"+port.port+"_"+var.dataName);
+                varElement.setAttribute("valueReference", (unsigned int)vr);
+                if(var.causality == InterfaceVarSpec::Input) {
+                    varElement.setAttribute("causality", "input");
+                    ++nInputs;
+                }
+                else {
+                    if(version == 2) {
+                        varElement.setAttribute("initial","exact");
+                    }
+                    varElement.setAttribute("causality", "output");
+                    ++nOutputs;
+                }
+                ++nReals;
+                varElement.setAttribute("description", "");
+
+                QDomElement dataElement = domDocument.createElement("Real");    //We only support real data type for now
+                dataElement.setAttribute("start", 0);   //! @todo Support start values
+                if(version == 1) {
+                    dataElement.setAttribute("fixed", "false");
+                }
+                varElement.appendChild(dataElement);
+
+                varsElement.appendChild(varElement);
+                ++vr;
+            }
+        }
+
+        QList<ParameterSpecification> parameterSpecs;
+        getParameters(parameterSpecs, pSystem);
+
+        for(auto &parSpec : parameterSpecs) {
+            QDomElement varElement = domDocument.createElement("ScalarVariable");
+            varElement.setAttribute("name", parSpec.name);
+            varElement.setAttribute("valueReference", (unsigned int)vr);
+            if(version == 2) {
+                varElement.setAttribute("causality", "parameter");
+                varElement.setAttribute("initial","exact");
+                varElement.setAttribute("variability", "fixed");
+            }
+            else if(version == 1) {
+                varElement.setAttribute("causality", "input");
+                varElement.setAttribute("variability", "parameter");
+            }
+            varElement.setAttribute("description", parSpec.description);
+            QDomElement dataElement = domDocument.createElement(parSpec.type);
+            dataElement.setAttribute("start", parSpec.init);   //! @todo Support start values
+            if(!parSpec.unit.isEmpty()) {
+                dataElement.setAttribute("unit", parSpec.unit);
+            }
             if(version == 1) {
                 dataElement.setAttribute("fixed", "false");
             }
             varElement.appendChild(dataElement);
-
             varsElement.appendChild(varElement);
             ++vr;
         }
-    }
 
-    QList<ParameterSpecification> parameterSpecs;
-    getParameters(parameterSpecs, pSystem);
-
-    for(auto &parSpec : parameterSpecs) {
-        QDomElement varElement = domDocument.createElement("ScalarVariable");
-        varElement.setAttribute("name", parSpec.name);
-        varElement.setAttribute("valueReference", (unsigned int)vr);
-        if(version == 2) {
-            varElement.setAttribute("causality", "parameter");
-            varElement.setAttribute("initial","exact");
-            varElement.setAttribute("variability", "fixed");
-        }
-        else if(version == 1) {
-            varElement.setAttribute("causality", "input");
-            varElement.setAttribute("variability", "parameter");
-        }
-        varElement.setAttribute("description", parSpec.description);
-        QDomElement dataElement = domDocument.createElement(parSpec.type);
-        dataElement.setAttribute("start", parSpec.init);   //! @todo Support start values
-        if(!parSpec.unit.isEmpty()) {
-            dataElement.setAttribute("unit", parSpec.unit);
-        }
         if(version == 1) {
-            dataElement.setAttribute("fixed", "false");
+            QDomElement implElement = domDocument.createElement("Implementation");
+            QDomElement coSimElement = domDocument.createElement("CoSimulation_StandAlone");
+            QDomElement capabilitiesElement = domDocument.createElement("Capabilities");
+            capabilitiesElement.setAttribute("canHandleVariableCommunicationStepSize", "true");
+            coSimElement.appendChild(capabilitiesElement);
+            implElement.appendChild(coSimElement);
+            rootElement.appendChild(implElement);
         }
-        varElement.appendChild(dataElement);
-        varsElement.appendChild(varElement);
-        ++vr;
-    }
+        else {
+            QDomElement structureElement = domDocument.createElement("ModelStructure");
+            rootElement.appendChild(structureElement);
+        }
 
-    if(version == 1) {
-        QDomElement implElement = domDocument.createElement("Implementation");
-        QDomElement coSimElement = domDocument.createElement("CoSimulation_StandAlone");
-        QDomElement capabilitiesElement = domDocument.createElement("Capabilities");
-        capabilitiesElement.setAttribute("canHandleVariableCommunicationStepSize", "true");
-        coSimElement.appendChild(capabilitiesElement);
-        implElement.appendChild(coSimElement);
-        rootElement.appendChild(implElement);
-    }
-    else {
-        QDomElement structureElement = domDocument.createElement("ModelStructure");
-        rootElement.appendChild(structureElement);
-    }
+        QDomNode xmlProcessingInstruction = domDocument.createProcessingInstruction("xml","version=\"1.0\" encoding=\"UTF-8\"");
+        domDocument.insertBefore(xmlProcessingInstruction, domDocument.firstChild());
 
-    QDomNode xmlProcessingInstruction = domDocument.createProcessingInstruction("xml","version=\"1.0\" encoding=\"UTF-8\"");
-    domDocument.insertBefore(xmlProcessingInstruction, domDocument.firstChild());
-
-    QFile modelDescriptionFile(savePath + "/modelDescription.xml");
-    if(!modelDescriptionFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        printErrorMessage(QString("Failed to open %1 for writing.").arg(modelDescriptionFile.fileName()));
-        return false;
+        QFile modelDescriptionFile(savePath + "/modelDescription.xml");
+        if(!modelDescriptionFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            printErrorMessage(QString("Failed to open %1 for writing.").arg(modelDescriptionFile.fileName()));
+            return false;
+        }
+        QByteArray temp_data;
+        QTextStream temp_data_stream(&temp_data);
+        domDocument.save(temp_data_stream, 4);
+        modelDescriptionFile.write(temp_data);
+        modelDescriptionFile.close();
+        return true;
     }
-    QByteArray temp_data;
-    QTextStream temp_data_stream(&temp_data);
-    domDocument.save(temp_data_stream, 4);
-    modelDescriptionFile.write(temp_data);
-    modelDescriptionFile.close();
-    return true;
 }
 
 
-void HopsanFMIGenerator::replaceNameSpace(const QString &savePath) const
+void HopsanFMIGenerator::replaceNameSpace(const QString &savePath, int version) const
 {
     printMessage("Replacing namespace");
 
@@ -1633,16 +1791,24 @@ void HopsanFMIGenerator::replaceNameSpace(const QString &savePath) const
         if(!replaceInFile(file, before, after))
             return;
     }
-    if(!replaceInFile(savePath+"/fmu_hopsan.cpp", before, after))
-        return;
-    if(!replaceInFile(savePath+"/fmu_hopsan.h", before, after))
-        return;
+    if(version != 3) {
+        if(!replaceInFile(savePath+"/fmu_hopsan.cpp", before, after))
+            return;
+        if(!replaceInFile(savePath+"/fmu_hopsan.h", before, after))
+            return;
+    }
+    else {
+        if(!replaceInFile(savePath+"/fmu3_model.c", before, after)) {
+            return;
+        }
+    }
 }
 
-bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QString &fmuStagePath, const QString &modelName, int version, bool x64) const
+bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QString &fmuStagePath, const QString &modelName, const int version, bool x64) const
 {
     const QString vStr = QString::number(version);
     const QString fmiLibDir=mHopsanRootPath+"/dependencies/fmilibrary";
+    const QString fmi4cDir=mHopsanRootPath+"/dependencies/fmi4c/3rdparty/fmi";
 
     printMessage("------------------------------------------------------------------------");
     printMessage("Compiling FMU source code");
@@ -1653,7 +1819,12 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     QString outputLibraryFile;
 #ifdef _WIN32
     if(x64) {
-        outputLibraryFile = QString("%1/binaries/win64/%2.dll").arg(fmuStagePath).arg(modelName);
+        if(version == 3) {
+            outputLibraryFile = QString("%1/binaries/x86_64-windows/%2.dll").arg(fmuStagePath).arg(modelName);
+        }
+        else {
+            outputLibraryFile = QString("%1/binaries/win64/%2.dll").arg(fmuStagePath).arg(modelName);
+        }
     } else {
         outputLibraryFile = QString("%1/binaries/win32/%2.dll").arg(fmuStagePath).arg(modelName);
     }
@@ -1678,53 +1849,95 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
         printErrorMessage("Failed to open Makefile for writing.");
         return false;
     }
-    //Write the compilation script file
-    QTextStream makefileStream(&makefile);
-    makefileStream << "CXX = g++\n";
-    makefileStream << "CC = gcc\n";
-    QString fpicFlag;
+    if(version == 3) {
+        //Write the compilation script file
+        QTextStream makefileStream(&makefile);
+        makefileStream << "CXX = g++\n";
+        QString fpicFlag;
 #ifndef _WIN32
-    fpicFlag= "-fPIC";
+        fpicFlag= "-fPIC";
 #endif
-    makefileStream << "CXXFLAGS = "+fpicFlag+" -c -std=c++14 -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS -DHOPSANCORE_NOMULTITHREADING";
-    makefileStream << "\n";
-    makefileStream << "CFLAGS = "+fpicFlag+" -c\n";
+        makefileStream << "CXXFLAGS = "+fpicFlag+" -c -std=c++14 -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS -DHOPSANCORE_NOMULTITHREADING -DNOFMI4C\n";
 #ifdef _WIN32
-    makefileStream << "LFLAGS = "+fpicFlag+" -w -shared -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic -Wl,--rpath,'$$ORIGIN/.' -Wl,--rpath,'$$ORIGIN/../../resources'";
+        makefileStream << "LFLAGS = "+fpicFlag+" -w -shared -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic -Wl,--rpath,'$$ORIGIN/.' -Wl,--rpath,'$$ORIGIN/../../resources'\n";
 #else
-    makefileStream << "LFLAGS = "+fpicFlag+" -w -shared -static-libgcc -Wl,--rpath,'$$ORIGIN/.' -Wl,--rpath,'$$ORIGIN/../../resources'";
+        makefileStream << "LFLAGS = "+fpicFlag+" -w -shared -static-libgcc -Wl,--rpath,'$$ORIGIN/.' -Wl,--rpath,'$$ORIGIN/../../resources'\n";
 #endif
-    makefileStream << "\n";
-    makefileStream << "CXXINCLUDES = ";
-    // Add HopsanCore (and necessary dependency) include paths
-    for(const QString &includePath : getHopsanCoreIncludePaths()) {
-        makefileStream << QString(" -I\"%1\"").arg(includePath);
+        makefileStream << "INCLUDES = ";
+        // Add HopsanCore (and necessary dependency) include paths
+        for(const QString &includePath : getHopsanCoreIncludePaths()) {
+            makefileStream << QString(" -I\"%1\"").arg(includePath);
+        }
+        for(const QString &includePath : mIncludePaths) {
+            makefileStream << QString(" -I\"%1\"").arg(includePath);
+        }
+        makefileStream << " -I"+fmi4cDir+"\n";
+        makefileStream << "OUTPUT = \""+outputLibraryFile+"\"\n\n";
+        makefileStream << "SRC = fmu3_model.cpp";
+        QStringList srcFiles = listHopsanCoreSourceFiles(fmuBuildPath) + listInternalLibrarySourceFiles(fmuBuildPath);
+        for(const QString& srcFile : srcFiles) {
+            makefileStream << " " << srcFile;
+        }
+        makefileStream << "\n\n";
+        makefileStream << "VPATH := $(sort  $(dir $(SRC)))\n\n";
+        makefileStream << "OBJ := $(patsubst %.cpp, %.o, $(notdir $(SRC)))\n";
+        makefileStream << "OBJ := $(patsubst %.c, %.o, $(notdir $(OBJ)))\n\n";
+        makefileStream << "all: 	$(OBJ)\n";
+        makefileStream << "\t$(CXX) $(OBJ) $(LFLAGS) -o $(OUTPUT)\n\n";
+        makefileStream << "%.o : %.cpp Makefile\n";
+        makefileStream << "\t$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@\n\n";
+        makefileStream << "%.o : %.c Makefile\n";
+        makefileStream << "\t$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@\n\n";
     }
-    for(const QString &includePath : mIncludePaths) {
-        makefileStream << QString(" -I\"%1\"").arg(includePath);
+    else {
+        //Write the compilation script file
+        QTextStream makefileStream(&makefile);
+        makefileStream << "CXX = g++\n";
+        makefileStream << "CC = gcc\n";
+        QString fpicFlag;
+#ifndef _WIN32
+        fpicFlag= "-fPIC";
+#endif
+        makefileStream << "CXXFLAGS = "+fpicFlag+" -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS -DHOPSANCORE_NOMULTITHREADING -DNOFMI4C";
+        makefileStream << "\n";
+        makefileStream << "CFLAGS = "+fpicFlag+" -c\n";
+#ifdef _WIN32
+        makefileStream << "LFLAGS = "+fpicFlag+" -w -shared -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic -Wl,--rpath,'$$ORIGIN/.' -Wl,--rpath,'$$ORIGIN/../../resources'";
+#else
+        makefileStream << "LFLAGS = "+fpicFlag+" -w -shared -static-libgcc -Wl,--rpath,'$$ORIGIN/.' -Wl,--rpath,'$$ORIGIN/../../resources'";
+#endif
+        makefileStream << "\n";
+        makefileStream << "CXXINCLUDES = ";
+        // Add HopsanCore (and necessary dependency) include paths
+        for(const QString &includePath : getHopsanCoreIncludePaths()) {
+            makefileStream << QString(" -I\"%1\"").arg(includePath);
+        }
+        for(const QString &includePath : mIncludePaths) {
+            makefileStream << QString(" -I\"%1\"").arg(includePath);
+        }
+        makefileStream << "\n";
+        makefileStream << "CINCLUDES = -I\""+fmiLibDir+"/include\"\n";
+        makefileStream << "OUTPUT = \""+outputLibraryFile+"\"\n\n";
+        makefileStream << "CXXSRC = fmu_hopsan.cpp";
+        QStringList srcFiles = listHopsanCoreSourceFiles(fmuBuildPath) + listInternalLibrarySourceFiles(fmuBuildPath);
+        for(const QString& srcFile : srcFiles) {
+            makefileStream << " " << srcFile;
+        }
+        makefileStream << "\n";
+        makefileStream << "CSRC = fmu"+vStr+"_model_cs.c\n";
+        makefileStream << "COBJ = fmu"+vStr+"_model_cs.o\n";
+        makefileStream << "\n\n";
+        makefileStream << "VPATH := $(sort  $(dir $(CXXSRC)))\n\n";
+        makefileStream << "CXXOBJ := $(patsubst %.cpp, %.o, $(notdir $(CXXSRC)))\n";
+        makefileStream << "CXXOBJ := $(patsubst %.c, %.o, $(notdir $(CXXOBJ)))\n\n";
+        makefileStream << "all: 	$(CXXOBJ)\n";
+        makefileStream << "\t$(CC) $(CFLAGS) $(CINCLUDES) -c $(CSRC) -o $(COBJ)\n";
+        makefileStream << "\t$(CXX) $(COBJ) $(CXXOBJ) $(LFLAGS) -o $(OUTPUT)\n\n";
+        makefileStream << "%.o : %.cpp Makefile\n";
+        makefileStream << "\t$(CXX) $(CXXFLAGS) $(CXXINCLUDES) -c $< -o $@\n\n";
+        makefileStream << "%.o : %.c Makefile\n";
+        makefileStream << "\t$(CXX) $(CXXFLAGS) $(CXXINCLUDES) -c $< -o $@\n\n";
     }
-    makefileStream << "\n";
-    makefileStream << "CINCLUDES = -I\""+fmiLibDir+"/include\"\n";
-    makefileStream << "OUTPUT = \""+outputLibraryFile+"\"\n\n";
-    makefileStream << "CXXSRC = fmu_hopsan.cpp";
-    QStringList srcFiles = listHopsanCoreSourceFiles(fmuBuildPath) + listInternalLibrarySourceFiles(fmuBuildPath);
-    for(const QString& srcFile : srcFiles) {
-        makefileStream << " " << srcFile;
-    }
-    makefileStream << "\n";
-    makefileStream << "CSRC = fmu"+vStr+"_model_cs.c\n";
-    makefileStream << "COBJ = fmu"+vStr+"_model_cs.o\n";
-    makefileStream << "\n\n";
-    makefileStream << "VPATH := $(sort  $(dir $(CXXSRC)))\n\n";
-    makefileStream << "CXXOBJ := $(patsubst %.cpp, %.o, $(notdir $(CXXSRC)))\n";
-    makefileStream << "CXXOBJ := $(patsubst %.c, %.o, $(notdir $(CXXOBJ)))\n\n";
-    makefileStream << "all: 	$(CXXOBJ)\n";
-    makefileStream << "\t$(CC) $(CFLAGS) $(CINCLUDES) -c $(CSRC) -o $(COBJ)\n";
-    makefileStream << "\t$(CXX) $(COBJ) $(CXXOBJ) $(LFLAGS) -o $(OUTPUT)\n\n";
-    makefileStream << "%.o : %.cpp Makefile\n";
-    makefileStream << "\t$(CXX) $(CXXFLAGS) $(CXXINCLUDES) -c $< -o $@\n\n";
-    makefileStream << "%.o : %.c Makefile\n";
-    makefileStream << "\t$(CXX) $(CXXFLAGS) $(CXXINCLUDES) -c $< -o $@\n\n";
     makefile.close();
 
     printMessage("Generating compilation script");

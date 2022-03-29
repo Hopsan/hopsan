@@ -288,11 +288,28 @@ public:
     QStringList path;
     QString component;
     QString port;
+    double start;
 
     QList<InterfaceVarSpec> vars;
 };
 
+enum ModelVariableCausality {Input, Output};
+
+class ModelVariableSpecification
+{
+public:
+    ModelVariableSpecification(QStringList systemHierarchy, QString componentName, QString portName, QString dataName, int dataId, double startValue, ModelVariableCausality causality);
+    QStringList systemHierarchy;
+    QString componentName;
+    QString portName;
+    QString dataName;
+    int dataId;
+    double startValue;
+    ModelVariableCausality causality;
+};
+
 void getInterfaces(QList<InterfacePortSpec> &interfaces, hopsan::ComponentSystem *pSystem, QStringList &path);
+void getModelVariables(hopsan::ComponentSystem *pSystem, QList<ModelVariableSpecification> &vars, QStringList &systemHierarchy);
 void getParameters(QList<ParameterSpecification> &parameters, hopsan::ComponentSystem *pSystem);
 
 #endif // GENERATORTYPES_H

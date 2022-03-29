@@ -1318,7 +1318,10 @@ bool HopsanGeneratorBase::copyHopsanCoreSourceFilesToDir(const QString &tgtPath)
     printMessage("Copying HopsanCore source, header and dependencies...");
 
     QDir saveDir(tgtPath);
-    if (saveDir.mkpath(".") && copyDir(mHopsanRootPath+"/HopsanCore", tgtPath+"/HopsanCore", {}))
+    QRegExp excludedFiles("*.o|*.cmake|*.txt|*.html|*.pdf|*.md|*.json|*.py");
+    excludedFiles.setPatternSyntax(QRegExp::Wildcard);
+
+    if (saveDir.mkpath(".") && copyDir(mHopsanRootPath+"/HopsanCore", tgtPath+"/HopsanCore", {excludedFiles}))
     {
         return true;
     }

@@ -54,8 +54,8 @@ private:
                               QStringList &outVarValueRefs, QStringList &outVarPortNames, QString &cqsType);
 
     bool generateModelDescriptionXmlFile(hopsan::ComponentSystem *pSystem, QString savePath, QString guid, int version, size_t &nReals, size_t &nInputs, size_t &nOutputs);
-    void replaceNameSpace(const QString &savePath) const;
-    bool compileAndLinkFMU(const QString &fmuBuildPath, const QString &fmuStagePath, const QString &modelName, int version, bool x64) const;
+    void replaceNameSpace(const QString &savePath, int version) const;
+    bool compileAndLinkFMU(const QString &fmuBuildPath, const QString &fmuStagePath, const QString &modelName, const int version, bool x64) const;
     bool compressFiles(const QString &fmuStagePath, const QString &modelName) const;
 
     QStringList mExtraSourceFiles;

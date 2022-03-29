@@ -1,0 +1,320 @@
+#define MODEL_IDENTIFIER fmi3
+
+#include "fmi3Functions.h"
+#include "HopsanEssentials.h"
+#include "ComponentSystem.h"
+#include "ComponentUtilities/num2string.hpp"
+#include "model.hpp"
+#include <stdbool.h>
+#include <stdio.h>
+#include <string>
+#include <string.h>
+
+<<<data>>>
+
+#define UNUSED(x)(void)(x)
+
+hopsan::HopsanEssentials gHopsanCore;
+
+typedef struct {
+    fmi3String instanceName;
+    fmi3String instantiationToken;
+    fmi3InstanceEnvironment instanceEnvironment;
+    fmi3CallbackLogMessage logger;
+    fmi3CallbackIntermediateUpdate intermediateUpdate;
+    bool loggingOn;
+
+    hopsan::ComponentSystem *pSystem;
+    void *dataPtrs[NUMDATAPTRS];        //Data pointer for each value reference, NULL if variable is a parameter
+    const char* parNames[NUMDATAPTRS];  //Parameter names for value references, NULL for non-parameter variables
+} fmuContext;
+
+std::string parseResourceLocation(std::string uri)
+{
+    // The resource location is an URI according to rfc3986 on the following format
+    // schema://authority/path or schema:/path
+    // authority is expected to be empty if included
+    // only the 'file' schema is supported by Hopsan
+    std::string::size_type se = uri.find_first_of(':');
+    std::string schema = uri.substr(0,se);
+    // If the next two chars are // then authority is included (may be empty)
+    std::string::size_type pb;
+    if (uri.substr(se+1,2) == "//") {
+        pb = uri.find_first_of('/', se+3);
+    } else {
+        pb = uri.find_first_of('/', se);
+    }
+    // Now we know were the path begins (pb), but is it a unix or windows path
+    // Check windows
+    if (uri.substr(pb+2,2) == ":/") {
+        // Skip first /
+        pb++;
+    }
+    std::string path = uri.substr(pb);
+#ifdef _WIN32
+    std::string::size_type i = path.find_first_of('/');
+    while (i != std::string::npos) {
+        path.replace(i, 1, 1, '\\');
+        i = path.find_first_of('/');
+    }
+#endif
+    return path;
+}
+
+typedef void (*hopsan_message_callback_t) (const char* message, const char* type, void* userState);
+
+void hopsan_get_message(hopsan_message_callback_t message_callback, void* userState)
+{
+    hopsan::HString message, type, tag;
+    gHopsanCore.getMessage(message, type, tag);
+
+    // Replace any # with ## (# is reserved by FMI for value references)
+    // # is used as escape character in this case
+    message.replace("#", "##");
+
+    // Replace any single % since we do not use printf format strings inside Hopsan
+    // The FMI standard assuems that message is a printf format string
+    // Use %% to print %
+    message.replace("%", "%%");
+
+    message_callback(message.c_str(), type.c_str(), userState);
+}
+
+void forward_message(const char* message, const char* type, void* userState)
+{
+    fmuContext *fmu = (fmuContext*)userState;
+    if (fmu == NULL) {
+        return;
+    }
+
+    if (fmu->loggingOn == fmi3False) {
+        return;
+    }
+
+    fmi3Status status = fmi3OK;
+    if (strcmp(type, "warning") == 0) {
+        status = fmi3Warning;
+    }
+    else if (strcmp(type, "error") == 0) {
+        status = fmi3Error;
+    }
+    else if (strcmp(type, "fatal") == 0) {
+        status = fmi3Fatal;
+    }
+    else if (strcmp(type, "debug") == 0) {
+        status = fmi3OK;
+    }
+    fmu->logger(fmu->instanceEnvironment, fmu->instanceName, status, type, message);
+}
+
+int hopsan_has_message() {
+    return (gHopsanCore.checkMessage() > 0) ? 1 : 0;
+}
+
+void get_all_hopsan_messages(fmuContext *fmu)
+{
+    while (hopsan_has_message() > 0) {
+        hopsan_get_message(forward_message, (void*)fmu);
+    }
+}
+
+extern "C" {
+
+const char* fmi3GetVersion(void) {
+    return fmi3Version;
+}
+
+fmi3Status fmi3SetDebugLogging(fmi3Instance instance,
+                               fmi3Boolean loggingOn,
+                               size_t nCategories,
+                               const fmi3String categories[])
+{
+    UNUSED(nCategories);
+    UNUSED(categories);
+    fmuContext *fmu =(fmuContext*)instance;
+    fmu->loggingOn = loggingOn;
+}
+
+fmi3Instance fmi3InstantiateCoSimulation(fmi3String instanceName,
+                                         fmi3String instantiationToken,
+                                         fmi3String resourcePath,
+                                         fmi3Boolean visible,
+                                         fmi3Boolean loggingOn,
+                                         fmi3Boolean eventModeUsed,
+                                         fmi3Boolean earlyReturnAllowed,
+                                         const fmi3ValueReference requiredIntermediateVariables[],
+                                         size_t nRequiredIntermediateVariables,
+                                         fmi3InstanceEnvironment instanceEnvironment,
+                                         fmi3CallbackLogMessage logMessage,
+                                         fmi3CallbackIntermediateUpdate intermediateUpdate)
+{
+    UNUSED(resourcePath);
+    UNUSED(visible);
+    UNUSED(eventModeUsed);
+    UNUSED(earlyReturnAllowed);
+    UNUSED(requiredIntermediateVariables);
+    UNUSED(nRequiredIntermediateVariables);
+
+    fmuContext *fmu = static_cast<fmuContext *>(malloc(sizeof(fmuContext)));
+
+    fmu->instanceName = instanceName;
+    fmu->instantiationToken = instantiationToken;
+    fmu->instanceEnvironment = instanceEnvironment;
+    fmu->logger = logMessage;
+    fmu->intermediateUpdate = intermediateUpdate;
+    fmu->loggingOn = loggingOn;
+
+    double startT, stopT;      // Dummy variables
+    fmu->pSystem = gHopsanCore.loadHMFModel(getModelString().c_str(), startT, stopT);
+    if (fmu->pSystem) {
+        std::string rl = parseResourceLocation(resourcePath);
+        fmu->pSystem->addSearchPath(rl.c_str());
+        fmu->pSystem->setDesiredTimestep(TIMESTEP);
+        fmu->pSystem->setNumLogSamples(0);
+        fmu->pSystem->disableLog();
+        if(!fmu->pSystem->checkModelBeforeSimulation())
+        {
+            get_all_hopsan_messages(fmu);
+            if(fmu->loggingOn) {
+                fmu->logger(fmu->instanceEnvironment, fmu->instanceName, fmi3Error, "eror", "Model cannot be simulated.");
+            }
+            return NULL;
+        }
+        get_all_hopsan_messages(fmu);
+    }
+
+    INITDATAPTRS
+
+    if(fmu->loggingOn) {
+        fmu->logger(fmu->instanceEnvironment, fmu->instanceName, fmi3OK, "info", "Successfully instantiated FMU");
+    }
+
+    return fmu;
+}
+
+void fmi3FreeInstance(fmi3Instance instance)
+{
+    fmuContext *fmu = (fmuContext*)instance;
+    free(fmu);
+}
+
+fmi3Status fmi3EnterInitializationMode(fmi3Instance instance,
+                                       fmi3Boolean toleranceDefined,
+                                       fmi3Float64 tolerance,
+                                       fmi3Float64 startTime,
+                                       fmi3Boolean stopTimeDefined,
+                                       fmi3Float64 stopTime)
+{
+    UNUSED(toleranceDefined);
+    UNUSED(tolerance);
+    UNUSED(startTime);
+    UNUSED(stopTimeDefined);
+    UNUSED(stopTime);
+    fmuContext *fmu = (fmuContext*)instance;
+
+    fmu->pSystem->initialize(startTime, stopTime);
+    get_all_hopsan_messages(fmu);
+
+    return fmi3OK;
+}
+
+fmi3Status fmi3ExitInitializationMode(fmi3Instance instance) {
+    UNUSED(instance);
+    return fmi3OK;  //Nothing to do
+}
+
+fmi3Status fmi3Terminate(fmi3Instance instance) {
+    fmuContext *fmu = (fmuContext*)instance;
+    if(fmu) {
+        fmu->pSystem->finalize();
+        get_all_hopsan_messages(fmu);
+        return fmi3OK;
+    }
+    return fmi3Error;
+}
+
+fmi3Status fmi3Reset(fmi3Instance instance) {
+    fmuContext *fmu = (fmuContext*)instance;
+    if(fmu) {
+        fmu->pSystem->finalize();
+        get_all_hopsan_messages(fmu);
+        return fmi3OK;
+    }
+    return fmi3Error;
+}
+
+fmi3Status fmi3GetFloat64(fmi3Instance instance,
+                          const fmi3ValueReference valueReferences[],
+                          size_t nValueReferences,
+                          fmi3Float64 values[],
+                          size_t nValues) {
+    UNUSED(nValues);
+    fmuContext *fmu =(fmuContext*)instance;
+    fmi3Status status = fmi3OK;
+    for(size_t i=0; i<nValueReferences; ++i) {
+        if(valueReferences[i] >= NUMDATAPTRS) {
+            status = fmi3Error;   //Illegal value reference
+        }
+        else {
+            values[i] = (*(double*)fmu->dataPtrs[valueReferences[i]]);
+        }
+    }
+    return status;
+}
+
+fmi3Status fmi3SetFloat64(fmi3Instance instance,
+                          const fmi3ValueReference valueReferences[],
+                          size_t nValueReferences,
+                          const fmi3Float64 values[],
+                          size_t nValues)
+{
+    UNUSED(nValues);
+    fmuContext *fmu =(fmuContext*)instance;
+    fmi3Status status = fmi3OK;
+    for(size_t i=0; i<nValueReferences; ++i) {
+        if(valueReferences[i] >= NUMDATAPTRS) {
+            status = fmi3Error;
+        }
+        else {
+            if(fmu->dataPtrs[valueReferences[i]]) {
+                //Non-parameter variable
+                (*(double*)fmu->dataPtrs[valueReferences[i]]) = values[i];
+            }
+            else {
+                //Parameter variable (has no data pointer, so use name lookup)
+                fmu->pSystem->setSystemParameter(fmu->parNames[valueReferences[i]], to_hstring(values[i]), "double", "", "", true);
+            }
+        }
+    }
+    return status;
+}
+
+//Co-simulation
+fmi3Status fmi3DoStep(fmi3Instance instance,
+                      fmi3Float64 currentCommunicationPoint,
+                      fmi3Float64 communicationStepSize,
+                      fmi3Boolean noSetFMUStatePriorToCurrentPoint,
+                      fmi3Boolean* eventEncountered,
+                      fmi3Boolean* terminateSimulation,
+                      fmi3Boolean* earlyReturn,
+                      fmi3Float64* lastSuccessfulTime)
+{
+    UNUSED(noSetFMUStatePriorToCurrentPoint);
+    UNUSED(eventEncountered);
+    UNUSED(terminateSimulation);
+    UNUSED(earlyReturn);
+    UNUSED(lastSuccessfulTime);
+
+    fmuContext *fmu =(fmuContext *)instance;
+
+    if (fmu == NULL) {
+        return fmi3Fatal;
+    }
+    fmu->pSystem->simulate(currentCommunicationPoint+communicationStepSize);
+
+    get_all_hopsan_messages(fmu);
+
+    return fmi3OK;
+}
+
+}
