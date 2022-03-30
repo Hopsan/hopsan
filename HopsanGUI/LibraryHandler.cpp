@@ -82,6 +82,19 @@
 
 namespace  {
 
+//! @brief Chooses between canonicalFilePath and absoluteFilePath depnding on if file exists
+//! @details canonicalFilePath returns empty string if file does not exist, making it less usefull for error messages about missing files
+//! @param[in] fi A file info object
+//! @returns The file path
+QString visibleFilePath(const QFileInfo & fi) {
+    if (fi.exists()) {
+        return fi.canonicalFilePath();
+    }
+    else {
+        return fi.absoluteFilePath();
+    }
+}
+
 //! @brief Helpfunction to create full typename from type and subtype
 //! @returns The full typename type|subtype, or type is subtype was empty
 QString makeFullTypeString(const QString &rType, const QString &rSubType)
@@ -197,7 +210,7 @@ void LibraryHandler::loadLibrary(QString loadPath, LibraryTypeEnumT type, Hidden
             }
             else
             {
-                gpMessageHandler->addWarningMessage(QString("When looking for Library XML files. Could not open file: %1").arg(fileInfo.canonicalFilePath()));
+                gpMessageHandler->addWarningMessage(QString("When looking for Library XML files. Could not open file: %1").arg(visibleFilePath(fileInfo)));
             }
             file.close();
         }
@@ -240,13 +253,13 @@ void LibraryHandler::loadLibrary(QString loadPath, LibraryTypeEnumT type, Hidden
             }
             else
             {
-                gpMessageHandler->addErrorMessage(QString("Could not open (read) Library XML file: %1").arg(fileInfo.canonicalFilePath()));
+                gpMessageHandler->addErrorMessage(QString("Could not open (read) Library XML file: %1").arg(visibleFilePath(fileInfo)));
             }
             file.close();
         }
         else
         {
-            gpMessageHandler->addErrorMessage(QString("The Library XML file must have file suffix .xml, File: %1").arg(fileInfo.canonicalFilePath()));
+            gpMessageHandler->addErrorMessage(QString("The Library XML file must have file suffix .xml, File: %1").arg(visibleFilePath(fileInfo)));
         }
     }
 
@@ -1270,7 +1283,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
         }
         else
         {
-            gpMessageHandler->addErrorMessage(QString("Could not open (read) Library XML file: %1").arg(libraryMainFileInfo.canonicalFilePath()));
+            gpMessageHandler->addErrorMessage(QString("Could not open (read) Library XML file: %1").arg(visibleFilePath(libraryMainFileInfo)));
             return false;
         }
         file.close();
@@ -1313,7 +1326,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
             }
             else
             {
-                gpMessageHandler->addErrorMessage(QString("When loading component appearance files. Could not open (read) file: %1").arg(cafFileInfo.canonicalFilePath()));
+                gpMessageHandler->addErrorMessage(QString("When loading component appearance files. Could not open (read) file: %1").arg(visibleFilePath(cafFileInfo)));
             }
             cafFile.close();
         }
@@ -1482,7 +1495,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
         }
         else
         {
-            gpMessageHandler->addErrorMessage(QString("When loading component appearance files. Could not open (read) file: %1").arg(cafFileInfo.canonicalFilePath()));
+            gpMessageHandler->addErrorMessage(QString("When loading component appearance files. Could not open (read) file: %1").arg(visibleFilePath(cafFileInfo)));
         }
         cafFile.close();
     }
