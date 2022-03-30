@@ -36,6 +36,7 @@
 #include "CoreAccess.h"
 
 #include <QDebug>
+#include <QFile>
 
 PortAppearance::PortAppearance()
 {
@@ -115,6 +116,11 @@ void PortAppearance::selectPortIcon(QString CQSType, QString porttype, QString n
         }
     }
     mMainIconPath.append(".svg");
+
+    // If the port is not available, then fall back to empty port graphics
+    if (!QFile::exists(mMainIconPath)) {
+        mMainIconPath = QString(PORTICONPATH)+"EmptyPort.svg";
+    }
 
     //qDebug() << "mMainIconPath: " << mMainIconPath;
 
