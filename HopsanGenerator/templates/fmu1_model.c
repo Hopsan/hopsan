@@ -1,675 +1,460 @@
-/*
-Copyright (C) 2012 Modelon AB
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the BSD style license.
-
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-FMILIB_License.txt file for more details.
-
-You should have received a copy of the FMILIB_License.txt file
-along with this program. If not, contact Modelon AB <http://www.modelon.com>.
-*/
-
+#include "fmiFunctions.h"
+#include "HopsanEssentials.h"
+#include "ComponentSystem.h"
+#include "ComponentUtilities/num2string.hpp"
+#include "model.hpp"
+#include <stdbool.h>
 #include <stdio.h>
+#include <string>
 #include <string.h>
 
-#include "fmu1_model.h"
-#include "fmu_hopsan.h"
+<<<data>>>
+
+#define UNUSED(x)(void)(x)
+
+hopsan::HopsanEssentials gHopsanCore;
+
+typedef struct {
+    fmiString instanceName;
+    fmiString instantiationToken;
+    fmiCallbackLogger logger;
+    bool loggingOn;
+    double startTime;
+    double stopTime;
+
+    hopsan::ComponentSystem *pSystem;
+    void *dataPtrs[NUMDATAPTRS];        //Data pointer for each value reference, NULL if variable is a parameter
+    const char* parNames[NUMDATAPTRS];  //Parameter names for value references, NULL for non-parameter variables
+} fmuContext;
+
+std::string parseResourceLocation(std::string uri)
+{
+    // The resource location is an URI according to rfc3986 on the following format
+    // schema://authority/path or schema:/path
+    // authority is expected to be empty if included
+    // only the 'file' schema is supported by Hopsan
+    std::string::size_type se = uri.find_first_of(':');
+    std::string schema = uri.substr(0,se);
+    // If the next two chars are // then authority is included (may be empty)
+    std::string::size_type pb;
+    if (uri.substr(se+1,2) == "//") {
+        pb = uri.find_first_of('/', se+3);
+    } else {
+        pb = uri.find_first_of('/', se);
+    }
+    // Now we know were the path begins (pb), but is it a unix or windows path
+    // Check windows
+    if (uri.substr(pb+2,2) == ":/") {
+        // Skip first /
+        pb++;
+    }
+    std::string path = uri.substr(pb);
+#ifdef _WIN32
+    std::string::size_type i = path.find_first_of('/');
+    while (i != std::string::npos) {
+        path.replace(i, 1, 1, '\\');
+        i = path.find_first_of('/');
+    }
+#endif
+    return path;
+}
+
+typedef void (*hopsan_message_callback_t) (const char* message, const char* type, void* userState);
+
+void hopsan_get_message(hopsan_message_callback_t message_callback, void* userState)
+{
+    hopsan::HString message, type, tag;
+    gHopsanCore.getMessage(message, type, tag);
+
+    // Replace any # with ## (# is reserved by FMI for value references)
+    // # is used as escape character in this case
+    message.replace("#", "##");
+
+    // Replace any single % since we do not use printf format strings inside Hopsan
+    // The FMI standard assuems that message is a printf format string
+    // Use %% to print %
+    message.replace("%", "%%");
+
+    message_callback(message.c_str(), type.c_str(), userState);
+}
 
 void forward_message(const char* message, const char* type, void* userState)
 {
-    component_ptr_t comp = (component_ptr_t)userState;
-    if (comp == NULL) {
+    fmuContext *fmu = (fmuContext*)userState;
+    if (fmu == NULL) {
         return;
     }
 
-    if (comp->loggingOn == fmiFalse) {
+    if (fmu->loggingOn == fmiFalse) {
         return;
     }
 
     fmiStatus status = fmiOK;
-    if (strcmp(type, "warning") == 0)
-    {
+    if (strcmp(type, "warning") == 0) {
         status = fmiWarning;
     }
-    else if (strcmp(type, "error") == 0)
-    {
+    else if (strcmp(type, "error") == 0) {
         status = fmiError;
     }
-    else if (strcmp(type, "fatal") == 0)
-    {
+    else if (strcmp(type, "fatal") == 0) {
         status = fmiFatal;
     }
-    else if (strcmp(type, "debug") == 0)
-    {
-        //! @todo Make it possible to choose debug logs or not
+    else if (strcmp(type, "debug") == 0) {
         status = fmiOK;
     }
-    comp->functions.logger(NULL, comp->instanceName, status, type, message);
+    fmu->logger(fmu, fmu->instanceName, status, type, message);
 }
 
-void get_all_hopsan_messages(component_ptr_t comp)
+int hopsan_has_message() {
+    return (gHopsanCore.checkMessage() > 0) ? 1 : 0;
+}
+
+void get_all_hopsan_messages(fmuContext *fmu)
 {
-    while (hopsan_has_message() > 0)
-    {
-        hopsan_get_message(forward_message, (void*)comp);
+    while (hopsan_has_message() > 0) {
+        hopsan_get_message(forward_message, (void*)fmu);
     }
 }
 
-/* Model calculation functions */
-static int calc_initialize(component_ptr_t comp)
+extern "C" {
+
+#define MODEL_IDENTIFIER <<<modelname>>>
+
+const char* fmiGetVersion() {
+    return fmiVersion;
+}
+
+fmiStatus fmiSetDebugLogging(fmiComponent c,
+                               fmiBoolean loggingOn)
 {
-    int initOK;
-    double tStop;
-
-    tStop = comp->tStart + 1.0; // Use a dummy stop value if one is not given
-    if (comp->StopTimeDefined)
-    {
-        tStop = comp->tStop;
-    }
-
-    initOK = hopsan_initialize(comp->tStart, tStop);
-    if (initOK)
-    {
-        return fmiOK;
-    }
-    else
-    {
-        get_all_hopsan_messages(comp);
-        return fmiError;
-    }
+    fmuContext *fmu =(fmuContext*)c;
+    fmu->loggingOn = loggingOn;
 }
 
-static int calc_get_derivatives(component_ptr_t comp)
+fmiComponent fmiInstantiateSlave(fmiString instanceName,
+                                 fmiString fmuGUID,
+                                 fmiString fmuLocation,
+                                 fmiString mimeType,
+                                 fmiReal timeout,
+                                 fmiBoolean visible,
+                                 fmiBoolean interactive,
+                                 fmiCallbackFunctions functions,
+                                 fmiBoolean loggingOn)
 {
-	return 0;
-}
+    UNUSED(mimeType);
+    UNUSED(timeout);
+    UNUSED(interactive);
+    UNUSED(visible);
 
-static int calc_get_event_indicators(component_ptr_t comp)
-{	
-	return 0;
-}
+    fmuContext *fmu = static_cast<fmuContext *>(malloc(sizeof(fmuContext)));
 
-static int calc_event_update(component_ptr_t comp)
-{	
-    return 1; /* Should not call the event update */
+    fmu->instanceName = strdup(instanceName);
+    fmu->instantiationToken = fmuGUID;
+    fmu->logger = functions.logger;
+    fmu->loggingOn = loggingOn;
 
-}
-
-
-/* FMI 1.0 Common Functions */
-const char* fmi_get_version()
-{
-	return FMI_VERSION;
-}
-
-fmiStatus fmi_set_debug_logging(fmiComponent c, fmiBoolean loggingOn)
-{
-	component_ptr_t comp = (fmiComponent)c;
-	if (comp == NULL) {
-		return fmiFatal;
-	} else {
-		comp->loggingOn = loggingOn;
-		return fmiOK;
-	}
-}
-
-fmiStatus fmi_get_real(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiReal value[])
-{
-	component_ptr_t comp = (fmiComponent)c;
-	if (comp == NULL) 
-    {
-		return fmiFatal;
-	} 
-    else 
-    {
-        size_t i;
-        for(i=0; i<nvr; ++i)
+    double startT, stopT;      // Dummy variables
+    fmu->pSystem = gHopsanCore.loadHMFModel(getModelString().c_str(), startT, stopT);
+    if (fmu->pSystem) {
+        std::string resourceLocation = fmuLocation;
+        resourceLocation = resourceLocation+"/resources";
+        std::string rl = parseResourceLocation(resourceLocation);
+        fmu->pSystem->addSearchPath(rl.c_str());
+        fmu->pSystem->setDesiredTimestep(TIMESTEP);
+        fmu->pSystem->setNumLogSamples(0);
+        fmu->pSystem->disableLog();
+        if(!fmu->pSystem->checkModelBeforeSimulation())
         {
-            value[i] = hopsan_get_real(vr[i]);
-        }
-		return fmiOK;
-	}
-}
-
-fmiStatus fmi_get_integer(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiInteger value[])
-{
-	component_ptr_t comp = (fmiComponent)c;
-	if (comp == NULL) 
-    {
-		return fmiFatal;
-	} 
-    else 
-    {
-        size_t i;
-        for(i=0; i<nvr; ++i)
-        {
-            value[i] = hopsan_get_integer(vr[i]);
-        }
-		return fmiOK;
-	}
-}
-
-fmiStatus fmi_get_boolean(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiBoolean value[])
-{
-	component_ptr_t comp = (fmiComponent)c;
-	if (comp == NULL) 
-    {
-		return fmiFatal;
-	} 
-    else 
-    {
-        size_t i;
-        for(i=0; i<nvr; ++i)
-        {
-            value[i] = hopsan_get_boolean(vr[i]);
-        }
-		return fmiOK;
-	}
-}
-
-fmiStatus fmi_get_string(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiString  value[])
-{
-	component_ptr_t comp = (fmiComponent)c;
-	if (comp == NULL) 
-    {
-		return fmiFatal;
-	} 
-    else 
-    {
-        size_t i;
-        for(i=0; i<nvr; ++i)
-        {
-            value[i] = hopsan_get_string(vr[i]);
-        }
-        return fmiOK;
-	}
-}
-
-fmiStatus fmi_set_real(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiReal value[])
-{
-	component_ptr_t comp = (fmiComponent)c;
-	if (comp == NULL) 
-    {
-		return fmiFatal;
-	} 
-    else 
-    {
-        size_t i;
-        for(i=0; i<nvr; ++i)
-        {
-            hopsan_set_real(vr[i], value[i]);
-        }
-		return fmiOK;
-	}
-}
-
-fmiStatus fmi_set_integer(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger value[])
-{
-	component_ptr_t comp = (fmiComponent)c;
-	if (comp == NULL) 
-    {
-		return fmiFatal;
-	} 
-    else 
-    {
-        size_t i;
-        for(i=0; i<nvr; ++i)
-        {
-            hopsan_set_integer(vr[i], value[i]);
-        }
-		return fmiOK;
-	}
-}
-
-fmiStatus fmi_set_boolean(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiBoolean value[])
-{
-	component_ptr_t comp = (fmiComponent)c;
-	if (comp == NULL) 
-    {
-		return fmiFatal;
-	} 
-    else 
-    {
-        size_t i;
-        for(i=0; i<nvr; ++i)
-        {
-            hopsan_set_boolean(vr[i], value[i]);
-        }
-		return fmiOK;
-	}
-}
-
-fmiStatus fmi_set_string(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiString  value[])
-{
-	component_ptr_t comp = (fmiComponent)c;
-	if (comp == NULL) 
-    {
-		return fmiFatal;
-	} 
-    else 
-    {
-        size_t i;
-        for(i=0; i<nvr; ++i)
-        {
-            hopsan_set_string(vr[i], value[i]);
-        }
-        return fmiOK;
-	}
-}
-
-/* FMI 1.0 ME Functions */
-const char* fmi_get_model_types_platform()
-{
-	return FMI_PLATFORM_TYPE;
-}
-
-fmiStatus fmi_set_time(fmiComponent c, fmiReal fmitime)
-{
-	component_ptr_t comp = (fmiComponent)c;
-	if (comp == NULL) {
-		return fmiFatal;
-	} else {
-		comp->fmitime = fmitime;
-		return fmiOK;
-	}
-}
-
-fmiStatus fmi_set_continuous_states(fmiComponent c, const fmiReal x[], size_t nx)
-{
-	component_ptr_t comp = (fmiComponent)c;
-	if (comp == NULL) 
-    {
-		return fmiFatal;
-	} 
-    else 
-    {
-		size_t k;
-		for (k = 0; k < nx; k++) 
-        {
-			comp->states[k] = x[k];
-		}
-		return fmiOK;
-	}
-}
-
-fmiStatus fmi_completed_integrator_step(fmiComponent c, fmiBoolean* callEventUpdate)
-{
-	component_ptr_t comp = (fmiComponent)c;
-	if (comp == NULL) 
-    {
-		return fmiFatal;
-	} 
-    else 
-    {
-		*callEventUpdate = comp->callEventUpdate;
-		return fmiOK;
-	}
-}
-
-fmiStatus fmi_get_derivatives(fmiComponent c, fmiReal derivatives[] , size_t nx)
-{
-	component_ptr_t comp = (fmiComponent)c;
-	if (comp == NULL) {
-		return fmiFatal;
-	} else {
-		size_t k;
-
-		calc_get_derivatives(comp);
-
-		for (k = 0; k < nx; k++) {
-			derivatives[k] = comp->states_der[k];
-		}
-		return fmiOK;
-	}
-}
-
-fmiStatus fmi_get_event_indicators(fmiComponent c, fmiReal eventIndicators[], size_t ni)
-{
-	component_ptr_t comp = (fmiComponent)c;
-	if (comp == NULL) {
-		return fmiFatal;
-	} else {
-		size_t k;
-
-		calc_get_event_indicators(comp);
-
-		for (k = 0; k < ni; k++) {
-			eventIndicators[k] = comp->event_indicators[k];
-		}
-		return fmiOK;
-	}
-}
-
-fmiStatus fmi_event_update(fmiComponent c, fmiBoolean intermediateResults, fmiEventInfo* eventInfo)
-{
-	component_ptr_t comp = (fmiComponent)c;
-	if (comp == NULL) 
-    {
-		return fmiFatal;
-	} 
-    else 
-    {
-		calc_event_update(comp);
-
-		*eventInfo = comp->eventInfo;
-		return fmiOK;
-	}
-}
-
-fmiStatus fmi_get_continuous_states(fmiComponent c, fmiReal states[], size_t nx)
-{
-	component_ptr_t comp = (fmiComponent)c;
-	if (comp == NULL) 
-    {
-		return fmiFatal;
-	} 
-    else 
-    {
-		size_t k;
-
-		for (k = 0; k < nx; k++) 
-        {
-			states[k] = comp->states[k];
-		}
-		return fmiOK;
-	}
-}
-
-fmiStatus fmi_get_nominal_continuousstates(fmiComponent c, fmiReal x_nominal[], size_t nx)
-{
-	component_ptr_t comp = (fmiComponent)c;
-	if (comp == NULL) 
-    {
-		return fmiFatal;
-	} 
-    else 
-    {
-		size_t k;
-		for (k = 0; k < nx; k++) 
-        {
-			x_nominal[k] = comp->states_nom[k];
-		}
-		return fmiOK;
-	}
-}
-
-fmiStatus fmi_get_state_value_references(fmiComponent c, fmiValueReference vrx[], size_t nx)
-{
-	component_ptr_t comp = (fmiComponent)c;
-	if (comp == NULL) {
-		return fmiFatal;
-	} else {
-		size_t k;
-		for (k = 0; k < nx; k++) {
-			vrx[k] = comp->states_vr[k];
-		}
-		return fmiOK;
-	}
-}
-
-fmiStatus fmi_terminate(fmiComponent c)
-{
-	component_ptr_t comp = (fmiComponent)c;
-	if (comp == NULL) {
-		return fmiFatal;
-	} else {
-        hopsan_finalize();
-        get_all_hopsan_messages(comp);
-		return fmiOK;
-	}
-}
-
-/* FMI 1.0 CS Functions */
-const char* fmi_get_types_platform()
-{
-	return FMI_PLATFORM_TYPE;
-}
-
-fmiComponent fmi_instantiate_slave(fmiString instanceName, fmiString fmuGUID, fmiString fmuLocation, fmiString mimeType, fmiReal timeout, fmiBoolean visible, fmiBoolean interactive, fmiCallbackFunctions functions, fmiBoolean loggingOn)
-{
-    component_ptr_t comp;
-    int k, p, instantiateOK ;
-
-    comp = (component_ptr_t)functions.allocateMemory(1, sizeof(component_t));
-    if (comp == NULL)
-    {
-        return NULL;
-    }
-    else if (strcmp(fmuGUID, FMI_GUID) != 0)
-    {
-        return NULL;
-    }
-    else
-    {
-        sprintf(comp->instanceName, "%s", instanceName);
-        sprintf(comp->GUID, "%s", fmuGUID);
-        sprintf(comp->fmuLocation, "%s", fmuLocation);
-        sprintf(comp->mimeType, "%s", mimeType);
-        comp->timeout		= timeout;
-        comp->visible		= visible;
-        comp->interactive	= interactive;
-        comp->functions		= functions;
-        comp->loggingOn		= loggingOn;
-
-        comp->callEventUpdate = fmiFalse;
-
-        /* Set default values */
-        for (k = 0; k < N_STATES;			k++) comp->states[k]			= 0.0;
-        for (k = 0; k < N_STATES;			k++) comp->states_prev[k]		= 0.0; /* Used in CS only */
-        for (k = 0; k < N_STATES;			k++) comp->states_nom[k]		= 1.0;
-        for (k = 0; k < N_STATES;			k++) comp->states_vr[k]			= k;
-        for (k = 0; k < N_STATES;			k++) comp->states_der[k]		= 0.0;
-        for (k = 0; k < N_EVENT_INDICATORS; k++) comp->event_indicators[k]	= 1e10;
-        for (k = 0; k < N_REAL;				k++) comp->reals[k]				= 0.0;
-        for (k = 0; k < N_INTEGER;			k++) comp->integers[k]			= 0;
-        for (k = 0; k < N_BOOLEAN;			k++) comp->booleans[k]			= fmiFalse;
-        for (k = 0; k < N_STRING;			k++) comp->strings[k]			= NULL;
-
-        /* Used in CS only */
-        for (k = 0; k < N_INPUT_REAL; k++) {
-            for (p = 0; p < N_INPUT_REAL_MAX_ORDER + 1; p++) {
-                comp->input_real[k][p] = 0.0;
+            get_all_hopsan_messages(fmu);
+            if(fmu->loggingOn) {
+                fmu->logger(fmu, fmu->instanceName, fmiError, "error", "Model cannot be simulated.");
             }
-        }
-
-        /* Used in CS only */
-        for (k = 0; k < N_OUTPUT_REAL; k++) {
-            for (p = 0; p < N_OUTPUT_REAL_MAX_ORDER + 1; p++) {
-                comp->output_real[k][p] = 0.0;
-            }
-        }
-
-        char fmuResourceLocation[1024];
-        strcpy(fmuResourceLocation, comp->fmuLocation);
-        strcat(fmuResourceLocation, "/resources");
-        instantiateOK = hopsan_instantiate(fmuResourceLocation);
-        if (!instantiateOK)
-        {
-            get_all_hopsan_messages(comp);
-            fmi_free_slave_instance(comp);
             return NULL;
         }
-
-        return comp;
+        get_all_hopsan_messages(fmu);
     }
+
+    INITDATAPTRS
+
+    if(fmu->loggingOn) {
+        fmu->logger(fmu, fmu->instanceName, fmiOK, "info", "Successfully instantiated FMU");
+    }
+
+    return fmu;
 }
 
-fmiStatus fmi_initialize_slave(fmiComponent c, fmiReal tStart, fmiBoolean StopTimeDefined, fmiReal tStop)
+fmiStatus fmiInitializeSlave(fmiComponent c,
+                             fmiReal startTime,
+                             fmiBoolean stopTimeDefined,
+                             fmiReal stopTime)
 {
-    component_ptr_t comp = (fmiComponent)c;
-    if (comp == NULL) {
+    fmuContext *fmu = (fmuContext*)c;
+
+    fmu->startTime = startTime;
+    if(stopTimeDefined) {
+        fmu->stopTime = stopTime;
+    }
+    else {
+        fmu->stopTime = 0;
+    }
+
+    fmu->pSystem->initialize(fmu->startTime, fmu->stopTime);
+    get_all_hopsan_messages(fmu);
+}
+
+void fmiFreeSlaveInstance(fmiComponent c)
+{
+    fmuContext *fmu = (fmuContext*)c;
+    free(fmu);
+}
+
+fmiStatus fmiTerminateSlave(fmiComponent c) {
+    fmuContext *fmu = (fmuContext*)c;
+    if(fmu) {
+        fmu->pSystem->finalize();
+        get_all_hopsan_messages(fmu);
+        return fmiOK;
+    }
+    return fmiError;
+}
+
+fmiStatus fmiResetSlave(fmiComponent c) {
+    fmuContext *fmu = (fmuContext*)c;
+    if(fmu) {
+        fmu->pSystem->finalize();
+        get_all_hopsan_messages(fmu);
+        return fmiOK;
+    }
+    return fmiError;
+}
+
+fmiStatus fmiGetReal(fmiComponent c,
+                     const fmiValueReference valueReferences[],
+                     size_t nValueReferences,
+                     fmiReal values[])
+{
+    fmuContext *fmu =(fmuContext*)c;
+    fmiStatus status = fmiOK;
+    for(size_t i=0; i<nValueReferences; ++i) {
+        if(valueReferences[i] >= NUMDATAPTRS) {
+            status = fmiError;   //Illegal value reference
+        }
+        else {
+            if(fmu->dataPtrs[valueReferences[i]]) {
+                values[i] = (*(double*)fmu->dataPtrs[valueReferences[i]]);
+            }
+            else {
+                hopsan::HString valueStr;
+                fmu->pSystem->getParameterValue(fmu->parNames[valueReferences[i]], valueStr);
+                bool ok;
+                values[i] = valueStr.toDouble(&ok);
+            }
+        }
+    }
+    return status;
+}
+
+fmiStatus fmiSetReal(fmiComponent c,
+                     const fmiValueReference valueReferences[],
+                     size_t nValueReferences,
+                     const fmiReal values[])
+{
+    fmuContext *fmu =(fmuContext*)c;
+    fmiStatus status = fmiOK;
+    for(size_t i=0; i<nValueReferences; ++i) {
+        if(valueReferences[i] >= NUMDATAPTRS) {
+            status = fmiError;
+        }
+        else {
+            if(fmu->dataPtrs[valueReferences[i]]) {
+                (*(double*)fmu->dataPtrs[valueReferences[i]]) = values[i];
+            }
+            else {
+                fmu->pSystem->setSystemParameter(fmu->parNames[valueReferences[i]], to_hstring(values[i]), "double", "", "", true);
+            }
+        }
+    }
+    return status;
+}
+
+fmiStatus fmiGetInteger(fmiComponent c,
+                        const fmiValueReference valueReferences[],
+                        size_t nValueReferences,
+                        fmiInteger values[])
+{
+    UNUSED(c);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    return fmiError;
+}
+
+fmiStatus fmiSetInteger(fmiComponent c,
+                        const fmiValueReference valueReferences[],
+                        size_t nValueReferences,
+                        const fmiInteger values[])
+{
+    UNUSED(c);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    return fmiError;
+}
+
+fmiStatus fmiGetBoolean(fmiComponent c,
+                        const fmiValueReference valueReferences[],
+                        size_t nValueReferences,
+                        fmiBoolean values[])
+{
+    UNUSED(c);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    return fmiError;
+}
+
+fmiStatus fmiSetBoolean(fmiComponent c,
+                        const fmiValueReference valueReferences[],
+                        size_t nValueReferences,
+                        const fmiBoolean values[])
+{
+    UNUSED(c);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    return fmiError;
+}
+
+fmiStatus fmiGetString(fmiComponent c,
+                       const fmiValueReference valueReferences[],
+                       size_t nValueReferences,
+                       fmiString values[])
+{
+    UNUSED(c);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    return fmiError;
+}
+
+fmiStatus fmiSetString(fmiComponent c,
+                       const fmiValueReference valueReferences[],
+                       size_t nValueReferences,
+                       const fmiString values[])
+{
+    UNUSED(c);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    return fmiError;
+}
+
+//Co-simulation
+fmiStatus fmiSetRealInputDerivatives(fmiComponent c,
+                                     const fmiValueReference valueReferences[],
+                                     size_t nValueReferences,
+                                     const fmiInteger order[],
+                                     const fmiReal value[])
+{
+    UNUSED(c);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(order);
+    UNUSED(value);
+    return fmiError;
+}
+
+fmiStatus fmiGetRealOutputDerivatives(fmiComponent c,
+                                      const fmiValueReference valueReferences[],
+                                      size_t nValueReferences,
+                                      const fmiInteger order[],
+                                      fmiReal value[])
+{
+    UNUSED(c);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(order);
+    UNUSED(value);
+    return fmiError;
+}
+
+fmiStatus fmiDoStep(fmiComponent c,
+                    fmiReal currentCommunicationPoint,
+                    fmiReal communicationStepSize,
+                    fmiBoolean newStep)
+{
+    UNUSED(newStep);
+
+    fmuContext *fmu =(fmuContext *)c;
+
+    if (fmu == NULL) {
         return fmiFatal;
-    } else {
-        comp->tStart			= tStart;
-        comp->StopTimeDefined	= StopTimeDefined;
-        comp->tStop				= tStop;
-
-        //! @todo not sure if the eventInfo is relevant here, since this is not ME
-        comp->eventInfo.iterationConverged			= fmiFalse;
-        comp->eventInfo.stateValueReferencesChanged = fmiFalse;
-        comp->eventInfo.stateValuesChanged			= fmiFalse;
-        comp->eventInfo.terminateSimulation			= fmiFalse;
-        comp->eventInfo.upcomingTimeEvent			= fmiFalse;
-        comp->eventInfo.nextEventTime				= -0.0;
-
-        comp->toleranceControlled = fmiTrue;
-        comp->relativeTolerance = 1e-4;
-
-        return calc_initialize(comp);
     }
+    fmu->pSystem->simulate(currentCommunicationPoint+communicationStepSize);
+
+    get_all_hopsan_messages(fmu);
+
+    return fmiOK;
 }
 
-fmiStatus fmi_terminate_slave(fmiComponent c)
+fmiStatus fmiCancelStep(fmiComponent c)
 {
-	return fmi_terminate(c);
+    UNUSED(c);
+    return fmiError;
 }
 
-fmiStatus fmi_reset_slave(fmiComponent c)
+fmiStatus fmiGetStatus( fmiComponent c,
+                       const fmiStatusKind s,
+                       fmiStatus* value)
 {
-	return fmiOK;
+    UNUSED(c);
+    UNUSED(s);
+    UNUSED(value);
+    return fmiDiscard;
 }
 
-void fmi_free_slave_instance(fmiComponent c)
+fmiStatus fmiGetRealStatus(fmiComponent c,
+                           const fmiStatusKind s,
+                           fmiReal* value)
 {
-    int i;
-    component_ptr_t comp = (fmiComponent)c;
-    for(i = 0; i < N_STRING; i++) {
-        comp->functions.freeMemory((void*)(comp->strings[i]));
-        comp->strings[i] = 0;
+    if(s == fmiLastSuccessfulTime) {
+        fmuContext *fmu =(fmuContext *)c;
+        (*value) = fmu->pSystem->getTime();
     }
-    comp->functions.freeMemory(c);
+    return fmiDiscard;
 }
 
-fmiStatus fmi_set_real_input_derivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger order[], const fmiReal value[])
+fmiStatus fmiGetIntegerStatus(fmiComponent c,
+                              const fmiStatusKind s,
+                              fmiInteger* value)
 {
-
-	component_ptr_t comp	= (fmiComponent)c;
-	size_t k;
-
-	for (k = 0; k < nvr; k++) {
-		comp->input_real[vr[k]][order[k]] = value[k];
-        if (value[k] != 0.0) {/* Tests that the value is set to MAGIC_TEST_VALUE */
-			return fmiFatal;
-		}
-	}
-
-	return fmiOK;
+    UNUSED(c);
+    UNUSED(s);
+    UNUSED(value);
+    return fmiDiscard;
 }
 
-fmiStatus fmi_get_real_output_derivatives(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger order[], fmiReal value[])
+fmiStatus fmiGetBooleanStatus(fmiComponent c, const fmiStatusKind s,
+                              fmiBoolean* value)
 {
-	component_ptr_t comp	= (fmiComponent)c;
-	size_t k;
-
-	for (k = 0; k < nvr; k++) {
-		value[k] = comp->output_real[vr[k]][order[k]];
-	}
-
-	return fmiOK;
+    UNUSED(c);
+    UNUSED(s);
+    UNUSED(value);
+    return fmiDiscard;
 }
 
-fmiStatus fmi_cancel_step(fmiComponent c)
+fmiStatus fmiGetStringStatus(fmiComponent c, const fmiStatusKind s,
+                             fmiString* value)
 {
-	return fmiOK;
+    UNUSED(c);
+    UNUSED(s);
+    UNUSED(value);
+    return fmiDiscard;
 }
 
-fmiStatus fmi_do_step(fmiComponent c, fmiReal currentCommunicationPoint, fmiReal communicationStepSize, fmiBoolean newStep)
+const char* fmiGetTypesPlatform()
 {
-	component_ptr_t comp	= (fmiComponent)c;
-
-	if (comp == NULL) 
-    {
-		return fmiFatal;
-	} 
-    else 
-    {
-		fmiReal tstart = currentCommunicationPoint;
-		fmiReal tcur;
-		fmiReal tend = currentCommunicationPoint + communicationStepSize;
-		fmiReal hcur; 
-		fmiReal hdef = 0.01;	/* Default time step length */
-		fmiReal z_cur[N_EVENT_INDICATORS];
-		fmiReal z_pre[N_EVENT_INDICATORS];
-		fmiReal states[N_STATES];
-		fmiReal states_der[N_STATES];
-		fmiEventInfo eventInfo;
-		fmiBoolean callEventUpdate;
-		fmiBoolean intermediateResults = fmiFalse;
-		fmiStatus fmistatus;	
-		size_t k;
-		size_t counter = 0;
-
-		fmi_get_continuous_states(comp, states, N_STATES);
-		fmi_get_event_indicators(comp, z_pre, N_EVENT_INDICATORS);
-
-		tcur = tstart;
-		hcur = hdef;
-		callEventUpdate = fmiFalse;
-		eventInfo = comp->eventInfo;
-        
-        hopsan_simulate(tend);
-
-        fmi_set_time(comp, tcur);
-
-		for (k = 0; k < N_STATES; k++) { /* Update states */
-			comp->reals[k] = comp->states[k];
-		}
-		return fmiOK;
-	}
+    return "standard32";
 }
 
-fmiStatus fmi_get_status(fmiComponent c, const fmiStatusKind s, fmiStatus*  value)
-{
-	switch (s) {
-		case fmiDoStepStatus:
-			/* Return fmiPending if we are waiting. Otherwise the result from fmiDoStep */
-			*value = fmiOK;
-			return fmiOK;
-		default: /* Not defined for status for this function */
-			return fmiDiscard;
-	}
-}
-
-fmiStatus fmi_get_real_status(fmiComponent c, const fmiStatusKind s, fmiReal*    value)
-{
-	switch (s) {
-		case fmiLastSuccessfulTime:
-			/* Return fmiPending if we are waiting. Otherwise return end time for last call to fmiDoStep */
-			*value = 0.01;
-			return fmiOK;
-		default: /* Not defined for status for this function */
-			return fmiDiscard;
-	}
-}
-
-fmiStatus fmi_get_integer_status(fmiComponent c, const fmiStatusKind s, fmiInteger* value)
-{
-	switch (s) {
-		default: /* Not defined for status for this function */
-			return fmiDiscard;
-	}
-}
-
-fmiStatus fmi_get_boolean_status(fmiComponent c, const fmiStatusKind s, fmiBoolean* value)
-{
-	switch (s) {
-		default: /* Not defined for status for this function */
-			return fmiDiscard;
-	}
-}
-
-fmiStatus fmi_get_string_status(fmiComponent c, const fmiStatusKind s, fmiString*  value)
-{
-	switch (s) {
-		case fmiPendingStatus:
-			*value = "Did fmiDoStep really return with fmiPending? Then its time to implement this function";
-			return fmiDiscard;
-		default: /* Not defined for status for this function */
-			return fmiDiscard;
-	}
 }

@@ -82,22 +82,7 @@ QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString
 
 bool removeDir(QString path)
 {
-    QDir dir;
-    dir.setPath(path);
-    for(const QFileInfo &info : dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst)) {
-        if (info.isDir()) {
-            removeDir(info.absoluteFilePath());
-        }
-        else {
-            if(QFile::remove(info.absoluteFilePath())) {
-                qDebug() << "Successfully removed " << info.absoluteFilePath();
-            }
-            else {
-                qDebug() << "Failed to remove " << info.absoluteFilePath();
-            }
-        }
-    }
-    return dir.rmdir(path);     //If removing files fails, this will fail, so we only need to check this
+    return QDir(path).removeRecursively();
 }
 
 
