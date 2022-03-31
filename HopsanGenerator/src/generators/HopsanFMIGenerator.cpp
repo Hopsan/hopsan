@@ -1176,162 +1176,57 @@ bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     //Copy source files from templates
     //------------------------------------------------------------------//
 
-    if(version != 3) {
-        bool c1 = copyFile(":/templates/fmu"+vStr+"_model.h", fmuBuildPath+"/fmu"+vStr+"_model.h");
-        bool c3 = copyFile(":/templates/fmu"+vStr+"_model_cs.c", fmuBuildPath+"/fmu"+vStr+"_model_cs.c");
-        bool c2 = copyFile(":/templates/fmu"+vStr+"_model.c", fmuBuildPath+"/fmu"+vStr+"_model.c");
-        bool c4 = copyFile(":/templates/fmu_hopsan.h", fmuBuildPath+"/fmu_hopsan.h");
-        if (!(c1 && c2 && c3 && c4)) {
-            printErrorMessage("Failed to copy template file(s)");
-            return false;
+    QString fmuHopsanSourceCode = readTextFromFile(":/templates/fmu"+vStr+"_model.c");
+    if(fmuHopsanSourceCode.isEmpty()) {
+        printErrorMessage("Unable to read template code for fmu"+vStr+"_model.c");
+        return false;
+    }
+    QString dataStr;
+    dataStr.append("#define TIMESTEP "+QString::number(pSystem->getDesiredTimeStep()));
+
+    //Get list of interface variables
+    QList<ModelVariableSpecification> vars;
+    QStringList systemHierarchy = QStringList();
+    getModelVariables(pSystem, vars, systemHierarchy);
+
+    //Get list of system parameters
+    QList<ParameterSpecification> pars;
+    getParameters(pars, pSystem);
+
+    dataStr.append("\n#define NUMDATAPTRS "+QString::number(vars.size()+pars.size()));
+    dataStr.append("\n#define INITDATAPTRS ");
+    int vr = 0;
+    for(const auto &var : vars) {
+        dataStr.append("\\\nfmu->dataPtrs["+QString::number(vr)+"] = fmu->pSystem");
+        for(const auto &system : var.systemHierarchy) {
+            dataStr.append("->getSubComponentSystem(\""+system+"\")");
         }
+        dataStr.append("->getSubComponent(\""+var.componentName+"\")->getSafeNodeDataPtr(\""+var.portName+"\","+QString::number(var.dataId)+");");
+        dataStr.append("\\\nfmu->parNames["+QString::number(vr)+"] = NULL;");
+        ++vr;
+    }
+    for(const auto &par : pars) {
+        dataStr.append("\\\nfmu->dataPtrs["+QString::number(vr)+"] = NULL;");
+        dataStr.append("\\\nfmu->parNames["+QString::number(vr)+"] = \""+par.name+"\";");
+        ++vr;
+    }
+
+    if(version == 1) {
+        fmuHopsanSourceCode = replaceTag(fmuHopsanSourceCode, "modelname", modelName);
+    }
+
+    fmuHopsanSourceCode = replaceTag(fmuHopsanSourceCode, "data", dataStr);
+
+    QFile fmuHopsanSourceFile(fmuBuildPath+"/fmu"+vStr+"_model.c");
+    printMessage("Generating "+fmuHopsanSourceFile.fileName());
+
+    if(fmuHopsanSourceFile.open(QFile::Text | QFile::WriteOnly)) {
+        writeTextToFile(fmuHopsanSourceFile, fmuHopsanSourceCode);
+        fmuHopsanSourceFile.close();
     }
     else {
-        QString fmuHopsanSourceCode = readTextFromFile(":/templates/fmu3_model.c");
-        if(fmuHopsanSourceCode.isEmpty()) {
-            printErrorMessage("Unable to read template code for fmu3_model.c");
-            return false;
-        }
-        QString dataStr;
-        dataStr.append("#define TIMESTEP "+QString::number(pSystem->getDesiredTimeStep()));
-
-        //Get list of interface variables
-        QList<ModelVariableSpecification> vars;
-        QStringList systemHierarchy = QStringList();
-        getModelVariables(pSystem, vars, systemHierarchy);
-
-        //Get list of system parameters
-        QList<ParameterSpecification> pars;
-        getParameters(pars, pSystem);
-
-        dataStr.append("\n#define NUMDATAPTRS "+QString::number(vars.size()+pars.size()));
-        dataStr.append("\n#define INITDATAPTRS ");
-        int vr = 0;
-        for(const auto &var : vars) {
-            dataStr.append("\\\nfmu->dataPtrs["+QString::number(vr)+"] = fmu->pSystem");
-            for(const auto &system : var.systemHierarchy) {
-                dataStr.append("->getSubComponentSystem(\""+system+"\")");
-            }
-            dataStr.append("->getSubComponent(\""+var.componentName+"\")->getSafeNodeDataPtr(\""+var.portName+"\","+QString::number(var.dataId)+");");
-            dataStr.append("\\\nfmu->parNames["+QString::number(vr)+"] = NULL;");
-            ++vr;
-        }
-        for(const auto &par : pars) {
-            dataStr.append("\\\nfmu->dataPtrs["+QString::number(vr)+"] = NULL;");
-            dataStr.append("\\\nfmu->parNames["+QString::number(vr)+"] = \""+par.name+"\";");
-            ++vr;
-        }
-
-        fmuHopsanSourceCode = replaceTag(fmuHopsanSourceCode, "data", dataStr);
-
-        QFile fmuHopsanSourceFile(fmuBuildPath+"/fmu3_model.c");
-        printMessage("Generating "+fmuHopsanSourceFile.fileName());
-
-        if(fmuHopsanSourceFile.open(QFile::Text | QFile::WriteOnly)) {
-            writeTextToFile(fmuHopsanSourceFile, fmuHopsanSourceCode);
-            fmuHopsanSourceFile.close();
-        }
-        else {
-            printErrorMessage(QString("Unable to open %1 for writing").arg(fmuHopsanSourceFile.fileName()));
-            return false;
-        }
-    }
-
-    //------------------------------------------------------------------//
-    // Generate fmu_model_defines.h
-    //------------------------------------------------------------------//
-    if(version != 3) {
-        const auto fmuModelDefinesH = QString("fmu%1_model_defines.h").arg(vStr);
-        QFile fmuModelDefinesHeaderFile(fmuBuildPath+"/"+fmuModelDefinesH);
-        printMessage("Generating "+fmuModelDefinesHeaderFile.fileName());
-
-        QString fmuModelDefinesHeaderCode = readTextFromFile(":/templates/"+fmuModelDefinesH);
-        if(fmuModelDefinesHeaderCode.isEmpty()) {
-            printErrorMessage("Unable to read template code for "+fmuModelDefinesH);
-            return false;
-        }
-        fmuModelDefinesHeaderCode.replace("<<<n_reals>>>", QString::number(nReals));
-        fmuModelDefinesHeaderCode.replace("<<<n_inputs>>>", QString::number(nInputs));
-        fmuModelDefinesHeaderCode.replace("<<<n_outputs>>>", QString::number(nOutputs));
-        fmuModelDefinesHeaderCode.replace("<<<guid>>>", guid);
-        if(version == 1) {
-            fmuModelDefinesHeaderCode.replace("<<<modelname>>>", modelName);
-        }
-
-        if(fmuModelDefinesHeaderFile.open(QFile::Text | QFile::WriteOnly)) {
-            writeTextToFile(fmuModelDefinesHeaderFile, fmuModelDefinesHeaderCode);
-            fmuModelDefinesHeaderFile.close();
-        }
-        else {
-            printErrorMessage(QString("Unable to open %1 for writing").arg(fmuModelDefinesHeaderFile.fileName()));
-            return false;
-        }
-    }
-
-    //------------------------------------------------------------------//
-    // Generate fmu_hopsan.cpp
-    //------------------------------------------------------------------//
-    if(version != 3) {
-        QFile fmuHopsanSourceFile(fmuBuildPath+"/fmu_hopsan.cpp");
-        printMessage("Generating "+fmuHopsanSourceFile.fileName());
-
-        QString fmuHopsanSourceCode = readTextFromFile(":/templates/fmu_hopsan.cpp");
-        if(fmuHopsanSourceCode.isEmpty()) {
-            printErrorMessage("Unable to read template code for fmu_hopsan.cpp");
-            return false;
-        }
-
-        QString setDataPtrsString;
-        size_t vr=0;
-        QList<InterfacePortSpec> interfacePortSpecs;
-        QStringList path = QStringList();
-        getInterfaces(interfacePortSpecs, pSystem, path);
-        for(const auto &portSpec : interfacePortSpecs) {
-            for(const auto &varSpec : portSpec.vars) {
-                QString temp = QString("        dataPtrs[%1] = spCoreComponentSystem").arg(vr);
-                for(const auto &subsystem : portSpec.path) {
-                    temp.append(QString("->getSubComponentSystem(\"%1\")").arg(subsystem));
-                }
-                temp.append(QString("->getSubComponent(\"%1\")->getSafeNodeDataPtr(\"%2\", %3);\n").arg(portSpec.component).arg(portSpec.port).arg(varSpec.dataId));
-                setDataPtrsString.append(temp);
-                ++vr;
-            }
-        }
-        fmuHopsanSourceCode.replace("<<<nports>>>", QString::number(nReals));
-        fmuHopsanSourceCode.replace("<<<setdataptrs>>>", setDataPtrsString);
-        fmuHopsanSourceCode.replace("<<<timestep>>>", QString::number(pSystem->getDesiredTimeStep()));
-
-        QList<ParameterSpecification> parSpecs;
-        getParameters(parSpecs, pSystem);
-        QString addParametersToMap;
-        for(const auto &parSpec : parSpecs) {
-            QString dataType;
-            if(parSpec.type == "Real") {
-                addParametersToMap.append(QString("        realParametersMap.insert(std::pair<int,hopsan::HString>(%1,\"%2\"));\n").arg(vr).arg(parSpec.name.toStdString().c_str()));
-            }
-            else if(parSpec.type == "Integer") {
-                addParametersToMap.append(QString("        intParametersMap.insert(std::pair<int,hopsan::HString>(%1,\"%2\"));\n").arg(vr).arg(parSpec.name));
-            }
-            else if(parSpec.type == "Boolean") {
-                addParametersToMap.append(QString("        boolParametersMap.insert(std::pair<int,hopsan::HString>(%1,\"%2\"));\n").arg(vr).arg(parSpec.name));
-            }
-            else if(parSpec.type == "String") {
-                addParametersToMap.append(QString("        stringParametersMap.insert(std::pair<int,hopsan::HString>(%1,\"%2\"));\n").arg(vr).arg(parSpec.name));
-            }
-            else {
-                continue;   //Illegal data type, should never happen
-            }
-            ++vr;
-        }
-        fmuHopsanSourceCode.replace("<<<addparameterstomap>>>", addParametersToMap);
-        if(fmuHopsanSourceFile.open(QFile::Text | QFile::WriteOnly)) {
-            writeTextToFile(fmuHopsanSourceFile, fmuHopsanSourceCode);
-            fmuHopsanSourceFile.close();
-        }
-        else {
-            printErrorMessage("Unable to open fmu_hopsan.cpp for writing");
-            return false;
-        }
+        printErrorMessage(QString("Unable to open %1 for writing").arg(fmuHopsanSourceFile.fileName()));
+        return false;
     }
 
     //------------------------------------------------------------------//
@@ -1789,16 +1684,8 @@ void HopsanFMIGenerator::replaceNameSpace(const QString &savePath, int version) 
         if(!replaceInFile(file, before, after))
             return;
     }
-    if(version != 3) {
-        if(!replaceInFile(savePath+"/fmu_hopsan.cpp", before, after))
-            return;
-        if(!replaceInFile(savePath+"/fmu_hopsan.h", before, after))
-            return;
-    }
-    else {
-        if(!replaceInFile(savePath+"/fmu3_model.c", before, after)) {
-            return;
-        }
+    if(!replaceInFile(savePath+"/fmu"+QString::number(version)+"_model.c", before, after)) {
+        return;
     }
 }
 
@@ -1847,95 +1734,47 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
         printErrorMessage("Failed to open Makefile for writing.");
         return false;
     }
-    if(version == 3) {
-        //Write the compilation script file
-        QTextStream makefileStream(&makefile);
-        makefileStream << "CXX = g++\n";
-        QString fpicFlag;
+
+    //Write the compilation script file
+    QTextStream makefileStream(&makefile);
+    makefileStream << "CXX = g++\n";
+    QString fpicFlag;
 #ifndef _WIN32
-        fpicFlag= "-fPIC";
+    fpicFlag= "-fPIC";
 #endif
-        makefileStream << "CXXFLAGS = "+fpicFlag+" -c -std=c++14 -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS -DHOPSANCORE_NOMULTITHREADING -DNOFMI4C\n";
+    makefileStream << "CXXFLAGS = "+fpicFlag+" -c -std=c++14 -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS -DHOPSANCORE_NOMULTITHREADING -DNOFMI4C\n";
 #ifdef _WIN32
-        makefileStream << "LFLAGS = "+fpicFlag+" -w -shared -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic -Wl,--rpath,'$$ORIGIN/.' -Wl,--rpath,'$$ORIGIN/../../resources'\n";
+    makefileStream << "LFLAGS = "+fpicFlag+" -w -shared -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic -Wl,--rpath,'$$ORIGIN/.' -Wl,--rpath,'$$ORIGIN/../../resources'\n";
 #else
-        makefileStream << "LFLAGS = "+fpicFlag+" -w -shared -static-libgcc -Wl,--rpath,'$$ORIGIN/.' -Wl,--rpath,'$$ORIGIN/../../resources'\n";
+    makefileStream << "LFLAGS = "+fpicFlag+" -w -shared -static-libgcc -Wl,--rpath,'$$ORIGIN/.' -Wl,--rpath,'$$ORIGIN/../../resources'\n";
 #endif
-        makefileStream << "INCLUDES = ";
-        // Add HopsanCore (and necessary dependency) include paths
-        for(const QString &includePath : getHopsanCoreIncludePaths()) {
-            makefileStream << QString(" -I\"%1\"").arg(includePath);
-        }
-        for(const QString &includePath : mIncludePaths) {
-            makefileStream << QString(" -I\"%1\"").arg(includePath);
-        }
-        makefileStream << " -I"+fmi4cDir+"\n";
-        makefileStream << "OUTPUT = \""+outputLibraryFile+"\"\n\n";
-        makefileStream << "SRC = fmu3_model.cpp";
-        QStringList srcFiles = listHopsanCoreSourceFiles(fmuBuildPath) + listInternalLibrarySourceFiles(fmuBuildPath);
-        for(const QString& srcFile : srcFiles) {
-            makefileStream << " " << srcFile;
-        }
-        makefileStream << "\n\n";
-        makefileStream << "VPATH := $(sort  $(dir $(SRC)))\n\n";
-        makefileStream << "OBJ := $(patsubst %.cpp, %.o, $(notdir $(SRC)))\n";
-        makefileStream << "OBJ := $(patsubst %.c, %.o, $(notdir $(OBJ)))\n\n";
-        makefileStream << "all: 	$(OBJ)\n";
-        makefileStream << "\t$(CXX) $(OBJ) $(LFLAGS) -o $(OUTPUT)\n\n";
-        makefileStream << "%.o : %.cpp Makefile\n";
-        makefileStream << "\t$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@\n\n";
-        makefileStream << "%.o : %.c Makefile\n";
-        makefileStream << "\t$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@\n\n";
+    makefileStream << "INCLUDES = ";
+    // Add HopsanCore (and necessary dependency) include paths
+    for(const QString &includePath : getHopsanCoreIncludePaths()) {
+        makefileStream << QString(" -I\"%1\"").arg(includePath);
     }
-    else {
-        //Write the compilation script file
-        QTextStream makefileStream(&makefile);
-        makefileStream << "CXX = g++\n";
-        makefileStream << "CC = gcc\n";
-        QString fpicFlag;
-#ifndef _WIN32
-        fpicFlag= "-fPIC";
-#endif
-        makefileStream << "CXXFLAGS = "+fpicFlag+" -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS -DHOPSANCORE_NOMULTITHREADING -DNOFMI4C";
-        makefileStream << "\n";
-        makefileStream << "CFLAGS = "+fpicFlag+" -c\n";
-#ifdef _WIN32
-        makefileStream << "LFLAGS = "+fpicFlag+" -w -shared -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic -Wl,--rpath,'$$ORIGIN/.' -Wl,--rpath,'$$ORIGIN/../../resources'";
-#else
-        makefileStream << "LFLAGS = "+fpicFlag+" -w -shared -static-libgcc -Wl,--rpath,'$$ORIGIN/.' -Wl,--rpath,'$$ORIGIN/../../resources'";
-#endif
-        makefileStream << "\n";
-        makefileStream << "CXXINCLUDES = ";
-        // Add HopsanCore (and necessary dependency) include paths
-        for(const QString &includePath : getHopsanCoreIncludePaths()) {
-            makefileStream << QString(" -I\"%1\"").arg(includePath);
-        }
-        for(const QString &includePath : mIncludePaths) {
-            makefileStream << QString(" -I\"%1\"").arg(includePath);
-        }
-        makefileStream << "\n";
-        makefileStream << "CINCLUDES = -I\""+fmiLibDir+"/include\"\n";
-        makefileStream << "OUTPUT = \""+outputLibraryFile+"\"\n\n";
-        makefileStream << "CXXSRC = fmu_hopsan.cpp";
-        QStringList srcFiles = listHopsanCoreSourceFiles(fmuBuildPath) + listInternalLibrarySourceFiles(fmuBuildPath);
-        for(const QString& srcFile : srcFiles) {
-            makefileStream << " " << srcFile;
-        }
-        makefileStream << "\n";
-        makefileStream << "CSRC = fmu"+vStr+"_model_cs.c\n";
-        makefileStream << "COBJ = fmu"+vStr+"_model_cs.o\n";
-        makefileStream << "\n\n";
-        makefileStream << "VPATH := $(sort  $(dir $(CXXSRC)))\n\n";
-        makefileStream << "CXXOBJ := $(patsubst %.cpp, %.o, $(notdir $(CXXSRC)))\n";
-        makefileStream << "CXXOBJ := $(patsubst %.c, %.o, $(notdir $(CXXOBJ)))\n\n";
-        makefileStream << "all: 	$(CXXOBJ)\n";
-        makefileStream << "\t$(CC) $(CFLAGS) $(CINCLUDES) -c $(CSRC) -o $(COBJ)\n";
-        makefileStream << "\t$(CXX) $(COBJ) $(CXXOBJ) $(LFLAGS) -o $(OUTPUT)\n\n";
-        makefileStream << "%.o : %.cpp Makefile\n";
-        makefileStream << "\t$(CXX) $(CXXFLAGS) $(CXXINCLUDES) -c $< -o $@\n\n";
-        makefileStream << "%.o : %.c Makefile\n";
-        makefileStream << "\t$(CXX) $(CXXFLAGS) $(CXXINCLUDES) -c $< -o $@\n\n";
+    for(const QString &includePath : mIncludePaths) {
+        makefileStream << QString(" -I\"%1\"").arg(includePath);
     }
+    makefileStream << " -I"+fmi4cDir+"\n";
+    makefileStream << "OUTPUT = \""+outputLibraryFile+"\"\n\n";
+    makefileStream << "SRC = fmu"+QString::number(version)+"_model.cpp";
+    QStringList srcFiles = listHopsanCoreSourceFiles(fmuBuildPath) + listInternalLibrarySourceFiles(fmuBuildPath);
+    for(const QString& srcFile : srcFiles) {
+        makefileStream << " " << srcFile;
+    }
+    makefileStream << "\n\n";
+    makefileStream << "VPATH := $(sort  $(dir $(SRC)))\n\n";
+    makefileStream << "OBJ := $(patsubst %.cpp, %.o, $(notdir $(SRC)))\n";
+    makefileStream << "OBJ := $(patsubst %.c, %.o, $(notdir $(OBJ)))\n\n";
+    makefileStream << "all: 	$(OBJ)\n";
+    makefileStream << "\t$(CXX) $(OBJ) $(LFLAGS) -o $(OUTPUT)\n\n";
+    makefileStream << "%.o : %.cpp Makefile\n";
+    makefileStream << "\t$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@\n\n";
+    makefileStream << "%.o : %.c Makefile\n";
+    makefileStream << "\t$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@\n\n";
+
+
     makefile.close();
 
     printMessage("Generating compilation script");

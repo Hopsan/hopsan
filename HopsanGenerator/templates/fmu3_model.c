@@ -289,6 +289,313 @@ fmi3Status fmi3SetFloat64(fmi3Instance instance,
     return status;
 }
 
+fmi3Status fmi3GetFloat32(fmi3Instance instance,
+                          const fmi3ValueReference valueReferences[],
+                          size_t nValueReferences,
+                          fmi3Float32 values[],
+                          size_t nValues)
+{
+    UNUSED(instance);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    UNUSED(nValues);
+    return fmi3Error;
+}
+
+fmi3Status fmi3SetFloat32(fmi3Instance instance,
+                          const fmi3ValueReference valueReferences[],
+                          size_t nValueReferences,
+                          const fmi3Float32 values[],
+                          size_t nValues)
+{
+    UNUSED(instance);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    UNUSED(nValues);
+    return fmi3Error;
+}
+
+fmi3Status fmi3GetInt64(fmi3Instance instance,
+                        const fmi3ValueReference valueReferences[],
+                        size_t nValueReferences,
+                        fmi3Int64 values[],
+                        size_t nValues)
+{
+    UNUSED(instance);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    UNUSED(nValues);
+    return fmi3Error;
+}
+
+fmi3Status fmi3SetInt64(fmi3Instance instance,
+                        const fmi3ValueReference valueReferences[],
+                        size_t nValueReferences,
+                        const fmi3Int64 values[],
+                        size_t nValues)
+{
+    UNUSED(instance);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    UNUSED(nValues);
+    return fmi3Error;
+}
+
+fmi3Status fmi3GetInt32(fmi3Instance instance,
+                        const fmi3ValueReference valueReferences[],
+                        size_t nValueReferences,
+                        fmi3Int32 values[],
+                        size_t nValues)
+{
+    UNUSED(instance);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    UNUSED(nValues);
+    return fmi3Error;
+}
+
+fmi3Status fmi3SetInt32(fmi3Instance instance,
+                        const fmi3ValueReference valueReferences[],
+                        size_t nValueReferences,
+                        const fmi3Int32 values[],
+                        size_t nValues)
+{
+    UNUSED(instance);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    UNUSED(nValues);
+    return fmi3Error;
+}
+
+fmi3Status fmi3GetInt16(fmi3Instance instance,
+                        const fmi3ValueReference valueReferences[],
+                        size_t nValueReferences,
+                        fmi3Int16 values[],
+                        size_t nValues)
+{
+    UNUSED(instance);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    UNUSED(nValues);
+    return fmi3Error;
+}
+
+fmi3Status fmi3SetInt16(fmi3Instance instance,
+                        const fmi3ValueReference valueReferences[],
+                        size_t nValueReferences,
+                        const fmi3Int16 values[],
+                        size_t nValues)
+{
+    UNUSED(instance);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    UNUSED(nValues);
+    return fmi3Error;
+}
+
+fmi3Status fmi3GetInt8(fmi3Instance instance,
+                       const fmi3ValueReference valueReferences[],
+                       size_t nValueReferences,
+                       fmi3Int8 values[],
+                       size_t nValues)
+{
+    UNUSED(instance);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    UNUSED(nValues);
+    return fmi3Error;
+}
+
+fmi3Status fmi3SetInt8(fmi3Instance instance,
+                       const fmi3ValueReference valueReferences[],
+                       size_t nValueReferences,
+                       const fmi3Int8 values[],
+                       size_t nValues)
+{
+    UNUSED(instance);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    UNUSED(nValues);
+    return fmi3Error;
+}
+
+fmi3Status fmi3GetUInt64(fmi3Instance instance,
+                         const fmi3ValueReference valueReferences[],
+                         size_t nValueReferences,
+                         fmi3UInt64 values[],
+                         size_t nValues)
+{
+    UNUSED(instance);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    UNUSED(nValues);
+    return fmi3Error;
+}
+
+fmi3Status fmi3SetUInt64(fmi3Instance instance,
+                         const fmi3ValueReference valueReferences[],
+                         size_t nValueReferences,
+                         const fmi3UInt64 values[],
+                         size_t nValues)
+{
+    UNUSED(instance);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    UNUSED(nValues);
+    return fmi3Error;
+}
+
+fmi3Status fmi3GetUInt32(fmi3Instance instance,
+                         const fmi3ValueReference valueReferences[],
+                         size_t nValueReferences,
+                         fmi3UInt32 values[],
+                         size_t nValues)
+{
+    UNUSED(instance);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    UNUSED(nValues);
+    return fmi3Error;
+}
+
+fmi3Status fmi3SetUInt32(fmi3Instance instance,
+                         const fmi3ValueReference valueReferences[],
+                         size_t nValueReferences,
+                         const fmi3UInt32 values[],
+                         size_t nValues)
+{
+    UNUSED(instance);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    UNUSED(nValues);
+    return fmi3Error;
+}
+
+fmi3Status fmi3GetUInt16(fmi3Instance instance,
+                         const fmi3ValueReference valueReferences[],
+                         size_t nValueReferences,
+                         fmi3UInt16 values[],
+                         size_t nValues)
+{
+    UNUSED(instance);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    UNUSED(nValues);
+    return fmi3Error;
+}
+
+fmi3Status fmi3SetUInt16(fmi3Instance instance,
+                         const fmi3ValueReference valueReferences[],
+                         size_t nValueReferences,
+                         const fmi3UInt16 values[],
+                         size_t nValues)
+{
+    UNUSED(instance);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    UNUSED(nValues);
+    return fmi3Error;
+}
+
+fmi3Status fmi3GetUInt8(fmi3Instance instance,
+                        const fmi3ValueReference valueReferences[],
+                        size_t nValueReferences,
+                        fmi3UInt8 values[],
+                        size_t nValues)
+{
+    UNUSED(instance);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    UNUSED(nValues);
+    return fmi3Error;
+}
+
+fmi3Status fmi3SetUInt8(fmi3Instance instance,
+                        const fmi3ValueReference valueReferences[],
+                        size_t nValueReferences,
+                        const fmi3UInt8 values[],
+                        size_t nValues)
+{
+    UNUSED(instance);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    UNUSED(nValues);
+    return fmi3Error;
+}
+
+fmi3Status fmi3GetBoolean(fmi3Instance instance,
+                          const fmi3ValueReference valueReferences[],
+                          size_t nValueReferences,
+                          fmi3Boolean values[],
+                          size_t nValues)
+{
+    UNUSED(instance);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    UNUSED(nValues);
+    return fmi3Error;
+}
+
+fmi3Status fmi3GetString(fmi3Instance instance,
+                         const fmi3ValueReference valueReferences[],
+                         size_t nValueReferences,
+                         fmi3String values[],
+                         size_t nValues)
+{
+    UNUSED(instance);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    UNUSED(nValues);
+    return fmi3Error;
+}
+
+fmi3Status fmi3GetBinary(fmi3Instance instance,
+                         const fmi3ValueReference valueReferences[],
+                         size_t nValueReferences,
+                         size_t valueSizes[],
+                         fmi3Binary values[],
+                         size_t nValues)
+{
+    UNUSED(instance);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    UNUSED(nValues);
+    return fmi3Error;
+}
+
+fmi3Status fmi3GetClock(fmi3Instance instance,
+                        const fmi3ValueReference valueReferences[],
+                        size_t nValueReferences,
+                        fmi3Clock values[])
+{
+    UNUSED(instance);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(values);
+    return fmi3Error;
+}
+
 //Co-simulation
 fmi3Status fmi3DoStep(fmi3Instance instance,
                       fmi3Float64 currentCommunicationPoint,
