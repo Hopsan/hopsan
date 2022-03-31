@@ -973,6 +973,7 @@ bool Port::getLastNodeData(QString dataName, double& rData) const
 void Port::breakAllConnections()
 {
     while (mConnectedConnectors.size() > 0) {
+        mpParentModelObject->forgetConnector(mConnectedConnectors[0]);
         mConnectedConnectors[0]->breakConnection(this);
         mConnectedConnectors.removeFirst();
     }
