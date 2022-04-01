@@ -43,6 +43,7 @@ jobs:
             call setupTclap.bat
             call setupFMILibrary.bat
             call setupQwt.bat
+            call setupFmi4c.bat
 
       - name: Configure
         working-directory: hopsan-build
@@ -82,7 +83,7 @@ jobs:
       - name: Download dependencies
         shell: bash
         working-directory: dependencies
-        run: ./download-dependencies.py fmilibrary tclap
+        run: ./download-dependencies.py fmilibrary tclap fmi4c
 
       - name: Build dependencies
         shell: bash
@@ -90,6 +91,7 @@ jobs:
         run: |
           ./setupFMILibrary.sh
           ./setupTclap.sh
+          ./setupFmi4c.sh
 
       - name: Configure
         working-directory: hopsan-build
