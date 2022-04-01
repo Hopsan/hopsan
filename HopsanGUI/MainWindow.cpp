@@ -1497,6 +1497,7 @@ void MainWindow::updateToolBarsToNewTab()
     mpExportToFMU2_32Action->setEnabled(modelTab);
     mpExportToLabviewAction->setEnabled(modelTab);
     mpExportToSimulinkAction->setEnabled(modelTab);
+    mpImportFMUAction->setEnabled(modelTab);
     mpImportModelParametersMenuButton->setEnabled(modelTab);
     mpLoadModelParametersFromHpfAction->setEnabled(modelTab);
     mpLoadModelParametersFromSsvAction->setEnabled(modelTab);
