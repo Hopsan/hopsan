@@ -192,56 +192,6 @@ bool callCppGenerator(const char* hppPath, const char* compilerPath, bool compil
 }
 
 
-//! @brief Calls the functional mockup interface (FMU) import generator
-//! @param fmuFilePath Path to the .fmu file
-//! @param targetPath Destination of generated fmu import wrapper
-//! @param hopsanInstallPath Path to the Hopsan installation where HopsanCore/include exists
-//! @param compilerPath Path to the compiler binaries
-//! @param[in] quiet Hide generator output
-bool callFmuImportGenerator(const char* fmuFilePath, const char* targetPath, const char* hopsanInstallPath, const char* compilerPath, messagehandler_t messageHandler, void* pMessageObject)
-{
-    auto pGenerator = std::unique_ptr<HopsanFMIGenerator>(new HopsanFMIGenerator(hopsanInstallPath, compilerPath));
-    pGenerator->setMessageHandler(messageHandler, pMessageObject);
-    QString typeName, hppFile;
-    if(!pGenerator->generateFromFmu(fmuFilePath, targetPath, typeName, hppFile))
-    {
-        pGenerator->printErrorMessage("Failed to generate code when importing from FMU");
-        return false;
-    }
-
-    QString fmuFileName = QFileInfo(fmuFilePath).baseName();
-    QFileInfo fmuImportRoot(QString("%1/%2").arg(targetPath).arg(fmuFileName));
-    QFileInfo hppFileInfo(QDir(fmuImportRoot.absoluteFilePath()).relativeFilePath(hppFile));
-
-    const QString fmiLibraryDir=pGenerator->getHopsanRootPath()+"/dependencies/fmilibrary";
-
-    QStringList cflags, lflags;
-    cflags << QString("-I\"%1\"").arg(fmiLibraryDir+"/include");
-    lflags << QString("-L\"%1\"").arg(fmiLibraryDir+"/lib");
-#ifdef _WIN32
-    lflags << " -llibfmilib_shared";
-#else
-    lflags << " -lfmilib_shared";  //Remove extra "lib" prefix in Linux
-#endif
-
-    // Generate the component library files
-    QStringList hppFiles {hppFileInfo.filePath()};
-    QString libName = QDir(fmuImportRoot.canonicalFilePath()).dirName();
-    bool genOK = pGenerator->generateNewLibrary(fmuImportRoot.canonicalFilePath(), libName, hppFiles, {typeName+".xml"}, cflags, lflags);
-    if (!genOK) {
-        pGenerator->printErrorMessage("Failed to generate FMU import library");
-        return false;
-    }
-
-    // Compile the generated component library
-    bool compileOK = compileComponentLibrary(fmuImportRoot.canonicalFilePath()+"/"+fmuFileName+"_lib.xml", pGenerator.get());
-    if (!compileOK) {
-        pGenerator->printErrorMessage("Failed to compile imported FMU library");
-    }
-    return compileOK;
-}
-
-
 //! @brief Calls the functional mockup interface (FMU) export generator
 //! @param[in] outputPath Path to export to
 //! @param[in] pSystem Pointer to system that shall be exported

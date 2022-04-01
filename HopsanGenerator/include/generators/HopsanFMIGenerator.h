@@ -36,12 +36,9 @@ class HopsanFMIGenerator : public HopsanGeneratorBase
 {
 public:
     HopsanFMIGenerator(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath="");
-    bool generateFromFmu(const QString &rFmuPath, QString targetPath, QString &rTypeName, QString &rHppPath);
     bool generateToFmu(QString savePath, hopsan::ComponentSystem *pSystem, const QStringList& externalLibraries, int version=2, bool x64=true);
 
 private:
-    bool generateFromFmu1(const QString &rFmuPath, const QString &targetPath, QString &rTypeName, QString &rHppPath, jm_callbacks &callbacks, fmi_import_context_t* context);
-    bool generateFromFmu2(const QString &rFmuPath, const QString &rTargetPath, QString &rTypeName, QString &rHppPath, jm_callbacks &callbacks, fmi_import_context_t* context);
 
     //Utility functions
     void getInterfaceInfo(QString typeName, QString compName,
