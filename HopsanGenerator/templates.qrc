@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>templates/fmu1CsImportComponentTemplate.hpp</file>
         <file>templates/simulinkWrapperTemplate.cpp</file>
         <file>templates/labviewWrapperTemplate.cpp</file>
         <file>templates/simulinkCoSimWrapperTemplate.cpp</file>
@@ -11,19 +10,8 @@
         <file>templates/labviewApiTemplate.h</file>
         <file>templates/labviewCodegenTemplate.c</file>
         <file>templates/labviewHowToTemplate.txt</file>
-        <file>templates/fmuCoSimComponentTemplate.hpp</file>
-        <file>templates/fmu2CsImportComponentTemplate.hpp</file>
-        <file>templates/fmu2MeImportComponentTemplate.hpp</file>
-        <file>templates/fmu_hopsan.cpp</file>
-        <file>templates/fmu_hopsan.h</file>
         <file>templates/fmu2_model.c</file>
-        <file>templates/fmu2_model.h</file>
-        <file>templates/fmu2_model_cs.c</file>
-        <file>templates/fmu2_model_defines.h</file>
         <file>templates/fmu1_model.c</file>
-        <file>templates/fmu1_model.h</file>
-        <file>templates/fmu1_model_cs.c</file>
-        <file>templates/fmu1_model_defines.h</file>
         <file>templates/library_template.xml</file>
         <file>templates/exe_main.cpp</file>
         <file>templates/exe_utilities.cpp</file>
