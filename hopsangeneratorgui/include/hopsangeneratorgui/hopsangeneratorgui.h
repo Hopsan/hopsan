@@ -30,7 +30,6 @@ public:
 
     bool generateFromModelica(const QString& modelicaFile, const CompileT compile=CompileT::DoNotCompile);
 
-    bool generateFromFmu(const QString& fmuFilePath, const QString& destination);
     bool generateToFmu(const QString& outputPath, hopsan::ComponentSystem *pSystem, const QStringList& externalLibraries, const FmuVersionT version,
                        TargetArchitectureT arch);
 
