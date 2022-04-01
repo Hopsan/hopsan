@@ -1669,7 +1669,14 @@ void LibraryHandler::importFmu()
     }
     gpConfig->setStringSetting(CFG_FMUIMPORTDIR, fmuFileInfo.absolutePath());
 
-    importFMU(fmuFileInfo.absoluteFilePath());
+    SystemObject *pSystem = gpModelHandler->getCurrentTopLevelSystem();
+    if(pSystem) {
+        QPointF pos = pSystem->getGraphicsViewport().mCenter;
+        ModelObject *pFmuComponent = pSystem->addModelObject("FMIWrapper", pos);
+        if(pFmuComponent) {
+            pFmuComponent->setParameterValue("path", fmuFileInfo.absoluteFilePath());
+        }
+    }
 }
 
 
