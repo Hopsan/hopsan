@@ -359,34 +359,6 @@ bool HopsanGeneratorGUI::generateFromModelica(const QString& modelicaFile, const
     return didOK;
 }
 
-bool HopsanGeneratorGUI::generateFromFmu(const QString& fmuFilePath, const QString& destination)
-{
-    auto lw = mPrivates->createNewWidget();
-    loadGeneratorLibrary();
-
-    QFileInfo fmuFileInfo(fmuFilePath);
-    QString fmuFileName = fmuFileInfo.baseName();
-    QDir importDestination(QDir::cleanPath(destination+"/"+fmuFileName));
-    if(importDestination.exists())
-    {
-        printErrorMessage(QString("Destination already exist %1").arg(importDestination.path()));
-        return false;
-    }
-    else
-    {
-        constexpr auto functionName = "callFmuImportGenerator";
-        const auto fmu = fmuFilePath.toStdString();
-        const auto dst = destination.toStdString();
-        const auto& hopsanRoot = mPrivates->hopsanRoot;
-        const auto& compilerPath = mPrivates->compilerPath;
-        MessageForwarder forwarder(lw->widget());
-
-        using FmuImportFunction_t = bool(const char*, const char*, const char*, const char*, MessageHandler_t, void*);
-        bool didOK = mPrivates->call<FmuImportFunction_t>(forwarder, functionName, fmu.c_str(), dst.c_str(), hopsanRoot.c_str(), compilerPath.c_str(), &messageHandler, static_cast<void*>(&forwarder));
-        lw->setDidSucceed(didOK);
-        return didOK;
-    }
-}
 
 bool HopsanGeneratorGUI::generateToFmu(const QString& outputPath, hopsan::ComponentSystem* pSystem, const QStringList& externalLibraries,
                                        const FmuVersionT version, const TargetArchitectureT architecture)

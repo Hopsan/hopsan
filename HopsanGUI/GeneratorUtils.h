@@ -32,7 +32,4 @@ QSharedPointer<HopsanGeneratorGUI> createDefaultGenerator(bool autoCloseOnSucces
 QSharedPointer<HopsanGeneratorGUI> createDefaultImportGenerator();
 QSharedPointer<HopsanGeneratorGUI> createDefaultExportGenerator();
 
-bool importFMU(const QString& fmuFilePath);
-
-
 #endif
