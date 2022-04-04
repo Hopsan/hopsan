@@ -88,6 +88,8 @@ bool CSVParserNG::openText(HString text)
         return false;
     }
     FILE* pTempfile = fdopen(fd, "r+b");
+    // Unlink the file, but it will remain until the file is closed (and then be automatically removed)
+    remove(tmpfilebuff);
 #endif
 
     if (pTempfile == 0) {
