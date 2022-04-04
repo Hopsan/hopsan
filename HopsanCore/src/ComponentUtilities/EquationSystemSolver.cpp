@@ -639,7 +639,7 @@ public:
     SUNLinearSolver LS;
     SUNMatrix J;
     double mSolverTime;
-    SolverTypeEnum mType = NewtonIteration;
+    SolverTypeEnum mType;
 };
 
 

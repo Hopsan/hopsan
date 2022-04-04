@@ -101,19 +101,19 @@ const HString TempDirectoryHandle::getTempDirectory() const {
     return HString(tempdirbuff);
 #else
     char * val = getenv("TMPDIR");
-    if(val != nullptr) {
+    if(val != NULL) {
         return val;
     }
     val = getenv("TMP");
-    if(val != nullptr) {
+    if(val != NULL) {
         return val;
     }
     val = getenv("TEMP");
-    if(val != nullptr) {
+    if(val != NULL) {
         return val;
     }
     val = getenv("TEMPDIR");
-    if(val != nullptr) {
+    if(val != NULL) {
         return val;
     }
     return "/tmp";

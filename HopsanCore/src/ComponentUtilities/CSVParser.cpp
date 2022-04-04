@@ -80,7 +80,7 @@ bool CSVParserNG::openText(HString text)
 
     FILE* pTempfile = fopen(tmpfilename.c_str(), "w+b");
 #else
-    char tmpfilebuff[18] {"hopsan-csv-XXXXXX"};
+    char tmpfilebuff[18] = "hopsan-csv-XXXXXX";
     int fd = mkstemp(tmpfilebuff);
     HString tmpfilename(tmpfilebuff);
     if (fd == -1) {
