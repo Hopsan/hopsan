@@ -299,6 +299,8 @@ class ModelVariableSpecification
 {
 public:
     ModelVariableSpecification(QStringList systemHierarchy, QString componentName, QString portName, QString dataName, int dataId, double startValue, ModelVariableCausality causality);
+    QString getName() const;
+    QString getCausalityStr() const;
     QStringList systemHierarchy;
     QString componentName;
     QString portName;
