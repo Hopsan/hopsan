@@ -26,6 +26,7 @@
 #include "generators/HopsanFMIGenerator.h"
 #include "GeneratorUtilities.h"
 #include "ComponentSystem.h"
+#include "HopsanEssentials.h"
 #include <cassert>
 #include <QUuid>
 #include <QDateTime>
@@ -488,22 +489,183 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
 
 bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSystem, QString savePath, QString guid, int version, size_t &nReals, size_t &nInputs, size_t &nOutputs)
 {
-    if(version == 3) {
-        QString versionStr = "3.0-beta.3";
-        QString dateAndTime = QDateTime::currentDateTime().toUTC().toString(Qt::ISODate);
-        QString modelName = pSystem->getName().c_str();
+    if(version < 1 || version > 3) {
+        printErrorMessage("Illegal FMI version: "+QString::number(version));
+        return false;
+    }
 
-        QFile mdFile(savePath + "/modelDescription.xml");
-        if (!mdFile.open(QIODevice::WriteOnly)) {
-            printErrorMessage("Unable to write to: "+savePath+"/modelDescription.xml");
-            return false;
-        }
-        QXmlStreamWriter mdWriter(&mdFile);
-        mdWriter.setAutoFormatting(true);
-        mdWriter.writeStartDocument();
+    QString hopsanStr = "Hopsan"+QString(hopsan::HopsanEssentials().getCoreVersion());
+    QString dateAndTime = QDateTime::currentDateTime().toUTC().toString(Qt::ISODate);
+    QString modelName = pSystem->getName().c_str();
+
+    QFile mdFile(savePath + "/modelDescription.xml");
+    if (!mdFile.open(QIODevice::WriteOnly)) {
+        printErrorMessage("Unable to write to: "+savePath+"/modelDescription.xml");
+        return false;
+    }
+    QXmlStreamWriter mdWriter(&mdFile);
+    mdWriter.setAutoFormatting(true);
+    mdWriter.writeStartDocument();
+
+    if(version == 1) {
         mdWriter.writeStartElement("fmiModelDescription");
         mdWriter.writeAttribute("modelName", modelName);
-        mdWriter.writeAttribute("fmiVersion", versionStr);
+        mdWriter.writeAttribute("modelIdentifier", modelName);
+        mdWriter.writeAttribute("fmiVersion", "1.0");
+        mdWriter.writeAttribute("generationTool", hopsanStr);
+        mdWriter.writeAttribute("generationDateAndTime", dateAndTime);
+        mdWriter.writeAttribute("variableNamingConvention", "structured");
+        mdWriter.writeAttribute("guid", guid);
+        mdWriter.writeAttribute("numberOfEventIndicators", "0");
+        mdWriter.writeAttribute("numberOfContinuousStates", "0");
+
+        mdWriter.writeStartElement("Implementation");
+        mdWriter.writeStartElement("CoSimulation_StandAlone");
+        mdWriter.writeStartElement("Capabilities");
+        mdWriter.writeAttribute("canHandleVariableCommunicationStepSize", "true");
+        mdWriter.writeEndElement(); //Capabilities
+        mdWriter.writeEndElement(); //CoSimulation_StandAlone
+        mdWriter.writeEndElement(); //Implementation
+
+        mdWriter.writeStartElement("DefaultExperiment");
+        mdWriter.writeAttribute("startTime", QString::number(pSystem->getTime()));
+        mdWriter.writeEndElement(); //DefaultExperiment
+
+        mdWriter.writeStartElement("ModelVariables");
+
+        QList<ModelVariableSpecification> vars;
+        QStringList systemHierarchy = QStringList();
+        getModelVariables(pSystem, vars, systemHierarchy);
+
+        long vr = 0;
+        for(const auto &var : vars) {
+            mdWriter.writeStartElement("ScalarVariable");
+            mdWriter.writeAttribute("name", var.getName());
+            mdWriter.writeAttribute("valueReference", QString::number(vr));
+            mdWriter.writeAttribute("causality", var.getCausalityStr());
+            mdWriter.writeAttribute("variability", "continuous");
+            mdWriter.writeStartElement("Real");
+            mdWriter.writeAttribute("start", QString::number(var.startValue));
+            mdWriter.writeEndElement(); //Real
+            mdWriter.writeEndElement(); //ScalarVariable
+            ++vr;
+        }
+
+        QList<ParameterSpecification> parameterSpecs;
+        getParameters(parameterSpecs, pSystem);
+
+        for(auto &parSpec : parameterSpecs) {
+            mdWriter.writeStartElement("ScalarVariable");
+            mdWriter.writeAttribute("name", parSpec.name);
+            mdWriter.writeAttribute("valueReference", QString::number(vr));
+            mdWriter.writeAttribute("causality", "input");
+            mdWriter.writeAttribute("variability", "parameter");
+            mdWriter.writeAttribute("description", parSpec.description);
+
+            if(parSpec.type == "Real") {
+                mdWriter.writeStartElement("Real");
+            }
+            else if(parSpec.type == "Integer") {
+                mdWriter.writeStartElement("Integer");
+            }
+            else if(parSpec.type == "Boolean") {
+                mdWriter.writeStartElement("Boolean");
+            }
+            else if(parSpec.type == "String") {
+                mdWriter.writeStartElement("String");
+            }
+
+            mdWriter.writeAttribute("start", parSpec.init);
+
+            mdWriter.writeAttribute("unit", parSpec.unit);
+            mdWriter.writeEndElement(); //Float64/Int32/Boolean/String
+            mdWriter.writeEndElement(); //ScalarVariable
+            ++vr;
+        }
+        mdWriter.writeEndElement(); //ModelVariables
+        mdWriter.writeEndElement(); //fmiModelDescription
+    }
+    else if(version == 2) {
+        mdWriter.writeStartElement("fmiModelDescription");
+        mdWriter.writeAttribute("modelName", modelName);
+        mdWriter.writeAttribute("fmiVersion", "2.0");
+        mdWriter.writeAttribute("generationTool", hopsanStr);
+        mdWriter.writeAttribute("generationDateAndTime", dateAndTime);
+        mdWriter.writeAttribute("variableNamingConvention", "structured");
+        mdWriter.writeAttribute("guid", guid);
+        mdWriter.writeAttribute("numberOfEventIndicators", "0");
+
+        mdWriter.writeStartElement("CoSimulation");
+        mdWriter.writeAttribute("modelIdentifier", modelName);
+        mdWriter.writeAttribute("canHandleVariableCommunicationStepSize", "true");
+        mdWriter.writeEndElement(); //CoSimulation
+
+        mdWriter.writeStartElement("DefaultExperiment");
+        mdWriter.writeAttribute("startTime", QString::number(pSystem->getTime()));
+        mdWriter.writeEndElement(); //DefaultExperiment
+
+        mdWriter.writeStartElement("ModelVariables");
+
+        QList<ModelVariableSpecification> vars;
+        QStringList systemHierarchy = QStringList();
+        getModelVariables(pSystem, vars, systemHierarchy);
+
+        long vr = 0;
+        for(const auto &var : vars) {
+            mdWriter.writeStartElement("ScalarVariable");
+            mdWriter.writeAttribute("name", var.getName());
+            mdWriter.writeAttribute("valueReference", QString::number(vr));
+            mdWriter.writeAttribute("causality", var.getCausalityStr());
+            mdWriter.writeAttribute("variability", "continuous");
+            mdWriter.writeStartElement("Real");
+            mdWriter.writeAttribute("start", QString::number(var.startValue));
+            mdWriter.writeEndElement(); //Real
+            mdWriter.writeEndElement(); //ScalarVariable
+            ++vr;
+        }
+
+        QList<ParameterSpecification> parameterSpecs;
+        getParameters(parameterSpecs, pSystem);
+
+        for(auto &parSpec : parameterSpecs) {
+            mdWriter.writeStartElement("ScalarVariable");
+            mdWriter.writeAttribute("name", parSpec.name);
+            mdWriter.writeAttribute("valueReference", QString::number(vr));
+            mdWriter.writeAttribute("causality", "parameter");
+            mdWriter.writeAttribute("variability", "fixed");
+            mdWriter.writeAttribute("description", parSpec.description);
+
+            if(parSpec.type == "Real") {
+                mdWriter.writeStartElement("Real");
+            }
+            else if(parSpec.type == "Integer") {
+                mdWriter.writeStartElement("Integer");
+            }
+            else if(parSpec.type == "Boolean") {
+                mdWriter.writeStartElement("Boolean");
+            }
+            else if(parSpec.type == "String") {
+                mdWriter.writeStartElement("String");
+            }
+
+            mdWriter.writeAttribute("start", parSpec.init);
+
+            mdWriter.writeAttribute("unit", parSpec.unit);
+            mdWriter.writeEndElement(); //Float64/Int32/Boolean/String
+            mdWriter.writeEndElement(); //ScalarVariable
+            ++vr;
+        }
+
+        mdWriter.writeStartElement("ModelStructure");       // This element must exist, even if it is empty
+        mdWriter.writeEndElement(); //ModelSctructure
+
+        mdWriter.writeEndElement(); //ModelVariables
+        mdWriter.writeEndElement(); //fmiModelDescription
+    }
+    else { //version == 3
+        mdWriter.writeStartElement("fmiModelDescription");
+        mdWriter.writeAttribute("modelName", modelName);
+        mdWriter.writeAttribute("fmiVersion", "3.0-beta.3");
         mdWriter.writeAttribute("generationTool", "Hopsan");    //!< We should inclure version number, but not sure which one (gui/cli/core)?
         mdWriter.writeAttribute("generationDateAndTime", dateAndTime);
         mdWriter.writeAttribute("variableNamingConvention", "structured");
@@ -547,7 +709,7 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
             else {
                 mdWriter.writeAttribute("causality", "output");
             }
-            mdWriter.writeAttribute("start", QString::number(var.startValue));  //! @todo Support start values
+            mdWriter.writeAttribute("start", QString::number(var.startValue));
             ++vr;
             mdWriter.writeEndElement(); //Float64
         }
@@ -584,144 +746,11 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
         }
         mdWriter.writeEndElement(); //ModelVariables
         mdWriter.writeEndElement(); //fmiModelDescription
-        mdWriter.writeEndDocument();
-        mdFile.close();
     }
-    else {
+    mdWriter.writeEndDocument();
+    mdFile.close();
 
-        QString versionStr = QString::number(version, 'f', 1);
-        QString dateAndTime = QDateTime::currentDateTime().toUTC().toString(Qt::ISODate);
-        QString modelName = pSystem->getName().c_str();
-
-        printMessage("Generating modelDescription.xml for FMI "+versionStr);
-
-        //Write modelDescription.xml
-        QDomDocument domDocument;
-        QDomElement rootElement = domDocument.createElement("fmiModelDescription");
-        rootElement.setAttribute("fmiVersion", versionStr);
-        rootElement.setAttribute("modelName", modelName);
-        if(version==1) {
-            rootElement.setAttribute("modelIdentifier", modelName);
-            rootElement.setAttribute("numberOfContinuousStates", "0");
-        }
-        else {
-            rootElement.setAttribute("variableNamingConvention", "structured");
-        }
-        rootElement.setAttribute("guid", guid);
-        rootElement.setAttribute("description", "");
-        rootElement.setAttribute("generationTool", "HopsanGenerator");
-        rootElement.setAttribute("generationDateAndTime", dateAndTime);
-        rootElement.setAttribute("numberOfEventIndicators", "0");
-        domDocument.appendChild(rootElement);
-
-        if(version==2) {
-            QDomElement coSimElement = domDocument.createElement("CoSimulation");
-            coSimElement.setAttribute("modelIdentifier",modelName);
-            coSimElement.setAttribute("canHandleVariableCommunicationStepSize", "true");
-            rootElement.appendChild(coSimElement);
-        }
-
-        QDomElement varsElement = domDocument.createElement("ModelVariables");
-        rootElement.appendChild(varsElement);
-
-        QList<InterfacePortSpec> interfacePortSpecs;
-        QStringList path = QStringList();
-        getInterfaces(interfacePortSpecs, pSystem, path);
-
-        size_t vr=0;
-        nReals=0;
-        nInputs=0;
-        nOutputs=0;
-        for(const auto &port : interfacePortSpecs) {
-            for(const auto &var : port.vars) {
-                QDomElement varElement = domDocument.createElement("ScalarVariable");
-                varElement.setAttribute("name", port.component+"_"+port.port+"_"+var.dataName);
-                varElement.setAttribute("valueReference", (unsigned int)vr);
-                if(var.causality == InterfaceVarSpec::Input) {
-                    varElement.setAttribute("causality", "input");
-                    ++nInputs;
-                }
-                else {
-                    if(version == 2) {
-                        varElement.setAttribute("initial","exact");
-                    }
-                    varElement.setAttribute("causality", "output");
-                    ++nOutputs;
-                }
-                ++nReals;
-                varElement.setAttribute("description", "");
-
-                QDomElement dataElement = domDocument.createElement("Real");    //We only support real data type for now
-                dataElement.setAttribute("start", 0);   //! @todo Support start values
-                if(version == 1) {
-                    dataElement.setAttribute("fixed", "false");
-                }
-                varElement.appendChild(dataElement);
-
-                varsElement.appendChild(varElement);
-                ++vr;
-            }
-        }
-
-        QList<ParameterSpecification> parameterSpecs;
-        getParameters(parameterSpecs, pSystem);
-
-        for(auto &parSpec : parameterSpecs) {
-            QDomElement varElement = domDocument.createElement("ScalarVariable");
-            varElement.setAttribute("name", parSpec.name);
-            varElement.setAttribute("valueReference", (unsigned int)vr);
-            if(version == 2) {
-                varElement.setAttribute("causality", "parameter");
-                varElement.setAttribute("initial","exact");
-                varElement.setAttribute("variability", "fixed");
-            }
-            else if(version == 1) {
-                varElement.setAttribute("causality", "input");
-                varElement.setAttribute("variability", "parameter");
-            }
-            varElement.setAttribute("description", parSpec.description);
-            QDomElement dataElement = domDocument.createElement(parSpec.type);
-            dataElement.setAttribute("start", parSpec.init);   //! @todo Support start values
-            if(!parSpec.unit.isEmpty()) {
-                dataElement.setAttribute("unit", parSpec.unit);
-            }
-            if(version == 1) {
-                dataElement.setAttribute("fixed", "false");
-            }
-            varElement.appendChild(dataElement);
-            varsElement.appendChild(varElement);
-            ++vr;
-        }
-
-        if(version == 1) {
-            QDomElement implElement = domDocument.createElement("Implementation");
-            QDomElement coSimElement = domDocument.createElement("CoSimulation_StandAlone");
-            QDomElement capabilitiesElement = domDocument.createElement("Capabilities");
-            capabilitiesElement.setAttribute("canHandleVariableCommunicationStepSize", "true");
-            coSimElement.appendChild(capabilitiesElement);
-            implElement.appendChild(coSimElement);
-            rootElement.appendChild(implElement);
-        }
-        else {
-            QDomElement structureElement = domDocument.createElement("ModelStructure");
-            rootElement.appendChild(structureElement);
-        }
-
-        QDomNode xmlProcessingInstruction = domDocument.createProcessingInstruction("xml","version=\"1.0\" encoding=\"UTF-8\"");
-        domDocument.insertBefore(xmlProcessingInstruction, domDocument.firstChild());
-
-        QFile modelDescriptionFile(savePath + "/modelDescription.xml");
-        if(!modelDescriptionFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            printErrorMessage(QString("Failed to open %1 for writing.").arg(modelDescriptionFile.fileName()));
-            return false;
-        }
-        QByteArray temp_data;
-        QTextStream temp_data_stream(&temp_data);
-        domDocument.save(temp_data_stream, 4);
-        modelDescriptionFile.write(temp_data);
-        modelDescriptionFile.close();
-        return true;
-    }
+    return true;
 }
 
 
