@@ -900,3 +900,23 @@ ModelVariableSpecification::ModelVariableSpecification(QStringList systemHierarc
     this->startValue = startValue;
     this->causality = causality;
 }
+
+QString ModelVariableSpecification::getName() const
+{
+    if(systemHierarchy.isEmpty()) {
+        return componentName+"."+portName+"."+dataName;
+    }
+    else {
+        return systemHierarchy.join(".")+"."+componentName+"."+portName+"."+dataName;
+    }
+}
+
+QString ModelVariableSpecification::getCausalityStr() const
+{
+    if(causality == Input) {
+        return "input";
+    }
+    else {
+        return "output";
+    }
+}
