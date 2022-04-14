@@ -843,7 +843,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
 #ifndef _WIN32
     fpicFlag= "-fPIC";
 #endif
-    makefileStream << "CXXFLAGS = "+fpicFlag+" -c -std=c++14 -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS -DHOPSANCORE_NOMULTITHREADING -DNOFMI4C\n";
+    makefileStream << "CXXFLAGS = "+fpicFlag+" -c -std=c++14 -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS -DHOPSANCORE_NOMULTITHREADING\n";
 #ifdef _WIN32
     makefileStream << "LFLAGS = "+fpicFlag+" -w -shared -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic -Wl,--rpath,'$$ORIGIN/.' -Wl,--rpath,'$$ORIGIN/../../resources'\n";
 #else
