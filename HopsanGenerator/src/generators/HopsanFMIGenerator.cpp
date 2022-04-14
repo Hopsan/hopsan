@@ -668,8 +668,8 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
     else { //version == 3
         mdWriter.writeStartElement("fmiModelDescription");
         mdWriter.writeAttribute("modelName", modelName);
-        mdWriter.writeAttribute("fmiVersion", "3.0-beta.3");
-        mdWriter.writeAttribute("generationTool", "Hopsan");    //!< We should inclure version number, but not sure which one (gui/cli/core)?
+        mdWriter.writeAttribute("fmiVersion", "3.0-rc.1");
+        mdWriter.writeAttribute("generationTool", hopsanStr);
         mdWriter.writeAttribute("generationDateAndTime", dateAndTime);
         mdWriter.writeAttribute("variableNamingConvention", "structured");
         mdWriter.writeAttribute("instantiationToken", guid);
