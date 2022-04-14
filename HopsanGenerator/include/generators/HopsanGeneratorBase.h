@@ -108,7 +108,6 @@ protected:
     bool copyFile(const QString &source, const QString &target) const;
     bool copyDir(const QString &fromPath, const QString &toPath, const QList<QRegExp>& excludeRegExps) const;
     void cleanUp(const QString &path, const QStringList &files, const QStringList &subDirs) const;
-    void getNodeAndCqTypeFromInterfaceComponent(const QString &compType, QString &nodeType, QString &cqType);
     bool generateModelFile(const hopsan::ComponentSystem *pSystem, const QString &buildPath, const QMap<QString,QString>& replaceMap) const;
 
     QString mHopsanRootPath;
