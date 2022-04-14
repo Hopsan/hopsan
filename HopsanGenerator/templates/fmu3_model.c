@@ -148,7 +148,6 @@ fmi3Instance fmi3InstantiateCoSimulation(fmi3String instanceName,
                                          fmi3CallbackLogMessage logMessage,
                                          fmi3CallbackIntermediateUpdate intermediateUpdate)
 {
-    UNUSED(resourcePath);
     UNUSED(visible);
     UNUSED(eventModeUsed);
     UNUSED(earlyReturnAllowed);
