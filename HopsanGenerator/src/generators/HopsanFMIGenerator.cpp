@@ -519,14 +519,6 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
         mdWriter.writeAttribute("numberOfEventIndicators", "0");
         mdWriter.writeAttribute("numberOfContinuousStates", "0");
 
-        mdWriter.writeStartElement("Implementation");
-        mdWriter.writeStartElement("CoSimulation_StandAlone");
-        mdWriter.writeStartElement("Capabilities");
-        mdWriter.writeAttribute("canHandleVariableCommunicationStepSize", "true");
-        mdWriter.writeEndElement(); //Capabilities
-        mdWriter.writeEndElement(); //CoSimulation_StandAlone
-        mdWriter.writeEndElement(); //Implementation
-
         mdWriter.writeStartElement("DefaultExperiment");
         mdWriter.writeAttribute("startTime", QString::number(pSystem->getTime()));
         mdWriter.writeEndElement(); //DefaultExperiment
@@ -583,6 +575,15 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
             ++vr;
         }
         mdWriter.writeEndElement(); //ModelVariables
+
+        mdWriter.writeStartElement("Implementation");
+        mdWriter.writeStartElement("CoSimulation_StandAlone");
+        mdWriter.writeStartElement("Capabilities");
+        mdWriter.writeAttribute("canHandleVariableCommunicationStepSize", "true");
+        mdWriter.writeEndElement(); //Capabilities
+        mdWriter.writeEndElement(); //CoSimulation_StandAlone
+        mdWriter.writeEndElement(); //Implementation
+
         mdWriter.writeEndElement(); //fmiModelDescription
     }
     else if(version == 2) {
@@ -618,7 +619,9 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
             mdWriter.writeAttribute("causality", var.getCausalityStr());
             mdWriter.writeAttribute("variability", "continuous");
             mdWriter.writeStartElement("Real");
-            mdWriter.writeAttribute("start", QString::number(var.startValue));
+            if(var.causality != Output) {
+                mdWriter.writeAttribute("start", QString::number(var.startValue));
+            }
             mdWriter.writeEndElement(); //Real
             mdWriter.writeEndElement(); //ScalarVariable
             ++vr;
@@ -655,11 +658,11 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
             mdWriter.writeEndElement(); //ScalarVariable
             ++vr;
         }
+        mdWriter.writeEndElement(); //ModelVariables
 
         mdWriter.writeStartElement("ModelStructure");       // This element must exist, even if it is empty
         mdWriter.writeEndElement(); //ModelSctructure
 
-        mdWriter.writeEndElement(); //ModelVariables
         mdWriter.writeEndElement(); //fmiModelDescription
     }
     else { //version == 3
