@@ -1,4 +1,4 @@
-#include "fmiFunctions.h"
+#include "fmi/fmiFunctions.h"
 #include "HopsanEssentials.h"
 #include "ComponentSystem.h"
 #include "ComponentUtilities/num2string.hpp"
