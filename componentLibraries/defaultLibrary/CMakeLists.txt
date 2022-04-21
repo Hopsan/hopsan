@@ -6,6 +6,7 @@ if(WIN32)
   set(CMAKE_SHARED_LIBRARY_PREFIX "")
 endif()
 
+include(../../dependencies/fmi4c.cmake)
 
 file(GLOB_RECURSE component_files *.cpp *.cci *.h *.hpp)
 
@@ -14,6 +15,7 @@ target_include_directories(defaultcomponentlibrary PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 
 target_link_libraries(defaultcomponentlibrary hopsancore)
+target_link_optional_libraries(defaultcomponentlibrary fmi4c)
 
 install(TARGETS defaultcomponentlibrary
   RUNTIME DESTINATION componentLibraries/defaultLibrary
