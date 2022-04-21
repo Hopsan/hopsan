@@ -16,6 +16,7 @@
 
 #ifdef USEFMI4C
 #include "fmi4c.h"
+#include <cstdarg>
 #endif
 
 //!
