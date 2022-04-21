@@ -1,6 +1,9 @@
 fmilibrary/
 fmilibrary-code/
 fmilibrary-build/
+fmi4c/
+fmi4c-code/
+fmi4c-build/
 qwt/
 qwt-code/
 qwt-build/
