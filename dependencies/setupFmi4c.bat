@@ -19,12 +19,9 @@ if exist %builddir% (
 )
 mkdir %builddir%
 cd %builddir%
-cmake -Wno-dev -G %HOPSAN_BUILD_CMAKE_GENERATOR% -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=%installdir% %codedir%
+cmake -Wno-dev -G %HOPSAN_BUILD_CMAKE_GENERATOR% -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%installdir% %codedir%
 cmake --build . --parallel 8
 cmake --build . --target install
-
-xcopy /S /E /Y %codedir%\include %installdir%\include\
-xcopy /S /E /Y %codedir%\3rdparty\fmi %installdir%\3rdparty\fmi\
 
 cd %basedir%
 echo.
