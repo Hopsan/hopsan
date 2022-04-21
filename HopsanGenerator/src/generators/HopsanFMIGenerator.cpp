@@ -794,7 +794,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
 {
     const QString vStr = QString::number(version);
     const QString fmiLibDir=mHopsanRootPath+"/dependencies/fmilibrary";
-    const QString fmi4cDir=mHopsanRootPath+"/dependencies/fmi4c/3rdparty/fmi";
+    const QString fmi4cIncludeDir=mHopsanRootPath+"/dependencies/fmi4c/include";
 
     printMessage("------------------------------------------------------------------------");
     printMessage("Compiling FMU source code");
@@ -857,7 +857,7 @@ bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QS
     for(const QString &includePath : mIncludePaths) {
         makefileStream << QString(" -I\"%1\"").arg(includePath);
     }
-    makefileStream << " -I"+fmi4cDir+"\n";
+    makefileStream << " -I"+fmi4cIncludeDir+"\n";
     makefileStream << "OUTPUT = \""+outputLibraryFile+"\"\n\n";
     makefileStream << "SRC = fmu"+QString::number(version)+"_model.cpp";
     QStringList srcFiles = listHopsanCoreSourceFiles(fmuBuildPath) + listInternalLibrarySourceFiles(fmuBuildPath);
