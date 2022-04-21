@@ -98,11 +98,11 @@
       <url>https://github.com/Hopsan/hopsan_qt_mingw64/releases/download/v5.9.9/qt-5.9.9-x64-5.4.0-release-posix-seh-rt_v5-rev0-webkit.7z</url>
     </releasefile>
   </dependency>
-  
+
   <dependency name="fmi4c">
-	<releasefile sha1="fd1bce2369c2a3833de644e08feef2886f013b6c">
-		<url>https://github.com/robbr48/fmi4c/archive/refs/tags/v1.0-alpha.2.zip</url>
-	</releasefile>
+    <releasefile sha256="417745a511fbde7fcc14c6960a2a786900dfd1c99681628075d99f2ca8bc0047">
+      <url>https://github.com/robbr48/fmi4c/archive/9571d54e35abf226f207de96750b39d26bd684ff.zip</url>
+    </releasefile>
   </dependency>
 
 </hopsandependencies>
