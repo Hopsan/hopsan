@@ -1,6 +1,6 @@
 #define MODEL_IDENTIFIER fmi2
 
-#include "fmi2Functions.h"
+#include "fmi/fmi2Functions.h"
 #include "HopsanEssentials.h"
 #include "ComponentSystem.h"
 #include "ComponentUtilities/num2string.hpp"
