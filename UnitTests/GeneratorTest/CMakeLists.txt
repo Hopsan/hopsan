@@ -21,9 +21,11 @@ endif()
 # Copy runtime requirement dll's to run directory
 if (WIN32)
     include(${CMAKE_CURRENT_LIST_DIR}/../../dependencies/fmilibrary.cmake)
+    include(${CMAKE_CURRENT_LIST_DIR}/../../dependencies/fmi4c.cmake)
     copy_file_after_build(${test_name} $<TARGET_FILE:hopsancore> $<TARGET_FILE_DIR:${test_name}>)
     copy_file_after_build(${test_name} $<TARGET_FILE:hopsangenerator> $<TARGET_FILE_DIR:${test_name}>)
     copy_file_after_build(${test_name} $<TARGET_FILE:fmilibrary> $<TARGET_FILE_DIR:${test_name}>)
+    copy_file_after_build(${test_name} $<TARGET_FILE:fmi4c> $<TARGET_FILE_DIR:${test_name}>)
 endif()
 
 # Copy compiled hopsancore and source code to mimic installation
@@ -39,6 +41,7 @@ endif()
 
 # Copy FMILibrary to mimic installation
 copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../dependencies/fmilibrary ${CMAKE_CURRENT_BINARY_DIR}/../../dependencies)
+copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../dependencies/fmi4c ${CMAKE_CURRENT_BINARY_DIR}/../../dependencies)
 
 # Copy FMUChecker and 7z to mimic installation
 copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../dependencies/tools/FMUChecker ${CMAKE_CURRENT_BINARY_DIR}/../../dependencies/tools)
