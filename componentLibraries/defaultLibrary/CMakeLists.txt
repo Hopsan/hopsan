@@ -2,9 +2,6 @@ cmake_minimum_required(VERSION 3.0)
 project(DefaultComponentLibrary)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_DEBUG_POSTFIX _d)
-if(WIN32)
-  set(CMAKE_SHARED_LIBRARY_PREFIX "")
-endif()
 
 include(${CMAKE_CURRENT_LIST_DIR}/../../dependencies/fmi4c.cmake)
 
@@ -16,6 +13,11 @@ target_include_directories(defaultcomponentlibrary PUBLIC
 
 target_link_libraries(defaultcomponentlibrary hopsancore)
 target_link_optional_libraries(defaultcomponentlibrary fmi4c)
+if(WIN32)
+  set_target_properties(defaultcomponentlibrary PROPERTIES
+                                                PREFIX ""
+                                                IMPORT_PREFIX "")
+endif()
 
 install(TARGETS defaultcomponentlibrary
   RUNTIME DESTINATION componentLibraries/defaultLibrary
