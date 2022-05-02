@@ -19,8 +19,8 @@ devversion=2.20.0
 debianDistArchArray=( bullseye:amd64:bullseye      bullseye:i386:bullseye
                       buster:amd64:qt5py3_buster   buster:i386:qt5py3_buster
                       stretch:amd64:qt5py27        stretch:i386:qt5py27 )
-ubuntuDistArchArray=( impish:amd64:bullseye
-                      hirsute:amd64:bullseye
+ubuntuDistArchArray=( jammy:amd64:bullseye
+                      impish:amd64:bullseye
                       focal:amd64:focal
                       bionic:amd64:qt5py3_1        bionic:i386:qt5py3_1 )
 
