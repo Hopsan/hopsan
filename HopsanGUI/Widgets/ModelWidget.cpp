@@ -689,8 +689,7 @@ bool ModelWidget::startRealtimeSimulation(const double realtimeFactor)
         return false;
     }
     CoreSimulationHandler mCoreSimulationHandler;
-    mCoreSimulationHandler.startRealtimeSimumlation(mpToplevelSystem->getCoreSystemAccessPtr(), realtimeFactor);
-    return true;
+    return mCoreSimulationHandler.startRealtimeSimulation(mpToplevelSystem->getCoreSystemAccessPtr(), realtimeFactor);
 }
 
 void ModelWidget::stopRealtimeSimulation()
