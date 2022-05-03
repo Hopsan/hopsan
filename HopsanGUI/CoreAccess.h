@@ -326,7 +326,7 @@ public:
     bool simulate(const double startTime, const double stopTime, const int nThreads, CoreSystemAccess* pCoreSystemAccess, bool modelHasNotChanged=false);
     bool simulate(const double startTime, const double stopTime, const int nThreads, QVector<CoreSystemAccess*> &rvCoreSystemAccess, bool modelHasNotChanged=false);
 
-    bool startRealtimeSimumlation(CoreSystemAccess *pCoreSystemAccess, double realTimeFactor=1);
+    bool startRealtimeSimulation(CoreSystemAccess *pCoreSystemAccess, double realTimeFactor=1);
     void stopRealtimeSimulation(CoreSystemAccess *pCoreSystemAccess);
 
     void finalize(CoreSystemAccess* pCoreSystemAccess);
