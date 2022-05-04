@@ -758,6 +758,8 @@ def copyFiles():
     # Copy 3pdependency installations
     if not copyDirTo(r'dependencies/fmilibrary', gTemporaryBuildDir+r'/dependencies'):
         return False
+    if not copyDirTo(r'dependencies/fmi4c', gTemporaryBuildDir+r'/dependencies'):
+        return False
 
     # Copy 7zip to temporary directory
     git_export(r'dependencies/tools/7z', gTemporaryBuildDir+'/dependencies/tools')
