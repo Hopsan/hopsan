@@ -21,7 +21,7 @@ mkdir -p $builddir
 cd $builddir
 
 # Generate makefiles
-cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=${installdir} ${codedir}
+cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=${installdir} -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED=OFF ${codedir}
 
 # Build and install
 cmake --build . --parallel 8
