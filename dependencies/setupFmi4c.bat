@@ -19,7 +19,7 @@ if exist %builddir% (
 )
 mkdir %builddir%
 cd %builddir%
-cmake -Wno-dev -G %HOPSAN_BUILD_CMAKE_GENERATOR% -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%installdir% %codedir%
+cmake -Wno-dev -G %HOPSAN_BUILD_CMAKE_GENERATOR% -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%installdir% -DBUILD_SHARED=OFF -DUSE_INCLUDED_ZLIB=ON %codedir%
 cmake --build . --parallel 8
 cmake --build . --target install
 

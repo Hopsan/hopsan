@@ -25,7 +25,6 @@ if (WIN32)
     copy_file_after_build(${test_name} $<TARGET_FILE:hopsancore> $<TARGET_FILE_DIR:${test_name}>)
     copy_file_after_build(${test_name} $<TARGET_FILE:hopsangenerator> $<TARGET_FILE_DIR:${test_name}>)
     copy_file_after_build(${test_name} $<TARGET_FILE:fmilibrary> $<TARGET_FILE_DIR:${test_name}>)
-    copy_file_after_build(${test_name} $<TARGET_FILE:fmi4c> $<TARGET_FILE_DIR:${test_name}>)
 endif()
 
 # Copy compiled hopsancore and source code to mimic installation
