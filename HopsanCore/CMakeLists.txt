@@ -35,6 +35,8 @@ if (MSVC)
   # Ensure that the __cplusplus macro is set to the appropriate value in MSVC
   # otherwise it is stuck at 199711L
   target_compile_options(hopsancore PUBLIC "/Zc:__cplusplus")
+  # Undefine odd min and max macros to enable use of std::min, std::max, make it public so all projects get this define
+  target_compile_definitions(hopsancore PUBLIC NOMINMAX)
 endif()
 target_compile_definitions(hopsancore PRIVATE HOPSANCORE_WRITELOG)
 if(CMAKE_BUILD_TYPE MATCHES Debug)
