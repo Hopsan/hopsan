@@ -79,6 +79,7 @@ srcDeps=${srcDir}/dependencies
 
 install_dir  ${srcDeps}/katex                                  $dstDir/dependencies
 install_dir  ${srcDeps}/fmilibrary                             $dstDir/dependencies
+install_dir  ${srcDeps}/fmi4c                                  $dstDir/dependencies
 
 install_dynamic_libs_if_exist  ${srcDeps}/qwt/lib         libqwt            $dstDir/bin
 install_dynamic_libs_if_exist  ${srcDeps}/zeromq/lib      libzmq            $dstDir/bin
