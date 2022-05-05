@@ -26,8 +26,8 @@ mkdir %builddir%
 cd %builddir%
 set PATH=%PATH_WITHOUT_MSYS%
 cmake -G %HOPSAN_BUILD_CMAKE_GENERATOR% -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%installdir% %codedir%\cmake
-cmake --build . --parallel 8
-cmake --build . --target install
+cmake --build . --config Release --parallel 8
+cmake --build . --config Release --target install
 
 cd %basedir%
 echo.
