@@ -18,9 +18,9 @@ if exist %builddir% (
 )
 mkdir %builddir%
 cd %builddir%
-cmake -Wno-dev -G %HOPSAN_BUILD_CMAKE_GENERATOR% -DCMAKE_SH="CMAKE_SH-NOTFOUND" -DFMILIB_FMI_PLATFORM="win64" -DFMILIB_INSTALL_PREFIX=%installdir% %codedir%
-cmake --build . --parallel 8
-cmake --build . --target install
+cmake -Wno-dev -G %HOPSAN_BUILD_CMAKE_GENERATOR% -DCMAKE_BUILD_TYPE=Release -DCMAKE_SH="CMAKE_SH-NOTFOUND" -DFMILIB_FMI_PLATFORM="win64" -DFMILIB_INSTALL_PREFIX=%installdir% %codedir%
+cmake --build . --config Release --parallel 8
+cmake --build . --config Release --target install
 
 cd %basedir%
 echo.
