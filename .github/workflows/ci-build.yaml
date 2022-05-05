@@ -33,7 +33,7 @@ jobs:
       - name: Download dependencies
         shell: cmd
         working-directory: dependencies
-        run: python download-dependencies.py fmilibrary tclap qwt
+        run: python download-dependencies.py fmilibrary tclap qwt fmi4c
 
       - name: Build dependencies
         shell: cmd
