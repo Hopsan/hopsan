@@ -3,7 +3,7 @@ on: [pull_request]
 
 jobs:
   cmake-msvc2019:
-    timeout-minutes: 20
+    timeout-minutes: 30
     runs-on: windows-2019
     env:
       HOPSAN_BUILD_SCRIPT_NOPAUSE: 1
