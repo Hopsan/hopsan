@@ -1185,6 +1185,7 @@ bool LogDataHandler2::collectLogDataFromSystem(SystemObject *pCurrentSystem, con
 
     // Store the systems own time vector
     auto pCoreSysTimeVector = pCurrentSystem->getCoreSystemAccessPtr()->getLogTimeData();
+    pCoreSysTimeVector->resize(pCurrentSystem->getCoreSystemAccessPtr()->getCoreSystemPtr()->getNumActuallyLoggedSamples());
     if (pCoreSysTimeVector && !pCoreSysTimeVector->empty())
     {
         // Check so that we have not already stored this time vector in this generation
