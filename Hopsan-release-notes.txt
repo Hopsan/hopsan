@@ -30,6 +30,60 @@
 ******************************
     Version History
 ******************************
+2.20.0 (2022-07-11)
+
+----- Enhancements -----
+
+- HopsanCore
+  - Move real-time simulation main loop into HopsanCore (from GUI) resulting in much better performance (animation mode)
+  - Temporary files created by lookup components are now deleted on Linux systems when the model is closed
+    (On Windows they will remain in the temp directory)
+
+- HopsanGUI
+  - Show HTML description in FMIWrapper component (extension library) if available in FMU
+  - Replace functionality added to FindWidget for text files
+  - Import/export parameter data to/from SSV format
+  - Support SSV parameter sets for components (can be specified in component xml)
+  - Add 'Energy Density Spectrum', 'Power Density Spectrum' and 'Root Mean Square' of vector to frequency analysis
+  - Added "Open model file" option in right-click menu for subsystem components in library widget
+  - Hide "Open source code" option for components that have no source code specified
+  - Double-clicking on subsystem components opens model file
+  - HCOM: Add steady-state identification, function ssi()
+  - HCOM: New function: cut()
+  - HCOM: Support elseif and nested if-statements
+  - Make GUI fall back to empty port icon graphics for unknown node types
+    This makes it possibly to register and use custom node types in custom component libraries
+    Note! Custom nodes may not yet work in all cases, such as in code generation
+
+- Ops
+  - Support for surrogate models in Ops algorithms
+    Surrogate models are fast numerical approximations of the objective functions.
+    The implementation is based on polynomial response surfaces, as described by: https://doi.org/10.1007/s11081-014-9247-9
+    To active surrogate models, add the command surrogatemodel <interval> in the HCOM script.
+    The interval setting specifies how many evaluations the surrogate model is used before it is updated.
+
+----- Bug Fixes -----
+
+- HopsanGUI
+  - Update default parameters when changing FMU in FMIWrapper component 
+  - Ignore file change warning after saving a file. At least on Windows the file would otherwise be reported as modified
+  - Loading HMF components as internal subsystems was forgotten when saving the model
+  - HCOM: Fix SymHop evaluation of model parameters ending with 'e'
+  - HCOM: Fix symhop evaluation of power if variable contains underscore, ex: a_b^2
+  - HCOM: Fix hg() (highest generation) function, it did always return 0
+  - Fix crash when adding new component to library
+  - Ensure that error and warning messages about missing files when loading libraries actually contain the missing path
+  - Spectrum/FFT dialog Crashes GUI if simulation was stopped by stop component
+    time data was not truncated to actual number of simulated samples
+  
+- HopsanCore
+  - Fix signal component sorting when a ReadMultiPort with multiple connections is present
+  
+----- Component Libraries -----
+  - Standard Component Library: MechanicTranslationalLosslessConnector XML file error
+  - Standard Component Library: SignalSteadyStateIdentifier
+
+--------------------------------------------------------------------------------------------------------------------------------------------
 2.19.1 (2021-11-05)
 
 ----- Bug Fixes -----
