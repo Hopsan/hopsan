@@ -58,6 +58,7 @@
 
 #include "ComponentUtilities/CSVParser.h"
 #include "HopsanTypes.h"
+#include "ComponentSystem.h"
 
 #ifdef USEHDF5
 #include "hopsanhdf5exporter.h"
@@ -1185,14 +1186,15 @@ bool LogDataHandler2::collectLogDataFromSystem(SystemObject *pCurrentSystem, con
 
     // Store the systems own time vector
     auto pCoreSysTimeVector = pCurrentSystem->getCoreSystemAccessPtr()->getLogTimeData();
-    pCoreSysTimeVector->resize(pCurrentSystem->getCoreSystemAccessPtr()->getCoreSystemPtr()->getNumActuallyLoggedSamples());
     if (pCoreSysTimeVector && !pCoreSysTimeVector->empty())
     {
         // Check so that we have not already stored this time vector in this generation
         if (!rGenTimeVectors.contains(pCoreSysTimeVector))
         {
             //! @todo here we need to copy (convert) from std vector to qvector, don know if that slows down (probably not much)
-            auto pSysTimeVector = insertTimeVectorVariable(QVector<double>::fromStdVector(*pCoreSysTimeVector), sharedSystemHierarchy);
+            auto time_vec = QVector<double>::fromStdVector(*pCoreSysTimeVector);
+            time_vec.resize(pCurrentSystem->getCoreSystemAccessPtr()->getCoreSystemPtr()->getNumActuallyLoggedSamples());
+            auto pSysTimeVector = insertTimeVectorVariable(time_vec, sharedSystemHierarchy);
             rGenTimeVectors.insert(pCoreSysTimeVector, pSysTimeVector);
         }
     }
@@ -1262,7 +1264,9 @@ bool LogDataHandler2::collectLogDataFromSystem(SystemObject *pCurrentSystem, con
                         // Else create a unique variable time vector for this component
                         else
                         {
-                            auto pVarTimeVec = insertTimeVectorVariable(QVector<double>::fromStdVector(*pCoreVarTimeVector), SharedSystemHierarchyT());
+                            auto time_vec = QVector<double>::fromStdVector(*pCoreVarTimeVector);
+                            time_vec.resize(pCurrentSystem->getCoreSystemAccessPtr()->getCoreSystemPtr()->getNumActuallyLoggedSamples());
+                            auto pVarTimeVec = insertTimeVectorVariable(time_vec, SharedSystemHierarchyT());
                             pNewData = insertTimeDomainVariable(pVarTimeVec, dataVec, pVarDesc);
                         }
                     }
