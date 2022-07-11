@@ -1361,7 +1361,7 @@ void PlotTab::openFrequencyAnalysisDialog(PlotCurve *pCurve)
 
     double xdiff = maxX-minX;
     if(0 == xdiff) {
-            gpMessageHandler->addErrorMessage("Minimum and maximum value of X-vector must not be equal when creating frequency spectrum");
+        gpMessageHandler->addErrorMessage("Minimum and maximum value of X-vector must not be equal when creating frequency spectrum");
         return;
     }
 
@@ -1449,16 +1449,20 @@ void PlotTab::openFrequencyAnalysisDialog(PlotCurve *pCurve)
                 break;
         }
         SharedVectorVariableT pNewVar = pCurve->getSharedVectorVariable()->toFrequencySpectrum(SharedVectorVariableT(), type, function, minTime, maxTime);
+        if (pNewVar) {
+            PlotTab *pTab = mpParentPlotWindow->addPlotTab();
+            pTab->addCurve(new PlotCurve(pNewVar, QwtPlot::yLeft, FrequencyAnalysisType));
+            pTab->setTabName("Frequency Spectrum");
 
-        PlotTab *pTab = mpParentPlotWindow->addPlotTab();
-        pTab->addCurve(new PlotCurve(pNewVar, QwtPlot::yLeft, FrequencyAnalysisType));
-        pTab->setTabName("Frequency Spectrum");
-
-        if(pLogScaleCheckBox->isChecked())
-        {
-            pTab->getPlotArea(0)->setBottomAxisLogarithmic(true); //!< @todo maybe need a set all logarithmic function
-            pTab->getPlotArea(0)->setLeftAxisLogarithmic(true);
-            pTab->rescaleAxesToCurves(); //!< @todo maybe we should not need to call this here
+            if(pLogScaleCheckBox->isChecked())
+            {
+                pTab->getPlotArea(0)->setBottomAxisLogarithmic(true); //!< @todo maybe need a set all logarithmic function
+                pTab->getPlotArea(0)->setLeftAxisLogarithmic(true);
+                pTab->rescaleAxesToCurves(); //!< @todo maybe we should not need to call this here
+            }
+        }
+        else {
+            gpMessageHandler->addErrorMessage("Failed to create frequency spectrum");
         }
     }
     pDialog->deleteLater();
