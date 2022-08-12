@@ -790,6 +790,7 @@ bool HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     removeDuplicates(unknowns);
     unknowns.removeAll(Expression("mTime"));
     unknowns.removeAll(Expression("mTimestep"));
+    unknowns.removeAll(Expression("s"));
 
     //Verify equation system
     printMessage("Found "+QString::number(systemEquations.size())+" equations, "+QString::number(knowns.size())+" known variables and "+QString::number(unknowns.size())+" unknown variables.");
