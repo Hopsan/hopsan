@@ -2300,6 +2300,11 @@ Expression Expression::inlineTransform(const InlineTransformT transform, bool &o
             retExpr = retExpr.inlineTransform(transform, ok);
         }
     }
+    else if(this->isSymbol()) {
+        if(mString == "s") {
+            retExpr = Expression(transformStr.arg("1"));
+        }
+    }
 
     ok = true;
     return retExpr;
