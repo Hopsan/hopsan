@@ -1619,6 +1619,10 @@ bool Expression::isNumericalSymbol() const
     return (!mString.isEmpty() && (mString[0].isNumber() || mString == "-1.0"));
 }
 
+bool Expression::isInteger() const
+{
+    return (this->isNumericalSymbol()) && (trunc(this->toDouble()) == this->toDouble());
+}
 
 //! @brief Tells whether or not this is a variable
 bool Expression::isVariable() const
@@ -2624,8 +2628,8 @@ void Expression::expand(const ExpressionSimplificationT simplifications)
 //Expand power functions from e.g. "pow(x,3)" to "x*x*x". This will improve performance in generated code.
 void Expression::expandPowers()
 {
-    if(this->isPower() && this->getPower()->isNumericalSymbol()) {
-        int nFactors = int(mpPower->toDouble());
+    if(this->isPower() && this->getPower()->isInteger()) {
+        int nFactors = int(mpPower->toDouble()+0.5);
         QList<Expression> factors;
         for(int i=0; i<nFactors; ++i) {
             factors << (*mpBase);

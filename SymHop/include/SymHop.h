@@ -114,6 +114,7 @@ public:
     bool isFunction() const;
     bool isSymbol() const;
     bool isNumericalSymbol() const;
+    bool isInteger() const;
     bool isVariable() const;
     bool isAssignment() const;
     bool isEquation() const;
