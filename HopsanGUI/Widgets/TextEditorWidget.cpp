@@ -778,7 +778,10 @@ void TextEditor::keyPressEvent(QKeyEvent* event)
         else {
             auto cursor = textCursor();
             int pos = cursor.position();
-            QChar next = this->toPlainText().at(pos);
+            QChar next = '\n';
+            if(pos < this->toPlainText().size()) {
+                next = this->toPlainText().at(pos);
+            }
             cursor.beginEditBlock();
             if(next.isSpace() || next == '\n') {
                 insertPlainText("()");
