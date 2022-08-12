@@ -238,7 +238,7 @@ TerminalConsole::TerminalConsole(TerminalWidget *pParent)
     mpCompleter->setCompletionMode(QCompleter::PopupCompletion);
     mpCompleter->setCaseSensitivity(Qt::CaseInsensitive);
 #if QT_VERSION >= 0x050700
-    connect(mpCompleter, qOverload<const QString&>(&QCompleter::activated), this, &TerminalConsole::insertCompletion);
+    connect(mpCompleter, QOverload<const QString&>::of(&QCompleter::activated), this, &TerminalConsole::insertCompletion);
 #else
     QObject::connect(mpCompleter, SIGNAL(activated(QString)), this, SLOT(insertCompletion(QString)));
 #endif
