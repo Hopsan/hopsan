@@ -8001,7 +8001,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *pAbort)
                     }
                 }
                 else {
-                    return QString();
+                    continue;
                 }
             }
         }
