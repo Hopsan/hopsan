@@ -1388,6 +1388,10 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     }
     else if(selectedAction == sourceCodeAction) {
         auto appearance = gpLibraryHandler->getModelObjectAppearancePtr(mModelObjectAppearance.getTypeName());
+        if(nullptr == appearance) {
+            gpMessageHandler->addErrorMessage("Source code is not available for missing components.");
+            return 0;
+        }
         QString basePath = appearance->getBasePath();
         if(!basePath.isEmpty()) {
             basePath.append("/");
