@@ -283,24 +283,29 @@ class NodePneumatic :public Node
 public:
     //! @brief The data variable indexes, DataLength is used internally
     //! @ingroup NodePneumatic
-    enum DataIndexEnumT {MassFlow, EnergyFlow, Pressure, Temperature, WaveVariable, CharImpedance, DataLength};
-    enum DataIndexEnumOldT {MASSFLOW, ENERGYFLOW, PRESSURE, TEMPERATURE, WAVEVARIABLE, CHARIMP};
+    enum DataIndexEnumT {EnergyFlow, Pressure, WaveVariable, CharImpedance, MassFlow, Density, DensityWaveVariable, DensityCharImpedance, Temperature, DataLength};
+    enum DataIndexEnumOldT {ENERGYFLOW, PRESSURE, WAVEVARIABLE, CHARIMP, MASSFLOW, DENSITY, DENSITYWAVEVARIABLE, DENSITYCHARIMP, TEMPERATURE};
     static Node* CreatorFunction() {return new NodePneumatic;}
 
 private:
     NodePneumatic() : Node(DataLength)
     {
         setNiceName("pneumatic");
-        setDataCharacteristics(MassFlow, "MassFlow", "mdot", "kg/s", FlowType);
+        setDataCharacteristics(EnergyFlow, "EnergyFlow", "Qdot", "J/s", FlowType);
         setDataCharacteristics(Pressure, "Pressure", "p", "Pa", IntensityType);
-        setDataCharacteristics(Temperature, "Temperature", "T", "K", DefaultType);
         setDataCharacteristics(WaveVariable, "WaveVariable", "c", "Pa", TLMType);
-        setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "?", TLMType);
-        setDataCharacteristics(EnergyFlow, "EnergyFlow", "Qdot", "J/s", DefaultType);
+        setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "s/m^3", TLMType);
+        setDataCharacteristics(MassFlow, "MassFlow", "mdot", "kg/s", FlowType);
+        setDataCharacteristics(Density, "Density", "rho", "kg/m^3", IntensityType);
+        setDataCharacteristics(DensityWaveVariable, "DensityWaveVariable", "crho", "kg/m^3", TLMType);
+        setDataCharacteristics(DensityCharImpedance, "DensityCharImpedance", "Zcrho", "s/m^3", TLMType);
+        setDataCharacteristics(Temperature, "Temperature", "T", "K", DefaultType);
 
         // Set default initial startvales to reasonable (non-zero) values
         mDataValues[Pressure] = 100000;
         mDataValues[WaveVariable] = 100000;
+        mDataValues[Density] = 1.225;
+        mDataValues[DensityWaveVariable] = 1.225;
         mDataValues[Temperature] = 293;
     }
 
