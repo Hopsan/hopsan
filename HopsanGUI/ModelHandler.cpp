@@ -721,7 +721,7 @@ void ModelHandler::disconnectMainWindowConnections(ModelWidget *pModel)
 
 void ModelHandler::disconnectMainWindowConnections(TextEditorWidget* pScriptEditor)
 {
-    //disconnect(gpMainWindow->mpSaveAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(save()));
+    disconnect(gpMainWindow->mpSaveAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(save()));
     disconnect(gpMainWindow->mpSaveAndRunAction,  SIGNAL(triggered()),    pScriptEditor,  SLOT(saveAndRun()));
     disconnect(gpMainWindow->mpSaveAsAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(saveAs()));
     disconnect(gpMainWindow->mpCutAction,      SIGNAL(triggered()),    pScriptEditor, SLOT(cut()));
