@@ -566,16 +566,28 @@ void TextEditor::keyPressEvent(QKeyEvent* event)
     {
         if((event->modifiers().testFlag(Qt::ShiftModifier)))
         {
-            moveCursor(QTextCursor::StartOfBlock, QTextCursor::KeepAnchor); //Shift+home = select until start of line (Excluding whitespace at beginning)
-            if(this->textCursor().selection().toPlainText().startsWith(" ")) {
-                moveCursor(QTextCursor::NextWord, QTextCursor::KeepAnchor);
+            QString textLeftOfCursor = textCursor().block().text().left(textCursor().positionInBlock());
+            if(textLeftOfCursor.trimmed().isEmpty()) {
+                moveCursor(QTextCursor::StartOfLine, QTextCursor::KeepAnchor);
+            }
+            else {
+                moveCursor(QTextCursor::StartOfBlock, QTextCursor::KeepAnchor); //Shift+home = select until start of line (Excluding whitespace at beginning)
+                if(this->textCursor().selection().toPlainText().startsWith(" ")) {
+                    moveCursor(QTextCursor::NextWord, QTextCursor::KeepAnchor);
+                }
             }
         }
         else
         {
-            moveCursor(QTextCursor::StartOfBlock);      //Home = move cursor to start of line, excluding initial whitespace
-            if(this->textCursor().block().text().startsWith(" ")) {
-                moveCursor(QTextCursor::NextWord);
+            QString textLeftOfCursor = textCursor().block().text().left(textCursor().positionInBlock());
+            if(textLeftOfCursor.trimmed().isEmpty()) {
+                moveCursor(QTextCursor::StartOfLine);
+            }
+            else {
+                moveCursor(QTextCursor::StartOfBlock);      //Home = move cursor to start of line, excluding initial whitespace
+                if(this->textCursor().block().text().startsWith(" ")) {
+                    moveCursor(QTextCursor::NextWord);
+                }
             }
         }
     }
