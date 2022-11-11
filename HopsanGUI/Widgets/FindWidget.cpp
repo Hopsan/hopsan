@@ -373,11 +373,17 @@ void FindWidget::replaceAll()
 
 void FindWidget::setVisible(bool visible)
 {
-    //If text is selected in current editor, update it in find widget
     if(mpTextEditor) {
+
+        //If text is selected in current editor, update it in find widget
         QString selection = mpTextEditor->getSelectedText();
         if(!selection.contains("\u2029") && mpFindLineEdit->text() != selection && !selection.isEmpty()) {
             mpFindLineEdit->setText(selection);
+            visible = true;
+        }
+
+        //If find widget does not have focus, give it focus instead of hiding it
+        if(gpMainWindowWidget->focusWidget() != mpFindLineEdit) {
             visible = true;
         }
     }
