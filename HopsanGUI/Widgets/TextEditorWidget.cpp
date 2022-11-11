@@ -794,6 +794,22 @@ void TextEditor::keyPressEvent(QKeyEvent* event)
             setTextCursor(cursor);
         }
     }
+    else if(event->key() == Qt::Key_ParenRight)
+    {
+        auto cursor = textCursor();
+        auto text = cursor.block().text();
+        if(cursor.anchor() == cursor.position() &&
+            cursor.positionInBlock() == cursor.block().length()-2 &&
+            text.endsWith(")")) {
+            //Line ends with a closing parenthesis and cursor is just before it.
+            //Do not add a new parenthesis, just move the cursor one step.
+            cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, 1);
+        }
+        else {
+            QPlainTextEdit::keyPressEvent(event);
+        }
+        this->setTextCursor(cursor);
+    }
     else
     {
         QPlainTextEdit::keyPressEvent(event);
