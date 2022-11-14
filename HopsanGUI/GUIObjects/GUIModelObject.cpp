@@ -701,6 +701,12 @@ bool ModelObject::isLossesDisplayVisible()
     return mpLossesDisplay->isVisible();
 }
 
+//! @brief Stores XML data that can be used if the component is missing and cannot save itself
+void ModelObject::setFallbackDomElement(const QDomElement &rDomElement)
+{
+    mFallbackDomElement = rDomElement.cloneNode().toElement();
+}
+
 
 //! @brief Get a pointer to the port with the specified name
 //! @param [in] rName The port name
@@ -1025,10 +1031,15 @@ bool ModelObject::getCustomParameterUnitScale(QString name, UnitConverter &rUs)
 
 void ModelObject::saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents)
 {
-    QDomElement xmlObject = appendDomElement(rDomElement, getHmfTagName());
-    saveCoreDataToDomElement(xmlObject, contents);
-    if (contents == FullModel) {
-        saveGuiDataToDomElement(xmlObject);
+    if(!mFallbackDomElement.isNull()) { //Missing component, use fallback dom element
+        rDomElement.appendChild(mFallbackDomElement.cloneNode().toElement());
+    }
+    else {
+        QDomElement xmlObject = appendDomElement(rDomElement, getHmfTagName());
+        saveCoreDataToDomElement(xmlObject, contents);
+        if (contents == FullModel) {
+            saveGuiDataToDomElement(xmlObject);
+        }
     }
 }
 

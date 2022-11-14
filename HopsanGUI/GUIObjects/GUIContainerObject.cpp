@@ -4658,8 +4658,11 @@ void SystemObject::loadFromDomElement(QDomElement domElement)
                                                                     xmlSubObject.attribute(HMF_TYPENAME) + QString(", Name: ") + xmlSubObject.attribute(HMF_NAMETAG));
 
                 // Insert missing component dummy instead
+                QString typeName = xmlSubObject.attribute(HMF_TYPENAME);
                 xmlSubObject.setAttribute(HMF_TYPENAME, "MissingComponent");
                 pObj = loadModelObject(xmlSubObject, this, NoUndo);
+                xmlSubObject.setAttribute(HMF_TYPENAME, typeName);
+                pObj->setFallbackDomElement(xmlSubObject);
             }
             else
             {

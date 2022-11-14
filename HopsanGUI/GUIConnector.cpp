@@ -621,6 +621,9 @@ void Connector::saveToDomElement(QDomElement &rDomElement)
     // Ignore if connector broken
     if (mIsBroken)
     {
+        if(!mFallbackDomElement.isNull()) {
+            rDomElement.appendChild(mFallbackDomElement.cloneNode().toElement());
+        }
         return;
     }
 
@@ -1199,6 +1202,12 @@ void Connector::setDashed(bool value)
     mIsDashed=value;
     refreshPen();
     mpParentSystemObject->mpModelWidget->hasChanged();
+}
+
+//! @brief Stores XML data that can be used if the component is missing and cannot save itself
+void Connector::setFallbackDomElement(const QDomElement &rElement)
+{
+    mFallbackDomElement = rElement.cloneNode().toElement();
 }
 
 
