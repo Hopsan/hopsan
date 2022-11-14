@@ -125,6 +125,7 @@ public slots:
     void deselect();
     void select();
     void setDashed(bool value);
+    void setFallbackDomElement(const QDomElement &rElement);
 
 private slots:
     void setVisible(bool visible);
@@ -157,6 +158,8 @@ private:
     QVector<QPointF> mPoints;
 
     Component *mpVolunectorComponent;
+
+    QDomElement mFallbackDomElement;
 };
 
 

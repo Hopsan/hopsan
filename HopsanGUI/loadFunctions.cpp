@@ -115,40 +115,35 @@ bool loadConnector(QDomElement &rDomElement, SystemObject* pContainer, UndoStatu
     Port *startPort = pContainer->getModelObjectPort(startComponentName, startPortName);
     Port *endPort = pContainer->getModelObjectPort(endComponentName, endPortName);
 
-    if (startPort && endPort)
+    Connector* pConn = pContainer->createConnector(startPort, endPort, NoUndo);
+    if (pConn)
     {
-        Connector* pConn = pContainer->createConnector(startPort, endPort, NoUndo);
-        if (pConn)
+        if(pointVector.isEmpty() && !pConn->isDangling() && !pConn->isBroken())   //Create a diagonal connector if no points were loaded from HMF
         {
-            if(pointVector.isEmpty() && !pConn->isDangling() && !pConn->isBroken())   //Create a diagonal connector if no points were loaded from HMF
-            {
-                pointVector.push_back(pConn->getStartPort()->boundingRect().center());
-                pointVector.push_back(pConn->getEndPort()->boundingRect().center());
-                geometryList.clear();
-                geometryList.append("diagonal");
-            }
-            pConn->setPointsAndGeometries(pointVector, geometryList);
-            pConn->setDashed(isDashed);
-            pConn->refreshConnectorAppearance();
-            pConn->setColor(color);
-
-            if(undoSettings == Undo)
-            {
-                pContainer->getUndoStackPtr()->registerAddedConnector(pConn);
-            }
-            if (pConn->isConnected())
-            {
-                success = true;
-            }
+            pointVector.push_back(pConn->getStartPort()->boundingRect().center());
+            pointVector.push_back(pConn->getEndPort()->boundingRect().center());
+            geometryList.clear();
+            geometryList.append("diagonal");
         }
-        else
+        pConn->setPointsAndGeometries(pointVector, geometryList);
+        pConn->setDashed(isDashed);
+        pConn->refreshConnectorAppearance();
+        pConn->setColor(color);
+
+        if(undoSettings == Undo)
         {
+            pContainer->getUndoStackPtr()->registerAddedConnector(pConn);
+        }
+        if (pConn->isConnected())
+        {
+            success = true;
+        }
+
+        if(startPort == nullptr || endPort == nullptr)
+        {
+            pConn->setFallbackDomElement(rDomElement);
             success = false;
         }
-    }
-    else
-    {
-        success = false;
     }
 
     gpMessageHandler->collectHopsanCoreMessages();;

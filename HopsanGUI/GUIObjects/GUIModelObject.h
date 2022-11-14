@@ -153,6 +153,9 @@ public:
     void getLosses(double &total, QMap<QString, double> domainSpecificLosses);
     bool isLossesDisplayVisible();
 
+    void setFallbackDomElement(const QDomElement &rDomElement);
+    QDomElement getFallbackDomElement();
+
 public slots:
     virtual void refreshAppearance();
     virtual void refreshExternalPortsAppearanceAndPosition();
@@ -234,6 +237,8 @@ protected:
     QPointer<ComponentPropertiesDialog3> mpPropertiesDialog;
 
     QTimer mDragCopyTimer;
+
+    QDomElement mFallbackDomElement;
 
 protected slots:
     void snapNameTextPosition(QPointF pos);
