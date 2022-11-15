@@ -8,7 +8,7 @@ Homepage: https://github.com/Hopsan/hopsan
 
 Package: hopsan
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, python
+Depends: ${shlibs:Depends}, ${misc:Depends}, python, zip
 Description: This is a free simulation environment for fluid and mechatronic systems.
  Hopsan is developed at Linköping University. Although originally 
  developed for simulation of fluid power systems, it has also been adopted
