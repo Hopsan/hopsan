@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject sourcecode="ActivityDiagramMergeN.hpp" displayname="MergeN" typename="ActivityDiagramMergeN">
+    <icons>
+      <icon type="user" path="ActivityDiagramMergeN.svg" scale="1" iconrotation=""/>
+      <icon type="iso" path="ActivityDiagramMergeN.svg" scale="1" iconrotation=""/>
+    </icons>
+    <help>
+        <text>Activity diagram merge.</text>
+    </help> 
+    <ports>
+      <port enabled="true" x="0" y="0.5" a="180" name="Ppn1"/>
+      <port enabled="true" x="1" y="0.5" a="0" name="Ppn2"/>
+    </ports>
+  </modelobject>
+</hopsanobjectappearance>

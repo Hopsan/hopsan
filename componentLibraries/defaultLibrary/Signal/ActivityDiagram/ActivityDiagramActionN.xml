@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="ActivityDiagramActionN.hpp" typename="ActivityDiagramActionN" displayname="ActionN">
+        <icons>
+            <icon scale="1" path="ActivityDiagramActionN.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="ActivityDiagramActionN.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <help>
+            <text>Activity diagram action.</text>
+        </help>  
+        <ports>
+            <port x="0.5" y="0.5" a="180" name="Ppn1"/>
+            <port x="0.5" y="1." a="90" name="state"/>
+        </ports>
+		<animation>
+            <icon userpath="ActivityDiagramActionN.svg"/>
+            <movable>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>
+                <icon userpath="ActivityDiagramActionN_active.svg"/>
+                <data port="state" dataname="Value" idx="0"/>
+                <movement x="0" y="0" a="0" idx="0"/>
+                <indicator port="state" dataname="Value"/>
+            </movable>
+        </animation>
+    </modelobject>
+</hopsanobjectappearance>

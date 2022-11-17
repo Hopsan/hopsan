@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsancomponentlibrary version="0.3" libversion="1" name="ActivityDiagramLib">
+    <id>afd1b9b5-0b66-4d17-9e90-1da59a2be242</id>
+    <name>ActivityDiagramLib</name>
+    <buildflags>
+        <cflags>-std=c++11</cflags>
+    </buildflags>
+    <lib debug_ext="_d">ActivityDiagramLib</lib>  
+    <source>ActivityDiagramLib.cc</source>
+	
+    <component>ActivityDiagramInitiateState.hpp</component>
+    <component>ActivityDiagramEdge.hpp</component>
+    <component>ActivityDiagramAction.hpp</component>
+    <component>ActivityDiagramActionN.hpp</component>
+    <component>ActivityDiagramDecision.hpp</component>
+    <component>ActivityDiagramForkN.hpp</component>
+    <component>ActivityDiagramJoinN.hpp</component>
+    <component>ActivityDiagramMergeN.hpp</component>
+    <component>ActivityDiagramFork.hpp</component>
+    <component>ActivityDiagramJoin0.hpp</component>
+    <component>ActivityDiagramJoin.hpp</component>
+    <component>ActivityDiagramMerge0.hpp</component>
+    <component>ActivityDiagramMerge.hpp</component>
+    <component>ActivityDiagramFinal.hpp</component>
+    <component>ActivityDiagramFinalNode.hpp</component>
+
+    <componentxml>ActivityDiagramInitiateState.xml</componentxml>
+    <componentxml>ActivityDiagramActionN.xml</componentxml>
+    <componentxml>ActivityDiagramAction.xml</componentxml>
+    <componentxml>ActivityDiagramDecision.xml</componentxml>
+    <componentxml>ActivityDiagramEdge.xml</componentxml>
+    <componentxml>ActivityDiagramFinalNode.xml</componentxml>
+    <componentxml>ActivityDiagramFinal.xml</componentxml>
+    <componentxml>ActivityDiagramForkN.xml</componentxml>
+    <componentxml>ActivityDiagramFork.xml</componentxml>
+    <componentxml>ActivityDiagramJoin0.xml</componentxml>
+    <componentxml>ActivityDiagramJoinN.xml</componentxml>
+    <componentxml>ActivityDiagramJoin.xml</componentxml>
+    <componentxml>ActivityDiagramMerge0.xml</componentxml>
+    <componentxml>ActivityDiagramMergeN.xml</componentxml>
+    <componentxml>ActivityDiagramMerge.xml</componentxml>
+</hopsancomponentlibrary>

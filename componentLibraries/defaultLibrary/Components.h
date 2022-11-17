@@ -44,6 +44,7 @@
 #include "Mechanic/Rotational/Rotational.h"
 #include "Obsolete/Obsolete.h"
 #include "Pneumatic/Pneumatic.h"
+#include "Signal/ActivityDiagram/ActivityDiagram.h"
 #include "Signal/Animation/Animation.h"
 #include "Signal/Arithmetics/Arithmetics.h"
 #include "Signal/Control/Control.h"

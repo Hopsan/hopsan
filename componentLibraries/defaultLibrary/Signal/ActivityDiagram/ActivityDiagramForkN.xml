@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject sourcecode="ActivityDiagramForkN.hpp" displayname="ForkN" typename="ActivityDiagramForkN">
+    <icons>
+      <icon type="user" path="ActivityDiagramFork.svg" scale="1" iconrotation="ON"/>
+      <icon type="iso" path="ActivityDiagramFork.svg" scale="1" iconrotation="ON"/>
+    </icons>
+    <help>
+        <text>Activity diagram fork with multi-port.</text>
+    </help> 
+    <ports>
+      <port enabled="true" x="0.4" y="1" autoplaced="true" name="event" a="90"/>
+      <port enabled="true" x="0" y="0.5" a="180" name="Ppn2"/>
+      <port enabled="true" x="1" y="0.5" a="0" name="Ppn1"/>
+    </ports>
+  </modelobject>
+</hopsanobjectappearance>
