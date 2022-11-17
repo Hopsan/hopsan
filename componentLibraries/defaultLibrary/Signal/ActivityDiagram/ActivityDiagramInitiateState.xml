@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="ActivityDiagramInitiateState.hpp" typename="ActivityDiagramInitiateState" displayname="InitiateState">
+        <icons>
+            <icon scale="1" path="ActivityDiagramInitiateState.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="ActivityDiagramInitiateState.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <help>
+            <text>Activity diagram initiate state. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
+            <link>ActivityDiagramInitiateState.nb</link>
+        </help> 
+        <ports>
+            <port x="1" y="0.5" a="180" name="Ppn1"/>
+            <port x="0" y="0.5" a="180" name="event"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

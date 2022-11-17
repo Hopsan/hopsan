@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject sourcecode="ActivityDiagramMerge.hpp" displayname="Merge" typename="ActivityDiagramMerge">
+    <icons>
+      <icon type="user" path="ActivityDiagramMerge.svg" scale="1" iconrotation="ON"/>
+      <icon type="iso" path="ActivityDiagramMerge.svg" scale="1" iconrotation="ON"/>
+    </icons>
+    <help>
+        <text>Activity diagram merge. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
+        <link>ActivityDiagramMerge.nb</link>
+    </help> 
+    <ports>
+      <port enabled="true" x="0.2" y="0.38" autoplaced="true" name="event1" a="90"/>
+      <port enabled="true" x="0.6" y="0.8" autoplaced="true" name="event2" a="180"/>
+      <port enabled="true" x="0" y="0.305" autoplaced="true" name="Ppn1" a="0"/>
+      <port enabled="true" x="0.69" y="1" autoplaced="true" name="Ppn2" a="90"/>
+      <port enabled="true" x="1" y="0.305" autoplaced="true" name="Ppn3" a="180"/>
+    </ports>
+  </modelobject>
+</hopsanobjectappearance>

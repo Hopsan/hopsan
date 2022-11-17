@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject displayname="Action" typename="ActivityDiagramAction" sourcecode="ActivityDiagramAction.hpp">
+        <icons>
+            <icon scale="1" path="ActivityDiagramAction.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="ActivityDiagramAction.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <help>
+            <text>Activity diagram action. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
+            <link>ActivityDiagramAction.nb</link>
+        </help>  
+        <ports>
+            <port a="90" y="1" x=".5" enabled="true" autoplaced="true" name="state"/>
+            <port a="0" y="0.5" x="1" enabled="true" autoplaced="true" name="Ppn2"/>
+            <port a="180" y="0.5" x="0" enabled="true" autoplaced="true" name="Ppn1"/>
+        </ports>
+        <animation>
+            <icon userpath="ActivityDiagramAction.svg"/>
+            <movable>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>
+                <icon userpath="ActivityDiagramAction_active.svg"/>
+                <data port="state" dataname="Value" idx="0"/>
+                <movement x="0" y="0" a="0" idx="0"/>
+                <indicator port="state" dataname="Value"/>
+            </movable>
+        </animation>
+    </modelobject>
+</hopsanobjectappearance>

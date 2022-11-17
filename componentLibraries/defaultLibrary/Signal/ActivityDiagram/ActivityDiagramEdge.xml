@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject displayname="Edge" typename="ActivityDiagramEdge">
+        <icons>
+            <icon scale="1" path="ActivityDiagramEdge.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="ActivityDiagramEdge.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <help>
+            <text>Activity diagram edge. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
+            <link>ActivityDiagramEdge.nb</link>
+        </help> 
+        <ports>
+            <port a="90" y="1" x=".5" enabled="true" autoplaced="true" name="event"/>
+            <port a="180" y="0.5" x="1" enabled="true" autoplaced="true" name="Ppn2"/>
+            <port a="0" y="0.5" x="0" enabled="true" autoplaced="true" name="Ppn1"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

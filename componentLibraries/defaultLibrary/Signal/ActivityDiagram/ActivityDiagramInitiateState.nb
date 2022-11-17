@@ -1,0 +1,568 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     28067,        560]
+NotebookOptionsPosition[     24247,        500]
+NotebookOutlinePosition[     24668,        516]
+CellTagsIndexPosition[     24625,        513]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Component Generation", "Title",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{{3.7627280721197987`*^9, 3.762728097973707*^9}, {
+  3.7747940713991594`*^9, 
+  3.774794098262859*^9}},ExpressionUUID->"5ee7c9b3-61b3-495d-947e-\
+36f10d487fd4"],
+
+Cell[BoxData[
+ RowBox[{"<<", "C:\\\\Hopsan\\Compgen\\CompgenNG.mx"}]], "Input",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{{3.525533906765625*^9, 3.525533914734375*^9}, 
+   3.577601924150117*^9, 3.753532820170209*^9, 3.753532868377143*^9, 
+   3.762728078322752*^9},
+ CellLabel->
+  "In[289]:=",ExpressionUUID->"fb626f91-feab-4a07-b722-dbbcc151c4cc"],
+
+Cell[BoxData[
+ RowBox[{"path", "=", 
+  RowBox[{"ToFileName", "[", 
+   RowBox[{"{", 
+    RowBox[{
+    "\"\<H:\>\"", ",", "\"\<PettersDropbox\>\"", ",", "\"\<Dropbox\>\"", ",", 
+     "\"\<HopsanComponents\>\"", ",", "\"\<ActivityDiagram\>\"", ",", 
+     "\"\<ActivityDiagram\>\""}], "}"}], "]"}]}]], "Input",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{{3.754985113560959*^9, 3.754985114033472*^9}, {
+   3.757063485852047*^9, 3.757063485995899*^9}, 3.76272807832475*^9, {
+   3.7747826878685503`*^9, 3.774782689771587*^9}, 3.7748679214756083`*^9},
+ CellLabel->
+  "In[290]:=",ExpressionUUID->"f08428ac-a507-4dcf-b70e-fed094d55f5a"],
+
+Cell[BoxData["\<\"H:\\\\PettersDropbox\\\\Dropbox\\\\HopsanComponents\\\\\
+ActivityDiagram\\\\ActivityDiagram\\\\\"\>"], "Output",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{
+  3.7553252830013437`*^9, 3.762681313451692*^9, 3.7626839962189417`*^9, {
+   3.76272807832475*^9, 3.76272808233467*^9}, 3.7627282318551483`*^9, 
+   3.774782464352406*^9, {3.774782702334381*^9, 3.7747827237674847`*^9}, 
+   3.7747829584815454`*^9, {3.7747832790659356`*^9, 3.7747833074202747`*^9}, 
+   3.774783356371421*^9, 3.7747834533243513`*^9, 3.77479556374086*^9, 
+   3.7748613834299583`*^9, 3.7748619371199417`*^9, 3.7748642131804657`*^9, 
+   3.7748645633975315`*^9, {3.7748645970573945`*^9, 3.774864607918788*^9}, 
+   3.774867703652725*^9, 3.774867926791222*^9, 3.774892832598035*^9, 
+   3.775317869629486*^9, 3.7803136766181493`*^9},
+ CellLabel->
+  "Out[290]=",ExpressionUUID->"1242d9d9-afc6-43a3-a28c-3bb0031bdc41"],
+
+Cell[BoxData[
+ RowBox[{"path", "=", 
+  RowBox[{"ToFileName", "[", 
+   RowBox[{"{", 
+    RowBox[{
+    "\"\<C:\>\"", ",", "\"\<Users\>\"", ",", "\"\<petkr14\>\"", ",", 
+     "\"\<Dropbox\>\"", ",", "\"\<HopsanComponents\>\"", ",", 
+     "\"\<StateMachine0\>\"", ",", "\"\<ActivityDiagram\>\"", ",", 
+     "\"\<ActivityDiagram\>\""}], "}"}], "]"}]}]], "Input",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{3.780313242636645*^9},
+ CellLabel->
+  "In[291]:=",ExpressionUUID->"0903a469-10cd-4b2d-aa4c-70ce77ff970d"],
+
+Cell[BoxData["\<\"C:\\\\Users\\\\petkr14\\\\Dropbox\\\\HopsanComponents\\\\\
+StateMachine0\\\\ActivityDiagram\\\\ActivityDiagram\\\\\"\>"], "Output",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{3.780313676730456*^9, 3.780322390417487*^9},
+ CellLabel->
+  "Out[291]=",ExpressionUUID->"d8204922-e834-4a17-b6ea-d9627d8a5a34"],
+
+Cell[BoxData[
+ RowBox[{"Off", "[", 
+  RowBox[{"General", "::", "\"\<spell1\>\""}], "]"}]], "Input",
+ PageWidth->WindowWidth,
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{3.76272807832475*^9},
+ CellLabel->
+  "In[310]:=",ExpressionUUID->"96c62941-67ee-4f41-b96b-bc238faf7f2f"],
+
+Cell["ActivityDiagram Initiate", "Section",
+ PageWidth->WindowWidth,
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{{3.516086509*^9, 3.51608651040625*^9}, 3.52240314025*^9, {
+   3.7535317970818443`*^9, 3.7535318239181423`*^9}, {3.754047538282405*^9, 
+   3.754047549959265*^9}, {3.7552832968927016`*^9, 3.7552832972033815`*^9}, {
+   3.7554173810299163`*^9, 3.755417381886033*^9}, 3.7747954639963675`*^9, 
+   3.774861381726017*^9, 3.77486191225311*^9, 
+   3.7803133814542294`*^9},ExpressionUUID->"4d153d9c-7b28-4465-9655-\
+a48708ad9847"],
+
+Cell["\<\
+Event trigger for state machines. The flow is triggered on a positive flank \
+in event (should be a value 0 or -1). The flow is either 0 or one in one time \
+step. The vawe variables cel1 and cel2 are either 0 or 1.\
+\>", "Text",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{{3.7535320908646555`*^9, 3.753532282365305*^9}, 
+   3.7554173947018223`*^9, 
+   3.774861381726017*^9},ExpressionUUID->"5a36ba0e-8e98-445a-9ec2-\
+50747d0f7dcb"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"domain", "=", "\"\<ActivityDiagram\>\""}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"displayName", "=", "\"\<InitiateState\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"brief", "=", "\"\<Initialization for a Activity Diagram\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"componentType", "=", "\"\<ComponentQ\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"author", "=", "\"\<Petter Krus <petter.krus@liu.se>\>\""}], 
+  ";"}], "\n", 
+ RowBox[{"coauthor", "=", 
+  "\"\<Robert Braun <robert.braun@liu.se>, Emilia Villani\>\""}], "\
+\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+  "affiliation", " ", "=", " ", 
+   "\"\<Division of Fluid and Mechatronic Systems, Link\[ODoubleDot]ping \
+University\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"SetFilenames", "[", 
+   RowBox[{"path", ",", "domain", ",", "displayName"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"ResetComponentVariables", "[", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Date", "[", "]"}]}], "Input",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{{3.513785360140625*^9, 3.513785397734375*^9}, 
+   3.5137854683125*^9, 3.5153945210188417`*^9, {3.51608651940625*^9, 
+   3.516086528875*^9}, {3.522403083546875*^9, 3.52240310159375*^9}, {
+   3.575772870974745*^9, 3.5757728916915812`*^9}, {3.60584801018426*^9, 
+   3.60584801687926*^9}, {3.753531830402015*^9, 3.7535318497890887`*^9}, {
+   3.7535329032428656`*^9, 3.7535329063911552`*^9}, {3.7540475704265985`*^9, 
+   3.754047583132675*^9}, {3.755283262173503*^9, 3.755283264773819*^9}, {
+   3.755417376704378*^9, 3.75541737766938*^9}, {3.755417462599818*^9, 
+   3.755417466808478*^9}, 3.774795466549244*^9, 3.7748613817270155`*^9, {
+   3.774861919274185*^9, 3.7748619298823028`*^9}, {3.774892217455916*^9, 
+   3.7748922180483685`*^9}},
+ CellLabel->
+  "In[311]:=",ExpressionUUID->"0c12bced-a0c3-4902-8101-a0eeacaebe47"],
+
+Cell[BoxData["\<\"Robert Braun <robert.braun@liu.se>, Emilia Villani\"\>"], \
+"Output",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{{3.7535328848148966`*^9, 3.7535329121154985`*^9}, 
+   3.7535331327717113`*^9, 3.75528330099747*^9, 3.7553242249759817`*^9, 
+   3.755324260834011*^9, 3.755463629330747*^9, 3.7554639167334347`*^9, 
+   3.774795563892702*^9, {3.7748613817270155`*^9, 3.7748613835148697`*^9}, 
+   3.774861937213806*^9, 3.774864213342299*^9, 3.774864563555369*^9, {
+   3.7748645972112355`*^9, 3.77486460807063*^9}, 3.774867703803563*^9, 
+   3.77486792694706*^9, 3.7748928327908363`*^9, 3.7753178697183957`*^9, 
+   3.780313676948842*^9, 3.780321747089079*^9},
+ CellLabel->
+  "Out[316]=",ExpressionUUID->"8c05a766-4870-42e3-8962-0267e54c5333"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "2019", ",", "10", ",", "17", ",", "19", ",", "22", ",", 
+   "27.0890793`9.185369160057958"}], "}"}]], "Output",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{{3.7535328848148966`*^9, 3.7535329121154985`*^9}, 
+   3.7535331327717113`*^9, 3.75528330099747*^9, 3.7553242249759817`*^9, 
+   3.755324260834011*^9, 3.755463629330747*^9, 3.7554639167334347`*^9, 
+   3.774795563892702*^9, {3.7748613817270155`*^9, 3.7748613835148697`*^9}, 
+   3.774861937213806*^9, 3.774864213342299*^9, 3.774864563555369*^9, {
+   3.7748645972112355`*^9, 3.77486460807063*^9}, 3.774867703803563*^9, 
+   3.77486792694706*^9, 3.7748928327908363`*^9, 3.7753178697183957`*^9, 
+   3.780313676948842*^9, 3.7803217471047015`*^9},
+ CellLabel->
+  "Out[320]=",ExpressionUUID->"d6ab8112-8cd6-4dcb-906c-f2e46c873b65"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"state", "=."}], ";"}]], "Input",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{{3.7748642032354603`*^9, 3.7748642103278923`*^9}},
+ CellLabel->
+  "In[321]:=",ExpressionUUID->"b80f8bb0-04de-4ff6-8453-f128bf415b6b"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"nodeConnections", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{"PetriNetQnode", "[", 
+     RowBox[{"pn1", ",", "1.", ",", "\"\<PetriNet port 1\>\""}], "]"}], 
+    "\[IndentingNewLine]", "}"}]}], ";"}]], "Input",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{{3.515774261203125*^9, 3.515774262703125*^9}, {
+   3.51603387128125*^9, 3.51603387178125*^9}, {3.522403633375*^9, 
+   3.522403641375*^9}, 3.53224891889497*^9, 3.75404759400323*^9, 
+   3.7540477190914407`*^9, 3.7553242534686055`*^9, 3.7748613817270155`*^9, 
+   3.77486769495127*^9, 3.7748928260322795`*^9, {3.7803134756519003`*^9, 
+   3.7803134759010286`*^9}},
+ CellLabel->
+  "In[322]:=",ExpressionUUID->"2096f5b3-005e-4e58-a8bb-ee5cca97f503"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputVariables", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{
+     "event", ",", "1.", ",", "double", ",", "\"\<\>\"", ",", 
+      "\"\<event (trigg on positive flank)\>\""}], "}"}], 
+    "\[IndentingNewLine]", "}"}]}], ";"}]], "Input",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{{3.780313538092991*^9, 3.7803135406627865`*^9}, {
+  3.780313660202917*^9, 3.780313667247159*^9}},
+ CellLabel->
+  "In[323]:=",ExpressionUUID->"9c24bf64-7f0f-471e-80fb-017e0b6971b2"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputParameters", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{
+     "diffEvent", ",", "1.", ",", "double", ",", "\"\<\>\"", ",", 
+      "\"\<event (trigg on positive flank)\>\""}], "}"}], 
+    "\[IndentingNewLine]", "}"}]}], ";"}]], "Input",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{{3.7803136602039175`*^9, 3.780313667247159*^9}},
+ CellLabel->
+  "In[324]:=",ExpressionUUID->"1eef8e95-54f5-4096-b690-1ee8c645500c"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"initialExpressions", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{
+     "oldEvent", ",", "0.", ",", "double", ",", "\"\<\>\"", ",", 
+      "\"\<oldEvent (startvalue)\>\""}], "}"}], "\[IndentingNewLine]", 
+    "}"}]}], ";"}]], "Input",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{{3.7554635581691155`*^9, 3.7554636200383286`*^9}, 
+   3.7748613817270155`*^9, {3.7803136602039175`*^9, 3.7803136672481318`*^9}},
+ CellLabel->
+  "In[325]:=",ExpressionUUID->"45a7267b-102e-4994-82f3-17fd694e5654"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"expressions", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"qpn1", "==", 
+      RowBox[{"onPositive", "[", 
+       RowBox[{"event", "-", 
+        RowBox[{"diffEvent", " ", "oldEvent"}], "-", "spn1", "-", "0.5"}], 
+       "]"}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"oldEvent", "\[Equal]", "event"}]}], "\[IndentingNewLine]", 
+    "}"}]}], ";"}]], "Input",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{{3.532248478932937*^9, 3.532248638440628*^9}, {
+   3.571914197748662*^9, 3.5719142149866924`*^9}, {3.7535310915842247`*^9, 
+   3.7535311473072805`*^9}, {3.7535315340759363`*^9, 3.753531580504115*^9}, {
+   3.7535316152480335`*^9, 3.7535316172745495`*^9}, {3.7535316889611306`*^9, 
+   3.7535317847886696`*^9}, {3.7535320068457546`*^9, 
+   3.7535320299450684`*^9}, {3.7535324291297054`*^9, 3.7535324760913725`*^9}, 
+   3.7535329786896353`*^9, {3.7540475984872904`*^9, 3.7540476129458995`*^9}, {
+   3.7540476910155144`*^9, 3.754047691685115*^9}, 3.7554173893183746`*^9, 
+   3.7554174592942257`*^9, {3.7554635125221767`*^9, 3.755463526263009*^9}, 
+   3.7747954957200775`*^9, {3.774795527795559*^9, 3.7747955286187067`*^9}, 
+   3.7748613817270155`*^9, {3.774864588216931*^9, 3.774864591940977*^9}, {
+   3.78031356706925*^9, 3.780313572399868*^9}, {3.7803136602059264`*^9, 
+   3.7803136672481318`*^9}, {3.780321712750452*^9, 3.780321722472545*^9}},
+ CellLabel->
+  "In[326]:=",ExpressionUUID->"2316194c-ef64-4d0a-9217-862d722a09ba"],
+
+Cell[BoxData[
+ RowBox[{"Compgen", "[", "file", "]"}]], "Input",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{
+  3.7748613817290125`*^9, 3.7748646059877806`*^9, {3.7803136602059264`*^9, 
+   3.7803136672481318`*^9}},
+ CellLabel->
+  "In[327]:=",ExpressionUUID->"4f62450d-7e66-411b-91fd-6f6fd94578a2"]
+}, Open  ]],
+
+Cell[BoxData[
+ TemplateBox[{
+  "XMLElement","cntsList",
+   "\"\\!\\(\\*RowBox[{\\\"XMLElement\\\", \\\"[\\\", \
+RowBox[{\\\"\\\\\\\"modelobject\\\\\\\"\\\", \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{RowBox[{\\\"\\\\\\\"typename\\\\\\\"\\\", \\\"\[Rule]\\\", \\\"\\\\\\\
+\"ActivityDiagramInitiateState\\\\\\\"\\\"}], \\\",\\\", \
+RowBox[{\\\"\\\\\\\"displayname\\\\\\\"\\\", \\\"\[Rule]\\\", \
+\\\"\\\\\\\"ActivityDiagramInitiateState\\\\\\\"\\\"}]}], \\\"}\\\"}], \
+\\\",\\\", RowBox[{\\\"{\\\", RowBox[{RowBox[{\\\"XMLElement\\\", \\\"[\\\", \
+RowBox[{\\\"\\\\\\\"icon\\\\\\\"\\\", \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{RowBox[{\\\"\\\\\\\"isopath\\\\\\\"\\\", \\\"\[Rule]\\\", \
+\\\"\\\\\\\"ActivityDiagramInitiateState.svg\\\\\\\"\\\"}], \\\",\\\", \
+RowBox[{\\\"\\\\\\\"iconrotation\\\\\\\"\\\", \\\"\[Rule]\\\", \\\"\\\\\\\"ON\
+\\\\\\\"\\\"}], \\\",\\\", RowBox[{\\\"\\\\\\\"userpath\\\\\\\"\\\", \\\"\
+\[Rule]\\\", \\\"\\\\\\\"ActivityDiagramInitiateState.svg\\\\\\\"\\\"}]}], \\\
+\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \\\"}\\\"}]}], \\\"]\\\"}], \
+\\\",\\\", RowBox[{\\\"XMLElement\\\", \\\"[\\\", \
+RowBox[{\\\"\\\\\\\"portpositions\\\\\\\"\\\", \\\",\\\", RowBox[{\\\"{\\\", \
+\\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{RowBox[{\\\"XMLElement\\\", \\\"[\\\", RowBox[{\\\"\\\\\\\"portpose\\\
+\\\\\"\\\", \\\",\\\", RowBox[{\\\"{\\\", RowBox[{RowBox[{\\\"\\\\\\\"x\\\\\\\
+\"\\\", \\\"\[Rule]\\\", \\\"\\\\\\\"0\\\\\\\"\\\"}], \\\",\\\", RowBox[{\\\"\
+\\\\\\\"y\\\\\\\"\\\", \\\"\[Rule]\\\", \\\"0.5`\\\"}], \\\",\\\", RowBox[{\\\
+\"\\\\\\\"a\\\\\\\"\\\", \\\"\[Rule]\\\", \\\"\\\\\\\"0\\\\\\\"\\\"}], \
+\\\",\\\", RowBox[{\\\"\\\\\\\"name\\\\\\\"\\\", \\\"\[Rule]\\\", \
+\\\"\\\\\\\"Ppn1\\\\\\\"\\\"}]}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \
+\\\"}\\\"}]}], \\\"]\\\"}], \\\",\\\", RowBox[{\\\"XMLElement\\\", \\\"[\\\", \
+RowBox[{\\\"\\\\\\\"portpose\\\\\\\"\\\", \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{RowBox[{\\\"\\\\\\\"x\\\\\\\"\\\", \\\"\[Rule]\\\", \\\"0.5`\\\"}], \
+\\\",\\\", RowBox[{\\\"\\\\\\\"y\\\\\\\"\\\", \\\"\[Rule]\\\", \
+\\\"\\\\\\\"0\\\\\\\"\\\"}], \\\",\\\", RowBox[{\\\"\\\\\\\"a\\\\\\\"\\\", \\\
+\"\[Rule]\\\", \\\"\\\\\\\"270\\\\\\\"\\\"}], \\\",\\\", \
+RowBox[{\\\"\\\\\\\"name\\\\\\\"\\\", \\\"\[Rule]\\\", \
+\\\"\\\\\\\"event\\\\\\\"\\\"}]}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \
+\\\"}\\\"}]}], \\\"]\\\"}]}], \\\"}\\\"}]}], \\\"]\\\"}]}], \\\"}\\\"}]}], \\\
+\"]\\\"}]\\) in \\!\\(\\*RowBox[{\\\"XMLElement\\\", \\\"[\\\", \
+RowBox[{\\\"\\\\\\\"hopsanobjectappearance\\\\\\\"\\\", \\\",\\\", RowBox[{\\\
+\"{\\\", RowBox[{\\\"\\\\\\\"version\\\\\\\"\\\", \\\"\[Rule]\\\", \\\"\\\\\\\
+\"0.1\\\\\\\"\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"XMLElement\\\", \
+\\\"[\\\", RowBox[{\\\"\\\\\\\"modelobject\\\\\\\"\\\", \\\",\\\", RowBox[{\\\
+\"{\\\", RowBox[{RowBox[{\\\"\\\\\\\"typename\\\\\\\"\\\", \\\"\[Rule]\\\", \
+\\\"\\\\\\\"ActivityDiagramInitiateState\\\\\\\"\\\"}], \\\",\\\", RowBox[{\\\
+\"\\\\\\\"displayname\\\\\\\"\\\", \\\"\[Rule]\\\", \
+\\\"\\\\\\\"ActivityDiagramInitiateState\\\\\\\"\\\"}]}], \\\"}\\\"}], \
+\\\",\\\", RowBox[{\\\"{\\\", RowBox[{RowBox[{\\\"XMLElement\\\", \\\"[\\\", \
+RowBox[{\\\"\\\\\\\"icon\\\\\\\"\\\", \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{RowBox[{\\\"\\\\\\\"isopath\\\\\\\"\\\", \\\"\[Rule]\\\", \
+\\\"\\\\\\\"ActivityDiagramInitiateState.svg\\\\\\\"\\\"}], \\\",\\\", \
+RowBox[{\\\"\\\\\\\"iconrotation\\\\\\\"\\\", \\\"\[Rule]\\\", \\\"\\\\\\\"ON\
+\\\\\\\"\\\"}], \\\",\\\", RowBox[{\\\"\\\\\\\"userpath\\\\\\\"\\\", \\\"\
+\[Rule]\\\", \\\"\\\\\\\"ActivityDiagramInitiateState.svg\\\\\\\"\\\"}]}], \\\
+\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \\\"}\\\"}]}], \\\"]\\\"}], \
+\\\",\\\", RowBox[{\\\"XMLElement\\\", \\\"[\\\", \
+RowBox[{\\\"\\\\\\\"portpositions\\\\\\\"\\\", \\\",\\\", RowBox[{\\\"{\\\", \
+\\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{RowBox[{\\\"XMLElement\\\", \\\"[\\\", RowBox[{\\\"\\\\\\\"portpose\\\
+\\\\\"\\\", \\\",\\\", RowBox[{\\\"{\\\", RowBox[{RowBox[{\\\"\\\\\\\"x\\\\\\\
+\"\\\", \\\"\[Rule]\\\", \\\"\\\\\\\"0\\\\\\\"\\\"}], \\\",\\\", RowBox[{\\\"\
+\\\\\\\"y\\\\\\\"\\\", \\\"\[Rule]\\\", \\\"0.5`\\\"}], \\\",\\\", RowBox[{\\\
+\"\\\\\\\"a\\\\\\\"\\\", \\\"\[Rule]\\\", \\\"\\\\\\\"0\\\\\\\"\\\"}], \
+\\\",\\\", RowBox[{\\\"\\\\\\\"name\\\\\\\"\\\", \\\"\[Rule]\\\", \
+\\\"\\\\\\\"Ppn1\\\\\\\"\\\"}]}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \
+\\\"}\\\"}]}], \\\"]\\\"}], \\\",\\\", RowBox[{\\\"XMLElement\\\", \\\"[\\\", \
+RowBox[{\\\"\\\\\\\"portpose\\\\\\\"\\\", \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{RowBox[{\\\"\\\\\\\"x\\\\\\\"\\\", \\\"\[Rule]\\\", \\\"0.5`\\\"}], \
+\\\",\\\", RowBox[{\\\"\\\\\\\"y\\\\\\\"\\\", \\\"\[Rule]\\\", \
+\\\"\\\\\\\"0\\\\\\\"\\\"}], \\\",\\\", RowBox[{\\\"\\\\\\\"a\\\\\\\"\\\", \\\
+\"\[Rule]\\\", \\\"\\\\\\\"270\\\\\\\"\\\"}], \\\",\\\", \
+RowBox[{\\\"\\\\\\\"name\\\\\\\"\\\", \\\"\[Rule]\\\", \
+\\\"\\\\\\\"event\\\\\\\"\\\"}]}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \
+\\\"}\\\"}]}], \\\"]\\\"}]}], \\\"}\\\"}]}], \\\"]\\\"}]}], \\\"}\\\"}]}], \\\
+\"]\\\"}]}], \\\"]\\\"}]\\) is not a list of contents. The third item in an \
+XMLElement must be a list of contents, even if it is an empty list.\"",2,327,
+   105,18988733202671857145,"Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{{3.753532885828144*^9, 3.7535329140382867`*^9}, 
+   3.7535331349449224`*^9, 3.755283301345112*^9, 3.7553242251498013`*^9, 
+   3.755324261470355*^9, 3.755463629467605*^9, 3.7554639168642983`*^9, 
+   3.774795564446212*^9, {3.7748613817330103`*^9, 3.7748613837246532`*^9}, 
+   3.7748646085341535`*^9, 3.7748677043684864`*^9, 3.774867927526462*^9, 
+   3.7748928336179914`*^9, 3.775317870056046*^9, 3.780313678053779*^9, 
+   3.7803217478282585`*^9},
+ CellLabel->
+  "During evaluation of \
+In[327]:=",ExpressionUUID->"1af8fadd-fa4f-4845-8f75-6a3815d12642"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "Export","autofix",
+   "\"Malformed symbolic XML expression encountered. This may result in \
+unexpected XML data.\"",2,327,106,18988733202671857145,"Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{{3.753532885828144*^9, 3.7535329140382867`*^9}, 
+   3.7535331349449224`*^9, 3.755283301345112*^9, 3.7553242251498013`*^9, 
+   3.755324261470355*^9, 3.755463629467605*^9, 3.7554639168642983`*^9, 
+   3.774795564446212*^9, {3.7748613817330103`*^9, 3.7748613837246532`*^9}, 
+   3.7748646085341535`*^9, 3.7748677043684864`*^9, 3.774867927526462*^9, 
+   3.7748928336179914`*^9, 3.775317870056046*^9, 3.780313678053779*^9, 
+   3.780321748046993*^9},
+ CellLabel->
+  "During evaluation of \
+In[327]:=",ExpressionUUID->"8434ce92-990c-4026-8885-da975ec2b806"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "XMLElement","attrhs",
+   "\"\\!\\(\\*RowBox[{\\\"0.5`\\\"}]\\) in \
+\\!\\(\\*RowBox[{\\\"\\\\\\\"y\\\\\\\"\\\", \\\"\[Rule]\\\", \
+\\\"0.5`\\\"}]\\) is not a valid value for an attribute in an XMLElement. The \
+value of the attribute must be a string.\"",2,327,107,18988733202671857145,
+   "Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{{3.753532885828144*^9, 3.7535329140382867`*^9}, 
+   3.7535331349449224`*^9, 3.755283301345112*^9, 3.7553242251498013`*^9, 
+   3.755324261470355*^9, 3.755463629467605*^9, 3.7554639168642983`*^9, 
+   3.774795564446212*^9, {3.7748613817330103`*^9, 3.7748613837246532`*^9}, 
+   3.7748646085341535`*^9, 3.7748677043684864`*^9, 3.774867927526462*^9, 
+   3.7748928336179914`*^9, 3.775317870056046*^9, 3.780313678053779*^9, 
+   3.7803217480626173`*^9},
+ CellLabel->
+  "During evaluation of \
+In[327]:=",ExpressionUUID->"6601a59e-f9d9-4bc5-8e96-d904010a510f"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "Export","autofix",
+   "\"Malformed symbolic XML expression encountered. This may result in \
+unexpected XML data.\"",2,327,108,18988733202671857145,"Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{{3.753532885828144*^9, 3.7535329140382867`*^9}, 
+   3.7535331349449224`*^9, 3.755283301345112*^9, 3.7553242251498013`*^9, 
+   3.755324261470355*^9, 3.755463629467605*^9, 3.7554639168642983`*^9, 
+   3.774795564446212*^9, {3.7748613817330103`*^9, 3.7748613837246532`*^9}, 
+   3.7748646085341535`*^9, 3.7748677043684864`*^9, 3.774867927526462*^9, 
+   3.7748928336179914`*^9, 3.775317870056046*^9, 3.780313678053779*^9, 
+   3.7803217480938644`*^9},
+ CellLabel->
+  "During evaluation of \
+In[327]:=",ExpressionUUID->"fb76e24e-7769-4fdd-8ca6-373ec76c4036"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "XMLElement","attrhs",
+   "\"\\!\\(\\*RowBox[{\\\"0.5`\\\"}]\\) in \
+\\!\\(\\*RowBox[{\\\"\\\\\\\"x\\\\\\\"\\\", \\\"\[Rule]\\\", \
+\\\"0.5`\\\"}]\\) is not a valid value for an attribute in an XMLElement. The \
+value of the attribute must be a string.\"",2,327,109,18988733202671857145,
+   "Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{{3.753532885828144*^9, 3.7535329140382867`*^9}, 
+   3.7535331349449224`*^9, 3.755283301345112*^9, 3.7553242251498013`*^9, 
+   3.755324261470355*^9, 3.755463629467605*^9, 3.7554639168642983`*^9, 
+   3.774795564446212*^9, {3.7748613817330103`*^9, 3.7748613837246532`*^9}, 
+   3.7748646085341535`*^9, 3.7748677043684864`*^9, 3.774867927526462*^9, 
+   3.7748928336179914`*^9, 3.775317870056046*^9, 3.780313678053779*^9, 
+   3.780321748265729*^9},
+ CellLabel->
+  "During evaluation of \
+In[327]:=",ExpressionUUID->"a4235cb2-a562-400a-bebb-da624e550132"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "Export","autofix",
+   "\"Malformed symbolic XML expression encountered. This may result in \
+unexpected XML data.\"",2,327,110,18988733202671857145,"Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{{3.753532885828144*^9, 3.7535329140382867`*^9}, 
+   3.7535331349449224`*^9, 3.755283301345112*^9, 3.7553242251498013`*^9, 
+   3.755324261470355*^9, 3.755463629467605*^9, 3.7554639168642983`*^9, 
+   3.774795564446212*^9, {3.7748613817330103`*^9, 3.7748613837246532`*^9}, 
+   3.7748646085341535`*^9, 3.7748677043684864`*^9, 3.774867927526462*^9, 
+   3.7748928336179914`*^9, 3.775317870056046*^9, 3.780313678053779*^9, 
+   3.780321748281352*^9},
+ CellLabel->
+  "During evaluation of \
+In[327]:=",ExpressionUUID->"2d5e2e7a-28ad-4030-bce6-20f701608176"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "General","stop",
+   "\"Further output of \\!\\(\\*StyleBox[RowBox[{\\\"Export\\\", \\\"::\\\", \
+\\\"autofix\\\"}], \\\"MessageName\\\"]\\) will be suppressed during this \
+calculation.\"",2,327,111,18988733202671857145,"Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{{3.753532885828144*^9, 3.7535329140382867`*^9}, 
+   3.7535331349449224`*^9, 3.755283301345112*^9, 3.7553242251498013`*^9, 
+   3.755324261470355*^9, 3.755463629467605*^9, 3.7554639168642983`*^9, 
+   3.774795564446212*^9, {3.7748613817330103`*^9, 3.7748613837246532`*^9}, 
+   3.7748646085341535`*^9, 3.7748677043684864`*^9, 3.774867927526462*^9, 
+   3.7748928336179914`*^9, 3.775317870056046*^9, 3.780313678053779*^9, 
+   3.7803217482969747`*^9},
+ CellLabel->
+  "During evaluation of \
+In[327]:=",ExpressionUUID->"1a7cb48f-4fc3-40a6-8a7c-96f2b0b792aa"]
+},
+WindowSize->{1191, 801},
+WindowMargins->{{Automatic, 50}, {Automatic, 18}},
+PrivateNotebookOptions->{"VersionedStylesheet"->{"Default.nb"[8.] -> False}},
+FrontEndVersion->"12.0 for Microsoft Windows (64-bit) (April 8, 2019)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 271, 5, 96, "Title",ExpressionUUID->"5ee7c9b3-61b3-495d-947e-36f10d487fd4",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[853, 29, 379, 7, 28, "Input",ExpressionUUID->"fb626f91-feab-4a07-b722-dbbcc151c4cc",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[1235, 38, 657, 13, 28, "Input",ExpressionUUID->"f08428ac-a507-4dcf-b70e-fed094d55f5a",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[1895, 53, 928, 14, 32, "Output",ExpressionUUID->"1242d9d9-afc6-43a3-a28c-3bb0031bdc41",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[2826, 69, 537, 12, 28, "Input",ExpressionUUID->"0903a469-10cd-4b2d-aa4c-70ce77ff970d",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[3366, 83, 351, 5, 32, "Output",ExpressionUUID->"d8204922-e834-4a17-b6ea-d9627d8a5a34",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[3720, 90, 303, 7, 28, "Input",ExpressionUUID->"96c62941-67ee-4f41-b96b-bc238faf7f2f",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[4026, 99, 562, 9, 67, "Section",ExpressionUUID->"4d153d9c-7b28-4465-9655-a48708ad9847",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[4591, 110, 473, 9, 56, "Text",ExpressionUUID->"5a36ba0e-8e98-445a-9ec2-50747d0f7dcb",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[5067, 121, 1932, 42, 200, "Input",ExpressionUUID->"0c12bced-a0c3-4902-8101-a0eeacaebe47",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[7002, 165, 780, 12, 32, "Output",ExpressionUUID->"8c05a766-4870-42e3-8962-0267e54c5333",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[7785, 179, 849, 15, 32, "Output",ExpressionUUID->"d6ab8112-8cd6-4dcb-906c-f2e46c873b65",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[8637, 196, 275, 6, 28, "Input",ExpressionUUID->"b80f8bb0-04de-4ff6-8453-f128bf415b6b",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[8915, 204, 776, 15, 67, "Input",ExpressionUUID->"2096f5b3-005e-4e58-a8bb-ee5cca97f503",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[9694, 221, 559, 13, 67, "Input",ExpressionUUID->"9c24bf64-7f0f-471e-80fb-017e0b6971b2",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[10256, 236, 515, 12, 67, "Input",ExpressionUUID->"1eef8e95-54f5-4096-b690-1ee8c645500c",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[10774, 250, 587, 13, 67, "Input",ExpressionUUID->"45a7267b-102e-4994-82f3-17fd694e5654",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[11364, 265, 1523, 27, 86, "Input",ExpressionUUID->"2316194c-ef64-4d0a-9217-862d722a09ba",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[12890, 294, 326, 7, 28, "Input",ExpressionUUID->"4f62450d-7e66-411b-91fd-6f6fd94578a2",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}]
+}, Open  ]],
+Cell[13231, 304, 5844, 85, 112, "Message",ExpressionUUID->"1af8fadd-fa4f-4845-8f75-6a3815d12642"],
+Cell[19078, 391, 798, 15, 21, "Message",ExpressionUUID->"8434ce92-990c-4026-8885-da975ec2b806"],
+Cell[19879, 408, 942, 18, 21, "Message",ExpressionUUID->"6601a59e-f9d9-4bc5-8e96-d904010a510f"],
+Cell[20824, 428, 800, 15, 21, "Message",ExpressionUUID->"fb76e24e-7769-4fdd-8ca6-373ec76c4036"],
+Cell[21627, 445, 940, 18, 21, "Message",ExpressionUUID->"a4235cb2-a562-400a-bebb-da624e550132"],
+Cell[22570, 465, 798, 15, 21, "Message",ExpressionUUID->"2d5e2e7a-28ad-4030-bce6-20f701608176"],
+Cell[23371, 482, 872, 16, 21, "Message",ExpressionUUID->"1a7cb48f-4fc3-40a6-8a7c-96f2b0b792aa"]
+}
+]
+*)
+

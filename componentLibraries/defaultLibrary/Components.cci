@@ -44,6 +44,7 @@
 #include "Mechanic/Rotational/Rotational.cci"
 #include "Obsolete/Obsolete.cci"
 #include "Pneumatic/Pneumatic.cci"
+#include "Signal/ActivityDiagram/ActivityDiagram.cci"
 #include "Signal/Animation/Animation.cci"
 #include "Signal/Arithmetics/Arithmetics.cci"
 #include "Signal/Control/Control.cci"

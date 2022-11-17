@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="ActivityDiagramFork.hpp" displayname="Fork" typename="ActivityDiagramFork">
+        <icons>
+            <icon type="user" path="ActivityDiagramFork.svg" scale="1" iconrotation="ON"/>
+            <icon type="iso" path="ActivityDiagramFork.svg" scale="1" iconrotation="ON"/>
+        </icons>
+        <help>
+            <text>Activity diagram fork. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
+            <link>ActivityDiagramFork.nb</link>
+        </help> 
+        <ports>
+            <port enabled="true" x="0.4" y="1" autoplaced="true" name="event" a="90"/>
+            <port enabled="true" x="1" y="0.15" autoplaced="true" name="Ppn2" a="0"/>
+            <port enabled="true" x="1" y="0.85" autoplaced="true" name="Ppn3" a="0"/>
+            <port enabled="true" x="0" y="0.5" autoplaced="true" name="Ppn1" a="0"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="ActivityDiagramFinal.hpp" typename="ActivityDiagramFinal" displayname="Final">
+        <icons>
+            <icon scale="1" path="ActivityDiagramFinal.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="ActivityDiagramFinal.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <help>
+            <text>Activity diagram final. CDF-player for Mathematica documents can be found on http://www.wolfram.com/cdf-player/</text>
+            <link>ActivityDiagramFinal.nb</link>
+        </help> 
+        <ports>
+            <port x="0" y="0.5" a="180" name="Ppn1"/>
+            <port x=".33" y="0.77" a="90" name="event"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>
