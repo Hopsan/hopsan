@@ -225,15 +225,10 @@ HEADERS +=  \
  $${PWD}/Signal/ActivityDiagram/ActivityDiagramActionN.hpp \ 
  $${PWD}/Signal/ActivityDiagram/ActivityDiagramConnector.hpp \ 
  $${PWD}/Signal/ActivityDiagram/ActivityDiagramDecision.hpp \ 
- $${PWD}/Signal/ActivityDiagram/ActivityDiagramDecision0.hpp \ 
  $${PWD}/Signal/ActivityDiagram/ActivityDiagramEdge.hpp \ 
- $${PWD}/Signal/ActivityDiagram/ActivityDiagramEdge01.hpp \ 
- $${PWD}/Signal/ActivityDiagram/ActivityDiagramEdge1.hpp \ 
  $${PWD}/Signal/ActivityDiagram/ActivityDiagramFinal.hpp \ 
- $${PWD}/Signal/ActivityDiagram/ActivityDiagramFinal0.hpp \ 
  $${PWD}/Signal/ActivityDiagram/ActivityDiagramFinalNode.hpp \ 
  $${PWD}/Signal/ActivityDiagram/ActivityDiagramFork.hpp \ 
- $${PWD}/Signal/ActivityDiagram/ActivityDiagramFork0.hpp \ 
  $${PWD}/Signal/ActivityDiagram/ActivityDiagramForkN.hpp \ 
  $${PWD}/Signal/ActivityDiagram/ActivityDiagramInitiateState.hpp \ 
  $${PWD}/Signal/ActivityDiagram/ActivityDiagramJoin.hpp \ 
@@ -358,7 +353,7 @@ HEADERS +=  \
  $${PWD}/Signal/Sources&Sinks/SignalTime.hpp \ 
  $${PWD}/Signal/Sources&Sinks/SignalTimestep.hpp \ 
  $${PWD}/Signal/Sources&Sinks/Sources&Sinks.h \ 
- $${PWD}/Special/AeroComponents/AeroAircraft6DOF.hpp \
+ $${PWD}/Special/AeroComponents/AeroAircraft6DOF.hpp \ 
  $${PWD}/Special/AeroComponents/AeroAircraft6DOFS.hpp \ 
  $${PWD}/Special/AeroComponents/AeroAircraft6DOFSS.hpp \ 
  $${PWD}/Special/AeroComponents/AeroAtmosphere.hpp \ 
@@ -432,7 +427,7 @@ OTHER_FILES +=  \
  $${PWD}/Signal/Non-Linearities/Non-Linearities.cci \ 
  $${PWD}/Signal/SignalFFB/SignalFFB.cci \ 
  $${PWD}/Signal/SignalRouting/SignalRouting.cci \ 
- $${PWD}/Signal/Sources&Sinks/Sources&Sinks.cci \
+ $${PWD}/Signal/Sources&Sinks/Sources&Sinks.cci \ 
  $${PWD}/Special/AeroComponents/AeroComponents.cci \ 
  $${PWD}/Special/Benchmarking/Benchmarking.cci \ 
  $${PWD}/Special/MechanicB/MechanicB.cci \ 

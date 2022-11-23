@@ -6,7 +6,7 @@
       <icon type="iso" path="ActivityDiagramMergeN.svg" scale="1" iconrotation=""/>
     </icons>
     <help>
-        <text>Activity diagram merge.</text>
+        <text>Activity diagram merge with multi-port.</text>
     </help> 
     <ports>
       <port enabled="true" x="0" y="0.5" a="180" name="Ppn1"/>
