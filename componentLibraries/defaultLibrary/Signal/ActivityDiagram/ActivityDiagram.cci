@@ -27,14 +27,9 @@ pComponentFactory->registerCreatorFunction("ActivityDiagramAction",ActivityDiagr
 pComponentFactory->registerCreatorFunction("ActivityDiagramActionN",ActivityDiagramActionN::Creator);
 pComponentFactory->registerCreatorFunction("ActivityDiagramConnector",ActivityDiagramConnector::Creator);
 pComponentFactory->registerCreatorFunction("ActivityDiagramDecision",ActivityDiagramDecision::Creator);
-pComponentFactory->registerCreatorFunction("ActivityDiagramDecision",ActivityDiagramDecision::Creator);
 pComponentFactory->registerCreatorFunction("ActivityDiagramEdge",ActivityDiagramEdge::Creator);
-pComponentFactory->registerCreatorFunction("ActivityDiagramEdge",ActivityDiagramEdge::Creator);
-pComponentFactory->registerCreatorFunction("ActivityDiagramEdge",ActivityDiagramEdge::Creator);
-pComponentFactory->registerCreatorFunction("ActivityDiagramFinal",ActivityDiagramFinal::Creator);
 pComponentFactory->registerCreatorFunction("ActivityDiagramFinal",ActivityDiagramFinal::Creator);
 pComponentFactory->registerCreatorFunction("ActivityDiagramFinalNode",ActivityDiagramFinalNode::Creator);
-pComponentFactory->registerCreatorFunction("ActivityDiagramFork",ActivityDiagramFork::Creator);
 pComponentFactory->registerCreatorFunction("ActivityDiagramFork",ActivityDiagramFork::Creator);
 pComponentFactory->registerCreatorFunction("ActivityDiagramForkN",ActivityDiagramForkN::Creator);
 pComponentFactory->registerCreatorFunction("ActivityDiagramInitiateState",ActivityDiagramInitiateState::Creator);
