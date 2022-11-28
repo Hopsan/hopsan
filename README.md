@@ -57,6 +57,12 @@ You can also choose if you want the compiler included for importing and exportin
 
 If you choose the zip version, no start menu entry for Hopsan will be added, instead go into the bin directory and double-click hopsangui.exe to start.
 
+#### Chocolatey (a.k.a. [Chocolatey Package Manager](https://community.chocolatey.org/packages/hopsan), App Installer):
+
+```
+choco install hopsan
+```
+
 ### Ubuntu and Debian Packages
 
 You can download official release packages from  
