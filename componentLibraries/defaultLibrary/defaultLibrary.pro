@@ -49,5 +49,5 @@ SOURCES += \
 
 OTHER_FILES += \
 
-include(Components.pri)
 include($${PWD}/../../dependencies/fmi4c.pri)
+include(Components.pri)
