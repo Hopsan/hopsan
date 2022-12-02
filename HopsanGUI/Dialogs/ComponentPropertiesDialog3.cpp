@@ -132,7 +132,7 @@ void ComponentPropertiesDialog3::showEvent(QShowEvent *event)
 {
     //For FMI wrappers the help path may change after the component
     //is created, so it must update every time we open the dialog.
-    if(mpModelObject->getTypeName() == "FMIWrapper") {
+    if(mpModelObject->getTypeName() == "FMIWrapper" || mpModelObject->getTypeName() == "FMIWrapperQ") {
         createHelpWidget();
     }
 
@@ -383,13 +383,13 @@ QDialogButtonBox *ComponentPropertiesDialog3::createOKButtonBox()
 
 QWidget *ComponentPropertiesDialog3::createHelpWidget()
 {
-    if(!mpModelObject->getHelpText().isEmpty() || !mpModelObject->getHelpPicture().isEmpty() || !mpModelObject->getHelpLinks().isEmpty() || !mpModelObject->getHelpHtmlPath().isEmpty() || mpModelObject->getTypeName() == "FMIWrapper")
+    if(!mpModelObject->getHelpText().isEmpty() || !mpModelObject->getHelpPicture().isEmpty() || !mpModelObject->getHelpLinks().isEmpty() || !mpModelObject->getHelpHtmlPath().isEmpty() || mpModelObject->getTypeName() == "FMIWrapper" || mpModelObject->getTypeName() == "FMIWrapperQ")
     {
         QScrollArea *pHelpScrollArea = new QScrollArea();
         QGroupBox *pHelpWidget = new QGroupBox();
         QVBoxLayout *pHelpLayout = new QVBoxLayout(pHelpWidget);
 
-        if(mpModelObject->getTypeName() != "FMIWrapper")    //No point in showing component type name as heading for FMI wrappers
+        if(mpModelObject->getTypeName() != "FMIWrapper" && mpModelObject->getTypeName() != "FMIWrapperQ")    //No point in showing component type name as heading for FMI wrappers
         {
             QLabel *pHelpHeading = new QLabel(gpLibraryHandler->getModelObjectAppearancePtr(mpModelObject->getTypeName())->getDisplayName());
             pHelpHeading->setAlignment(Qt::AlignLeft);
@@ -400,11 +400,11 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
             pHelpLayout->addWidget(pHelpHeading);
         }
 
-        if(!mpModelObject->getHelpHtmlPath().isEmpty() || (mpModelObject->getTypeName() == "FMIWrapper" && mpModelObject->hasParameter("temppath")))
+        if(!mpModelObject->getHelpHtmlPath().isEmpty() || ((mpModelObject->getTypeName() == "FMIWrapper" || mpModelObject->getTypeName() == "FMIWrapperQ") && mpModelObject->hasParameter("temppath")))
         {
             WebViewWrapper* pHtmlView = new WebViewWrapper(false);
             QString path;
-            if(mpModelObject->getTypeName() == "FMIWrapper") {
+            if(mpModelObject->getTypeName() == "FMIWrapper" || mpModelObject->getTypeName() == "FMIWrapperQ") {
                 path = mpModelObject->getParameterValue("temppath")+"/documentation/index.html";
                 gpMessageHandler->addDebugMessage("Help path: "+path);
             }

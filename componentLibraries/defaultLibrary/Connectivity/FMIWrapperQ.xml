@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="FMIWrapperQ" displayname="FMIWrapperQ" sourcecode="FMIWrapperQ.hpp">
+        <icons>
+            <icon scale="1" path="FMIWrapper.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports/>
+        <defaultparameters>
+            <parameter name="visibleOutputs" hidden="true"></parameter>
+        </defaultparameters>
+        <help/>
+    </modelobject>
+</hopsanobjectappearance>

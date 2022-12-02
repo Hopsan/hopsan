@@ -139,7 +139,7 @@ QString Component::getTypeCQS() const
 //! @brief Set a parameter value to be mapped to a System parameter
 bool Component::setParameterValue(QString name, QString value, bool force)
 {
-    if(this->getTypeName() == "FMIWrapper" && name == "path") {
+    if((this->getTypeName() == "FMIWrapper" || this->getTypeName() == "FMIWrapperQ") && (name == "path" || name == "portspecs")) {
         //Remove old ports
         QList<Port*> ports = this->getPortListPtrs();
         for(const auto port : ports) {
@@ -150,10 +150,10 @@ bool Component::setParameterValue(QString name, QString value, bool force)
 
     bool retval =  mpParentSystemObject->getCoreSystemAccessPtr()->setParameterValue(this->getName(), name, value, force);
 
-    if(this->getTypeName() == "FMIWrapper" && name == "path") {
+    if((this->getTypeName() == "FMIWrapper" || this->getTypeName() == "FMIWrapperQ") && (name == "path" || name == "portspecs")) {
         //Get lists of input and output ports from core component
         QStringList visibleOutputs = getParameterValue("visibleOutputs").split(",");
-        QStringList inputs, outputs;
+        QStringList inputs, outputs, powerPorts;
         for(const auto &port: mpParentSystemObject->getCoreSystemAccessPtr()->getPortNames(this->getName())) {
             QString type = mpParentSystemObject->getCoreSystemAccessPtr()->getPortType(this->getName(), port);
             SharedPortAppearanceT app(new PortAppearance());
@@ -185,6 +185,20 @@ bool Component::setParameterValue(QString name, QString value, bool force)
             app->mEnabled = true;
             this->getAppearanceData()->addPortAppearance(outputs[i],app);
             this->createRefreshExternalPort(outputs[i]);
+        }
+
+        QStringList portSpecs = getParameterValue("portspecs").split(";");
+        for(int i=0; i<portSpecs.size(); ++i) {
+            if(!portSpecs[i].isEmpty()) {
+                SharedPortAppearanceT app(new PortAppearance());
+                app->y = 0.0;
+                app->x = double(1+i)/double(1+portSpecs.size());
+                app->rot = 270;
+                app->mEnabled = true;
+                QString portName = "P"+QString::number(i+1);
+                this->getAppearanceData()->addPortAppearance(portName, app);
+                this->createRefreshExternalPort(portName);
+            }
         }
 
         //Adjust icon scale
