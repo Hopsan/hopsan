@@ -38,3 +38,4 @@ pComponentFactory->registerCreatorFunction("PneumaticInterfaceQ",PneumaticInterf
 pComponentFactory->registerCreatorFunction("SignalInputInterface",SignalInputInterface::Creator);
 pComponentFactory->registerCreatorFunction("SignalOutputInterface",SignalOutputInterface::Creator);
 pComponentFactory->registerCreatorFunction("FMIWrapper", FMIWrapper::Creator);
+pComponentFactory->registerCreatorFunction("FMIWrapperQ", FMIWrapperQ::Creator);
