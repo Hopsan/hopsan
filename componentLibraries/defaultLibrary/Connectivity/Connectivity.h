@@ -38,3 +38,4 @@
 #include "SignalInputInterface.hpp"
 #include "SignalOutputInterface.hpp"
 #include "FMIWrapper.hpp"
+#include "FMIWrapperQ.hpp"

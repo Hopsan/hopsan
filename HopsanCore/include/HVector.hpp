@@ -193,6 +193,16 @@ public:
         return (mSize==0);
     }
 
+    bool contains(const T &data) const
+    {
+        for(int i=0; i<mSize; ++i) {
+            if(mpDataArray[i] == data) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     HVector<T>& operator=(const HVector<T> &rhs)
     {
         resize(rhs.size());
