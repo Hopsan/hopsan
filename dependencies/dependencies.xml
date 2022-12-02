@@ -100,8 +100,8 @@
   </dependency>
 
   <dependency name="fmi4c">
-    <releasefile sha256="417745a511fbde7fcc14c6960a2a786900dfd1c99681628075d99f2ca8bc0047">
-      <url>https://github.com/robbr48/fmi4c/archive/9571d54e35abf226f207de96750b39d26bd684ff.zip</url>
+    <releasefile sha256="d0a62b68c217f0f74a8e0c59d69578f0e19b92da970fef871ffbc30255dcb5e6">
+      <url>https://github.com/robbr48/fmi4c/archive/refs/tags/v1.0-alpha.3.zip</url>
     </releasefile>
   </dependency>
 
