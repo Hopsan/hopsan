@@ -188,12 +188,13 @@ class DependenciesXML:
             if os.path.isfile(fname):
                 print('Info: File already exists '+fname)
                 if verify_filehash(fname, hash_algo, expected_hashsum):
+                    print('Info: File checksum verified OK '+fname)
                     return (fname, False, True)
-                else:
-                    print('Warning: ' + hash_algo + ' missmatch in file ' + fname)
-                    print('Expected: ' + expected_hashsum)
-                    print('Actual: ' + hashsum_file(fname, hash_algo))
-                    do_download = force
+
+                print('Warning: ' + hash_algo + ' missmatch in file ' + fname)
+                print('Expected: ' + expected_hashsum)
+                print('Actual: ' + hashsum_file(fname, hash_algo))
+                do_download = force
 
             if do_download:
                 isok = download(url, fname, hash_algo, expected_hashsum)
