@@ -157,10 +157,10 @@ public:
     void factor(const Expression var);
     void factorMostCommonFactor();
 
-    bool verifyExpression() const;
+    bool verifyExpression(const QStringList &userFunctions = QStringList()) const;
 
     //Public functions that are not intended to be used externally
-    bool _verifyFunctions() const;
+    bool _verifyFunctions(const QStringList &userFunctions) const;
     void _simplify(ExpressionSimplificationT type = Expression::FullSimplification, const ExpressionRecursiveT recursive=NonRecursive);
 
     double countTerm(const Expression &expr) const;

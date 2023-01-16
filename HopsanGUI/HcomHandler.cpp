@@ -7468,7 +7468,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     bool ok;
     SymHop::Expression symHopExpr = SymHop::Expression(expr, &ok, SymHop::Expression::NoSimplifications);
 
-    if(!ok)
+    if(!ok || !symHopExpr.verifyExpression(mLocalFunctionoidPtrs.keys()))
     {
         HCOMERR("Could not evaluate expression: "+expr);
         mAnsType = Wildcard;
@@ -7698,6 +7698,12 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         //timer.toc("local pars to local vars");
 
         bool ok;
+        if(!symHopExpr.verifyExpression(mLocalFunctionoidPtrs.keys())) {
+            mAnsType = Wildcard;
+            HCOMERR("Illegal SymHop expression: "+symHopExpr.toString());
+            mAnsWildcard = symHopExpr.toString();
+        }
+
         double scalar = symHopExpr.evaluate(localVars, &mLocalFunctionoidPtrs, &ok);
         if(ok)
         {
