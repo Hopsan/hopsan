@@ -2849,11 +2849,10 @@ void Expression::factorMostCommonFactor()
 
 //! @brief Verifies that the expression is correct
 //FIXED
-bool Expression::verifyExpression() const
+bool Expression::verifyExpression(const QStringList &userFunctions) const
 {
-
     //Verify all functions
-    if(!_verifyFunctions())
+    if(!_verifyFunctions(userFunctions))
     {
         return false;
     }
@@ -2864,14 +2863,14 @@ bool Expression::verifyExpression() const
 
 //! @brief Verifies that all functions are supported
 //FIXED
-bool Expression::_verifyFunctions() const
+bool Expression::_verifyFunctions(const QStringList &userFunctions) const
 {
     bool success = true;
 
     QStringList functions = this->getFunctions();
     for(int i=0; i<functions.size(); ++i)
     {
-        if(!getSupportedFunctionsList().contains(functions[i]) && !getCustomFunctionList().contains(functions[i]))
+        if(!getSupportedFunctionsList().contains(functions[i]) && !getCustomFunctionList().contains(functions[i]) && !userFunctions.contains(functions[i]))
         {
             //QMessageBox::critical(0, "SymHop", "Function \""+functions[i]+"\" is not supported by component generator.");
             success = false;
