@@ -451,6 +451,13 @@ public:
     double operator()(QString &str, bool &ok);
 };
 
+class HcomFunctionoidAns : public HcomFunctionoid
+{
+public:
+    HcomFunctionoidAns(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
+    double operator()(QString &str, bool &ok);
+};
+
 class HcomFunctionoidExists : public HcomFunctionoid
 {
 public:

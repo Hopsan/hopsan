@@ -422,7 +422,7 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     registerFunctionoid("maxpar", new HcomFunctionoidMaxPar(this), "Returns the maximum value of specified parameter for specified component type", "Usage: maxpar(type,par)");
     registerFunctionoid("minpar", new HcomFunctionoidMinPar(this), "Returns the minimum value of specified parameter for specified component type", "Usage: minpar(type,par)");
     registerFunctionoid("hg", new HcomFunctionoidHg(this), "Returns highest generation number", "Usage: hg()");
-
+    registerFunctionoid("ans", new HcomFunctionoidAns(this), "Returns the answer from the previous computation", "Usage: ans()");
     createCommands();
 
     mLocalVars.insert("true",1);
@@ -6136,6 +6136,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
         bool ok;
         QString parVal;
 
+        double orgAnsScalar = mAnsScalar;
         while(true)
         {
             parVal = getParameterValue(fullName, parType, true);
@@ -6178,6 +6179,8 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
             }
             else
             {
+                mAnsScalar = orgAnsScalar;
+                mAnsType = Scalar;
                 break;
             }
         }
@@ -10126,4 +10129,16 @@ double HcomFunctionoidHg::operator()(QString &str, bool &ok)
     }
     ok = true;
     return mpHandler->getModelPtr()->getLogDataHandler()->getHighestGenerationNumber()+1;
+}
+
+double HcomFunctionoidAns::operator()(QString &str, bool &ok)
+{
+    Q_UNUSED(str);
+    if(mpHandler->mAnsType != HcomHandler::Scalar) {
+        ok = false;
+        mpHandler->mpConsole->printErrorMessage("ans() function only work with scalar computations.");
+        return 0;
+    }
+    ok = true;
+    return mpHandler->mAnsScalar;
 }
