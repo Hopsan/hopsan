@@ -376,6 +376,11 @@ QString PlotCurve::getDataSmartName() const
     return mData->getSmartName();
 }
 
+QString PlotCurve::getAliasName() const
+{
+    return mData->getAliasName();
+}
+
 
 const SharedVectorVariableT PlotCurve::getSharedVectorVariable() const
 {

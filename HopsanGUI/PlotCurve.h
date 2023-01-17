@@ -113,6 +113,7 @@ public:
     const QString &getDataModelPath() const;
     QString getDataFullName() const;
     QString getDataSmartName() const;
+    QString getAliasName() const;
     VariableSourceTypeT getDataSource() const;
 
     bool hasCurveDataUnitScale() const;
