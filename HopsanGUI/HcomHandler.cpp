@@ -1168,6 +1168,14 @@ void HcomHandler::createCommands()
     adcoCmd.group = "Model Commands";
     mCmdList << adcoCmd;
 
+    HcomCommand rpcoCmd;
+    rpcoCmd.cmd = "rpco";
+    rpcoCmd.description.append("Replaces a component with a different type");
+    rpcoCmd.help.append(" Usage: rpco [name] [typename]");
+    rpcoCmd.fnc = &HcomHandler::executeReplaceComponentCommand;
+    rpcoCmd.group = "Model Commands";
+    mCmdList << rpcoCmd;
+
     HcomCommand cocoCmd;
     cocoCmd.cmd = "coco";
     cocoCmd.description.append("Connect components in current model");
@@ -5058,6 +5066,21 @@ void HcomHandler::executeAddComponentCommand(const QString cmd)
     // Return the index of the new component
     mAnsScalar = mpModel->getViewContainerObject()->getModelObjects().size()-1;
     mAnsType = Scalar;
+}
+
+void HcomHandler::executeReplaceComponentCommand(const QString cmd)
+{
+    if(!mpModel || getNumberOfCommandArguments(cmd) != 2)
+    {
+        HCOMERR("Wrong number of arguments");
+        return;
+    }
+    QStringList args = splitCommandArguments(cmd);
+
+    QString name = args[0];
+    QString typeName = args[1];
+
+    mpModel->getTopLevelSystemContainer()->replaceComponent(name, typeName);
 }
 
 
