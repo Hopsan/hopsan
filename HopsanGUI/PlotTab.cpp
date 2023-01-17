@@ -1479,9 +1479,14 @@ void PlotTab::openCreateBodePlotDialog()
     pInputGroupBoxLayout->addStretch(1);
     for(int i=0; i<getNumberOfCurves(0); ++i)
     {
-        QRadioButton *radio = new QRadioButton(getCurves(0).at(i)->getComponentName() + ", " +
-                                               getCurves(0).at(i)->getPortName() + ", " +
-                                               getCurves(0).at(i)->getDataName());
+        QString curveName = getCurves(0).at(i)->getComponentName() + ", " +
+                            getCurves(0).at(i)->getPortName() + ", " +
+                            getCurves(0).at(i)->getDataName();
+        QString aliasName = getCurves(0).at(i)->getAliasName();
+        if(!aliasName.isEmpty()) {
+            curveName.append(" ("+aliasName+")");
+        }
+        QRadioButton *radio = new QRadioButton(curveName);
         bodeInputButtonToCurveMap.insert(radio, getCurves(0).at(i));
         pInputGroupBoxLayout->addWidget(radio);
     }
@@ -1492,9 +1497,14 @@ void PlotTab::openCreateBodePlotDialog()
     pOutputGroupBoxLayout->addStretch(1);
     for(int i=0; i<getNumberOfCurves(0); ++i)
     {
-        QRadioButton *radio = new QRadioButton(getCurves(0).at(i)->getComponentName() + ", " +
-                                               getCurves(0).at(i)->getPortName() + ", " +
-                                               getCurves(0).at(i)->getDataName());
+        QString curveName = getCurves(0).at(i)->getComponentName() + ", " +
+                            getCurves(0).at(i)->getPortName() + ", " +
+                            getCurves(0).at(i)->getDataName();
+        QString aliasName = getCurves(0).at(i)->getAliasName();
+        if(!aliasName.isEmpty()) {
+            curveName.append(" ("+aliasName+")");
+        }
+        QRadioButton *radio = new QRadioButton(curveName);
         bodeOutputButtonToCurveMap.insert(radio, getCurves(0).at(i));
         pOutputGroupBoxLayout->addWidget(radio);
     }
