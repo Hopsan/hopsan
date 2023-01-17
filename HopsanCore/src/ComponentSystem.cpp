@@ -1079,7 +1079,7 @@ std::list<HString> ComponentSystem::getModelAssets() const
 }
 
 //! @brief Adds a transparent SubSystemPort
-Port* ComponentSystem::addSystemPort(HString portName, const HString &rDescription)
+Port* ComponentSystem::addSystemPort(HString portName, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect)
 {
     // Force default port name p, if nothing else specified
     if (portName.empty())
@@ -1087,7 +1087,7 @@ Port* ComponentSystem::addSystemPort(HString portName, const HString &rDescripti
         portName = "p";
     }
 
-    return addPort(portName, SystemPortType, "NodeEmpty", rDescription, Port::Required);
+    return addPort(portName, SystemPortType, "NodeEmpty", rDescription, reqConnect);
 }
 
 
