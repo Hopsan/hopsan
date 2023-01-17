@@ -87,7 +87,7 @@ namespace hopsan {
         virtual std::list<HString> getModelAssets() const;
 
         // Handle system ports
-        Port* addSystemPort(HString portName, const HString &rDescription="");
+        Port* addSystemPort(HString portName, const HString &rDescription="", const Port::RequireConnectionEnumT reqConnect=Port::Required);
         HString renameSystemPort(const HString &rOldname, const HString &rNewname);
         void deleteSystemPort(const HString &rName);
 
