@@ -10,9 +10,11 @@ DESTDIR = $${PWD}/../bin
 TARGET = $${TARGET}$${DEBUG_EXT}
 DEFINES += LOGGING
 #DEFINES += DEBUG
-QMAKE_CXXFLAGS = -Wno-comment -Wno-switch -Wno-ignored-qualifiers -Wno-sign-compare
+QMAKE_CXXFLAGS += -Wno-comment -Wno-switch -Wno-ignored-qualifiers -Wno-sign-compare
 
 QT -= core gui
+
+LIBS *= -lws2_32
 
 #--------------------------------------------------
 # Add the include path to our self, (hopsandcp)
