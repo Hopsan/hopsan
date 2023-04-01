@@ -105,7 +105,7 @@ private:
      double *mpqmfuel;
      Delay mDelayedPart10;
      Delay mDelayedPart11;
-     EquationSystemSolver *mpSolver;
+     EquationSystemSolver *mpSolver = nullptr;
 
 public:
      static Component *Creator()

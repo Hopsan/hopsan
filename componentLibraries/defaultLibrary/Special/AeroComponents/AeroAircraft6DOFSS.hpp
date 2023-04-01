@@ -559,7 +559,7 @@ private:
      Delay mDelayedPart121;
      Delay mDelayedPart130;
      Delay mDelayedPart131;
-     EquationSystemSolver *mpSolver;
+     EquationSystemSolver *mpSolver = nullptr;
 
 public:
      static Component *Creator()

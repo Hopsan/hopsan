@@ -124,7 +124,7 @@ private:
      double *mpDRL;
      double *mpCd;
      Delay mDelayedPart10;
-     EquationSystemSolver *mpSolver;
+     EquationSystemSolver *mpSolver = nullptr;
 
 public:
      static Component *Creator()

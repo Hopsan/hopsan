@@ -123,7 +123,7 @@ private:
      double *mpDRL;
      double *mpCde;
      Delay mDelayedPart10;
-     EquationSystemSolver *mpSolver;
+     EquationSystemSolver *mpSolver = nullptr;
 
 public:
      static Component *Creator()
