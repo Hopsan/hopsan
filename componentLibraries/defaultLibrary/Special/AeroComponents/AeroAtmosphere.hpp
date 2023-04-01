@@ -90,7 +90,7 @@ private:
      double *mpTa;
      double *mpp0;
      double *mpVsound;
-     EquationSystemSolver *mpSolver;
+     EquationSystemSolver *mpSolver = nullptr;
 
 public:
      static Component *Creator()

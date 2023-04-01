@@ -69,7 +69,7 @@ private:
      //outputVariables pointers
      double *mpQstate;
      double *mpnotQstate;
-     EquationSystemSolver *mpSolver;
+     EquationSystemSolver *mpSolver = nullptr;
 
 public:
      static Component *Creator()

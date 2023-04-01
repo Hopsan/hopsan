@@ -77,7 +77,7 @@ private:
      //inputParameters pointers
      double *mpcv;
      //outputVariables pointers
-     EquationSystemSolver *mpSolver;
+     EquationSystemSolver *mpSolver = nullptr;
 
 public:
      static Component *Creator()

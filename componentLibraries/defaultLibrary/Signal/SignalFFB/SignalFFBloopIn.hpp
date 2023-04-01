@@ -72,7 +72,7 @@ private:
      //outputVariables pointers
      double *mpstate;
      double *mpexiting;
-     EquationSystemSolver *mpSolver;
+     EquationSystemSolver *mpSolver = nullptr;
 
 public:
      static Component *Creator()

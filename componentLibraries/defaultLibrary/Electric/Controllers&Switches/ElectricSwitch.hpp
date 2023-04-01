@@ -81,7 +81,7 @@ private:
      double *mpstate;
      //inputParameters pointers
      //outputVariables pointers
-     EquationSystemSolver *mpSolver;
+     EquationSystemSolver *mpSolver = nullptr;
 
 public:
      static Component *Creator()

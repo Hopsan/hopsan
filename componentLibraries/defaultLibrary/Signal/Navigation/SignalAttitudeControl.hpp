@@ -122,7 +122,7 @@ private:
      double *mpuaerR;
      double *mpuelev;
      double *mpurud;
-     EquationSystemSolver *mpSolver;
+     EquationSystemSolver *mpSolver = nullptr;
 
 public:
      static Component *Creator()

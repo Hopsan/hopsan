@@ -76,7 +76,7 @@ private:
      double *mpexiting;
      double *mpexitingb0;
      double *mpexitingb1;
-     EquationSystemSolver *mpSolver;
+     EquationSystemSolver *mpSolver = nullptr;
 
 public:
      static Component *Creator()

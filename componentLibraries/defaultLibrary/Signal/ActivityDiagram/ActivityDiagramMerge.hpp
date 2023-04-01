@@ -66,7 +66,7 @@ private:
      //inputParameters pointers
      double *mpdiffevent;
      //outputVariables pointers
-     EquationSystemSolver *mpSolver;
+     EquationSystemSolver *mpSolver = nullptr;
 
 public:
      static Component *Creator()

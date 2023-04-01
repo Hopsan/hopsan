@@ -86,7 +86,7 @@ private:
      double *mpheadingRef;
      double *mpvelocityRef;
      double *mpdistanceWp;
-     EquationSystemSolver *mpSolver;
+     EquationSystemSolver *mpSolver = nullptr;
 
 public:
      static Component *Creator()

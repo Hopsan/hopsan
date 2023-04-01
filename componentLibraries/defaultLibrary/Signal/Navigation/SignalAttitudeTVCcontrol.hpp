@@ -88,7 +88,7 @@ private:
      //outputVariables pointers
      double *mpuelev;
      double *mpurud;
-     EquationSystemSolver *mpSolver;
+     EquationSystemSolver *mpSolver = nullptr;
 
 public:
      static Component *Creator()

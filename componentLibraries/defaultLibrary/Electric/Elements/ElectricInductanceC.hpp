@@ -92,7 +92,7 @@ private:
      double *mpalpha;
      //outputVariables pointers
      double *mpCp;
-     EquationSystemSolver *mpSolver;
+     EquationSystemSolver *mpSolver = nullptr;
 
 public:
      static Component *Creator()

@@ -68,7 +68,7 @@ private:
      double *mpstate;
      double *mpout0;
      double *mpout1;
-     EquationSystemSolver *mpSolver;
+     EquationSystemSolver *mpSolver = nullptr;
 
 public:
      static Component *Creator()
