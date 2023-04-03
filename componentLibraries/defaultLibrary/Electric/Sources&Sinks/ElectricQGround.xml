@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hopsanobjectappearance version="0.3">
+    <modelobject sourcecode="ElectricGround.hpp" typename="ElectricVoltageSourceQ" subtypename="Ground" displayname="Q-type Ground">
+        <icons>
+            <icon scale="1" path="ElectricGround.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="ElectricGround.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <help>
+            <text>Electric ground conection based on Q-type voltage source</text>
+            <link>ElectricVoltageSourceQ.md</link>
+        </help>
+        <ports>
+            <port x="0.5" y="0" a="90" name="Pel1"/>
+        </ports>
+        <defaultparameters>
+            <parameter name="U#Value" hidden="true">0</parameter>
+        </defaultparameters>
+    </modelobject>
+</hopsanobjectappearance>
