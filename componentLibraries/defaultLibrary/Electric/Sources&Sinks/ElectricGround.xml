@@ -8,7 +8,8 @@
         <help>
             <text>Electric ground conection.</text>
             <link>ElectricGround.nb</link>
-        </help>        <ports>
+        </help>
+        <ports>
             <port x="0.5" y="0" a="90" name="Pel1"/>
         </ports>
     </modelobject>
