@@ -1199,16 +1199,8 @@ void ModelObjectAppearance::saveToXMLFile(QString filename)
     doc.appendChild(cafroot);
     cafroot.setAttribute(CAF_VERSION, CAF_VERSIONNUM);
     this->saveToDomElement(cafroot);
-    QFile xml(filename);
-    if (!xml.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-    {
-        qDebug() << "Failed to open file for writing: " << xml.fileName();
-        return;
-    }
-    QTextStream out(&xml);
     appendRootXMLProcessingInstruction(doc); //The xml "comment" on the first line
-    doc.save(out, XMLINDENTATION);
-    xml.close();
+    saveXmlFile(filename, gpMessageHandler, [&](){return doc;});
 }
 
 

@@ -171,6 +171,6 @@ private:
     TextOutput mTextOutput;
 };
 
-bool saveXmlFile(QString xmlFilePath, GUIMessageHandler* pMessageHandler, std::function<QDomDocument()> saveFunction);
+bool saveXmlFile(QString xmlFilePath, GUIMessageHandler* pMessageHandler, std::function<QDomDocument()> saveFunction, int indentation=XMLINDENTATION);
 
 #endif // GUIUTILITIES_H

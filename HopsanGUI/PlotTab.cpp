@@ -459,21 +459,7 @@ void PlotTab::exportToHvc(QString fileName)
         hvcFileInfo.setFile(filePath);
     }
 
-    QFile file(hvcFileInfo.absoluteFilePath());
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        gpMessageHandler->addErrorMessage("Failed to open file for writing: " + fileName);
-        return;
-    }
-
-    // Save the csv data
     QString hvdFileName=hvcFileInfo.baseName()+".hvd";
-    //! @todo this will only support one timevector
-    this->exportToCsv(hvcFileInfo.absolutePath()+"/"+hvdFileName, QTextStream::ScientificNotation);
-
-    qDebug() << hvcFileInfo.absoluteFilePath();
-    qDebug() << hvcFileInfo.absolutePath()+"/"+hvdFileName;
-
 
     // Save HVC xml data
     QDomDocument doc;
@@ -505,10 +491,18 @@ void PlotTab::exportToHvc(QString fileName)
         appendDomValueNode(variable, "tolerance", 0.01);
     }
 
-    QTextStream hvcFileStream(&file);
     appendRootXMLProcessingInstruction(doc); //The xml "comment" on the first line
-    doc.save(hvcFileStream, 2);
-    file.close();
+    bool savedOK = saveXmlFile(hvcFileInfo.absoluteFilePath(), gpMessageHandler, [&](){return doc;});
+    if (!savedOK) {
+        return;
+    }
+
+    // Save the csv data
+    //! @todo this will only support one timevector
+    this->exportToCsv(hvcFileInfo.absolutePath()+"/"+hvdFileName, QTextStream::ScientificNotation);
+
+    qDebug() << hvcFileInfo.absoluteFilePath();
+    qDebug() << hvcFileInfo.absolutePath()+"/"+hvdFileName;
 }
 
 
@@ -1121,29 +1115,22 @@ void PlotTab::saveToXml()
     QDir fileDialogSaveDir;
     QString filePath;
     QFileInfo fileInfo;
-    QFile file;
     filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To XML File"),
                                             gpConfig->getStringSetting(CFG_PLOTDATADIR),
                                             tr("Extensible Markup Language (*.xml)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
     fileInfo.setFile(filePath);
     gpConfig->setStringSetting(CFG_PLOTDATADIR, fileInfo.absolutePath());
-    file.setFileName(fileInfo.filePath());   //Create a QFile object
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        gpMessageHandler->addErrorMessage("Failed to open file for writing: " + filePath);
-        return;
-    }
 
     QDomDocument domDocument;
     QDomElement element = domDocument.createElement("hopsanplotdata");
     domDocument.appendChild(element);
     this->saveToDomElement(element, mpIncludeTimeCheckBox->isChecked(), mpIncludeDescriptionsCheckBox->isChecked());
     appendRootXMLProcessingInstruction(domDocument);
-
-    QTextStream fileStream(&file);
-    domDocument.save(fileStream, mpXmlIndentationSpinBox->value());
-    file.close();
+    bool savedOK = saveXmlFile(fileInfo.filePath(), gpMessageHandler, [&](){return domDocument;}, mpXmlIndentationSpinBox->value());
+    if (!savedOK) {
+        return;
+    }
 
     mpExportXmlDialog->close();
 }

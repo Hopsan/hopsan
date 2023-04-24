@@ -804,15 +804,13 @@ void ModelHandler::saveState()
         QString fileNameWithoutHmf = pModel->getTopLevelSystemContainer()->getModelFileInfo().fileName();
         fileNameWithoutHmf.chop(4);
         info.backupFile = gpDesktopHandler->getBackupPath()+fileNameWithoutHmf+"_savedstate.hmf";
-        QFile xmlhmf(gpDesktopHandler->getBackupPath()+fileNameWithoutHmf+"_savedstate.hmf");
-        if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-        {
+
+        appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
+        bool savedOK = saveXmlFile(info.backupFile, gpMessageHandler, [&](){return domDocument;});
+        if(!savedOK) {
             return;
         }
-        QTextStream out(&xmlhmf);
-        appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
-        domDocument.save(out, XMLINDENTATION);
-        xmlhmf.close();
+
         pModel->setSaved(true);
         closeModel(0);
         //pTab->close();

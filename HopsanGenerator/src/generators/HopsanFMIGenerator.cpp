@@ -1596,8 +1596,10 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
         printErrorMessage(QString("Failed to open %1 for writing.").arg(modelDescriptionFile.fileName()));
         return false;
     }
-    QTextStream out(&modelDescriptionFile);
-    domDocument.save(out, 4);
+    QByteArray temp_data;
+    QTextStream temp_data_stream(&temp_data);
+    domDocument.save(temp_data_stream, 4);
+    modelDescriptionFile.write(temp_data);
     modelDescriptionFile.close();
     return true;
 }

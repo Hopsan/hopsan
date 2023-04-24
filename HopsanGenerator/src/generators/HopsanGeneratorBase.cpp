@@ -1041,8 +1041,10 @@ bool HopsanGeneratorBase::generateCafFile(QString &rPath, ComponentAppearanceSpe
     }
 
     //Save to file
-    QTextStream out(&fmuCafFile);
-    domDocument.save(out, 2);
+    QByteArray temp_data;
+    QTextStream temp_data_stream(&temp_data);
+    domDocument.save(temp_data_stream, 2);
+    fmuCafFile.write(temp_data);
     fmuCafFile.close();
 
     return true;

@@ -791,15 +791,7 @@ void ModelWidget::exportModelParametersToSsv()
         ssvBaseUnitElement.setAttribute(ssv::attr::rad, rad);
     }
 
-    QFile file;
-    file.setFileName(ssvFile);   //Create a QFile object
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        gpMessageHandler->addErrorMessage("Failed to open file for writing: " + ssvFile);
-        return;
-    }
-    QTextStream fileStream(&file);
-    ssvDocument.save(fileStream, XMLINDENTATION);
-    file.close();
+    saveXmlFile(ssvFile, gpMessageHandler, [&](){return ssvDocument;});
 }
 
 void ModelWidget::importModelParametersFromHpf(QString parameterFile)

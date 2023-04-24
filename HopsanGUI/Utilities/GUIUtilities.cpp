@@ -1195,7 +1195,7 @@ void extractSections(const QString str, const QChar c, QStringList &rSplit, QLis
     rSplit.append(str.mid(start,len));
 }
 
-bool saveXmlFile(QString xmlFilePath, GUIMessageHandler *pMessageHandler, std::function<QDomDocument()> saveFunction)
+bool saveXmlFile(QString xmlFilePath, GUIMessageHandler *pMessageHandler, std::function<QDomDocument()> saveFunction, int indentation)
 {
     TicToc tt;
     QFile xmlFile(xmlFilePath);
@@ -1206,9 +1206,12 @@ bool saveXmlFile(QString xmlFilePath, GUIMessageHandler *pMessageHandler, std::f
     const int open_ms = tt.toc();
 
     tt.tic();
-    QTextStream out(&xmlFile);
+    // Saving directly using a QTextStream is very slow on a Windows network drive, so instead stream to a byte array and tehn save that
+    QByteArray temp_data;
+    QTextStream temp_data_stream(&temp_data);
     QDomDocument doc = saveFunction();
-    doc.save(out, XMLINDENTATION);
+    doc.save(temp_data_stream, indentation);
+    xmlFile.write(temp_data);
     const double save_ms = tt.toc();
 
     tt.tic();

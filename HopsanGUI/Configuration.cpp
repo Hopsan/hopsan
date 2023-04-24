@@ -303,8 +303,10 @@ void Configuration::saveToXml()
         // Use save file helper to avoid corrupting existing destination file if program crash during save
         SaveFileHelper sfh;
         auto saveFunc = [&](QFile& outFile) {
-            QTextStream text_stream(&outFile);
-            domDocument.save(text_stream, XMLINDENTATION);
+            QByteArray temp_data;
+            QTextStream temp_data_stream(&temp_data);
+            domDocument.save(temp_data_stream, XMLINDENTATION);
+            outFile.write(temp_data);
         };
         sfh.saveFileBackupExisting(config_file_path, saveFunc, "_backup");
     }

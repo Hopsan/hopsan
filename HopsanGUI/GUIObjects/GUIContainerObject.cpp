@@ -3876,18 +3876,11 @@ void SystemObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         this->saveToDomElement(rootElement, FullModel);
 
         //Save to file
-        QFile xmlFile(modelFilePath);
-        if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-        {
-            gpMessageHandler->addErrorMessage("Could not save to file: " + modelFilePath);
+        appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
+        bool saveOK = saveXmlFile(modelFilePath, gpMessageHandler, [&](){return domDocument;});
+        if (!saveOK) {
             return;
         }
-        QTextStream out(&xmlFile);
-        appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
-        domDocument.save(out, XMLINDENTATION);
-
-        //Close the file
-        xmlFile.close();
 
        // mpModelWidget->saveTo(modelFilePath, FullModel);
     }
@@ -3979,18 +3972,11 @@ void SystemObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         this->getAppearanceData()->setSubTypeName(old_subtype);
 
         //Save to file
-        QFile xmlFile(modelFilePath);
-        if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-        {
-            gpMessageHandler->addErrorMessage("Could not save to file: " + modelFilePath);
+        appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
+        bool saveOK = saveXmlFile(modelFilePath, gpMessageHandler, [&](){return domDocument;});
+        if (!saveOK) {
             return;
         }
-        QTextStream out(&xmlFile);
-        appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
-        domDocument.save(out, XMLINDENTATION);
-
-        //Close the file
-        xmlFile.close();
 
         this->setIconPath(orgIconPath, UserGraphics, Relative);
 
