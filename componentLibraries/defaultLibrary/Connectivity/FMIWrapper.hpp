@@ -306,7 +306,7 @@ public:
         HString fmuName = "fmu_"+to_hstring(rand() % 1000000000);
         addDebugMessage("FMU name: "+fmuName);
         
-        fmu = fmi4c_loadFmu(mFmuPath.c_str(), fmuName.c_str());
+        fmu = fmi4c_loadFmu(findFilePath(mFmuPath).c_str(), fmuName.c_str());
         if(fmu == nullptr) {
             addErrorMessage("Failed to load FMU file: "+mFmuPath);
             return;
