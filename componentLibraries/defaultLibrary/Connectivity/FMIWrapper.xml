@@ -8,6 +8,8 @@
         <defaultparameters>
             <parameter name="visibleOutputs" hidden="true"></parameter>
         </defaultparameters>
-        <help/>
+        <help>
+            <md>FMIWrapper.md</md>
+        </help>
     </modelobject>
 </hopsanobjectappearance>

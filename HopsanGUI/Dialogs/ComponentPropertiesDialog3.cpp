@@ -403,14 +403,7 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
         if(!mpModelObject->getHelpHtmlPath().isEmpty() || ((mpModelObject->getTypeName() == "FMIWrapper" || mpModelObject->getTypeName() == "FMIWrapperQ") && mpModelObject->hasParameter("temppath")))
         {
             WebViewWrapper* pHtmlView = new WebViewWrapper(false);
-            QString path;
-            if(mpModelObject->getTypeName() == "FMIWrapper" || mpModelObject->getTypeName() == "FMIWrapperQ") {
-                path = mpModelObject->getParameterValue("temppath")+"/documentation/index.html";
-                gpMessageHandler->addDebugMessage("Help path: "+path);
-            }
-            else {
-                path = mpModelObject->getAppearanceData()->getBasePath() + mpModelObject->getHelpHtmlPath();
-            }
+            QString path = mpModelObject->getAppearanceData()->getBasePath() + mpModelObject->getHelpHtmlPath();
             if (path.endsWith(".md"))
             {
 #ifdef USEDISCOUNT
