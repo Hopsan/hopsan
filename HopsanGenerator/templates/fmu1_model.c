@@ -34,7 +34,11 @@ std::string parseResourceLocation(std::string uri)
     // authority is expected to be empty if included
     // only the 'file' schema is supported by Hopsan
     std::string::size_type se = uri.find_first_of(':');
+    if(se = std::string::npos) {
+        se = 0;     //Resource location did not contain ':', assume an absolute unix path
+    }
     std::string schema = uri.substr(0,se);
+
     // If the next two chars are // then authority is included (may be empty)
     std::string::size_type pb;
     if (uri.substr(se+1,2) == "//") {
