@@ -226,6 +226,7 @@ private:
     fmiHandle *fmu;
     HString mVisibleOutputs;
     double mTolerance = 1e-4;
+    bool mLoggingOn = false;
 
 public:
     static Component *Creator()
@@ -328,7 +329,8 @@ public:
                  mTolerance = fmi1_getDefaultTolerance(fmu);
             }
             addConstant("tol", "Relative tolerance", "", mTolerance, mTolerance);
-            
+            addConstant("loggingOn", "Enable FMU logging", "", mLoggingOn, mLoggingOn);
+
            //Loop through variables in FMU and generate the lists
             for(int i=0; i<fmi1_getNumberOfVariables(fmu); ++i) {
                 addDebugMessage("Testing variable...");
@@ -418,7 +420,7 @@ public:
     
             //Instantiate FMU
             printf("Hopsan: calling fmi1InstantiateSlave()...");
-            if(!fmi1_instantiateSlave(fmu, "application/x-fmu-sharedlibrary", 1000, fmi1False, fmi1False, FMIWrapper_fmi1Logger, calloc, free, NULL, fmi1True)) {
+            if(!fmi1_instantiateSlave(fmu, "application/x-fmu-sharedlibrary", 1000, fmi1False, fmi1False, FMIWrapper_fmi1Logger, calloc, free, NULL, mLoggingOn)) {
                 addErrorMessage("Hopsan: fmi1InstantiateSlave() failed!");
                 fmu = NULL;
                 return;
@@ -439,6 +441,7 @@ public:
                  mTolerance = fmi2_getDefaultTolerance(fmu);
             }
             addConstant("tol", "Relative tolerance", "", mTolerance, mTolerance);
+            addConstant("loggingOn", "Enable FMU logging", "", mLoggingOn, mLoggingOn);
             
            //Loop through variables in FMU and generate the lists
             for(int i=0; i<fmi2_getNumberOfVariables(fmu); ++i) {
@@ -524,7 +527,7 @@ public:
 
     
             //Instantiate FMU
-            fmi2_instantiate(fmu, fmi2CoSimulation, FMIWrapper_fmi2Logger, calloc, free, NULL, (fmi2ComponentEnvironment*)this, fmi2False, fmi2True);
+            fmi2_instantiate(fmu, fmi2CoSimulation, FMIWrapper_fmi2Logger, calloc, free, NULL, (fmi2ComponentEnvironment*)this, fmi2False, mLoggingOn);
                  
             if(NULL == fmu) {
                 stopSimulation("Failed to instantiate FMU");
@@ -539,7 +542,8 @@ public:
                  mTolerance = fmi3_getDefaultTolerance(fmu);
             }
             addConstant("tol", "Relative tolerance", "", mTolerance, mTolerance);
-    
+            addConstant("loggingOn", "Enable FMU logging", "", mLoggingOn, mLoggingOn);
+
             //Loop through variables in FMU and generate the lists
             for(int i=0; i<fmi3_getNumberOfVariables(fmu); ++i) {
                 fmi3VariableHandle* var = fmi3_getVariableByIndex(fmu, i);
@@ -776,7 +780,7 @@ public:
 
             //Instantiate FMU
             size_t nRequiredIntermediateVariables = 0;
-            fmi3_instantiateCoSimulation(fmu, fmi3False, fmi3True, fmi3False, fmi3False, NULL, nRequiredIntermediateVariables, this, FMIWrapper_fmi3Logger, FMIWrapper_fmi3IntermediateUpdate);
+            fmi3_instantiateCoSimulation(fmu, fmi3False, mLoggingOn, fmi3False, fmi3False, NULL, nRequiredIntermediateVariables, this, FMIWrapper_fmi3Logger, FMIWrapper_fmi3IntermediateUpdate);
     
             if (NULL == fmu) {
                 stopSimulation("Failed to instantiate FMU");
