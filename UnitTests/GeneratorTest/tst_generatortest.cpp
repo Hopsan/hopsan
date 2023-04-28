@@ -95,6 +95,7 @@ Q_DECLARE_METATYPE(Component*)
 Q_DECLARE_METATYPE(Port*)
 Q_DECLARE_METATYPE(std::string)
 Q_DECLARE_METATYPE(Node*)
+Q_DECLARE_METATYPE(HString)
 
 
 class GeneratorTests : public QObject
@@ -383,7 +384,37 @@ private slots:
 
     void Generator_FMU_Import()
     {
-        QSKIP("FMU import test is not yet implemtented.");
+        ComponentSystem * pSystem = mHopsanCore.createComponentSystem();
+        Component *pFmuComponent = mHopsanCore.createComponent("FMIWrapper");
+        pSystem->addComponent(pFmuComponent);
+
+        QFETCH(HString, fmuPath);
+        pFmuComponent->setParameterValue("path", fmuPath, true);
+        QVERIFY2(pFmuComponent->hasParameter("loggingOn"), "Failed to import FMU");
+        Component *pSourceComponent = mHopsanCore.createComponent("SignalSineWave");
+        pSystem->addComponent(pSourceComponent);
+        Port *pPort1 = pSourceComponent->getPort("out");
+        Port *pPort2 = pFmuComponent->getPort("in1_out_y");
+        QVERIFY2(pPort2 != nullptr, "Input port is missing from imported FMU");
+        Port *pPort3 = pFmuComponent->getPort("out1_in_y");
+        QVERIFY2(pPort3 != nullptr, "Output port is missing from imported FMU");
+        pSystem->connect(pPort1, pPort2);
+        pSystem->simulate(0.01);
+        std::vector<double> *pInData = pPort1->getDataVectorPtr();
+        std::vector<double> *pOutData = pPort3->getDataVectorPtr();
+        bool ok = true;
+        for(size_t i=0; i<pInData->size(); ++i) {
+            if(pInData[i] != pOutData[i]) {
+                ok = false;
+            }
+        }
+        QVERIFY2(ok, "Simulation result from imported FMU is not correct");
+    }
+
+    void Generator_FMU_Import_data() {
+        QTest::addColumn<HString>("fmuPath");
+        QTest::newRow("0") << HString(QDir::currentPath().toStdString().c_str())+"/fmu1 64/unittestmodel_export.fmu";
+        QTest::newRow("1") << HString(QDir::currentPath().toStdString().c_str())+"/fmu2 64/unittestmodel_export.fmu";
     }
 
     void Generator_Simulink_Export()
