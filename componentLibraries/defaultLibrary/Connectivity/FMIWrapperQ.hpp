@@ -1198,8 +1198,6 @@ public:
             std::map<fmi2ValueReference,double*>::iterator it;
             for(it = mRealInputs.begin(); it != mRealInputs.end(); it++) {
                 status = fmi2_setReal(fmu, &it->first, 1, it->second);
-                double temp = double(*it->second);
-                addDebugMessage("setReal: "+to_hstring(it->first)+" = "+to_hstring(temp));
             }
             for(it = mIntInputs.begin(); it != mIntInputs.end(); it++) {
                 int value = (int)lround(*it->second);
@@ -1220,8 +1218,6 @@ public:
             //Forward outputs
             for(it = mRealOutputs.begin(); it != mRealOutputs.end(); it++) {
                 status = fmi2_getReal(fmu, &it->first, 1, it->second);
-                double temp = double(*it->second);
-                addDebugMessage("getReal: "+to_hstring(it->first)+" = "+to_hstring(temp));
             }
             for(it = mIntOutputs.begin(); it != mIntOutputs.end(); it++) {
                 int temp;
