@@ -190,7 +190,7 @@ bool compileComponentLibrary(QString path, HopsanGeneratorBase *pGenerator, QStr
     for(QString includePath : cl.mIncludePaths) {
         ch.addIncludePath(includePath);
     }
-    ch.addCompilerFlag("-fPIC -w", {Compiler::GCC, Compiler::Clang});
+    ch.addCompilerFlag("-std=c++14 -fPIC -w", {Compiler::GCC, Compiler::Clang});
     //! @todo setting rpath here is strange, as it will hard-code given path into dll (so if you move it it wont work) /Peter
     ch.addCompilerFlag(QString(R"(-Wl,--rpath,"%1")").arg(libRootDir), Compiler::GCC);
 

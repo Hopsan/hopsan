@@ -153,7 +153,7 @@ bool HopsanExeGenerator::compileAndLinkExe(const QString &buildPath, const QStri
     compileCppBatchStream << "@echo off\n";
     compileCppBatchStream << "PATH=" << mCompilerSelection.path << ";%PATH%\n";
     compileCppBatchStream << "@echo on\n";
-    compileCppBatchStream << "g++ -pipe -std=c++11 -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS " << "exe_main.cpp exe_utilities.cpp " << mExtraSourceFiles.join(" ");
+    compileCppBatchStream << "g++ -pipe -std=c++14 -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS " << "exe_main.cpp exe_utilities.cpp " << mExtraSourceFiles.join(" ");
     QStringList srcFiles = listHopsanCoreSourceFiles(buildPath) + listInternalLibrarySourceFiles(buildPath);
     for(const QString &srcFile : srcFiles) {
         compileCppBatchStream << " " << srcFile;
@@ -179,7 +179,7 @@ bool HopsanExeGenerator::compileAndLinkExe(const QString &buildPath, const QStri
     }
     //Write the compilation script file
     QTextStream compileCppBatchStream(&compileCppBatchFile);
-    compileCppBatchStream << mCompilerSelection.path+"g++ -pipe -std=c++11 -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS " << "exe_main.cpp exe_utilities.cpp " << mExtraSourceFiles.join(" ");
+    compileCppBatchStream << mCompilerSelection.path+"g++ -pipe -std=c++14 -c -DHOPSAN_INTERNALDEFAULTCOMPONENTS -DHOPSAN_INTERNAL_EXTRACOMPONENTS " << "exe_main.cpp exe_utilities.cpp " << mExtraSourceFiles.join(" ");
     QStringList srcFiles = listHopsanCoreSourceFiles(buildPath) + listInternalLibrarySourceFiles(buildPath);
     for(const QString &srcFile : srcFiles) {
         compileCppBatchStream << " " << srcFile;
