@@ -8,7 +8,7 @@ exists($${fmi4c_dir}) {
   macx {
     # Not supported
   } win32 {
-    LIBS *= -L$${fmi4c_dir}/lib -lfmi4c -lzlib
+    LIBS *= -L$${fmi4c_dir}/lib -lfmi4c -lzlibstatic
   } else {
     LIBS *= -L$${fmi4c_dir}/lib -lfmi4c -lz
   }
