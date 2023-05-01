@@ -399,6 +399,7 @@ private slots:
         Port *pPort3 = pFmuComponent->getPort("out1_in_y");
         QVERIFY2(pPort3 != nullptr, "Output port is missing from imported FMU");
         pSystem->connect(pPort1, pPort2);
+        pSystem->initialize(0, 100);
         pSystem->simulate(0.01);
         std::vector<double> *pInData = pPort1->getDataVectorPtr();
         std::vector<double> *pOutData = pPort3->getDataVectorPtr();
