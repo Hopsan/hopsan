@@ -413,8 +413,14 @@ private slots:
 
     void Generator_FMU_Import_data() {
         QTest::addColumn<HString>("fmuPath");
+
+#if defined (HOPSANCOMPILED64BIT)
         QTest::newRow("0") << HString(QDir::currentPath().toStdString().c_str())+"/fmu1 64/unittestmodel_export.fmu";
         QTest::newRow("1") << HString(QDir::currentPath().toStdString().c_str())+"/fmu2 64/unittestmodel_export.fmu";
+#else
+        QTest::newRow("0") << HString(QDir::currentPath().toStdString().c_str())+"/fmu1 32/unittestmodel_export.fmu";
+        QTest::newRow("1") << HString(QDir::currentPath().toStdString().c_str())+"/fmu2 32/unittestmodel_export.fmu";
+#endif
     }
 
     void Generator_Simulink_Export()
