@@ -150,12 +150,18 @@ fmiComponent fmiInstantiateSlave(fmiString instanceName,
     UNUSED(interactive);
     UNUSED(visible);
 
+    printf("FMU: Entering fmi1InstantiateSlave()...");
+
     fmuContext *fmu = static_cast<fmuContext *>(malloc(sizeof(fmuContext)));
+
+    printf("FMU: Debug 1");
 
     fmu->instanceName = strdup(instanceName);
     fmu->instantiationToken = fmuGUID;
     fmu->logger = functions.logger;
     fmu->loggingOn = loggingOn;
+
+    printf("FMU: Debug 2");
 
     double startT, stopT;      // Dummy variables
     fmu->pSystem = gHopsanCore.loadHMFModel(getModelString().c_str(), startT, stopT);
@@ -178,11 +184,17 @@ fmiComponent fmiInstantiateSlave(fmiString instanceName,
         get_all_hopsan_messages(fmu);
     }
 
+    printf("FMU: Debug 3");
+
     INITDATAPTRS
+
+    printf("FMU: Debug 3");
 
     if(fmu->loggingOn) {
         fmu->logger(fmu, fmu->instanceName, fmiOK, "info", "Successfully instantiated FMU");
     }
+
+    printf("FMU: Leaving fmi1InstantiateSlave()...");
 
     return fmu;
 }
