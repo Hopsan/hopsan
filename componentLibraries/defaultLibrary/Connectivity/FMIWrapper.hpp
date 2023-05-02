@@ -395,8 +395,11 @@ public:
             addConstant("tol", "Relative tolerance", "", mTolerance, mTolerance);
             addConstant("loggingOn", "Enable FMU logging", "", mLoggingOn, mLoggingOn);
             
+            printf("Debug A\n");
+
            //Loop through variables in FMU and generate the lists
             for(int i=0; i<fmi2_getNumberOfVariables(fmu); ++i) {
+                printf("Debug B\n");
                 fmi2VariableHandle* var = fmi2_getVariableByIndex(fmu, i);
                 const char* name = fmi2_getVariableName(var);
                 const char* description = fmi2_getVariableDescription(var);
@@ -477,10 +480,13 @@ public:
             }
             addConstant("visibleOutputs", "Visible output variables (hidden)", "", mVisibleOutputs, mVisibleOutputs);
 
+            printf("Debug C\n");
     
             //Instantiate FMU
             fmi2_instantiate(fmu, fmi2CoSimulation, FMIWrapper_fmi2Logger, calloc, free, NULL, (fmi2ComponentEnvironment*)this, fmi2False, mLoggingOn);
-                 
+
+            printf("Debug D\n");
+
             if(NULL == fmu) {
                 stopSimulation("Failed to instantiate FMU");
                 clearPortsAndParameters();

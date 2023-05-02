@@ -152,47 +152,49 @@ fmiComponent fmiInstantiateSlave(fmiString instanceName,
 
     printf("FMU: Entering fmi1InstantiateSlave()...");
 
-    fmuContext *fmu = static_cast<fmuContext *>(malloc(sizeof(fmuContext)));
+    fmuContext *fmu = NULL;
 
-    printf("FMU: Debug 1");
+//    fmuContext *fmu = static_cast<fmuContext *>(malloc(sizeof(fmuContext)));
 
-    fmu->instanceName = strdup(instanceName);
-    fmu->instantiationToken = fmuGUID;
-    fmu->logger = functions.logger;
-    fmu->loggingOn = loggingOn;
+//    printf("FMU: Debug 1");
 
-    printf("FMU: Debug 2");
+//    fmu->instanceName = strdup(instanceName);
+//    fmu->instantiationToken = fmuGUID;
+//    fmu->logger = functions.logger;
+//    fmu->loggingOn = loggingOn;
 
-    double startT, stopT;      // Dummy variables
-    fmu->pSystem = gHopsanCore.loadHMFModel(getModelString().c_str(), startT, stopT);
-    if (fmu->pSystem) {
-        std::string resourceLocation = fmuLocation;
-        resourceLocation = resourceLocation+"/resources";
-        std::string rl = parseResourceLocation(resourceLocation);
-        fmu->pSystem->addSearchPath(rl.c_str());
-        fmu->pSystem->setDesiredTimestep(TIMESTEP);
-        fmu->pSystem->setNumLogSamples(0);
-        fmu->pSystem->disableLog();
-        if(!fmu->pSystem->checkModelBeforeSimulation())
-        {
-            get_all_hopsan_messages(fmu);
-            if(fmu->loggingOn) {
-                fmu->logger(fmu, fmu->instanceName, fmiError, "error", "Model cannot be simulated.");
-            }
-            return NULL;
-        }
-        get_all_hopsan_messages(fmu);
-    }
+//    printf("FMU: Debug 2");
 
-    printf("FMU: Debug 3");
+//    double startT, stopT;      // Dummy variables
+//    fmu->pSystem = gHopsanCore.loadHMFModel(getModelString().c_str(), startT, stopT);
+//    if (fmu->pSystem) {
+//        //std::string resourceLocation = fmuLocation;
+//        //resourceLocation = resourceLocation+"/resources";
+//        //std::string rl = parseResourceLocation(resourceLocation);
+//        //fmu->pSystem->addSearchPath(rl.c_str());
+//        fmu->pSystem->setDesiredTimestep(TIMESTEP);
+//        fmu->pSystem->setNumLogSamples(0);
+//        fmu->pSystem->disableLog();
+//        if(!fmu->pSystem->checkModelBeforeSimulation())
+//        {
+//            get_all_hopsan_messages(fmu);
+//            if(fmu->loggingOn) {
+//                fmu->logger(fmu, fmu->instanceName, fmiError, "error", "Model cannot be simulated.");
+//            }
+//            return NULL;
+//        }
+//        get_all_hopsan_messages(fmu);
+//    }
 
-    INITDATAPTRS
+//    printf("FMU: Debug 3");
 
-    printf("FMU: Debug 3");
+//    INITDATAPTRS
 
-    if(fmu->loggingOn) {
-        fmu->logger(fmu, fmu->instanceName, fmiOK, "info", "Successfully instantiated FMU");
-    }
+//    printf("FMU: Debug 3");
+
+//    if(fmu->loggingOn) {
+//        fmu->logger(fmu, fmu->instanceName, fmiOK, "info", "Successfully instantiated FMU");
+//    }
 
     printf("FMU: Leaving fmi1InstantiateSlave()...");
 

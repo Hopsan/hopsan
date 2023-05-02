@@ -146,6 +146,8 @@ fmi2Component fmi2Instantiate(fmi2String instanceName,
 {
     UNUSED(visible);
 
+    printf("FMU: Entering fmi2Instantiate\n");
+
     if(fmuType != fmi2CoSimulation) {
         return NULL;
     }
@@ -182,6 +184,8 @@ fmi2Component fmi2Instantiate(fmi2String instanceName,
     if(fmu->loggingOn) {
         fmu->logger(fmu->componentEnvironment, fmu->instanceName, fmi2OK, "info", "Successfully instantiated FMU");
     }
+
+    printf("FMU: Leaving fmi2Instantiate\n");
 
     return fmu;
 }
