@@ -249,58 +249,7 @@ public:
 
         deconfigure(); //Make sure to unload FMU and free memory before loading a new one
 
-        for(size_t i=0; i<mPorts.size(); ++i) {
-            removePort(mPorts[i]->getName());
-        }
-        std::vector<HString> parameters;
-        this->getParameterNames(parameters);
-        for(size_t i=0; i<parameters.size(); ++i) {
-            if(parameters[i] != "path") {
-                this->unRegisterParameter(parameters[i]);
-            }
-        }
-        mPorts.clear();
-        mVisibleOutputs.clear();
-        mRealOutputs.clear();
-        mBoolOutputs.clear();
-        mIntOutputs.clear();
-        mRealInputs.clear();
-        mBoolInputs.clear();
-        mIntInputs.clear();
-        mRealParameters.clear();
-        mStringParameters.clear();
-        mBoolParameters.clear();
-        mIntParameters.clear();
-        mFloat64Outputs.clear();
-        mFloat32Outputs.clear();
-        mInt64Outputs.clear();
-        mInt32Outputs.clear();
-        mInt16Outputs.clear();
-        mInt8Outputs.clear();
-        mUInt64Outputs.clear();
-        mUInt32Outputs.clear();
-        mUInt16Outputs.clear();
-        mUInt8Outputs.clear();
-        mFloat64Inputs.clear();
-        mFloat32Inputs.clear();
-        mInt64Inputs.clear();
-        mInt32Inputs.clear();
-        mInt16Inputs.clear();
-        mInt8Inputs.clear();
-        mUInt64Inputs.clear();
-        mUInt32Inputs.clear();
-        mUInt16Inputs.clear();
-        mUInt8Inputs.clear();
-        mFloat64Parameters.clear();
-        mFloat32Parameters.clear();
-        mInt64Parameters.clear();
-        mInt32Parameters.clear();
-        mInt16Parameters.clear();
-        mInt8Parameters.clear();
-        mUInt64Parameters.clear();
-        mUInt32Parameters.clear();
-        mUInt16Parameters.clear();
-        mUInt8Parameters.clear();
+        clearPortsAndParameters();
 
         addInfoMessage("Loading FMU from "+mFmuPath+"...");
 
@@ -421,8 +370,10 @@ public:
             //Instantiate FMU
             printf("Hopsan: calling fmi1InstantiateSlave()...");
             if(!fmi1_instantiateSlave(fmu, "application/x-fmu-sharedlibrary", 1000, fmi1False, fmi1False, FMIWrapper_fmi1Logger, calloc, free, NULL, mLoggingOn)) {
+                printf("Hopsan: fmi1InstantiateSlave() failed!");
                 addErrorMessage("Hopsan: fmi1InstantiateSlave() failed!");
                 fmu = NULL;
+                clearPortsAndParameters();
                 return;
             }
             printf("Hopsan: fmi1InstantiateSlave() was successful!\n");
@@ -431,6 +382,7 @@ public:
                  
             if(NULL == fmu) {
                 stopSimulation("Failed to instantiate FMU");
+                clearPortsAndParameters();
                 return;
             }
     
@@ -531,6 +483,7 @@ public:
                  
             if(NULL == fmu) {
                 stopSimulation("Failed to instantiate FMU");
+                clearPortsAndParameters();
                 return;
             }
     
@@ -784,6 +737,7 @@ public:
     
             if (NULL == fmu) {
                 stopSimulation("Failed to instantiate FMU");
+                clearPortsAndParameters();
                 return;
             }
     
@@ -1315,6 +1269,62 @@ public:
             }
         }
         return ret;
+    }
+
+    void clearPortsAndParameters()
+    {
+        for(size_t i=0; i<mPorts.size(); ++i) {
+            removePort(mPorts[i]->getName());
+        }
+        std::vector<HString> parameters;
+        this->getParameterNames(parameters);
+        for(size_t i=0; i<parameters.size(); ++i) {
+            if(parameters[i] != "path") {
+                this->unRegisterParameter(parameters[i]);
+            }
+        }
+        mPorts.clear();
+        mVisibleOutputs.clear();
+        mRealOutputs.clear();
+        mBoolOutputs.clear();
+        mIntOutputs.clear();
+        mRealInputs.clear();
+        mBoolInputs.clear();
+        mIntInputs.clear();
+        mRealParameters.clear();
+        mStringParameters.clear();
+        mBoolParameters.clear();
+        mIntParameters.clear();
+        mFloat64Outputs.clear();
+        mFloat32Outputs.clear();
+        mInt64Outputs.clear();
+        mInt32Outputs.clear();
+        mInt16Outputs.clear();
+        mInt8Outputs.clear();
+        mUInt64Outputs.clear();
+        mUInt32Outputs.clear();
+        mUInt16Outputs.clear();
+        mUInt8Outputs.clear();
+        mFloat64Inputs.clear();
+        mFloat32Inputs.clear();
+        mInt64Inputs.clear();
+        mInt32Inputs.clear();
+        mInt16Inputs.clear();
+        mInt8Inputs.clear();
+        mUInt64Inputs.clear();
+        mUInt32Inputs.clear();
+        mUInt16Inputs.clear();
+        mUInt8Inputs.clear();
+        mFloat64Parameters.clear();
+        mFloat32Parameters.clear();
+        mInt64Parameters.clear();
+        mInt32Parameters.clear();
+        mInt16Parameters.clear();
+        mInt8Parameters.clear();
+        mUInt64Parameters.clear();
+        mUInt32Parameters.clear();
+        mUInt16Parameters.clear();
+        mUInt8Parameters.clear();
     }
 };
 
