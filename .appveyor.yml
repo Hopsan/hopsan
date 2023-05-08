@@ -2,9 +2,9 @@ image:
 - Visual Studio 2017
 environment:
   HOPSAN_BUILD_SCRIPT_NOPAUSE: 1
-  HOPSAN_BUILD_QT_HOME: C:\Qt\5.9.9\mingw53_32
-  HOPSAN_BUILD_MINGW_HOME: C:\Qt\Tools\mingw530_32
-platform: x86
+  HOPSAN_BUILD_QT_HOME: C:\Qt\5.12.6\mingw73_64
+  HOPSAN_BUILD_MINGW_HOME: C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64
+platform: x64
 configuration: Release
 install:
   - git submodule update --init
@@ -35,5 +35,4 @@ build_script:
   - dir bin
 test_script:
   - runUnitTests.bat
-#  - runValidationTests.bat
-# one validation test fail on 32 bit due to very small numeric error. Activate this once that has been resolved.
+  - runValidationTests.bat
