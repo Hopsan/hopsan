@@ -288,9 +288,13 @@ fmiStatus fmiGetInteger(fmiComponent c,
 {
     UNUSED(c);
     UNUSED(valueReferences);
-    UNUSED(nValueReferences);
     UNUSED(values);
-    return fmiError;
+    if (nValueReferences == 0) {
+        return fmiOK;
+    }
+    else {
+        return fmiError;
+    }
 }
 
 fmiStatus fmiSetInteger(fmiComponent c,
@@ -300,9 +304,13 @@ fmiStatus fmiSetInteger(fmiComponent c,
 {
     UNUSED(c);
     UNUSED(valueReferences);
-    UNUSED(nValueReferences);
     UNUSED(values);
-    return fmiError;
+    if (nValueReferences == 0) {
+        return fmiOK;
+    }
+    else {
+        return fmiError;
+    }
 }
 
 fmiStatus fmiGetBoolean(fmiComponent c,
@@ -312,9 +320,13 @@ fmiStatus fmiGetBoolean(fmiComponent c,
 {
     UNUSED(c);
     UNUSED(valueReferences);
-    UNUSED(nValueReferences);
     UNUSED(values);
-    return fmiError;
+    if (nValueReferences == 0) {
+        return fmiOK;
+    }
+    else {
+        return fmiError;
+    }
 }
 
 fmiStatus fmiSetBoolean(fmiComponent c,
@@ -324,9 +336,13 @@ fmiStatus fmiSetBoolean(fmiComponent c,
 {
     UNUSED(c);
     UNUSED(valueReferences);
-    UNUSED(nValueReferences);
     UNUSED(values);
-    return fmiError;
+    if (nValueReferences == 0) {
+        return fmiOK;
+    }
+    else {
+        return fmiError;
+    }
 }
 
 fmiStatus fmiGetString(fmiComponent c,
@@ -336,9 +352,13 @@ fmiStatus fmiGetString(fmiComponent c,
 {
     UNUSED(c);
     UNUSED(valueReferences);
-    UNUSED(nValueReferences);
     UNUSED(values);
-    return fmiError;
+    if (nValueReferences == 0) {
+        return fmiOK;
+    }
+    else {
+        return fmiError;
+    }
 }
 
 fmiStatus fmiSetString(fmiComponent c,
@@ -348,9 +368,13 @@ fmiStatus fmiSetString(fmiComponent c,
 {
     UNUSED(c);
     UNUSED(valueReferences);
-    UNUSED(nValueReferences);
     UNUSED(values);
-    return fmiError;
+    if (nValueReferences == 0) {
+        return fmiOK;
+    }
+    else {
+        return fmiError;
+    }
 }
 
 //Co-simulation
