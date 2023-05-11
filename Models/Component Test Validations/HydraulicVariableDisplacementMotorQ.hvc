@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanvalidationconfiguration hvcversion="0.2">
+  <validation time="141513" hopsancoreversion="2.20.0.20200515.1608" hopsanguiversion="2.20.0.20230428.1124" date="20230511">
+    <modelfile>../Component Test/HydraulicComponent Test/HydraulicVariableDisplacementMotorQTest.hmf</modelfile>
+    <hvdfile>HydraulicVariableDisplacementMotorQ.hvd</hvdfile>
+    <variable name="Pressure_Transducer_1#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>1</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+    <variable name="Pressure_Transducer#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>2</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+    <variable name="Flow_Rate_Transducer#out#Value">
+      <timecolumn>0</timecolumn>
+      <column>3</column>
+      <tolerance>0.01</tolerance>
+    </variable>
+  </validation>
+</hopsanvalidationconfiguration>
