@@ -28,6 +28,7 @@
 #define HYDRAULICVARIABLEDISPLACEMENTPUMP_HPP_INCLUDED
 
 #include <iostream>
+#include <cmath>
 #include "ComponentEssentials.h"
 
 #include <math.h>
@@ -101,43 +102,10 @@ namespace hopsan {
             //Variable Displacement Pump equations
 
             q2 = ( dp*n*eps/(2.0*pi) + Kcp*(c1-c2) ) / ( (Zc1+Zc2)*Kcp+1 );
+            q2 = std::fmin(std::fmax(q2, -c2/Zc2), c1/Zc1); //Limit flow to indirectly limit pressures
             q1 = -q2;
             p2 = c2 + Zc2*q2;
             p1 = c1 + Zc1*q1;
-
-            /* Cavitation Check */
-
-            if (p1 < 0.0)
-            {
-                c1 = 0.0;
-                Zc1 = 0.0;
-                cav = true;
-            }
-            if (p2 < 0.0)
-            {
-                c2 = 0.0;
-                Zc2 = 0.0;
-                cav = true;
-            }
-            if (cav)
-            {
-                q2 = ( dp*n*eps/(2.0*pi) + Kcp*(c1-c2) ) / ( (Zc1+Zc2)*Kcp+1 );
-                p1 = c1 + Zc1 * q1;
-                p2 = c2 + Zc2 * q2;
-                if (p1 <= 0.0)
-                {
-                    p1 = 0.0;
-                    q2 = std::min(q2, 0.0);
-                    p2 = c2;
-                }
-                if (p2 <= 0.0)
-                {
-                    p2 = 0.0;
-                    q2 = std::max(q2, 0.0);
-                    p1 = c1;
-                }
-                q1 = -q2;
-            }
 
             //Write new values to nodes
             (*mpND_p1) = p1;

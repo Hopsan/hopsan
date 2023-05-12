@@ -199,6 +199,7 @@ namespace hopsan {
             vmax = qmaxl * denom * sqrt(fabs(p2 - 1e5) / (pnom * tp));
             vmin = -qmaxl * denom * sqrt(fabs(p2 - 1e5) / (pnom * tm));
             qp = fltppu(u, wp1, g1, g2, ymin, ymax, vmin, vmax) / denom;
+            qp = std::fmin(std::fmax(qp, -c2/Zc2), c1/Zc1); //Limit flow to indirectly limit pressures
 
             //Calculate pressures
             p1 = c1e - Zc1 * gamma * qp;
@@ -207,23 +208,7 @@ namespace hopsan {
             //Leakage flow
             ql = Clp * (p2 - p1);
             q2 = qp - ql;
-
-
-            //Cavitation check
-            if (p1 < 0.0)
-            {
-                p1 = 0.0;
-                q2 = std::min(q2, 0.0);
-            }
-            if (p2 <= 0.0)
-            {
-                p2 = 0.0;
-                q2 = std::max(q2, 0.0);
-            }
-            if (c3 < 0.0) { c3 = 0.0; }
-
             q1 = -q2;
-
 
             //Write new values to nodes
             (*mpND_p1) = p1;

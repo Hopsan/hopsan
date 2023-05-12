@@ -134,55 +134,10 @@ namespace hopsan {
 
             //Ideal Flow
             q1a = -dpe * w3;
+            q1a = std::fmin(std::fmax(q1a, -c1a/gamma/Zc1), c2a/gamma/Zc2); //Limit flow to indirectly limit pressures
             q2a = -q1a;
             p1 = c1a + gamma * Zc1 * q1a;
             p2 = c2a + gamma * Zc2 * q2a;
-
-            //Cavitation Check
-            bool cav=false;
-            if (p1 < 0.0) {
-                c1 = 0.0;
-                Zc1 = 0;
-                cav = true;
-            }
-            if (p2 < 0.0) {
-                c2 = 0.0;
-                Zc2 = 0;
-                cav = true;
-            }
-            if(cav) {
-                ble = B + Zc1 * dpe*dpe + Zc2 * dpe*dpe + Zx3;
-                gamma = 1 / (cl * (Zc1 + Zc2) + 1);
-                c1a = (cl * Zc2 + 1) * gamma * c1 + cl * gamma * Zc1 * c2;
-                c2a = (cl * Zc1 + 1) * gamma * c2 + cl * gamma * Zc2 * c1;
-                ct = c1a * dpe - c2a * dpe - c3;
-                mIntegrator.setDamping(ble / J * mTimestep);
-                mIntegrator.redoIntegrate(ct/J);
-                w3 = mIntegrator.valueFirst();
-
-                q1a = -dpe * w3;
-                p1 = c1a + gamma * Zc1 * q1a;
-                p2 = c2a + gamma * Zc2 * q2a;
-
-                if(p1<=0) {
-                    p1 = 0;
-                    q1a = std::max(q1a, 0.0);
-                    w3 = std::min(w3, 0.0);
-                }
-                if(p2<=0) {
-                    p2 = 0;
-                    q1a = std::min(q1a, 0.0);
-                    w3 = std::max(w3, 0.0);
-                }
-                if(w3 > 0.0) {
-                    a3 = mIntegrator.valueSecond();     //Only change a3 if w3 was not limited due to cavitation
-                }
-                else {
-                    a3 = prevA3;
-                }
-                mIntegrator.initializeValues(ct/J, a3, w3);
-                q2a = -q1a;
-            }
 
             //Leakage Flow
             q1leak = -cl * (p1 - p2);
