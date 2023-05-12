@@ -35,6 +35,7 @@
 #define HYDRAULICFIXEDDISPLACEMENTPUMP_HPP_INCLUDED
 
 #include <iostream>
+#include <cmath>
 #include "ComponentEssentials.h"
 
 namespace hopsan {
@@ -102,6 +103,7 @@ namespace hopsan {
 
             //Fixed Displacement Pump equations
             q2 = ( dp*n/(2.0*pi) + Clp*(c1-c2) ) / ( (Zc1+Zc2)*Clp+1 );
+            q2 = std::fmin(std::fmax(q2, -c2/Zc2), c1/Zc1); //Limit flow to indirectly limit pressures
             q1 = -q2;
             p2 = c2 + Zc2*q2;
             p1 = c1 + Zc1*q1;
