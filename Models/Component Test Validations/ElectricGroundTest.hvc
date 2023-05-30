@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanvalidationconfiguration hvcversion="0.2">
-	<validation hopsancliversion="2.20.0" time="216039" date="2023044" hopsancoreversion="2.20.0.20200515.1608">
-		<modelfile>../hopsan-code/Models/Component Test/ElectricComponent Test/ElectricGroundTest.hmf</modelfile>
+	<validation hopsancliversion="2.20.0" time="011331" date="2023068" hopsancoreversion="2.20.0.20200515.1608">
+		<modelfile>../Component Test/ElectricComponent Test/ElectricGroundTest.hmf</modelfile>
 		<hvdfile>ElectricGroundTest.hvd</hvdfile>
 		<variable name="Current_sensor#Piout#Value">
 			<timecolumn>0</timecolumn>
@@ -33,24 +33,24 @@
 			<column>6</column>
 			<tolerance>0.010000</tolerance>
 		</variable>
-		<variable name="">
+		<variable name="Current_sensor_3#Piout#Value">
 			<timecolumn>0</timecolumn>
 			<column>7</column>
 			<tolerance>0.010000</tolerance>
 		</variable>
-		<variable name="">
+		<variable name="Voltage_sensor_1#Puout#Value">
 			<timecolumn>0</timecolumn>
-			<column>7</column>
+			<column>8</column>
 			<tolerance>0.010000</tolerance>
 		</variable>
-		<variable name="">
+		<variable name="Current_sensor_4#Piout#Value">
 			<timecolumn>0</timecolumn>
-			<column>7</column>
+			<column>9</column>
 			<tolerance>0.010000</tolerance>
 		</variable>
-		<variable name="">
+		<variable name="Current_sensor_5#Piout#Value">
 			<timecolumn>0</timecolumn>
-			<column>7</column>
+			<column>10</column>
 			<tolerance>0.010000</tolerance>
 		</variable>
 	</validation>
