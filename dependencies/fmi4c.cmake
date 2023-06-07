@@ -32,6 +32,9 @@ if (EXISTS ${local_fmi4c_dir})
                                        IMPORTED_LOCATION ${static_zlib}
                                        IMPORTED_LOCATION_DEBUG ${static_zlib_d})
       target_link_libraries(fmi4c INTERFACE fmi4c_zlib)
+  else()
+      find_package(ZLIB MODULE REQUIRED)
+      target_link_libraries(fmi4c INTERFACE ZLIB::ZLIB)
   endif()
 
   install(DIRECTORY ${local_fmi4c_dir} DESTINATION dependencies)
