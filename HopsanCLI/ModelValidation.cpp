@@ -41,6 +41,7 @@
 #include "hopsan_rapidxml.hpp"
 #include "ComponentUtilities/CSVParser.h"
 #include "ComponentUtilities/LookupTable.h"
+#include "Nodes.h"
 
 #include <cstring>
 #include <iomanip>
@@ -798,11 +799,12 @@ bool createModelTestDataSet(const string modelPath, const string hvcFilePath)
         {
             //cout << " found SignalSink" << endl;
             const std::vector<Port*> scope_ports = pComponent->getPortPtrVector();
-            for (size_t sp=0; sp<scope_ports.size(); ++sp)
-            {
-                std::vector<Port*> ports = scope_ports[sp]->getConnectedPorts();
+            for (auto sp : scope_ports) {
+                std::vector<Port*> ports = sp->getConnectedPorts();
                 data_ports.insert(data_ports.end(), ports.begin(), ports.end());
-                data_ids.push_back(0); //!< @todo here we assume that we only save signals
+                for (size_t i=0; i<ports.size(); ++i) {
+                    data_ids.push_back(NodeSignal::Value); // Scops only have signals
+                }
             }
         }
         else if (pComponent->isComponentSystem())
