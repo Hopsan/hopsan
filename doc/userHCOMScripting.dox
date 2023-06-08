@@ -465,6 +465,10 @@ Adds a new component to current model<br>
  Usage: adco [typename] [name] -n [other] [north-offset] [rot-angel]<br>
  Usage: adco [typename] [name] -s [other] [south-offset] [rot-angel]
 
+\subsection rpco rpco
+Replaces a component with a different type<br>
+ Usage: rpco [name] [typename]
+
 \subsection coco coco
 Connect components in current model<br>
  Usage: coco [comp1] [port1] [comp2] [port2]
@@ -578,6 +582,10 @@ Pause execution for a number of seconds<br>
 \subsection abs abs()
 The absolute value of each vector element<br>
 Usage: abs(vector)
+
+\subsection ans ans()
+Returns the answer from the previous computation<br>
+Usage: ans()
 
 \subsection aver aver()
 Calculate average value of vector<br>
