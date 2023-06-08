@@ -30,6 +30,67 @@
 ******************************
     Version History
 ******************************
+2.21.0 (2023-06-10)
+
+----- Important Change -----
+
+- From this version onward, 32-bit releases are no longer built by default. If you need a 32-bit version, you will need to build it yourself or ask kindly in the issue tracker.
+- This version replaces the FMI import functionality, so instead of compiling a specific FMU wrapper on import, an existing FMIWrapper component shall be used instead. It is available in the default library under the Connectivity category. This means that any model that included a generated FMI component from previous versions will not longer work. You need to replace that generated component with the new FMIWrapper component.
+
+----- Enhancements -----
+
+- Packaging:
+  - Hopsan was added to Chocolatey, a package manager for Windows, see https://community.chocolatey.org/packages/hopsan for details
+    Note! This package was added by an external contributor and is not directly built by the developers of Hopsan.
+
+- HopsanCore:
+  - Added connection-not-required argument to addSystemPort() function. This will only affect hand-coded "subsystem components"
+    Default behavior is to require a connection
+  - Extend pneumatic node type with density, density wave variable and density characteristic impedance
+    This is required for correct computation of temperature and heat flow
+
+- HopsanGenerator:
+  - Support inline transformation of Laplace operator
+  - FMI: Added FMI 3.0 import and export support
+  - FMI: All FMI import is now handled through the FMIWrapper component (instead of regenerating and compiling a custom wrapper every time)
+  - FMI: Added fmi4c dependency (FMILibrary is still kept for backwards compatibility)
+  - FMI: Harmonized FMI export for 1.0, 2.0 and 3.0 and removed unused template files
+
+- HopsanGUI:
+  - Improved find widget behavior when pressing Ctrl-F
+  - Home button will now move to beginning of line if there are only spaces before cursor in the text editor
+  - Do not add closing parenthesis when it has already been added in  the text editor
+  - HCOM: New function ans() returns the answer from the previous computation. Only works for scalars
+  - HCOM: New command rpco() which replaces a component by specified type. Replacement type must be specified in component appearance XML
+  - HCOM: Support decimal number without decimal part bwfore e in expressions such as in x=14.e-3
+
+----- Bug Fixes -----
+
+- SymHop:
+  - Only expand powers for integer exponents in SymHop
+
+- HopsanGUI
+  - Fix text editor parenthesis crash
+  - Fix text file constant warnings that file has changed on disk, even if it was saved by Hopsan
+  - Fix severe delays when saving text files
+  - Fix crashes when attempting to view the source of a missing component
+  - Fix crash when replacing subtype components with missing component
+  - FMU Export would fail on Linux when using deb package installation as the required zip was not in the dependency list
+  - Saving XML models and other XML data to Windows network drive share would take an extremely and unreasonably long time, it is now significantly faster
+  - Remember original data when saving models with missing components
+    This both eliminates the problem of accidentally saving a model with missing components and thereby losing data, and with the backup models being damaged during a failed library recompilation
+  - HCOM: Fix undesired abort of script when using if statement without else
+
+----- Component Libraries -----
+
+- The component Q-type ground in the Electric->Sources was actually a C-type ground, it has been renamed
+- A new component which is actually a Q-type ground has been added
+- Fixed several potential "free of dangling uninitialized pointers" in generated components
+  They apparently worked fine when built with GCC, but other compilers may have behaved differently
+- Add activity diagram components to the default library
+- Replaced old cavitation check i variable Q-type machine with a new check. Essentially, pressures are limited to zero implicitly by first limiting the flows to values required to get positive pressures. This solves problems with very large negative wave variables.
+
+--------------------------------------------------------------------------------------------------------------------------------------------
 2.20.0 (2022-07-11)
 
 ----- Enhancements -----
