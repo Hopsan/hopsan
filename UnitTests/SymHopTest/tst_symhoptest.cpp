@@ -903,6 +903,7 @@ private Q_SLOTS:
         QTest::newRow("36") << Expression("3.1415/4*15e-3^2*7800*.05") << variables << 0.068916656 << true;
         QTest::newRow("37") << Expression("x*y*y") << variables << x*y*y << true;
         QTest::newRow("38") << Expression("a_b^2") << variables << pow(a_b,2) << true;
+        QTest::newRow("39") << Expression("2.e-5") << variables << 0.00002 << true;
     }
 
 
