@@ -12,13 +12,13 @@ jobs:
       HOPSAN_BUILD_MINGW_HOME: 'WeDoNotWantMingwInPATH'
     steps:
       - name: Install Qt
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v3
         with:
           version: '5.15.2'
           arch: 'win64_msvc2019_64'
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 10
 
@@ -68,7 +68,7 @@ jobs:
         run: sudo apt-get install qt5-default qtbase5-dev qtbase5-private-dev libqt5webkit5-dev libqt5svg5-dev libqt5opengl5-dev libhdf5-dev libmarkdown2-dev libmsgpack-dev libqwt-qt5-dev libzmq3-dev
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 10
 
