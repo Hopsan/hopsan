@@ -16,13 +16,12 @@ name=hopsan
 devversion=2.21.0
 
 # Pbuilder dists and archs
-debianDistArchArray=( bullseye:amd64:bullseye      bullseye:i386:bullseye
-                      buster:amd64:qt5py3_buster   buster:i386:qt5py3_buster
-                      stretch:amd64:qt5py27        stretch:i386:qt5py27 )
-ubuntuDistArchArray=( jammy:amd64:bullseye
-                      impish:amd64:bullseye
-                      focal:amd64:focal
-                      bionic:amd64:qt5py3_1        bionic:i386:qt5py3_1 )
+debianDistArchArray=( bookworm:amd64:bookworm
+                      bullseye:amd64:bullseye
+                      buster:amd64:qt5py3_buster )
+ubuntuDistArchArray=( lunar:amd64:bookworm
+                      jammy:amd64:bullseye
+                      focal:amd64:focal )
 
 # Pbuilder mirrors
 ubuntuMirror=http://se.archive.ubuntu.com/ubuntu/
@@ -85,13 +84,7 @@ function builDSCFile {
 
   # Copy package configuration
   mkdir -p ${packagedir}
-  if [[ -d ${confdir}/debconfig_${config} ]]; then
-      # Use old packaging method
-      cp -a ${confdir}/debconfig_base/debian ${packagedir}
-      cp -a ${confdir}/debconfig_${config}/debian ${packagedir}
-  else
-      cp -a ${confdir}/${config}/debian ${packagedir}
-  fi
+  cp -a ${confdir}/${config}/debian ${packagedir}
 
   # Copy "unpack" prepared source files to this dir
   tar -xzf ${packagepreparedsrcfile} -C ${packagedir}
@@ -295,12 +288,7 @@ for i in "${distArchArrayDo[@]}"; do
 
     # Extract build dependencies from control file
     # Installs them once and for all to avoid wasting time on every build
-    if [[ -d ${debian_conf_root}/debconfig_${conf} ]]; then
-        # Use old method
-        debconf_path=${debian_conf_root}/debconfig_${conf}
-    else
-        debconf_path=${debian_conf_root}/${conf}
-    fi
+    debconf_path=${debian_conf_root}/${conf}
     extraPackages=$(echo $(cat ${debconf_path}/debian/control | sed -e '/Build-Depends/,/Standards-Version/!d' -e 's/Build-Depends://' -e '/Standards-Version.*/d' -e 's/[(][^)]*[)]//g' -e 's/\,//g'))
     #echo $extraPackages
 
