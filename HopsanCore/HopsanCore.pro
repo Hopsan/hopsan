@@ -233,3 +233,6 @@ HEADERS += \
     include/CoreUtilities/AliasHandler.h \
     include/CoreUtilities/SimulationHandler.h \
     include/CoreUtilities/SaveRestoreSimulationPoint.h
+
+#DO NOT remove the commented line below, it will be autoreplaced by script
+#INTERNALCOMPLIB_FMI4C_DEPENDENCY#

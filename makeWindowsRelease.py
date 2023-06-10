@@ -637,6 +637,7 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
     # Make sure we compile defaultLibrary into core
     replace_pattern('Common.prf', r'.*?DEFINES \*= HOPSAN_INTERNALDEFAULTCOMPONENTS', r'DEFINES *= HOPSAN_INTERNALDEFAULTCOMPONENTS')
     replace_pattern(r'HopsanCore/HopsanCore.pro', r'#INTERNALCOMPLIB.CPP#', r'../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cpp \\')
+    replace_pattern(r'HopsanCore/HopsanCore.pro', r'#INTERNALCOMPLIB_FMI4C_DEPENDENCY#', r'include($${PWD}/../dependencies/fmi4c.pri)')
     prepend_append_line_with_pattern('componentLibraries/defaultLibrary/defaultComponentLibrary.xml', '<lib.*?>', '<!-- The lib element is removed here since the default library code is built into the Hopsan Core -->\n<!--', '  -->')
     replace_pattern('componentLibraries/componentLibraries.pro', 'defaultLibrary', '')
 
