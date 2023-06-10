@@ -1,5 +1,6 @@
 set HOPSAN_BUILD_SCRIPT_NOPAUSE=true
 start /wait cmd /c setupDiscount.bat
+start /wait cmd /c setupFmi4c.bat
 start /wait cmd /c setupFMILibrary.bat
 start /wait cmd /c setupQwt.bat
 start /wait cmd /c setupMsgpack.bat
