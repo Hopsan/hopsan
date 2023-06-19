@@ -1,22 +1,22 @@
 ## Update documentation release notes and version number
 
 - Create a release-2.XX.0 branch based on Hopsan/master
-- Update the Hopsan-release-notes.txt document
+- Update the Hopsan-release-notes.txt document  
   Create a commit
 - Update the doc/userHCOMScripting.dox
-  Open local dev build of the Hopsan code you are going to release,
-  In HCOM run: "help doxygen"
-  Copy and replace the relevant section in the dox file.
-  Create a commit (if anything changed)
+  - Open local dev build of the Hopsan code you are going to release,  
+  In HCOM run: "help doxygen"  
+  - Copy and replace the relevant section in the dox file.
+  - Create a commit (if anything changed)
 - Find places where version number shall be updated "git grep -E 2\\.[0-9]{1\,}\\.[0-9]":
   - HopsanCore/include/HopsanCoreVersion.h
   - makeDebRelease.sh
   - makeWindowsRelease.py
-  - packaging/mac-app/build.sh
-  Create a commit with the updated version numbers
+  - packaging/mac-app/build.sh  
+  - Create a commit with the updated version numbers
 - Sign the commits
 - Push the release branch and make a pull request against Hopsan/master, wait until green in CI systems
-- Once OK, locally merge the pull request into Hopsan/master using "git merge --ff-only" to preserve signatures
+- Once OK, locally merge the pull request into Hopsan/master using "git merge --ff-only" to preserve signatures  
   Do not use the merge button on GitHub, then signatures will be lost
 - Push "git push Hopsan master"
 
@@ -41,7 +41,7 @@
 - Answer the questions (Choose NO for 32-bit, No need for MSVC binaries)
 - Resulting packages will be in output64
 
-## Build Windows 32-bit release
+## Build Windows 32-bit release (optional)
 
 - Use a clean disposable working copy of hopsan (not same as for 64-bit)
 - Fetch: "git fetch --all --prune"
@@ -99,9 +99,9 @@ You may need to install: "snap install snapcraft review-tools"
 - Run ./makeSnapRelease.sh
 - Answer the questions
 - If you are on a desktop:
-  Run: "multipass delete snapcraft-hopsan"
-  Run: "multipass purge"
-  Run: "snapcraft snap"
+  - Run: "multipass delete snapcraft-hopsan"
+  - Run: "multipass purge"
+  - Run: "snapcraft snap"
 - If you are inside a container:
   Run "snapcraft snap --use-lxd"
 - Push release:
@@ -114,13 +114,13 @@ You may need to install: "snap install snapcraft review-tools"
 - Pull flathub/master (ensure you are up-to-date)
 - Create a release branch based on master: "git checkout -b release-2.XX.0 flathub/master"
 - Ensure no local modifications: "git status"
-- From hopsan-code/dependencies run "./download-dependencies.py --output-flatpak"
+- From hopsan-code/dependencies run "./download-dependencies.py --output-flatpak"  
   You need to manually replace the dependencies text in com.github.hopsan.Hopsan.json.in (if any dependency has changed)
 - Run makeFlatpakRelease.sh
 - Answer questions
-  Base version: 2.XX.0 (should match tag, without initial v)
-  Revision    : The date and time stamp, see deb release packages, they have it in the file name, Ex: "20220711.1354"
-  Commit hash : Full commit hash (tagged commit)
+  - Base version: 2.XX.0 (should match tag, without initial v)
+  - Revision    : The date and time stamp, see deb release packages, they have it in the file name, Ex: "20220711.1354"
+  - Commit hash : Full commit hash (tagged commit)
 - Commit the changes
 - Sign the commit
 - Push the release branch to your fork: "git push -u peter release-2.XX.0"
@@ -147,7 +147,7 @@ You may need to install: "snap install snapcraft review-tools"
 ## Update online documentation
 
 - Clone Hopsan/documentation.git
-- Remove all files except the .git sub-directory
+- Remove all files except the .git sub-directory  
   Use the system default rm command (not git rm)
 - Build the documentation in a clean hopsan working copy
 - Copy all files from doc/html into the documentation working copy
