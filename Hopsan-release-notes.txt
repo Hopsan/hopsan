@@ -30,6 +30,16 @@
 ******************************
     Version History
 ******************************
+2.21.1 (2023-06-20)
+
+----- Bug Fixes -----
+
+- DefaultComponentLibrary:
+  - Remove external library file for the included ActivityDiagram sub directory
+    This prevents compilation error of non-existing external library when the Windows version of Hopsan starts
+    The library has been embedded into the default component library
+
+--------------------------------------------------------------------------------------------------------------------------------------------
 2.21.0 (2023-06-10)
 
 ----- Important Change -----
