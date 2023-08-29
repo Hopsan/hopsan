@@ -31,10 +31,12 @@ if (EXISTS ${local_fmi4c_dir})
       set_target_properties(fmi4c_zlib PROPERTIES
                                        IMPORTED_LOCATION ${static_zlib}
                                        IMPORTED_LOCATION_DEBUG ${static_zlib_d})
-      target_link_libraries(fmi4c INTERFACE fmi4c_zlib)
+      #target_link_libraries(fmi4c INTERFACE fmi4c_zlib)
+      set_target_properties(fmi4c PROPERTIES INTERFACE_LINK_LIBRARIES fmi4c_zlib) # Compatible with old cmake 3.10
   else()
       find_package(ZLIB MODULE REQUIRED)
-      target_link_libraries(fmi4c INTERFACE ZLIB::ZLIB)
+      #target_link_libraries(fmi4c INTERFACE ZLIB::ZLIB)
+      set_target_properties(fmi4c PROPERTIES INTERFACE_LINK_LIBRARIES ZLIB::ZLIB) # Compatible with old cmake 3.10
   endif()
 
   install(DIRECTORY ${local_fmi4c_dir} DESTINATION dependencies)
