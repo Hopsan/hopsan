@@ -4,7 +4,9 @@ Section: contrib/science
 Priority: optional
 Build-Depends: cmake,
                debhelper (>= 12~),
+               doxygen,
                fakeroot,
+               graphviz,
                libhdf5-dev,
                libmarkdown2-dev,
                libmsgpack-dev,
