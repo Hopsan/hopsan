@@ -25,6 +25,7 @@ set_target_properties(${target_name} PROPERTIES INSTALL_RPATH "\$ORIGIN")
 install(TARGETS ${target_name}
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
 )
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ DESTINATION include )
