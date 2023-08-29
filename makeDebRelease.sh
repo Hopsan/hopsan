@@ -185,14 +185,26 @@ pushd ${outputDir} > /dev/null
 # -----------------------------------------------------------------------------
 # Clone source code to ensure a clean build
 #
-echo Cloning from ${hopsancode_url} into ${tmp_stage_directory}
-rm -rf ${tmp_stage_directory}
-git clone -b ${branch_or_tag_to_clone} --depth 1 ${hopsancode_url} ${tmp_stage_directory}
-if [[ $? -ne 0 ]]; then
-    echo Error: Failed to clone from ${hopsancode_url}
-    exit 1
+echo "Cloning from ${hopsancode_url} into ${tmp_stage_directory}"
+if [[ -d ${tmp_stage_directory} ]]; then
+    echo "Reusing: ${tmp_stage_directory} as in exists, resetting --hard and clean -ffdx"
+    pushd ${tmp_stage_directory} > /dev/null
+    git remote set-url origin ${hopsancode_url}
+    git fetch --all --prune
+    git reset --hard origin/${branch_or_tag_to_clone}
+    git clean -ffdx
+    popd > /dev/null
+else
+    #rm -rf ${tmp_stage_directory}
+    git clone -b ${branch_or_tag_to_clone} --depth 1 ${hopsancode_url} ${tmp_stage_directory}
+    if [[ $? -ne 0 ]]; then
+        echo Error: Failed to clone from ${hopsancode_url}
+        exit 1
+    fi
 fi
 pushd ${tmp_stage_directory} > /dev/null
+echo "Updaing git submodules"
+git submodule sync
 git submodule update --init --recommend-shallow
 if [[ $? -ne 0 ]]; then
     echo Error: Failed to clone submodules from git
