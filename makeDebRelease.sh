@@ -176,10 +176,12 @@ echo
 #
 outputDir=${hopsancode_root}/output_deb
 outputDebDir=${outputDir}/debs
+readonly dependencies_cache=${outputDir}/dependencies-cache
 readonly tmp_stage_directory=${outputDir}/hopsan-stage
 
 mkdir -p ${outputDebDir}
 mkdir -p ${pbuilderWorkDir}
+mkdir -p ${dependencies_cache}
 pushd ${outputDir} > /dev/null
 
 # -----------------------------------------------------------------------------
@@ -229,7 +231,8 @@ readonly packageorigsrcfile=${outputfile_basename}.orig.tar.gz
 readonly package_dirname=${name}-${fullversionname}
 
 stage_directory=${tmp_stage_directory}-${fullversionname}
-mv ${tmp_stage_directory} ${stage_directory}
+rm -rf ${stage_directory} # Cleanup unlikely leftovers
+cp -r ${tmp_stage_directory} ${stage_directory}
 
 # -----------------------------------------------------------------------------
 # Prepare source code inside stage directory and package it into original source package
@@ -241,7 +244,7 @@ ${stage_directory}/packaging/prepareSourceCode.sh ${hopsancode_gitwc} ${stage_di
 # Download dependencies, since that can not be done inside a pbuilder environment
 # Unfortunately all dependencies must be downloaded since we can not know at this point which of them will be used
 pushd ${stage_directory}/dependencies > /dev/null
-./download-dependencies.py --all
+./download-dependencies.py --all --cache ${dependencies_cache}
 popd > /dev/null
 set +e
 # Remove .git directory and submodule files (if present) before packaging source code
