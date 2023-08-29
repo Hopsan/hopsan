@@ -179,6 +179,7 @@ class DependenciesXML:
     def __init__(self, dependencies_xml_file):
         tree = ET.parse(dependencies_xml_file)
         self.root = tree.getroot()
+        self.cache_dir = str()
 
     def __match_choice(self, name, version, choices, allow_missing):
         found_name = False
@@ -204,6 +205,19 @@ class DependenciesXML:
             fname = decide_file_name(dep_name, url)
 
             do_download = True
+
+            use_cache = len(self.cache_dir) > 0
+            cached_fpath = os.path.join(self.cache_dir, fname)
+            if use_cache and not os.path.isfile(fname) and os.path.isfile(cached_fpath):
+                print("Found {} in download cache".format(fname))
+                if verify_filehash(cached_fpath, hash_algo, expected_hashsum):
+                    print("Copying {}".format(cached_fpath))
+                    shutil.copyfile(cached_fpath, fname)
+                else:
+                    print('Warning: ' + hash_algo + ' missmatch in file ' + cached_fpath)
+                    print('Expected: ' + expected_hashsum)
+                    print('Actual: ' + hashsum_file(cached_fpath, hash_algo))
+
             if os.path.isfile(fname):
                 print('Info: File already exists '+fname)
                 if verify_filehash(fname, hash_algo, expected_hashsum):
@@ -218,6 +232,9 @@ class DependenciesXML:
             if do_download:
                 isok = download(url, fname, hash_algo, expected_hashsum)
                 if isok:
+                    if use_cache:
+                        print("Copying {} to download cache {}".format(fname, cached_fpath))
+                        shutil.copyfile(fname, cached_fpath)
                     return (fname, True, True)
 
         return ("", False, False)
@@ -233,6 +250,9 @@ class DependenciesXML:
                 matching_dependencies.append(dep)
                 allready_added_names.append(dep_name)
         return matching_dependencies
+
+    def set_download_cache_dir(self, dir_path):
+        self.cache_dir = dir_path
 
     def list_dependencies(self):
         names = list()
@@ -333,6 +353,7 @@ class DependenciesXML:
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
     argparser.add_argument('--all',  dest='download_all', action='store_true',  help='Download all dependencies (excluding toolchain)' )
+    argparser.add_argument('--cache', dest='cache_dir', type=str,  help='Cache directory for downloads')
     argparser.add_argument('--include-toolchain',  dest='download_toolchain', action='store_true',  help='Download toolchain dependencies' )
     argparser.add_argument('--list',  dest='list', action='store_true',  help='List available dependencies' )
     argparser.add_argument('--force', dest='force', action='store_true',
@@ -346,6 +367,13 @@ if __name__ == "__main__":
     chosen_deps = args.dependency_name[0]
 
     deps_xml = DependenciesXML('dependencies.xml')
+    if args.cache_dir:
+        print("Using download cache dir: " + args.cache_dir)
+        if not os.path.isdir(args.cache_dir):
+            print('Error: {} does not exist or is not a directory'.format(args.cache_dir))
+            sys.exit(1)
+        deps_xml.set_download_cache_dir(args.cache_dir)
+
     if args.output_flatpak:
         deps = deps_xml.ouput_dependencies_flatpak()
         output = str()
@@ -360,6 +388,6 @@ if __name__ == "__main__":
     deps_xml.check_choices(chosen_deps)
     all_ok = deps_xml.download_and_unpack_chosen_dependencies(chosen_deps, args.download_all, args.download_toolchain, args.force)
     if all_ok:
-        exit(0)
+        sys.exit(0)
     else:
-        exit(1)
+        sys.exit(1)
