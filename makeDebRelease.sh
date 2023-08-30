@@ -176,7 +176,12 @@ echo
 #
 outputDir=${hopsancode_root}/output_deb
 outputDebDir=${outputDir}/debs
-readonly dependencies_cache=${outputDir}/dependencies-cache
+# If a persistent cache dir for hopsan dependencies dowloads exists in the "workspace" then prefer it over loca cache that will be removed by git clean
+if [[ -d ${hopsancode_root}/../hopsan-dependencies-cache ]]; then
+    readonly dependencies_cache=${hopsancode_root}/../hopsan-dependencies-cache
+else
+    readonly dependencies_cache=${outputDir}/dependencies-cache
+fi
 readonly tmp_stage_directory=${outputDir}/hopsan-stage
 
 mkdir -p ${outputDebDir}
