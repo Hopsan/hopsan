@@ -7491,7 +7491,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     bool ok;
     SymHop::Expression symHopExpr = SymHop::Expression(expr, &ok, SymHop::Expression::NoSimplifications);
 
-    if(!ok || !symHopExpr.verifyExpression(mLocalFunctionoidPtrs.keys()))
+    if(!ok || !symHopExpr.verifyExpression(mLocalFunctionoidPtrs.keys()+mLocalFunctionDescriptions.keys()))
     {
         HCOMERR("Could not evaluate expression: "+expr);
         mAnsType = Wildcard;
