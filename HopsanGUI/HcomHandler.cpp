@@ -5094,8 +5094,27 @@ void HcomHandler::executeConnectCommand(const QString cmd)
         return;
     }
 
-    Port *pPort1 = mpModel->getViewContainerObject()->getModelObject(args[0])->getPort(args[1]);
-    Port *pPort2 = mpModel->getViewContainerObject()->getModelObject(args[2])->getPort(args[3]);
+    ModelObject *pComponent1, *pComponent2;
+    pComponent1 = mpModel->getViewContainerObject()->getModelObject(args[0]);
+    if(pComponent1 == nullptr) {
+        HCOMERR("Cannot find component \""+args[0]+"\"");
+        return;
+    }
+    pComponent2 = mpModel->getViewContainerObject()->getModelObject(args[2]);
+    if(pComponent2 == nullptr) {
+        HCOMERR("Cannot find component \""+args[2]+"\"");
+        return;
+    }
+    Port *pPort1 = pComponent1->getPort(args[1]);
+    if(pPort1 == nullptr) {
+        HCOMERR("Cannot find port \""+args[1]+"\" in component \""+args[0]+"\"");
+        return;
+    }
+    Port *pPort2 = pComponent2->getPort(args[3]);
+    if(pPort1 == nullptr) {
+        HCOMERR("Cannot find port \""+args[3]+"\" in component \""+args[2]+"\"");
+        return;
+    }
 
     Connector *pConn = mpModel->getViewContainerObject()->createConnector(pPort1, pPort2);
 
