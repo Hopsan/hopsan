@@ -2521,6 +2521,16 @@ void Expression::removeFactor(const Expression var)
     if(mFactors.size() == 1 && mDivisors.empty()) {
         this->replaceBy(Expression(mFactors.first()));
     }
+    for(int d=0; d<mDivisors.size(); ++d)
+    {
+        if(mDivisors[d].isMultiplyOrDivide())
+        {
+            mFactors.append(mDivisors[d].mDivisors);
+            mDivisors.append(mDivisors[d].mFactors);
+            mDivisors.removeAt(d);
+            --d;
+        }
+    }
     return;
 }
 
