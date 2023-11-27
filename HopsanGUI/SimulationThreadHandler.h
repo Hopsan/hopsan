@@ -75,6 +75,7 @@ signals:
     void setProgressState(SimulationState);
     void initDone(bool, int);
     void simulateDone(bool, int);
+    void stepFinished();
     void finalizeDone(bool, int);
 };
 
@@ -206,6 +207,7 @@ public:
 
 signals:
     void startSimulation();
+    void stepFinished();
     void done(bool);
 };
 

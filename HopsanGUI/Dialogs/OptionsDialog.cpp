@@ -345,6 +345,15 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     mpThreadsSpinBox->setMaximum(1000000);
     mpThreadsSpinBox->setSingleStep(1);
 
+    mpLogDuringSimulationCheckBox = new QCheckBox(tr("Collect Log Data During Simulation"));
+    mpLogDuringSimulationCheckBox->setCheckable(true);
+
+    mpLogStepsLabel = new QLabel(tr("Logging interval (simulation steps):"));
+    mpLogStepsSpinBox = new QSpinBox();
+    mpLogStepsSpinBox->setMinimum(1);
+    mpLogStepsSpinBox->setMaximum(INT_MAX);
+    mpLogStepsSpinBox->setSingleStep(1);
+
     //mpThreadsWarningLabel = new QLabel(tr("Caution! Choosing more threads than the number of processor cores may be unstable on some systems."));
     //mpThreadsWarningLabel->setWordWrap(true);
     //QPalette palette = mpThreadsWarningLabel->palette();
@@ -360,8 +369,11 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     pSimulationLayout->addWidget(mpUseMulticoreCheckBox, 2, 0, 1, 2);
     pSimulationLayout->addWidget(mpThreadsLabel, 3, 0);
     pSimulationLayout->addWidget(mpThreadsSpinBox, 3, 1);
-    pSimulationLayout->addWidget(new QWidget(), 4, 0, 1, 2);
-    pSimulationLayout->setRowStretch(4, 1);
+    pSimulationLayout->addWidget(mpLogDuringSimulationCheckBox, 4, 0, 1, 2);
+    pSimulationLayout->addWidget(mpLogStepsLabel, 5, 0);
+    pSimulationLayout->addWidget(mpLogStepsSpinBox, 5, 1);
+    pSimulationLayout->addWidget(new QWidget(), 6, 0, 1, 2);
+    pSimulationLayout->setRowStretch(6, 1);
     //mpSimulationLayout->addWidget(mpThreadsWarningLabel, 4, 0, 1, 2);
     mpSimulationWidget->setLayout(pSimulationLayout);
 
@@ -536,6 +548,8 @@ OptionsDialog::OptionsDialog(QWidget *parent)
 
     connect(mpUseMulticoreCheckBox,         SIGNAL(toggled(bool)),  mpThreadsLabel,         SLOT(setEnabled(bool)));
     connect(mpUseMulticoreCheckBox,         SIGNAL(toggled(bool)),  mpThreadsSpinBox,       SLOT(setEnabled(bool)));
+    connect(mpLogDuringSimulationCheckBox,  SIGNAL(toggled(bool)),  mpLogStepsLabel,        SLOT(setEnabled(bool)));
+    connect(mpLogDuringSimulationCheckBox,  SIGNAL(toggled(bool)),  mpLogStepsSpinBox,      SLOT(setEnabled(bool)));
 
     QTabWidget *pTabWidget = new QTabWidget(this);
     pTabWidget->addTab(mpInterfaceWidget, "Interface");
@@ -623,6 +637,8 @@ void OptionsDialog::setValues()
     gpConfig->setIntegerSetting(CFG_PROGRESSBARSTEP, mpProgressBarSpinBox->value());
     gpConfig->setBoolSetting(CFG_MULTICORE, mpUseMulticoreCheckBox->isChecked());
     gpConfig->setIntegerSetting(CFG_NUMBEROFTHREADS, mpThreadsSpinBox->value());
+    gpConfig->setBoolSetting(CFG_LOGDURINGSIMULATION, mpLogDuringSimulationCheckBox->isChecked());
+    gpConfig->setIntegerSetting(CFG_LOGSTEPS, mpLogStepsSpinBox->value());
     gpConfig->setBoolSetting(CFG_AUTOLIMITGENERATIONS, mpAutoLimitGenerationsCheckBox->isChecked());
     gpConfig->setBoolSetting(CFG_SHOWHIDDENNODEDATAVARIABLES, mpShowHiddenNodeDataVarCheckBox->isChecked());
     gpConfig->setBoolSetting(CFG_PLOTWINDOWSONTOP, mpPlotWindowsOnTop->isChecked());
@@ -733,6 +749,10 @@ void OptionsDialog::show()
     mpUseMulticoreCheckBox->setChecked(gpConfig->getBoolSetting(CFG_MULTICORE));
     mpThreadsSpinBox->setValue(gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS));
     mpThreadsLabel->setEnabled(gpConfig->getBoolSetting(CFG_MULTICORE));
+    mpLogDuringSimulationCheckBox->setChecked(gpConfig->getBoolSetting(CFG_LOGDURINGSIMULATION));
+    mpLogStepsLabel->setEnabled(gpConfig->getBoolSetting(CFG_LOGDURINGSIMULATION));
+    mpLogStepsSpinBox->setEnabled(gpConfig->getBoolSetting(CFG_LOGDURINGSIMULATION));
+    mpLogStepsSpinBox->setValue(gpConfig->getIntegerSetting(CFG_LOGSTEPS));
     mpGenerationLimitSpinBox->setValue(gpConfig->getIntegerSetting(CFG_GENERATIONLIMIT));
     mpDefaultPloExportVersion->setValue(gpConfig->getIntegerSetting(CFG_PLOEXPORTVERSION));
     mpAutoLimitGenerationsCheckBox->setChecked(gpConfig->getBoolSetting(CFG_AUTOLIMITGENERATIONS));

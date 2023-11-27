@@ -1351,6 +1351,7 @@ void Configuration::registerSettings()
     mBoolSettings.insert(CFG_SETPWDTOMWD, false);
     mBoolSettings.insert(CFG_SHOWLICENSEONSTARTUP, true);
     mBoolSettings.insert(CFG_CHECKFORDEVELOPMENTUPDATES, false);
+    mBoolSettings.insert(CFG_LOGDURINGSIMULATION, false);
 #ifdef _WIN32
     mBoolSettings.insert(CFG_PREFERINCLUDEDCOMPILER, true);
 #else
@@ -1365,6 +1366,7 @@ void Configuration::registerSettings()
     mIntegerSettings.insert(CFG_PLOEXPORTVERSION, 1);
     mIntegerSettings.insert(CFG_REMOTESHORTTIMEOUT, 5);
     mIntegerSettings.insert(CFG_REMOTELONGTIMEOUT, 30);
+    mIntegerSettings.insert(CFG_LOGSTEPS, 100);
 
     // Double settings
     mDoubleSettings.insert(CFG_PLOTGFXDPI, 96.0);

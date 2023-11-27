@@ -89,6 +89,9 @@ private:
     QLabel *mpThreadsLabel;
     QSpinBox *mpThreadsSpinBox;
     QSpinBox *mpProgressBarSpinBox;
+    QCheckBox *mpLogDuringSimulationCheckBox;
+    QLabel *mpLogStepsLabel;
+    QSpinBox *mpLogStepsSpinBox;
 
     QWidget *mpUnitScaleWidget;
 
