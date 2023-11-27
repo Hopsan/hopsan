@@ -123,6 +123,7 @@ ModelWidget::ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *pParentT
     setMessageHandler(gpMessageHandler);
 
     connect(mpSimulationThreadHandler, SIGNAL(done(bool)), this, SIGNAL(simulationFinished()));
+    connect(mpSimulationThreadHandler, SIGNAL(stepFinished()), this, SLOT(collectAndAppendPlotData()));
     connect(this, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()), Qt::UniqueConnection);
     connect(this, SIGNAL(simulationFinished()), this, SLOT(unlockSimulateMutex()));
     connect(this, SIGNAL(modelChanged(ModelWidget*)), mpParentModelHandler, SIGNAL(modelChanged(ModelWidget*)));
@@ -621,8 +622,14 @@ bool ModelWidget::simulate_nonblocking()
         if(!mSimulateMutex.tryLock()) return false;
 
         qDebug() << "Calling simulate_nonblocking()";
+        if(gpConfig->getBoolSetting(CFG_LOGDURINGSIMULATION)) {
+            prepareForLogDuringSimulation();
+        }
         mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
         mpSimulationThreadHandler->initSimulateFinalize(mpToplevelSystem);
+        if(gpConfig->getBoolSetting(CFG_LOGDURINGSIMULATION)) {
+            cleanupAfterLogDuringSimulation();
+        }
     }
 
     return true;
@@ -1042,6 +1049,22 @@ void ModelWidget::lockModelEditingLimited(bool lock)
     }
 }
 
+
+void ModelWidget::prepareForLogDuringSimulation()
+{
+    mpLogDataHandler->createEmptyGeneration();
+    disconnect(this, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()));
+}
+
+void ModelWidget::cleanupAfterLogDuringSimulation()
+{
+    connect(this, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()), Qt::UniqueConnection);
+}
+
+void ModelWidget::collectAndAppendPlotData()
+{
+    collectPlotData(true);
+}
 
 //! @brief Slot that tells the current system to collect plot data from core
 void ModelWidget::collectPlotData(bool overWriteGeneration)

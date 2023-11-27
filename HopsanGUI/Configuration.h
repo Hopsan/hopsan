@@ -62,6 +62,8 @@
 #define CFG_AUTOLIMITGENERATIONS "autolimitgenerations"
 #define CFG_SETPWDTOMWD "setpwdtomwd"
 #define CFG_PLOTWINDOWSONTOP "plotwindowsontop"
+#define CFG_LOGDURINGSIMULATION "logduringsimulation"
+#define CFG_LOGSTEPS "logsteps"
 
 #define CFG_PLOTGFXIMAGEFORMAT "plotgfximageformat"
 #define CFG_PLOTGFXDIMENSIONSUNIT "plotgfxdimensionsunit"

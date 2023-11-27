@@ -58,6 +58,7 @@ public:
     void setParentModel(ModelWidget *pParentModel);
     ModelWidget *getParentModel();
 
+    void createEmptyGeneration();
     void collectLogDataFromModel(bool overWriteLastGeneration=false);
     void collectLogDataFromRemoteModel(QVector<RemoteResultVariable> &rResultVariables, bool overWriteLastGeneration=false);
     void importFromPlo(QString importFilePath=QString());

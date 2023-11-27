@@ -106,6 +106,11 @@ ModelWidget *LogDataHandler2::getParentModel()
     return mpParentModel;
 }
 
+void LogDataHandler2::createEmptyGeneration()
+{
+    ++mCurrentGenerationNumber;
+}
+
 
 void LogDataHandler2::exportToPlo(const QString &rFilePath, QList<SharedVectorVariableT> variables, int version) const
 {

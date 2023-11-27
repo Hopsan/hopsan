@@ -132,6 +132,9 @@ public slots:
     void lockModelEditingFull(bool lock);
     void lockModelEditingLimited(bool lock);
     void openAnimation();
+    void prepareForLogDuringSimulation();
+    void cleanupAfterLogDuringSimulation();
+    void collectAndAppendPlotData();
     void collectPlotData(bool overWriteGeneration=false);
     void setUseRemoteSimulation(bool tf);
     void revertModel();
@@ -145,6 +148,7 @@ signals:
     void simulationTimeChanged(QString start, QString ts, QString stop);
     void checkMessages();
     void simulationFinished();
+    void simulationStepFinished();
     void modelSaved(ModelWidget*);
     void aliasChanged(QString fullName, QString alias);
     void quantityChanged(QString fullName, QString quantity);
