@@ -80,6 +80,7 @@ private:
     uint8_t serversWaitingForConfiguration = 0;
     uint8_t serversWaitingAtExit = 0;
     uint8_t serversWaitingToStop = 0;
+    uint8_t serversRunPastStopTime = 0;
     uint8_t serversWaitingForInitialize = 0;
     uint8_t serversWaitingToRun = 0;
 };
