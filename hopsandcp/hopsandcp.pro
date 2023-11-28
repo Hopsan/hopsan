@@ -92,6 +92,8 @@ SOURCES = \
         src/utilities.cpp
 
 HEADERS += \
+    dependencies/DCPLib/include/master/dcp/logic/DcpManagerMaster.hpp \
+    dependencies/DCPLib/include/slave/dcp/logic/DcpManagerSlave.hpp \
     include/dcpmaster.h \
     include/dcpserver.h \
     include/hopsandcp_win32dll.h \
