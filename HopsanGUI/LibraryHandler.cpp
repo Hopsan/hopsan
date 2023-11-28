@@ -33,6 +33,8 @@
 
 //Defines
 #define XML_LIBRARY "hopsancomponentlibrary"
+#define XML_VERSION "version"
+#define XML_RECOMPILABLE "recompilable"
 #define XML_LIBRARY_NAME "name"
 #define XML_LIBRARY_ID "id"
 #define XML_LIBRARY_LIB "lib"
@@ -1124,7 +1126,8 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                 QDomElement xmlRoot = domDocument.documentElement();
                 if(xmlRoot.tagName() == QString(XML_LIBRARY))
                 {
-                    pLibrary->version = xmlRoot.attribute("version");
+                    pLibrary->version = xmlRoot.attribute(XML_VERSION);
+                    pLibrary->recompilable = parseAttributeBool(xmlRoot, XML_RECOMPILABLE, true);
                     // Read name of library
                     pLibrary->name = xmlRoot.firstChildElement(XML_LIBRARY_NAME).text();
                     if (pLibrary->name.isEmpty()) {
@@ -1685,6 +1688,11 @@ void LibraryHandler::importFmu()
 //! @param solver Solver to use (for Modelica code only)
 void LibraryHandler::recompileLibrary(SharedComponentLibraryPtrT pLib, bool dontUnloadAndLoad)
 {
+    if(!pLib->recompilable) {
+        gpMessageHandler->addErrorMessage("Library is not recompilable.");
+        return;
+    }
+
     CoreLibraryAccess coreLibrary;
     auto spGenerator = createDefaultImportGenerator();
 

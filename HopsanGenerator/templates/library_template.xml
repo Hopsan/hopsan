@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsancomponentlibrary version="0.3">
+<hopsancomponentlibrary version="0.3" recompilable="true">
   <id><<<libid>>></id>
   <name><<<libname>>></name>
   <lib debug_ext="<<<libdebugext>>>"><<<libname>>></lib>
