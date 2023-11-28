@@ -152,7 +152,7 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
                 mpContainerObject->getUndoStackPtr()->newPost();
                 mpContainerObject->addImageWidget(this->mapToScene(event->pos()).toPoint());
             else if(addDcpServerAction != nullptr && selectedAction == addDcpServerAction) {
-                QString dcpPath = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Select Distributed Co-Simlation Protocol File"),
+                QString dcpPath = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Select Distributed Co-Simulation Protocol File"),
                                                                      gpConfig->getStringSetting(CFG_DCPDIR),
                                                                      tr("Distributed Co-Simulation Protocol Files (*.dcp)"));
                 if(dcpPath.isEmpty()) {
