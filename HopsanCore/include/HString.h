@@ -122,6 +122,18 @@ inline HString operator+(HString lhs, const char rhs)
   return lhs;
 }
 
+inline HString join(HVector<HString> &vec, const char delim) {
+    HString ret;
+    for(size_t i=0; i<vec.size(); ++i) {
+        ret.append(vec[i]);
+        ret.append(delim);
+    }
+    if(ret.size() > 0) {
+        ret.erase(ret.size()-1,1);
+    }
+    return ret;
+}
+
 }
 
 #endif // HSTRING_H

@@ -132,6 +132,18 @@ public:
         mpDataArray[prevSize] = data;
     }
 
+    //! @brief Append data
+    //! @note This function is slow, it will reallocate all array memory every time
+    //! @param [in] data Data to append
+    void append(const HVector<T> &data)
+    {
+        size_t prevSize = mSize;
+        resize(prevSize+data.size());
+        for(int i=0; i<data.size(); ++i) {
+            mpDataArray[prevSize+i] = data[i];
+        }
+    }
+
     //! @brief Assign from C-array
     //! param [in] pData A pointer to the array
     //! param [in] count The number of elements to copy from the array
