@@ -96,6 +96,7 @@ std::shared_ptr<SlaveDescription_t> DcpServer::createServerDescription() {
     Resolution_t resolution = make_Resolution();
     resolution.numerator = 1;
     resolution.denominator = denominator_t(1.0/mpRootSystem->getTimestep());
+    resolution.fixed = false;
     serverDescription.TimeRes.resolutions.push_back(resolution);
     serverDescription.TransportProtocols.UDP_IPv4 = make_UDP_ptr();
     serverDescription.TransportProtocols.UDP_IPv4->Control = make_Control_ptr(mHost.c_str(), port_t(mPort));
