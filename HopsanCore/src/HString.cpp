@@ -527,7 +527,7 @@ HVector<HString> HString::split(const char delim) const
 {
   HVector<HString> parts;
   size_t b = 0;
-  while (true)
+  while (true && mSize > 0)
   {
     size_t e = find(delim, b);
     parts.append(substr(b,e-b));
