@@ -531,6 +531,10 @@ void LibraryWidget::handleItemClick(QTreeWidgetItem *item, int column)
         else if (pReply == pRecompileAction) {
             gpModelHandler->saveState();
             SharedComponentLibraryPtrT pLib = mItemToLibraryMap[item];
+            if(!pLib->recompilable) {
+                gpMessageHandler->addErrorMessage("Library is not recompilable.");
+                return;
+            }
             bool expanded = getLibraryItem(pLib)->isExpanded();
             // First unload the library
             QString libPath = pLib->xmlFilePath;

@@ -55,6 +55,7 @@ class GUIComponentLibrary
 public:
     QString id;
     QString version;
+    bool recompilable;
     QString name;
     QString loadPath;
     QString xmlFilePath;
