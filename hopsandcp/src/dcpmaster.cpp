@@ -230,6 +230,10 @@ void DcpMaster::receiveStateChangedNotification(uint8_t sender,
 
         case DcpState::RUNNING:
             if(mpSystem->getTime() > mStopTime) {
+                serversRunPastStopTime++;
+                if(serversRunPastStopTime < serverDescriptions.size()) {
+                    return;
+                }
                 stop();
             }
             else {
