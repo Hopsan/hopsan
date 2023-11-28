@@ -759,8 +759,6 @@ bool ModelWidget::simulateDcpServer()
     mSimulationProgress=0;
     mpSimulationThreadHandler->initSimulateFinalizeDcpServer(mpToplevelSystem, pHostLineEdit->text(), pPortSpinBox->value(), pTargetFileLineEdit->text());
 
-    unlockSimulateMutex();
-
     return true;
     //! @todo fix return code
 }
@@ -811,8 +809,6 @@ bool ModelWidget::simulateDcpMaster()
     mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
     mSimulationProgress=0;
     mpSimulationThreadHandler->initSimulateFinalizeDcpMaster(mpToplevelSystem, pHostLineEdit->text(), pPortSpinBox->value(), pRealTimeCheckBox->isChecked());
-
-    unlockSimulateMutex();
 
     return true;
     //! @todo fix return code
