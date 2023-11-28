@@ -15,7 +15,7 @@
 #include <chrono>
 
 DcpMaster::DcpMaster(hopsan::ComponentSystem *pSystem, const std::string host, int port, double comStep, double startTime, double stopTime, bool realTime)
-    : mpSystem(pSystem), mComStep(comStep), mStartTime(startTime), mStopTime(stopTime), mRealTime(realTime)
+    : mpSystem(pSystem), mRealTime(realTime), mComStep(comStep), mStartTime(startTime), mStopTime(stopTime)
 {
     (*mpSystem->getTimePtr()) = mStartTime;
 
@@ -195,6 +195,7 @@ void DcpMaster::receiveNAck(uint8_t sender, uint16_t pduSeqId, DcpError errorCod
 
 
 void DcpMaster::dataReceived(uint16_t dataId, size_t length, uint8_t payload[]) {
+    (void)dataId;
     (void)length;
     (void)payload;
 }
