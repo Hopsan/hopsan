@@ -323,11 +323,16 @@ QString VectorVariable::getFullVariableNameWithSeparator(const QString sep) cons
     return mpVariableDescription->getFullNameWithSeparator(sep);
 }
 
-QString VectorVariable::getSmartName() const
+QString VectorVariable::getSmartName(const QString sep) const
 {
     if (mpVariableDescription->mAliasName.isEmpty())
     {
-        return mpVariableDescription->getFullName();
+        if(sep.isEmpty()) {
+            return mpVariableDescription->getFullName();
+        }
+        else {
+            return mpVariableDescription->getFullNameWithSeparator(sep);
+        }
     }
     else
     {

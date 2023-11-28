@@ -536,49 +536,54 @@ void PlotTab::exportToMatlab()
 
     // Cycle plot areas
     int nTotCurves=0;
-    for (int a=0; a<mPlotAreas.size(); ++a)
-    {
-        PlotArea *pArea = mPlotAreas[a];
-        QList<PlotCurve*> curves = pArea->getCurves();
-
+    QStringList addedVariablesX, addedVariablesY;
+    for(const auto &pArea : qAsConst(mPlotAreas)) {
         // Cycle plot curves
-        for(int c=0; c<curves.size(); ++c)
-        {
-            fileStream << "x" << c+nTotCurves << "=[";                                         //Write time/X vector
+        for(const auto &pCurve : qAsConst(pArea->getCurves())) {
             if(pArea->hasCustomXData())
             {
                 //! @todo need smart function to auto select copy or direct access depending on cached or not (also in other places)
-                QVector<double> xvec = pArea->getCustomXData()->getDataVectorCopy();
-                for(int j=0; j<xvec.size(); ++j)
-                {
-                    if(j>0) fileStream << ",";
-                    fileStream << xvec[j];
+                QString varName = pArea->getCustomXData()->getSmartName("_")+"_"+QString::number(pCurve->getCurveGeneration());
+                if(!addedVariablesX.contains(varName)) {
+                    fileStream << varName << "=[";
+                    QVector<double> xvec = pArea->getCustomXData()->getDataVectorCopy();
+                    for(int i=0; i<xvec.size(); ++i) {
+                        if(i>0) fileStream << ",";
+                        fileStream << xvec[i];
+                    }
+                    fileStream << "];\n";
                 }
+                addedVariablesX.append(varName);
             }
             else
             {
                 //! @todo what if not timevector then this will crash
-                QVector<double> time = curves[c]->getSharedTimeOrFrequencyVariable()->getDataVectorCopy();
-                for(int j=0; j<time.size(); ++j)
-                {
-                    if(j>0) fileStream << ",";
-                    fileStream << time[j];
+                QString varName = pCurve->getSharedTimeOrFrequencyVariable()->getSmartName("_")+"_"+QString::number(pCurve->getCurveGeneration());
+                if(!addedVariablesX.contains(varName)) {
+                    fileStream << varName << "=[";
+                    QVector<double> time = pCurve->getSharedTimeOrFrequencyVariable()->getDataVectorCopy();
+                    for(int i=0; i<time.size(); ++i) {
+                        if(i>0) fileStream << ",";
+                        fileStream << time[i];
+                    }
+                    fileStream << "];\n";
                 }
+                addedVariablesX.append(varName);
             }
-            fileStream << "];\n";
 
-            fileStream << "y" << c+nTotCurves << "=[";                                             //Write data vector
-            QVector<double> data=curves[c]->getVariableDataCopy();
-            for(int k=0; k<data.size(); ++k)
-            {
-                if(k>0) fileStream << ",";
-                fileStream << data[k];
+
+            QString varName = pCurve->getSharedVectorVariable()->getSmartName("_")+"_"+QString::number(pCurve->getCurveGeneration());
+            addedVariablesY.append(varName);
+            fileStream << varName << "=[";                                          //Write data vector
+            QVector<double> data=pCurve->getVariableDataCopy();
+            for(int i=0; i<data.size(); ++i) {
+                if(i>0) fileStream << ",";
+                fileStream << data[i];
             }
             fileStream << "];\n";
+            nTotCurves++;
         }
         // Increment number for next plot area
-        nTotCurves += curves.size();
-
     }
 
     // Write plot functions
@@ -610,7 +615,7 @@ void PlotTab::exportToMatlab()
                 else
                     fileStream << "plot";
             }
-            fileStream << "(x" << c+nTotCurves << ",y" << c+nTotCurves << ",'-" << matlabColors[c%6] << "','linewidth'," << curves[c]->pen().width() << ")\n";
+            fileStream << "(" << addedVariablesX[c] << "," << addedVariablesY[c] << ",'-" << matlabColors[c%6] << "','linewidth'," << curves[c]->pen().width() << ")\n";
         }
         fileStream << "hold off\n";
         // Increment number for next plot area

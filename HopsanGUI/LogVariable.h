@@ -137,7 +137,7 @@ public:
     const QString &getAliasName() const;
     QString getFullVariableName() const;
     QString getFullVariableNameWithSeparator(const QString sep) const;
-    QString getSmartName() const;
+    QString getSmartName(const QString sep="") const;
     const SharedSystemHierarchyT getSystemHierarchy() const;
     const QString &getModelPath() const;
     const QString &getComponentName() const;
