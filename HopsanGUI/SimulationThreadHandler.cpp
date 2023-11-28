@@ -633,13 +633,15 @@ void DcpMasterSimulationWorkerObject::initSimulateFinalize()
     timer.start();
 
     DcpMaster *pDcpMaster = new DcpMaster(mpSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), mHost.toStdString(), mPort, mpSystem->getTimeStep(), mStartTime, mStopTime, mRealTime);
-    for(const auto comp : mpSystem->getModelObjects()) {
+    const QList<ModelObject *> modelObjects = mpSystem->getModelObjects();
+    for(const auto comp : modelObjects) {
         if(comp->getTypeName() == HOPSANGUIDCPCOMPONENT) {   //Just in case, model shall only contain DCP components anyway
             pDcpMaster->addServer(comp->getParameterValue("dcpFile").toStdString());
         }
     }
     std::map<std::pair<size_t,size_t>,std::pair<std::vector<size_t>,std::vector<size_t> > > connections;
-    for(const auto &connection : mpSystem->getSubConnectorPtrs()) {
+    const QList<Connector *> subConnectors = mpSystem->getSubConnectorPtrs();
+    for(const auto &connection : subConnectors) {
         Port *pStartPort = connection->getStartPort();
         Port *pEndPort = connection->getEndPort();
         ModelObject *pStartComponent = pStartPort->getParentModelObject();
@@ -649,13 +651,13 @@ void DcpMasterSimulationWorkerObject::initSimulateFinalize()
         QVector<CoreVariameterDescription> variameters;
         size_t fromVr, toVr;
         pStartComponent->getVariameterDescriptions(variameters);
-        for(const auto &variameter : variameters) {
+        for(const auto &variameter : qAsConst(variameters)) {
             if(variameter.mPortName == pStartPort->getName()) {
                 fromVr = variameter.mDescription.toUInt();
             }
         }
         pEndComponent->getVariameterDescriptions(variameters);
-        for(const auto &variameter : variameters) {
+        for(const auto &variameter : qAsConst(variameters)) {
             if(variameter.mPortName == pEndPort->getName()) {
                 toVr = variameter.mDescription.toUInt();
             }
