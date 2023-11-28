@@ -164,6 +164,9 @@ bool Component::setParameterValue(QString name, QString value, bool force)
             if("ReadPortType" == type) {
                 inputs << port;
             }
+            else if(this->getTypeName() == "DcpComponent" && "WritePortType" == type) {
+                outputs << port;
+            }
             else if("WritePortType" == type && visibleOutputs.contains(port)) {
                 outputs << port;
             }
