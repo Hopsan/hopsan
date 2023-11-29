@@ -31,6 +31,7 @@
 //!
 //$Id$
 
+#include <float.h>
 
 #include <QGraphicsWidget>
 #include <QGraphicsScene>
@@ -41,6 +42,7 @@
 #include <QFontDialog>
 #include <QColorDialog>
 #include <QGraphicsRectItem>
+#include <QFileDialog>
 
 #include "global.h"
 #include "GUIWidgets.h"
@@ -49,6 +51,8 @@
 #include "Utilities/GUIUtilities.h"
 #include "UndoStack.h"
 #include "GraphicsView.h"
+#include "MessageHandler.h"
+#include "Configuration.h"
 
 Widget::Widget(QPointF pos, double rot, SelectionStatusEnumT startSelected, SystemObject *pSystem, QGraphicsItem *pParent)
     : WorkspaceObject(pos, rot, startSelected, pSystem, pParent)
@@ -723,7 +727,7 @@ void TextBoxWidget::updateWidgetFromDialog()
 
     // Remember for UnDo
     mpParentSystemObject->getUndoStackPtr()->newPost("Modified TextBox");
-    mpParentSystemObject->getUndoStackPtr()->registerModifiedTextBoxWidget(this);
+    mpParentSystemObject->getUndoStackPtr()->registerModifiedWidget(this);
 
     // Update text
     mReflowText = mpDialogReflowCheckBox->isChecked();
@@ -811,5 +815,243 @@ void TextBoxWidget::openLineColorDialog()
 void TextBoxWidget::refreshWidgetSize()
 {
     resize(mpBorderItem->boundingRect().width(), mpBorderItem->boundingRect().height());
+    refreshSelectionBoxSize();
+}
+
+ImageWidget::ImageWidget(QPointF pos, double rot, SelectionStatusEnumT startSelected, SystemObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent)
+    : Widget(pos, rot, startSelected, pSystem, pParent)
+{
+    mWidgetIndex = widgetIndex;
+    setImage("");
+
+    setFlag(QGraphicsItem::ItemIsMovable, true);
+    setZValue(WidgetZValue);
+    setFlag(QGraphicsItem::ItemIsSelectable, true);
+
+    refreshWidgetSize();
+}
+
+ImageWidget::ImageWidget(const ImageWidget &other, SystemObject *pSystem)
+ : Widget(other.pos(), other.rotation(), Deselected, pSystem, 0)
+{
+    mpImage = new QGraphicsSvgItem(other.mpImage);
+    mpImage->show();
+}
+
+void ImageWidget::saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents)
+{
+    Q_UNUSED(contents);
+
+    QDomElement xmlObject = appendDomElement(rDomElement, getHmfTagName());
+
+    //Save GUI related stuff
+    QDomElement xmlGuiStuff = appendDomElement(xmlObject,HMF_HOPSANGUITAG);
+
+    QPointF pos = mapToScene(boundingRect().topLeft());
+
+    QDomElement xmlPose = appendDomElement(xmlGuiStuff, HMF_POSETAG);
+    setQrealAttribute(xmlPose, hmf::x, pos.x());
+    setQrealAttribute(xmlPose, hmf::y, pos.y());
+
+    QDomElement xmlImage = appendDomElement(xmlGuiStuff, hmf::image);
+    xmlImage.setAttribute(hmf::path, mImagePath);
+    xmlImage.setAttribute(hmf::scale, mpImage->scale());
+}
+
+WidgetTypesEnumT ImageWidget::getWidgetType() const
+{
+    return ImageWidgetType;
+}
+
+QString ImageWidget::getHmfTagName() const
+{
+    return hmf::imagewidget;
+}
+
+void ImageWidget::setImage(const QString &path, double iconScale)
+{
+    mImagePath = path;
+
+    if (mpImage != 0)
+    {
+        mpImage->deleteLater(); //Schedule previous icon for deletion
+    }
+
+    if(path.isEmpty()) {
+        mpImage = new QGraphicsSvgItem(mDefaultImage, this);
+    }
+    else {
+        mpImage = new QGraphicsSvgItem(path, this);
+    }
+    mpImage->setFlags(QGraphicsItem::ItemStacksBehindParent);
+
+    mpImage->setPos(this->boundingRect().topLeft());
+    mpImage->show();
+    mpImage->setAcceptHoverEvents(false);
+    mpImage->setScale(iconScale);
+
+    this->prepareGeometryChange();
+    this->resize(mpImage->boundingRect().width(), mpImage->boundingRect().height());  //Resize modelobject
+    mpSelectionBox->setSize(0.0, 0.0, mpImage->boundingRect().width(), mpImage->boundingRect().height()); //Resize selection box
+
+    this->setTransformOriginPoint(this->boundingRect().center());
+
+    mpImage->setFlag(QGraphicsItem::ItemIgnoresTransformations, false);
+}
+
+void ImageWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    Q_UNUSED(event)
+
+    if (mpEditDialog.isNull() && !mpParentSystemObject->mpModelWidget->getGraphicsView()->isCtrlKeyPressed())
+    {
+        // Open a dialog where image can be selected and scaled
+        mpEditDialog = new QDialog(gpMainWindowWidget);
+        mpEditDialog->setWindowTitle("Edit Image Widget");
+        mpEditDialog->setAttribute(Qt::WA_DeleteOnClose);
+
+        mpEditDialogPathLabel = new QLabel(tr("Path:"), mpEditDialog);
+        mpEditDialogPathLineEdit = new QLineEdit(mpEditDialog);
+        mpEditDialogPathLineEdit->setText(mImagePath);
+        mpEditDialogBrowseButton = new QToolButton(mpEditDialog);
+        mpEditDialogBrowseButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Open.svg"));
+        mpEditDialogScaleLabel = new QLabel(tr("Scale:"), mpEditDialog);
+        mpEditDialogScaleSpinBox = new QDoubleSpinBox(mpEditDialog);
+        mpEditDialogScaleSpinBox->setValue(mpImage->scale());
+        mpEditDialogScaleSpinBox->setMinimum(DBL_MIN);
+        mpEditDialogScaleSpinBox->setMaximum(DBL_MAX);
+        mpEditDialogScaleSpinBox->setSingleStep(0.01);
+
+
+        QHBoxLayout *pHorizontalLayout1 = new QHBoxLayout();
+        pHorizontalLayout1->addWidget(mpEditDialogPathLabel);
+        pHorizontalLayout1->addWidget(mpEditDialogPathLineEdit);
+        pHorizontalLayout1->addWidget(mpEditDialogBrowseButton);
+        pHorizontalLayout1->setStretch(1,1);
+
+        QHBoxLayout *pHorizontalLayout2 = new QHBoxLayout();
+        pHorizontalLayout2->addWidget(mpEditDialogScaleLabel);
+        pHorizontalLayout2->addWidget(mpEditDialogScaleSpinBox);
+        pHorizontalLayout2->setStretch(1,1);
+
+        QPushButton *pDialogDoneButton = new QPushButton("Done");
+        QPushButton *pDialogCancelButton = new QPushButton("Cancel");
+        QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
+        pButtonBox->addButton(pDialogDoneButton, QDialogButtonBox::ActionRole);
+        pButtonBox->addButton(pDialogCancelButton, QDialogButtonBox::ActionRole);
+
+        QVBoxLayout *pVerticalLayout = new QVBoxLayout(mpEditDialog);
+        pVerticalLayout->addLayout(pHorizontalLayout1);
+        pVerticalLayout->addLayout(pHorizontalLayout2);
+        pVerticalLayout->addWidget(pButtonBox,1,0);
+
+        mpEditDialog->show();
+
+        connect(mpEditDialogBrowseButton,   SIGNAL(clicked()),      this,           SLOT(browseForImageFile()));
+        connect(pDialogDoneButton,          SIGNAL(clicked()),      this,           SLOT(updateWidgetFromDialog()));
+        connect(pDialogCancelButton,        SIGNAL(clicked()),      mpEditDialog,   SLOT(close()));
+    }
+}
+
+void ImageWidget::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
+{
+    WorkspaceObject::hoverMoveEvent(event);
+}
+
+void ImageWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    WorkspaceObject::mousePressEvent(event);
+}
+
+
+void ImageWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    WorkspaceObject::mouseMoveEvent(event);
+
+    if (getModelLockLevel()==NotLocked)
+    {
+        mpSelectionBox->setActive();
+    }
+}
+
+
+void ImageWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    Widget::mouseReleaseEvent(event);
+}
+
+void ImageWidget::refreshSelectionBoxSize()
+{
+    mpSelectionBox->setSize(0.0, 0.0, boundingRect().width(), boundingRect().height());
+}
+
+void ImageWidget::deleteMe(UndoStatusEnumT undoSettings)
+{
+    if (!isLocallyLocked() && getModelLockLevel()==NotLocked)
+    {
+        mpParentSystemObject->deleteWidget(this, undoSettings);
+    }
+}
+
+void ImageWidget::flipVertical(UndoStatusEnumT undoSettings)
+{
+    Q_UNUSED(undoSettings);
+}
+
+void ImageWidget::flipHorizontal(UndoStatusEnumT undoSettings)
+{
+    Q_UNUSED(undoSettings);
+}
+
+void ImageWidget::browseForImageFile()
+{
+    QString filePath = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Select Image File"),
+                                                    gpConfig->getStringSetting(CFG_MODELGFXDIR),
+                                                    tr("Scalar Vector Graphics (*.svg)"));
+    if(!filePath.isEmpty()) {
+        mpEditDialogPathLineEdit->setText(filePath);
+    }
+}
+
+void ImageWidget::updateWidgetFromDialog()
+{
+    // Remember for UnDo
+    mpParentSystemObject->getUndoStackPtr()->newPost("Modified Image Widget");
+    mpParentSystemObject->getUndoStackPtr()->registerModifiedWidget(this);
+
+    QString path = mpEditDialogPathLineEdit->text();
+    if(!path.isEmpty() && !QFileInfo::exists(path)) {
+        gpMessageHandler->addErrorMessage("Specified image file does not exist.");
+        path = "";
+    }
+    setImage(mpEditDialogPathLineEdit->text(), mpEditDialogScaleSpinBox->value());
+    refreshWidgetSize();
+    mpEditDialog->close();
+}
+
+
+void ImageWidget::loadFromDomElement(QDomElement domElement)
+{
+    // Read gui specific stuff
+    QDomElement guiData = domElement.firstChildElement(HMF_HOPSANGUITAG);
+
+    //Pose
+    QDomElement poseObject = guiData.firstChildElement(HMF_POSETAG);
+    double x = parseAttributeQreal(poseObject, hmf::x, 0);
+    double y = parseAttributeQreal(poseObject, hmf::y, 0);
+    this->setPos(x, y);
+
+    // Image
+    QDomElement imageObject = guiData.firstChildElement(hmf::image);
+    QString path = imageObject.attribute(hmf::path);
+    double scale = parseAttributeQreal(imageObject, hmf::scale, 1.0);
+
+    setImage(path, scale);
+    refreshWidgetSize();
+}
+
+void ImageWidget::refreshWidgetSize()
+{
+    resize(mpImage->boundingRect().width()*mpImage->scale(), mpImage->boundingRect().height()*mpImage->scale());
     refreshSelectionBoxSize();
 }

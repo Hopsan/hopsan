@@ -49,8 +49,10 @@
 #include <QCheckBox>
 #include <QDialog>
 #include <QPointer>
+#include <QGraphicsSvgItem>
+#include <QFileInfo>
 
-enum WidgetTypesEnumT {UndefinedWidgetType, TextBoxWidgetType};
+enum WidgetTypesEnumT {UndefinedWidgetType, TextBoxWidgetType, ImageWidgetType};
 
 class Widget : public WorkspaceObject
 {
@@ -155,6 +157,57 @@ private:
     QPointF mPosBeforeResize;
     double mWidthBeforeResize;
     double mHeightBeforeResize;
+};
+
+
+class ImageWidget : public Widget
+{
+    Q_OBJECT
+
+public:
+    ImageWidget(QPointF pos, double rot, SelectionStatusEnumT startSelected, SystemObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
+    ImageWidget(const ImageWidget &other, SystemObject *pSystem);
+
+    // Type info
+    virtual WidgetTypesEnumT getWidgetType() const;
+    virtual QString getHmfTagName() const;
+
+    // Save and load
+    void saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel);
+    void loadFromDomElement(QDomElement domElement);
+
+    void setImage(const QString &path, double iconScale = 1.0);
+
+protected:
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
+    virtual void refreshSelectionBoxSize();
+
+public slots:
+    void deleteMe(UndoStatusEnumT undoSettings=Undo);
+    virtual void flipVertical(UndoStatusEnumT undoSettings = Undo);
+    virtual void flipHorizontal(UndoStatusEnumT undoSettings = Undo);
+
+private slots:
+    void browseForImageFile();
+    void updateWidgetFromDialog();
+
+private:
+    QGraphicsSvgItem *mpImage = nullptr;
+    QString mImagePath;
+    QString mDefaultImage = QString(GRAPHICSPATH) + "hopsan-logo.svg";
+
+    QPointer<QDialog> mpEditDialog;
+    QLabel *mpEditDialogPathLabel;
+    QLineEdit *mpEditDialogPathLineEdit;
+    QToolButton *mpEditDialogBrowseButton;
+    QLabel *mpEditDialogScaleLabel;
+    QDoubleSpinBox *mpEditDialogScaleSpinBox;
+    void refreshWidgetSize();
 };
 
 #endif // GUIWIDGETS_H

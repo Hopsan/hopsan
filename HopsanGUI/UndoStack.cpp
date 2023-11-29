@@ -31,6 +31,8 @@
 //!
 //$Id$
 
+#include <iostream>
+
 #include "global.h"
 #include "UndoStack.h"
 #include "GUIConnector.h"
@@ -354,7 +356,18 @@ void UndoStack::undoOneStep()
         else if(stuffElement.attribute("what") == UNDO_MODIFIEDTEXTBOXWIDGET)
         {
             modifyTextboxWidget(stuffElement);
-
+        }
+        else if(stuffElement.attribute("what") == UNDO_ADDEDIMAGEWIDGET)
+        {
+            removeImageWidget(stuffElement);
+        }
+        else if(stuffElement.attribute("what") == UNDO_DELETEDIMAGEWIDGET)
+        {
+            addImageWidget(stuffElement);
+        }
+        else if(stuffElement.attribute("what") == UNDO_MODIFIEDIMAGEWIDGET)
+        {
+            modifyImageWidget(stuffElement);
         }
         else if(stuffElement.attribute("what") == UNDO_MOVEDWIDGET)
         {
@@ -693,6 +706,18 @@ void UndoStack::redoOneStep()
         {
             modifyTextboxWidget(stuffElement);
         }
+        else if(stuffElement.attribute("what") == UNDO_ADDEDIMAGEWIDGET)
+        {
+            addImageWidget(stuffElement);
+        }
+        else if(stuffElement.attribute("what") == UNDO_DELETEDIMAGEWIDGET)
+        {
+            removeImageWidget(stuffElement);
+        }
+        else if(stuffElement.attribute("what") == UNDO_MODIFIEDIMAGEWIDGET)
+        {
+            modifyImageWidget(stuffElement);
+        }
         else if(stuffElement.attribute("what") == UNDO_MOVEDWIDGET)
         {
             double x_new, y_new;
@@ -1025,6 +1050,8 @@ void UndoStack::registerAddedWidget(Widget *item)
         QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
         if(item->getWidgetType() == TextBoxWidgetType)
             stuffElement.setAttribute("what", UNDO_ADDEDTEXTBOXWIDGET);
+        if(item->getWidgetType() == ImageWidgetType)
+            stuffElement.setAttribute("what", UNDO_ADDEDIMAGEWIDGET);
         stuffElement.setAttribute("index", item->getWidgetIndex());
         item->saveToDomElement(stuffElement);
         gpUndoWidget->refreshList();
@@ -1039,6 +1066,8 @@ void UndoStack::registerDeletedWidget(Widget *item)
         QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
         if(item->getWidgetType() == TextBoxWidgetType)
             stuffElement.setAttribute("what", UNDO_DELETEDTEXTBOXWIDGET);
+        if(item->getWidgetType() == ImageWidgetType)
+            stuffElement.setAttribute("what", UNDO_DELETEDIMAGEWIDGET);
         stuffElement.setAttribute("index", item->getWidgetIndex());
         item->saveToDomElement(stuffElement);
         gpUndoWidget->refreshList();
@@ -1092,12 +1121,18 @@ void UndoStack::registerResizedTextBoxWidget(const int index, const double w_old
     }
 }
 
-void UndoStack::registerModifiedTextBoxWidget(Widget *pItem)
+void UndoStack::registerModifiedWidget(Widget *pItem)
 {
     if(mEnabled) {
         QDomElement currentPostElement = getCurrentPost();
         QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-        stuffElement.setAttribute("what", UNDO_MODIFIEDTEXTBOXWIDGET);
+        if(pItem->getWidgetType() == TextBoxWidgetType) {
+            stuffElement.setAttribute("what", UNDO_MODIFIEDTEXTBOXWIDGET);
+        }
+        else if(pItem->getWidgetType() == ImageWidgetType) {
+            stuffElement.setAttribute("what", UNDO_MODIFIEDIMAGEWIDGET);
+        }
+
         stuffElement.setAttribute("index", pItem->getWidgetIndex());
 
         // Save the old text box widget
@@ -1135,6 +1170,38 @@ void UndoStack::modifyTextboxWidget(QDomElement &rStuffElement)
         pWidget->saveToDomElement(rStuffElement);
 
         QString tagname(HMF_TEXTBOXWIDGETTAG);
+        pWidget->loadFromDomElement(rStuffElement.firstChildElement(tagname));
+
+        // Now remember the prevData in case we want to redo/undo again
+        rStuffElement.replaceChild(rStuffElement.lastChildElement(tagname), rStuffElement.firstChildElement(tagname));
+    }
+}
+
+
+void UndoStack::addImageWidget(const QDomElement &rStuffElement)
+{
+    QDomElement imageElement = rStuffElement.firstChildElement(hmf::imagewidget);
+    int id = parseAttributeInt(imageElement, hmf::index, 0);
+    ImageWidget *pWidget = mpParentSystemObject->addImageWidget(QPointF(1,1), id, NoUndo);
+    pWidget->loadFromDomElement(imageElement);
+}
+
+
+void UndoStack::removeImageWidget(const QDomElement &rStuffElement)
+{
+    size_t id = rStuffElement.attribute("index").toInt();
+    mpParentSystemObject->deleteWidget(id, NoUndo);
+}
+
+
+void UndoStack::modifyImageWidget(QDomElement &rStuffElement)
+{
+    size_t index = rStuffElement.attribute("index").toInt();
+    ImageWidget *pWidget = qobject_cast<ImageWidget *>(mpParentSystemObject->getWidget(index));
+    if (pWidget) {
+        pWidget->saveToDomElement(rStuffElement);
+
+        QString tagname(hmf::imagewidget);
         pWidget->loadFromDomElement(rStuffElement.firstChildElement(tagname));
 
         // Now remember the prevData in case we want to redo/undo again

@@ -250,6 +250,9 @@ QString UndoWidget::translateTag(QString tag)
     tagMap.insert(UNDO_MOVEDCONNECTOR,          "Moved Connector");
     tagMap.insert(UNDO_CHANGEDPARAMETER,        "Changed Parameter");
     tagMap.insert(UNDO_ADDEDTEXTBOXWIDGET,      "Added Text Box Widget");
+    tagMap.insert(UNDO_ADDEDIMAGEWIDGET,        "Added Image Widget");
+    tagMap.insert(UNDO_DELETEDIMAGEWIDGET,      "Deleted Image Widget");
+    tagMap.insert(UNDO_MODIFIEDIMAGEWIDGET,     "Modified Image Widget");
     tagMap.insert(UNDO_DELETEDTEXTBOXWIDGET,    "Deleted Text Box Widget");
     tagMap.insert(UNDO_RESIZEDTEXTBOXWIDGET,    "Resized Text Box Widget");
     tagMap.insert(UNDO_MODIFIEDTEXTBOXWIDGET,   "Modified Text Box Widget");
