@@ -50,6 +50,7 @@ class QGraphicsScene;
 class Port;
 class Widget;
 class TextBoxWidget;
+class ImageWidget;
 class QTableView;
 class QRadioButton;
 
@@ -196,6 +197,8 @@ public:
     //GUIWidgets methods
     TextBoxWidget *addTextBoxWidget(QPointF position, UndoStatusEnumT undoSettings=Undo);
     TextBoxWidget *addTextBoxWidget(QPointF position, int desiredWidgetId, UndoStatusEnumT undoSettings=Undo);
+    ImageWidget *addImageWidget(QPointF position, UndoStatusEnumT undoSettings=Undo);
+    ImageWidget *addImageWidget(QPointF position, int desiredWidgetId, UndoStatusEnumT undoSettings=Undo);
     void deleteWidget(Widget *pWidget, UndoStatusEnumT undoSettings=Undo);
     void deleteWidget(const int id, UndoStatusEnumT undoSettings=Undo);
 

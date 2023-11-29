@@ -599,3 +599,18 @@ TextBoxWidget *loadTextBoxWidget(QDomElement &rDomElement, SystemObject *pContai
 
     return pWidget;
 }
+
+ImageWidget *loadImageWidget(QDomElement &rDomElement, SystemObject *pContainer, UndoStatusEnumT undoSettings)
+{
+    ImageWidget *pWidget = pContainer->addImageWidget(QPointF(1,1), NoUndo);
+    pWidget->loadFromDomElement(rDomElement);
+
+    if(undoSettings == Undo) {
+        pContainer->getUndoStackPtr()->registerAddedWidget(pWidget);
+    }
+
+    pWidget->setSelected(true);     //!< @todo Stupid!
+    pWidget->setSelected(false);    //For some reason this is needed...
+
+    return pWidget;
+}

@@ -43,6 +43,7 @@ class LibraryWidget;
 class ModelObject;
 class SystemObject;
 class TextBoxWidget;
+class ImageWidget;
 
 
 ModelObject* loadModelObject(const QDomElement &domElement, SystemObject* pSystem, UndoStatusEnumT undoSettings=Undo);
@@ -60,5 +61,7 @@ void loadSystemParameter(QDomElement &rDomElement, bool doAdd, const QString hmf
 void loadPlotAlias(QDomElement &rDomElement, SystemObject* pContainer);
 
 TextBoxWidget* loadTextBoxWidget(QDomElement &rDomElement, SystemObject *pContainer, UndoStatusEnumT undoSettings=Undo);
+
+ImageWidget* loadImageWidget(QDomElement &rDomElement, SystemObject *pContainer, UndoStatusEnumT undoSettings=Undo);
 
 #endif // LOADFUNCTIONS_H

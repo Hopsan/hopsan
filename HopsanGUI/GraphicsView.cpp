@@ -126,6 +126,8 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
             QMenu menu(this);
             QAction *addTextBoxAction = menu.addAction("Add Text Box Widget");
             addTextBoxAction->setDisabled(mpParentModelWidget->isEditingLimited() || mpContainerObject->isLocallyLocked());
+            QAction *addImageWidgetAction = menu.addAction("Add Image Widget");
+            addImageWidgetAction->setDisabled(mpParentModelWidget->isEditingLimited() || mpContainerObject->isLocallyLocked());
 
             QCursor cursor;
             QAction *selectedAction = menu.exec(cursor.pos());
@@ -134,6 +136,10 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
             {
                 mpContainerObject->getUndoStackPtr()->newPost();
                 mpContainerObject->addTextBoxWidget(this->mapToScene(event->pos()).toPoint());
+            }
+            else if(selectedAction == addImageWidgetAction) {
+                mpContainerObject->getUndoStackPtr()->newPost();
+                mpContainerObject->addImageWidget(this->mapToScene(event->pos()).toPoint());
             }
         }
     }

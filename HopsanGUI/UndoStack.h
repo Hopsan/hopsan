@@ -79,6 +79,9 @@
 #define UNDO_MOVEDCONNECTOR "movedconnector"
 #define UNDO_CHANGEDPARAMETER "changedparameter"
 #define UNDO_ADDEDTEXTBOXWIDGET "addedtextboxwidget"
+#define UNDO_ADDEDIMAGEWIDGET "addedimagewidget"
+#define UNDO_DELETEDIMAGEWIDGET "deletedimagewidget"
+#define UNDO_MODIFIEDIMAGEWIDGET "modifiedimagewidget"
 #define UNDO_DELETEDTEXTBOXWIDGET "deletedtextboxwidget"
 #define UNDO_RESIZEDTEXTBOXWIDGET "resizedtextboxwidget"
 #define UNDO_MODIFIEDTEXTBOXWIDGET "modifiedtextboxwidget"
@@ -128,7 +131,7 @@ public:
     void registerDeletedWidget(Widget *item);
     void registerMovedWidget(Widget *item, QPointF oldPos, QPointF newPos);
     void registerResizedTextBoxWidget(const int index, const double w_old, const double h_old, const double w_new, const double h_new, const QPointF oldPos, const QPointF newPos);
-    void registerModifiedTextBoxWidget(Widget *pItem);
+    void registerModifiedWidget(Widget *pItem);
 
 private:
     SystemObject *mpParentSystemObject;
@@ -138,6 +141,10 @@ private:
     void addTextboxwidget(const QDomElement &rStuffElement);
     void removeTextboxWidget(const QDomElement &rStuffElement);
     void modifyTextboxWidget(QDomElement &rStuffElement);
+
+    void addImageWidget(const QDomElement &rStuffElement);
+    void removeImageWidget(const QDomElement &rStuffElement);
+    void modifyImageWidget(QDomElement &rStuffElement);
 
     QDomElement getCurrentPost();
     QDomDocument mDomDocument;

@@ -736,6 +736,30 @@ TextBoxWidget *SystemObject::addTextBoxWidget(QPointF position, int desiredWidge
 }
 
 
+ImageWidget *SystemObject::addImageWidget(QPointF position, UndoStatusEnumT undoSettings)
+{
+    return addImageWidget(position, 0, undoSettings);
+}
+
+ImageWidget *SystemObject::addImageWidget(QPointF position, int desiredWidgetId, UndoStatusEnumT undoSettings)
+{
+    ImageWidget *pNewImageWidget;
+    if (mWidgetMap.contains(desiredWidgetId)) {
+        desiredWidgetId = mWidgetMap.keys().last()+1;
+    }
+    constexpr double angle = 0;
+    pNewImageWidget = new ImageWidget(position, angle, Deselected, this, desiredWidgetId);
+    mWidgetMap.insert(pNewImageWidget->getWidgetIndex(), pNewImageWidget);
+
+    if(undoSettings == Undo) {
+        mpUndoStack->registerAddedWidget(pNewImageWidget);
+    }
+    mpModelWidget->hasChanged();
+
+    return pNewImageWidget;
+}
+
+
 //! @brief Removes specified widget
 //! Works for both text and box widgets
 //! @param pWidget Pointer to widget to remove
@@ -1693,7 +1717,7 @@ void SystemObject::paste(CopyStack *xmlStack)
         connectorElement = connectorElement.nextSiblingElement(HMF_CONNECTORTAG);
     }
 
-    // Paste widgets
+    // Paste text box widgets
     QDomElement textBoxElement = copyRoot->firstChildElement(HMF_TEXTBOXWIDGETTAG);
     while(!textBoxElement.isNull())
     {
@@ -1706,6 +1730,21 @@ void SystemObject::paste(CopyStack *xmlStack)
             mpUndoStack->registerMovedWidget(pWidget, prevPos, pWidget->pos());
         }
         textBoxElement = textBoxElement.nextSiblingElement(HMF_TEXTBOXWIDGETTAG);
+    }
+
+    // Paste image widgets
+    QDomElement imageElement = copyRoot->firstChildElement(hmf::imagewidget);
+    while(!imageElement.isNull())
+    {
+        ImageWidget *pWidget = loadImageWidget(imageElement, this, Undo);
+        if (pWidget) {
+            pWidget->setSelected(true);
+            const auto prevPos = pWidget->pos();
+            pWidget->moveBy(offset.x(), offset.y());
+            didPaste = true;
+            mpUndoStack->registerMovedWidget(pWidget, prevPos, pWidget->pos());
+        }
+        imageElement = imageElement.nextSiblingElement(hmf::imagewidget);
     }
 
     // Paste system parameters
@@ -4689,6 +4728,14 @@ void SystemObject::loadFromDomElement(QDomElement domElement)
         {
             loadTextBoxWidget(xmlSubObject, this, NoUndo);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_TEXTBOXWIDGETTAG);
+        }
+
+        //4. Load all image widgets
+        xmlSubObject = xmlSubObjects.firstChildElement(hmf::imagewidget);
+        while (!xmlSubObject.isNull())
+        {
+            loadImageWidget(xmlSubObject, this, NoUndo);
+            xmlSubObject = xmlSubObject.nextSiblingElement(hmf::imagewidget);
         }
 
         //5. Load all sub-systems

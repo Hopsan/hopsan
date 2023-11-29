@@ -243,6 +243,16 @@ void readFromSsv(const QString filePath, QList<SsvParameter> &rParameters);
 #define HMF_AVERAGE "average"
 #define HMF_SIGMA "sigma"
 
+namespace hmf {
+    constexpr auto imagewidget="imagewidget";
+    constexpr auto x="x";
+    constexpr auto y="y";
+    constexpr auto image="image";
+    constexpr auto path="path";
+    constexpr auto scale="scale";
+    constexpr auto index="index";
+}
+
 #define XML_LIBS "libs"
 #define XML_USERLIB "userlib"
 #define XML_LIBTYPE "libtype"
