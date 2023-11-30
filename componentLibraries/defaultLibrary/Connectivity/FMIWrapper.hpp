@@ -527,10 +527,9 @@ public:
 
     
             //Instantiate FMU
-            fmi2_instantiate(fmu, fmi2CoSimulation, FMIWrapper_fmi2Logger, calloc, free, NULL, (fmi2ComponentEnvironment*)this, fmi2False, mLoggingOn);
-                 
-            if(NULL == fmu) {
+            if(!fmi2_instantiate(fmu, fmi2CoSimulation, FMIWrapper_fmi2Logger, calloc, free, NULL, (fmi2ComponentEnvironment*)this, fmi2False, mLoggingOn)) {
                 stopSimulation("Failed to instantiate FMU");
+                fmu = NULL;
                 return;
             }
     
@@ -780,10 +779,9 @@ public:
 
             //Instantiate FMU
             size_t nRequiredIntermediateVariables = 0;
-            fmi3_instantiateCoSimulation(fmu, fmi3False, mLoggingOn, fmi3False, fmi3False, NULL, nRequiredIntermediateVariables, this, FMIWrapper_fmi3Logger, FMIWrapper_fmi3IntermediateUpdate);
-    
-            if (NULL == fmu) {
+            if(!fmi3_instantiateCoSimulation(fmu, fmi3False, mLoggingOn, fmi3False, fmi3False, NULL, nRequiredIntermediateVariables, this, FMIWrapper_fmi3Logger, FMIWrapper_fmi3IntermediateUpdate)) {
                 stopSimulation("Failed to instantiate FMU");
+                fmu = NULL;
                 return;
             }
     

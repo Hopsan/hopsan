@@ -20,8 +20,8 @@ typedef struct {
     fmi3String instanceName;
     fmi3String instantiationToken;
     fmi3InstanceEnvironment instanceEnvironment;
-    fmi3CallbackLogMessage logger;
-    fmi3CallbackIntermediateUpdate intermediateUpdate;
+    fmi3LogMessageCallback logger;
+    fmi3IntermediateUpdateCallback intermediateUpdate;
     bool loggingOn;
 
     hopsan::ComponentSystem *pSystem;
@@ -104,7 +104,7 @@ void forward_message(const char* message, const char* type, void* userState)
     else if (strcmp(type, "debug") == 0) {
         status = fmi3OK;
     }
-    fmu->logger(fmu->instanceEnvironment, fmu->instanceName, status, type, message);
+    fmu->logger(fmu->instanceEnvironment, status, type, message);
 }
 
 int hopsan_has_message() {
@@ -145,8 +145,8 @@ fmi3Instance fmi3InstantiateCoSimulation(fmi3String instanceName,
                                          const fmi3ValueReference requiredIntermediateVariables[],
                                          size_t nRequiredIntermediateVariables,
                                          fmi3InstanceEnvironment instanceEnvironment,
-                                         fmi3CallbackLogMessage logMessage,
-                                         fmi3CallbackIntermediateUpdate intermediateUpdate)
+                                         fmi3LogMessageCallback logMessage,
+                                         fmi3IntermediateUpdateCallback intermediateUpdate)
 {
     UNUSED(visible);
     UNUSED(eventModeUsed);
@@ -175,18 +175,26 @@ fmi3Instance fmi3InstantiateCoSimulation(fmi3String instanceName,
         {
             get_all_hopsan_messages(fmu);
             if(fmu->loggingOn) {
-                fmu->logger(fmu->instanceEnvironment, fmu->instanceName, fmi3Error, "eror", "Model cannot be simulated.");
+                fmu->logger(fmu->instanceEnvironment, fmi3Error, "error", "Model cannot be simulated.");
             }
             return NULL;
         }
         get_all_hopsan_messages(fmu);
     }
+    else {
+        if(fmu->loggingOn) {
+            fmu->logger(fmu->instanceEnvironment, fmi3Error, "error", "Model cannot be loaded.");
+        }
+        return NULL;
+    }
 
     INITDATAPTRS
 
     if(fmu->loggingOn) {
-        fmu->logger(fmu->instanceEnvironment, fmu->instanceName, fmi3OK, "info", "Successfully instantiated FMU");
+        fmu->logger(fmu->instanceEnvironment, fmi3OK, "info", "Successfully instantiated FMU");
     }
+
+    state = Instantiated;
 
     return fmu;
 }
@@ -210,6 +218,20 @@ fmi3Status fmi3EnterInitializationMode(fmi3Instance instance,
     UNUSED(stopTimeDefined);
     UNUSED(stopTime);
     fmuContext *fmu = (fmuContext*)instance;
+
+    if(fmu == nullptr) {
+        return fmi3Error;
+    }
+    else if(fmu->pSystem == nullptr) {
+        if(fmu->loggingOn) {
+            fmu->logger(fmu->instanceEnvironment, fmi3Error, "error", "Hopsan system is NULL.");
+        }
+        return fmi3Error;
+    }
+
+    if(fmu->loggingOn) {
+        fmu->logger(fmu->instanceEnvironment, fmi3Error, "info", "Entering initialization mode...");
+    }
 
     fmu->pSystem->initialize(startTime, stopTime);
     get_all_hopsan_messages(fmu);
@@ -621,6 +643,237 @@ fmi3Status fmi3DoStep(fmi3Instance instance,
     get_all_hopsan_messages(fmu);
 
     return fmi3OK;
+}
+
+//Unused functions
+
+fmi3Instance fmi3InstantiateModelExchange(fmi3String, fmi3String, fmi3String, fmi3Boolean, fmi3Boolean,
+                                           fmi3InstanceEnvironment, fmi3LogMessageCallback)
+{
+    return NULL;
+}
+
+fmi3Instance fmi3InstantiateScheduledExecution(fmi3String, fmi3String, fmi3String, fmi3Boolean,
+                                                                   fmi3Boolean,
+                                                                   fmi3InstanceEnvironment, fmi3LogMessageCallback,
+                                                                   fmi3ClockUpdateCallback,
+                                                                   fmi3LockPreemptionCallback,
+                                                                   fmi3UnlockPreemptionCallback)
+{
+    return NULL;
+}
+
+fmi3Status fmi3EnterEventMode(fmi3Instance)
+{
+    return fmi3Discard;
+}
+
+
+fmi3Status fmi3SetBoolean(fmi3Instance, const fmi3ValueReference[], size_t, const fmi3Boolean[], size_t)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3SetString(fmi3Instance, const fmi3ValueReference[], size_t, const fmi3String[], size_t)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3SetBinary(fmi3Instance, const fmi3ValueReference[], size_t, const size_t[], const fmi3Binary[], size_t)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3SetClock(fmi3Instance, const fmi3ValueReference[], size_t, const fmi3Clock[])
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3GetNumberOfVariableDependencies(fmi3Instance, fmi3ValueReference, size_t*)
+{
+    return fmi3Discard;
+}
+fmi3Status fmi3GetVariableDependencies(fmi3Instance, fmi3ValueReference, size_t[], fmi3ValueReference[],
+                                                           size_t[], fmi3DependencyKind[], size_t)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3GetFMUState(fmi3Instance, fmi3FMUState*)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3SetFMUState(fmi3Instance, fmi3FMUState)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3FreeFMUState(fmi3Instance, fmi3FMUState*)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3SerializedFMUStateSize(fmi3Instance, fmi3FMUState, size_t*)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3SerializeFMUState(fmi3Instance, fmi3FMUState, fmi3Byte[], size_t)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3DeserializeFMUState(fmi3Instance, const fmi3Byte[], size_t, fmi3FMUState*)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3GetDirectionalDerivative(fmi3Instance, const fmi3ValueReference[], size_t,
+                                                            const fmi3ValueReference[], size_t, const fmi3Float64[],
+                                                            size_t, fmi3Float64[], size_t)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3GetAdjointDerivative(fmi3Instance, const fmi3ValueReference[], size_t,
+                                                        const fmi3ValueReference[], size_t, const fmi3Float64[],
+                                                        size_t, fmi3Float64[], size_t)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3EnterConfigurationMode(fmi3Instance)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3ExitConfigurationMode(fmi3Instance)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3GetIntervalDecimal(fmi3Instance, const fmi3ValueReference[], size_t,
+                                                      fmi3Float64[], fmi3IntervalQualifier[])
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3GetIntervalFraction(fmi3Instance, const fmi3ValueReference[], size_t,
+                                                       fmi3UInt64[], fmi3UInt64[], fmi3IntervalQualifier[])
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3GetShiftDecimal(fmi3Instance, const fmi3ValueReference[], size_t, fmi3Float64[])
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3GetShiftFraction(fmi3Instance, const fmi3ValueReference[], size_t,
+                                                    fmi3UInt64[], fmi3UInt64[])
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3SetIntervalDecimal(fmi3Instance, const fmi3ValueReference[],
+                                                      size_t, const fmi3Float64[])
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3SetIntervalFraction(fmi3Instance, const fmi3ValueReference[],
+                                                       size_t, const fmi3UInt64[], const fmi3UInt64[])
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3SetShiftDecimal(fmi3Instance instance, const fmi3ValueReference valueReferences[],
+                                                   size_t nValueReferences, const fmi3Float64 shifts[])
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3SetShiftFraction(fmi3Instance instance, const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences, const fmi3UInt64 counters[],
+                                                    const fmi3UInt64 resolutions[])
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3EvaluateDiscreteStates(fmi3Instance)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3UpdateDiscreteStates(fmi3Instance, fmi3Boolean*, fmi3Boolean*, fmi3Boolean*,
+                                                        fmi3Boolean*, fmi3Boolean*, fmi3Float64*)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3EnterContinuousTimeMode(fmi3Instance)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3CompletedIntegratorStep(fmi3Instance, fmi3Boolean, fmi3Boolean*, fmi3Boolean*) {
+    return fmi3Discard;
+}
+
+fmi3Status fmi3SetTime(fmi3Instance, fmi3Float64)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3SetContinuousStates(fmi3Instance, const fmi3Float64[], size_t)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3GetContinuousStateDerivatives(fmi3Instance, fmi3Float64[], size_t)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3GetEventIndicators(fmi3Instance, fmi3Float64[], size_t)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3GetContinuousStates(fmi3Instance, fmi3Float64[], size_t)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3GetNominalsOfContinuousStates(fmi3Instance, fmi3Float64[], size_t)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3GetNumberOfEventIndicators(fmi3Instance, size_t*)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3GetNumberOfContinuousStates(fmi3Instance, size_t*)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3EnterStepMode(fmi3Instance)
+{
+    return fmi3Discard;
+}
+fmi3Status fmi3GetOutputDerivatives(fmi3Instance, const fmi3ValueReference[], size_t,
+                                                        const fmi3Int32[], fmi3Float64[], size_t)
+{
+    return fmi3Discard;
+}
+
+fmi3Status fmi3ActivateModelPartition(fmi3Instance, fmi3ValueReference, fmi3Float64)
+{
+    return fmi3Discard;
 }
 
 }
