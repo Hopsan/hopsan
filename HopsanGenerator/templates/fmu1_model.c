@@ -8,6 +8,9 @@
 #include <string>
 #include <string.h>
 
+enum fmuStateT { Started, Instantiated, Initialized };
+fmuStateT state = Started;
+
 <<<data>>>
 
 #define UNUSED(x)(void)(x)
@@ -23,8 +26,8 @@ typedef struct {
     double stopTime;
 
     hopsan::ComponentSystem *pSystem;
-    void *dataPtrs[NUMDATAPTRS];        //Data pointer for each value reference, NULL if variable is a parameter
-    const char* parNames[NUMDATAPTRS];  //Parameter names for value references, NULL for non-parameter variables
+    void *dataPtrs[NUMDATAPTRS+1];        //Data pointer for each value reference, NULL if variable is a parameter
+    const char* parNames[NUMDATAPTRS+1];  //Parameter names for value references, NULL for non-parameter variables
 } fmuContext;
 
 std::string parseResourceLocation(std::string uri)
@@ -184,6 +187,8 @@ fmiComponent fmiInstantiateSlave(fmiString instanceName,
         fmu->logger(fmu, fmu->instanceName, fmiOK, "info", "Successfully instantiated FMU");
     }
 
+    state = Instantiated;
+
     return fmu;
 }
 
@@ -204,6 +209,8 @@ fmiStatus fmiInitializeSlave(fmiComponent c,
 
     fmu->pSystem->initialize(fmu->startTime, fmu->stopTime);
     get_all_hopsan_messages(fmu);
+
+    state = Initialized;
 }
 
 void fmiFreeSlaveInstance(fmiComponent c)
@@ -227,6 +234,7 @@ fmiStatus fmiResetSlave(fmiComponent c) {
     if(fmu) {
         fmu->pSystem->finalize();
         get_all_hopsan_messages(fmu);
+        state = Instantiated;
         return fmiOK;
     }
     return fmiError;
@@ -240,8 +248,11 @@ fmiStatus fmiGetReal(fmiComponent c,
     fmuContext *fmu =(fmuContext*)c;
     fmiStatus status = fmiOK;
     for(size_t i=0; i<nValueReferences; ++i) {
-        if(valueReferences[i] >= NUMDATAPTRS) {
+        if(valueReferences[i] >= NUMDATAPTRS+1) {
             status = fmiError;   //Illegal value reference
+        }
+        else if(valueReferences[i]==0) {
+            values[i] = fmu->pSystem->getDesiredTimeStep();
         }
         else {
             if(fmu->dataPtrs[valueReferences[i]]) {
@@ -266,11 +277,16 @@ fmiStatus fmiSetReal(fmiComponent c,
     fmuContext *fmu =(fmuContext*)c;
     fmiStatus status = fmiOK;
     for(size_t i=0; i<nValueReferences; ++i) {
-        if(valueReferences[i] >= NUMDATAPTRS) {
+        if(valueReferences[i] >= NUMDATAPTRS+1) {
             status = fmiError;
         }
         else {
-            if(fmu->dataPtrs[valueReferences[i]]) {
+            if(valueReferences[i] == 0) {
+                if(state == Instantiated) {
+                    fmu->pSystem->setDesiredTimestep(values[i]);
+                }
+            }
+            else if(fmu->dataPtrs[valueReferences[i]]) {
                 (*(double*)fmu->dataPtrs[valueReferences[i]]) = values[i];
             }
             else {

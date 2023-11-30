@@ -10,6 +10,9 @@
 #include <string>
 #include <string.h>
 
+enum fmuStateT { Started, Instantiated, Initializing, Initialized };
+fmuStateT state = Started;
+
 <<<data>>>
 
 #define UNUSED(x)(void)(x)
@@ -25,8 +28,8 @@ typedef struct {
     bool loggingOn;
 
     hopsan::ComponentSystem *pSystem;
-    void *dataPtrs[NUMDATAPTRS];        //Data pointer for each value reference, NULL if variable is a parameter
-    const char* parNames[NUMDATAPTRS];  //Parameter names for value references, NULL for non-parameter variables
+    void *dataPtrs[NUMDATAPTRS+1];        //Data pointer for each value reference, NULL if variable is a parameter
+    const char* parNames[NUMDATAPTRS+1];  //Parameter names for value references, NULL for non-parameter variables
 } fmuContext;
 
 std::string parseResourceLocation(std::string uri)
@@ -236,11 +239,14 @@ fmi3Status fmi3EnterInitializationMode(fmi3Instance instance,
     fmu->pSystem->initialize(startTime, stopTime);
     get_all_hopsan_messages(fmu);
 
+    state = Initializing;
+
     return fmi3OK;
 }
 
 fmi3Status fmi3ExitInitializationMode(fmi3Instance instance) {
     UNUSED(instance);
+    state = Initialized;
     return fmi3OK;  //Nothing to do
 }
 
@@ -259,6 +265,7 @@ fmi3Status fmi3Reset(fmi3Instance instance) {
     if(fmu) {
         fmu->pSystem->finalize();
         get_all_hopsan_messages(fmu);
+        state = Instantiated;
         return fmi3OK;
     }
     return fmi3Error;
@@ -273,8 +280,11 @@ fmi3Status fmi3GetFloat64(fmi3Instance instance,
     fmuContext *fmu =(fmuContext*)instance;
     fmi3Status status = fmi3OK;
     for(size_t i=0; i<nValueReferences; ++i) {
-        if(valueReferences[i] >= NUMDATAPTRS) {
+        if(valueReferences[i] >= NUMDATAPTRS+1) {
             status = fmi3Error;   //Illegal value reference
+        }
+        else if(valueReferences[i]==0) {
+            values[i] = fmu->pSystem->getDesiredTimeStep();
         }
         else {
             values[i] = (*(double*)fmu->dataPtrs[valueReferences[i]]);
@@ -293,11 +303,16 @@ fmi3Status fmi3SetFloat64(fmi3Instance instance,
     fmuContext *fmu =(fmuContext*)instance;
     fmi3Status status = fmi3OK;
     for(size_t i=0; i<nValueReferences; ++i) {
-        if(valueReferences[i] >= NUMDATAPTRS) {
+        if(valueReferences[i] >= NUMDATAPTRS+1) {
             status = fmi3Error;
         }
         else {
-            if(fmu->dataPtrs[valueReferences[i]]) {
+            if(valueReferences[i] == 0) {
+                if(state == Instantiated || state == Initializing) {
+                    fmu->pSystem->setDesiredTimestep(values[i]);
+                }
+            }
+            else if(fmu->dataPtrs[valueReferences[i]]) {
                 //Non-parameter variable
                 (*(double*)fmu->dataPtrs[valueReferences[i]]) = values[i];
             }

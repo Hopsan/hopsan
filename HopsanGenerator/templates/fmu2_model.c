@@ -10,6 +10,9 @@
 #include <string>
 #include <string.h>
 
+enum fmuStateT { Started, Instantiated, Initializing, Initialized };
+fmuStateT state = Started;
+
 <<<data>>>
 
 #define UNUSED(x)(void)(x)
@@ -26,8 +29,8 @@ typedef struct {
     double stopTime;
 
     hopsan::ComponentSystem *pSystem;
-    void *dataPtrs[NUMDATAPTRS];        //Data pointer for each value reference, NULL if variable is a parameter
-    const char* parNames[NUMDATAPTRS];  //Parameter names for value references, NULL for non-parameter variables
+    void *dataPtrs[NUMDATAPTRS+1];        //Data pointer for each value reference, NULL if variable is a parameter
+    const char* parNames[NUMDATAPTRS+1];  //Parameter names for value references, NULL for non-parameter variables
 } fmuContext;
 
 std::string parseResourceLocation(std::string uri)
@@ -183,6 +186,7 @@ fmi2Component fmi2Instantiate(fmi2String instanceName,
         fmu->logger(fmu->componentEnvironment, fmu->instanceName, fmi2OK, "info", "Successfully instantiated FMU");
     }
 
+    state = Instantiated;
     return fmu;
 }
 
@@ -222,11 +226,13 @@ fmi2Status fmi2EnterInitializationMode(fmi2Component c)
     fmu->pSystem->initialize(fmu->startTime, fmu->stopTime);
     get_all_hopsan_messages(fmu);
 
+    state = Initializing;
     return fmi2OK;
 }
 
 fmi2Status fmi2ExitInitializationMode(fmi2Component c) {
     UNUSED(c);
+    state = Initialized;
     return fmi2OK;  //Nothing to do
 }
 
@@ -237,6 +243,7 @@ fmi2Status fmi2Terminate(fmi2Component c) {
         get_all_hopsan_messages(fmu);
         return fmi2OK;
     }
+    state = Instantiated;
     return fmi2Error;
 }
 
@@ -245,8 +252,10 @@ fmi2Status fmi2Reset(fmi2Component c) {
     if(fmu) {
         fmu->pSystem->finalize();
         get_all_hopsan_messages(fmu);
+        state = Instantiated;
         return fmi2OK;
     }
+
     return fmi2Error;
 }
 
@@ -258,8 +267,11 @@ fmi2Status fmi2GetReal(fmi2Component c,
     fmuContext *fmu =(fmuContext*)c;
     fmi2Status status = fmi2OK;
     for(size_t i=0; i<nValueReferences; ++i) {
-        if(valueReferences[i] >= NUMDATAPTRS) {
+        if(valueReferences[i] >= NUMDATAPTRS+1) {
             status = fmi2Error;   //Illegal value reference
+        }
+        else if(valueReferences[i]==0) {
+            values[i] = fmu->pSystem->getDesiredTimeStep();
         }
         else {
             if(fmu->dataPtrs[valueReferences[i]]) {
@@ -284,11 +296,16 @@ fmi2Status fmi2SetReal(fmi2Component c,
     fmuContext *fmu =(fmuContext*)c;
     fmi2Status status = fmi2OK;
     for(size_t i=0; i<nValueReferences; ++i) {
-        if(valueReferences[i] >= NUMDATAPTRS) {
+        if(valueReferences[i] >= NUMDATAPTRS+1) {
             status = fmi2Error;
         }
         else {
-            if(fmu->dataPtrs[valueReferences[i]]) {
+            if(valueReferences[i] == 0) {
+                if(state == Instantiated || state == Initializing) {
+                    fmu->pSystem->setDesiredTimestep(values[i]);
+                }
+            }
+            else if(fmu->dataPtrs[valueReferences[i]]) {
                 (*(double*)fmu->dataPtrs[valueReferences[i]]) = values[i];
             }
             else {
