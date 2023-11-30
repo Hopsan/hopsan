@@ -263,7 +263,7 @@ bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
 
     dataStr.append("\n#define NUMDATAPTRS "+QString::number(vars.size()+pars.size()));
     dataStr.append("\n#define INITDATAPTRS ");
-    int vr = 0;
+    int vr = 1; //Value reference 0 reserved for timestep
     for(const auto &var : vars) {
         dataStr.append("\\\nfmu->dataPtrs["+QString::number(vr)+"] = fmu->pSystem");
         for(const auto &system : var.systemHierarchy) {
@@ -529,7 +529,19 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
         QStringList systemHierarchy = QStringList();
         getModelVariables(pSystem, vars, systemHierarchy);
 
-        long vr = 0;
+        mdWriter.writeStartElement("ScalarVariable");
+        mdWriter.writeAttribute("name", "timestep");
+        mdWriter.writeAttribute("valueReference", "0");
+        mdWriter.writeAttribute("causality", "input");
+        mdWriter.writeAttribute("variability", "parameter");
+        mdWriter.writeAttribute("description", "Hopsan time step");
+        mdWriter.writeStartElement("Real");
+        mdWriter.writeAttribute("start", QString::number(pSystem->getDesiredTimeStep()));
+        mdWriter.writeAttribute("unit", "s");
+        mdWriter.writeEndElement(); //Real
+        mdWriter.writeEndElement(); //ScalarVariable
+
+        long vr = 1;    //vr=0 reserved for timestep
         for(const auto &var : vars) {
             mdWriter.writeStartElement("ScalarVariable");
             mdWriter.writeAttribute("name", var.getName());
@@ -611,7 +623,19 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
         QStringList systemHierarchy = QStringList();
         getModelVariables(pSystem, vars, systemHierarchy);
 
-        long vr = 0;
+        mdWriter.writeStartElement("ScalarVariable");
+        mdWriter.writeAttribute("name", "timestep");
+        mdWriter.writeAttribute("valueReference", "0");
+        mdWriter.writeAttribute("causality", "parameter");
+        mdWriter.writeAttribute("variability", "fixed");
+        mdWriter.writeAttribute("description", "Hopsan time step");
+        mdWriter.writeStartElement("Real");
+        mdWriter.writeAttribute("start", QString::number(pSystem->getDesiredTimeStep()));
+        mdWriter.writeAttribute("unit", "s");
+        mdWriter.writeEndElement(); //Real
+        mdWriter.writeEndElement(); //ScalarVariable
+
+        long vr = 1;    //vr = 0 reserved for timestep
         for(const auto &var : vars) {
             mdWriter.writeStartElement("ScalarVariable");
             mdWriter.writeAttribute("name", var.getName());
@@ -692,10 +716,20 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
         QStringList systemHierarchy = QStringList();
         getModelVariables(pSystem, vars, systemHierarchy);
 
+        mdWriter.writeStartElement("Float64");
+        mdWriter.writeAttribute("name", "timestep");
+        mdWriter.writeAttribute("valueReference", "0");
+        mdWriter.writeAttribute("causality", "parameter");
+        mdWriter.writeAttribute("variability", "fixed");
+        mdWriter.writeAttribute("description", "Hopsan time step");
+        mdWriter.writeAttribute("start", QString::number(pSystem->getDesiredTimeStep()));
+        mdWriter.writeAttribute("unit", "s");
+        mdWriter.writeEndElement(); //Float64
+
         nReals=0;
         nInputs=0;
         nOutputs=0;
-        long vr = 0;
+        long vr = 1;    //! vr = 0 is reserved for timestep
         for(const auto &var : vars) {
             mdWriter.writeStartElement("Float64");
             if(var.systemHierarchy.isEmpty()) {
