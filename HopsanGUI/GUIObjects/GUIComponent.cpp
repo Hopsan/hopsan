@@ -204,6 +204,8 @@ bool Component::setParameterValue(QString name, QString value, bool force)
         //Adjust icon scale
         this->getAppearanceData()->setIconScale(qMax(qMax(inputs.size(),outputs.size())/3.0,1.0), UserGraphics);
 
+        mpParentSystemObject->renameModelObject(this->getName(), QFileInfo(getParameterValue("path")).baseName());
+
         //Refresh appearance
         this->refreshAppearance();
 
