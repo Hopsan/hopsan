@@ -228,7 +228,7 @@ public:
     QStringList getPortNames(const QString &componentName);
 
     // Component creation and removal
-    QString createComponent(QString type, QString name="");
+    QString createComponent(QString type, QString name="", QString subType="");
     QString createSubSystem(QString name="");
     QString createConditionalSubSystem(QString name="");
     void removeSubComponent(QString componentName, bool doDelete);

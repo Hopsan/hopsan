@@ -56,7 +56,7 @@ Component::Component(QPointF position, double rotation, ModelObjectAppearance* p
     : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentSystem, pParentSystem)
 {
     // Create the object in core, and get its default core name
-    mName = mpParentSystemObject->getCoreSystemAccessPtr()->createComponent(mModelObjectAppearance.getTypeName(), mModelObjectAppearance.getDisplayName());
+    mName = mpParentSystemObject->getCoreSystemAccessPtr()->createComponent(mModelObjectAppearance.getTypeName(), mModelObjectAppearance.getDisplayName(), mModelObjectAppearance.getSubTypeName());
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 
     // Sets the ports

@@ -699,7 +699,7 @@ void CoreSystemAccess::finalize()
     mpCoreComponentSystem->finalize();
 }
 
-QString CoreSystemAccess::createComponent(QString type, QString name)
+QString CoreSystemAccess::createComponent(QString type, QString name, QString subType)
 {
     //qDebug() << "createComponent: " << "type: " << type << " desired name:  " << name << " in system: " << this->getRootSystemName();
     hopsan::Component *pCoreComponent = gHopsanCore.createComponent(type.toStdString().c_str());
@@ -710,6 +710,7 @@ QString CoreSystemAccess::createComponent(QString type, QString name)
         {
             pCoreComponent->setName(name.toStdString().c_str());
         }
+        pCoreComponent->setSubTypeName(subType.toStdString().c_str());
         //qDebug() << "createComponent: name after add: " << QString::fromStdString(pCoreComponent->getName()) << " added to: " << QString::fromStdString(mpCoreComponentSystem->getName());
         return pCoreComponent->getName().c_str();
     }
