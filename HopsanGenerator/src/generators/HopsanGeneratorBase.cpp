@@ -1097,8 +1097,29 @@ bool HopsanGeneratorBase::generateLibrarySourceFile(const ComponentLibrary &lib)
     output.append("extern \"C\" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory, NodeFactory* pNodeFactory)\n");
     output.append("{\n");
     output.append("    //Register Components\n");
-    for(const QString& srcFile : lib.mComponentCodeFiles) {
-        QString typeName = QFileInfo(srcFile).baseName();
+    for(const QString& cafPath : lib.mComponentXMLFiles) {
+        QFile cafFile(QFileInfo(lib.mLoadFilePath).path()+"/"+cafPath);
+        QDomDocument cafDomDocument;
+        QDomElement cafRootElement;
+        cafRootElement = loadXMLDomDocument(cafFile,cafDomDocument,"hopsanobjectappearance");
+        if(QDomElement() == cafRootElement) {
+            printErrorMessage("Unable to parse XML file: "+QString(lib.mLoadFilePath+"/"+cafPath));
+            return false;
+        }
+        QDomElement modelObjectElement = cafRootElement.firstChildElement("modelobject");
+        if(modelObjectElement.isNull()) {
+            printErrorMessage("Unable to parse XML file: "+QString(lib.mLoadFilePath+"/"+cafPath)+" (cannot find \"modelobject\" element)");
+            return false;
+        }
+        QString typeName = modelObjectElement.attribute("typename");
+        if(typeName.isEmpty()) {
+            printErrorMessage("Type name not specified in component XML file.");
+            return false;
+        }
+        cafFile.close();
+        if(modelObjectElement.hasAttribute("subtypename") || modelObjectElement.hasAttribute("hmffile")) {
+            continue;
+        }
         output.append("    pComponentFactory->registerCreatorFunction(\""+typeName+"\", "+typeName+"::Creator);\n");
     }
     output.append("\n");
