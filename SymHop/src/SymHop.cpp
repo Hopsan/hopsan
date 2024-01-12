@@ -3758,7 +3758,7 @@ QString SymHop::getFunctionDerivative(const QString &key)
 //! @brief Returns a list with supported functions for equation-based model generation
 QStringList SymHop::getSupportedFunctionsList()
 {
-    return QStringList() << "div" << "rem" << "mod" << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "atan2" << "sinh" << "cosh" << "tanh" << "log" << "exp" << "sqrt" << "sign" << "abs" << "der" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "integer" << "floor" << "ceil" << "pow" << "min" << "max" << "nonZero" << "turbulentFlow" << "delay" << "equal" << "notEqual" << "greaterThan" << "smallerThan" << "greaterThanOrEqual" << "smallerThanOrEqual" << "r2d" << "d2r";
+    return QStringList() << "div" << "rem" << "mod" << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "atan2" << "sinh" << "cosh" << "tanh" << "log" << "exp" << "sqrt" << "sign" << "abs" << "der" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "integer" << "floor" << "ceil" << "pow" << "min" << "max" << "nonZero" << "turbulentFlow" << "delay" << "equal" << "notEqual" << "greaterThan" << "smallerThan" << "greaterThanOrEqual" << "smallerThanOrEqual" << "r2d" << "d2r" << "pi";
 }
 
 
