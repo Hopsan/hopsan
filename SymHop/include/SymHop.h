@@ -95,7 +95,7 @@ public:
     static Expression fromFunctionArguments(const QString function, const QList<Expression> arguments);
     static Expression fromEquation(const Expression left, const Expression right);
 
-    double evaluate(const QMap<QString, double> &variables, const QMap<QString, SymHopFunctionoid*> *functions=0 /* = QMap<QString, SymHop::Function>() */, bool *ok=0) const;
+    double  evaluate(const QMap<QString, double> &variables, const QMap<QString, SymHopFunctionoid*> *functions=0 /* = QMap<QString, SymHop::Function>() */, bool *ok=0) const;
     // magse says: QMap is a derived type, you can't have reference this way.
 
     void replaceByCopy(const Expression expr);

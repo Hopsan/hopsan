@@ -856,6 +856,8 @@ double Expression::evaluate(const QMap<QString, double> &variables, const QMap<Q
             else if(mFunction == "floor") { retval = floor(mArguments[0].evaluate(variables, functions, &ok1)); }
             else if(mFunction == "ceil") { retval = ceil(mArguments[0].evaluate(variables, functions, &ok1)); }
             else if(mFunction == "round") { retval = round(mArguments[0].evaluate(variables, functions, &ok1)); }
+            else if(mFunction == "r2d") { retval = mArguments[0].evaluate(variables, functions, &ok1)*180.0/M_PI; }
+            else if(mFunction == "d2r") { retval = mArguments[0].evaluate(variables, functions, &ok1)*M_PI/180.0; }
             else if(mFunction == "sign")
             {
                 if(mArguments[0].evaluate(variables, functions, &ok1) >= 0.0)
@@ -3756,7 +3758,7 @@ QString SymHop::getFunctionDerivative(const QString &key)
 //! @brief Returns a list with supported functions for equation-based model generation
 QStringList SymHop::getSupportedFunctionsList()
 {
-    return QStringList() << "div" << "rem" << "mod" << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "atan2" << "sinh" << "cosh" << "tanh" << "log" << "exp" << "sqrt" << "sign" << "abs" << "der" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "integer" << "floor" << "ceil" << "pow" << "min" << "max" << "nonZero" << "turbulentFlow" << "delay" << "equal" << "notEqual" << "greaterThan" << "smallerThan" << "greaterThanOrEqual" << "smallerThanOrEqual";
+    return QStringList() << "div" << "rem" << "mod" << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "atan2" << "sinh" << "cosh" << "tanh" << "log" << "exp" << "sqrt" << "sign" << "abs" << "der" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "integer" << "floor" << "ceil" << "pow" << "min" << "max" << "nonZero" << "turbulentFlow" << "delay" << "equal" << "notEqual" << "greaterThan" << "smallerThan" << "greaterThanOrEqual" << "smallerThanOrEqual" << "r2d" << "d2r";
 }
 
 
