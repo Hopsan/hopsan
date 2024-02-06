@@ -211,6 +211,8 @@ fmiStatus fmiInitializeSlave(fmiComponent c,
     get_all_hopsan_messages(fmu);
 
     state = Initialized;
+
+    return fmiOK;
 }
 
 void fmiFreeSlaveInstance(fmiComponent c)
