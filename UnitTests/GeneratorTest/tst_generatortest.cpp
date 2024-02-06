@@ -269,13 +269,22 @@ private slots:
 
         args << "-s" << testStopTime;
         args << "-l" << "2";
-        args << "-o" << "log.txt";
+        args << "-e" << "log.txt";
+        args << "-o" << "results.txt";
         args << qcwd+"/fmu1 32/unittestmodel_export.fmu";
         p.start(fmuChecker32, args);
         p.waitForFinished();
 
         QVERIFY2(p.exitStatus() == QProcess::NormalExit,
                  "Failed to generate valid FMU 1.0 (32-bit), FMUChecker crashed");
+        if(p.exitCode() != 0) {
+            QFile f("log.txt");
+
+            if(f.open(QFile::ReadOnly | QFile::Text)) {
+                QTextStream in(&f);
+                std::cout << in.readAll().toStdString().c_str() << "\n";
+            }
+        }
         QVERIFY2(p.exitCode() == 0,
                  "Failed to generate valid FMU 1.0 (32-bit), FMU not accepted by FMUChecker.");
 
@@ -293,13 +302,22 @@ private slots:
         args.clear();
         args << "-s" << testStopTime;
         args << "-l" << "2";
-        args << "-o" << "log.txt";
+        args << "-e" << "log.txt";
+        args << "-o" << "results.txt";
         args << qcwd+"/fmu2 32/unittestmodel_export.fmu";
         p.start(fmuChecker32, args);
         p.waitForFinished();
 
         QVERIFY2(p.exitStatus() == QProcess::NormalExit,
                  "Failed to generate valid FMU 2.0 (32-bit), FMUChecker crashed");
+        if(p.exitCode() != 0) {
+            QFile f("log.txt");
+
+            if(f.open(QFile::ReadOnly | QFile::Text)) {
+                QTextStream in(&f);
+                std::cout << in.readAll().toStdString().c_str() << "\n";
+            }
+        }
         QVERIFY2(p.exitCode() == 0,
                  "Failed to generate valid FMU 2.0 (32-bit), FMU not accepted by FMUChecker.");
 #endif
@@ -318,13 +336,22 @@ private slots:
         args.clear();
         args << "-s" << testStopTime;
         args << "-l" << "2";
-        args << "-o" << "log.txt";
+        args << "-e" << "log.txt";
+        args << "-o" << "results.txt";
         args << qcwd+"/fmu1 64/unittestmodel_export.fmu";
         p.start(fmuChecker64, args);
         p.waitForFinished();
 
         QVERIFY2(p.exitStatus() == QProcess::NormalExit,
                  "Failed to generate valid FMU 1.0 (64-bit), FMUChecker crashed");
+        if(p.exitCode() != 0) {
+            QFile f("log.txt");
+
+            if(f.open(QFile::ReadOnly | QFile::Text)) {
+                QTextStream in(&f);
+                std::cout << in.readAll().toStdString().c_str() << "\n";
+            }
+        }
         QVERIFY2(p.exitCode() == 0,
                  "Failed to generate valid FMU 1.0 (64-bit), FMU not accepted by FMUChecker.");
 
@@ -340,13 +367,22 @@ private slots:
         args.clear();
         args << "-s" << testStopTime;
         args << "-l" << "2";
-        args << "-o" << "log.txt";
+        args << "-e" << "log.txt";
+        args << "-o" << "results.txt";
         args << qcwd+"/fmu2 64/unittestmodel_export.fmu";
         p.start(fmuChecker64, args);
         p.waitForFinished();
 
         QVERIFY2(p.exitStatus() == QProcess::NormalExit,
                  "Failed to generate valid FMU 2.0 (64-bit), FMUChecker crashed");
+        if(p.exitCode() != 0) {
+            QFile f("log.txt");
+
+            if(f.open(QFile::ReadOnly | QFile::Text)) {
+                QTextStream in(&f);
+                std::cout << in.readAll().toStdString().c_str() << "\n";
+            }
+        }
         QVERIFY2(p.exitCode() == 0,
                  "Failed to generate valid FMU 2.0 (64-bit), FMU not accepted by FMUChecker.");
 #endif
