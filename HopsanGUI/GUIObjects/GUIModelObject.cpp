@@ -177,7 +177,7 @@ QStringList ModelObject::getSystemNameHieararchy() const
 
 QString ModelObject::getHmfTagName() const
 {
-    return HMF_OBJECTTAG; //!< @todo change this
+    return HMF_OBJECT; //!< @todo change this
 }
 
 

@@ -533,6 +533,7 @@ void loadSystemParameter(QDomElement &rDomElement, bool doAdd, const QString hmf
     type = rDomElement.attribute(HMF_TYPENAME, type); //!< @deprecated load old typename
     QString quantityORunit = rDomElement.attribute(HMF_QUANTITY, rDomElement.attribute(HMF_UNIT));
     QString description = rDomElement.attribute(HMF_DESCRIPTIONTAG);
+    bool internal = parseAttributeBool(rDomElement, HMF_INTERNAL, false);
 
     if( (hmfVersion <= "0.3") && type.isEmpty())     //Version check, types did not exist in 0.3 and bellow (everything was double)
     {
@@ -540,7 +541,7 @@ void loadSystemParameter(QDomElement &rDomElement, bool doAdd, const QString hmf
     }
 
     // Core will take care of deciding about quantity or unit, leave unit empty
-    CoreParameterData paramData(name, value, type, quantityORunit, "", description);
+    CoreParameterData paramData(name, value, type, quantityORunit, "", description, internal);
     if (doAdd)
     {
         pContainer->setOrAddParameter(paramData, true);

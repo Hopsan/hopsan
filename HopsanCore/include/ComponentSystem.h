@@ -166,8 +166,8 @@ namespace hopsan {
         bool wasSimulationAborted() const;
 
         // System parameters
-        bool setOrAddSystemParameter(const HString &rName, const HString &rValue, const HString &rType, const HString &rDescription="", const HString &rUnitOrQuantity="", const bool force=false);
-        bool setSystemParameter(const HString &rName, const HString &rValue, const HString &rType, const HString &rDescription="", const HString &rUnitOrQuantity="", const bool force=false);
+        bool setOrAddSystemParameter(const HString &rName, const HString &rValue, const HString &rType, const HString &rDescription="", const HString &rUnitOrQuantity="", const bool internal=false, const bool force=false);
+        bool setSystemParameter(const HString &rName, const HString &rValue, const HString &rType, const HString &rDescription="", const HString &rUnitOrQuantity="", const bool internal=false, const bool force=false);
         void unRegisterParameter(const HString &name);
         void addSearchPath(HString searchPath);
 

@@ -275,7 +275,7 @@ int Component::type() const
 
 QString Component::getHmfTagName() const
 {
-    return HMF_COMPONENTTAG;
+    return HMF_COMPONENT;
 }
 
 
@@ -346,6 +346,7 @@ void Component::saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsE
         xmlParam.setAttribute(HMF_VALUETAG, paramDataVec[i].mValue);
         xmlParam.setAttribute(HMF_TYPE, paramDataVec[i].mType);
         xmlParam.setAttribute(HMF_UNIT, paramDataVec[i].mUnit);
+        xmlParam.setAttribute(HMF_INTERNAL, bool2str(paramDataVec[i].mInternal));
 
         /*if(this->isParameterMappedToSystemParameter(*pit))
         {
