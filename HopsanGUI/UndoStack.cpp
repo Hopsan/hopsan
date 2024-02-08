@@ -144,7 +144,7 @@ void UndoStack::undoOneStep()
         didSomething = true;
         if(stuffElement.attribute("what") == UNDO_DELETEDOBJECT)
         {
-            QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENTTAG);
+            QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENT);
             ModelObject* pObj = loadModelObject(componentElement, mpParentSystemObject, NoUndo);
 
             //Load parameter values
@@ -168,7 +168,7 @@ void UndoStack::undoOneStep()
         }
         else if(stuffElement.attribute("what") == UNDO_ADDEDOBJECT)
         {
-            QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENTTAG);
+            QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENT);
             addedObjectList.append(componentElement);
         }
         else if(stuffElement.attribute("what") == UNDO_ADDEDSYSTEMPORT)
@@ -514,7 +514,7 @@ void UndoStack::redoOneStep()
         didSomething = true;
         if(stuffElement.attribute("what") == UNDO_DELETEDOBJECT)
         {
-            QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENTTAG);
+            QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENT);
             QString name = componentElement.attribute(HMF_NAMETAG);
             if(mpParentSystemObject->hasModelObject(name)) {
                 mpParentSystemObject->deleteModelObject(name, NoUndo);
@@ -548,7 +548,7 @@ void UndoStack::redoOneStep()
         }
         else if(stuffElement.attribute("what") == UNDO_ADDEDOBJECT)
         {
-            QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENTTAG);
+            QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENT);
             loadModelObject(componentElement, mpParentSystemObject, NoUndo);
         }
         else if(stuffElement.attribute("what") == UNDO_ADDEDSYSTEMPORT)

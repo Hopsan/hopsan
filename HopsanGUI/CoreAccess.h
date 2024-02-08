@@ -108,8 +108,8 @@ class CoreParameterData
 {
 public:
     CoreParameterData() {}
-    CoreParameterData(const QString name, const QString value, const QString type, const QString quantity="", const QString unit="", const QString desc="")
-        : mName(name), mValue(value), mType(type), mQuantity(quantity), mUnit(unit), mDescription(desc) {}
+    CoreParameterData(const QString name, const QString value, const QString type, const QString quantity="", const QString unit="", const QString desc="", const bool internal=false)
+        : mName(name), mValue(value), mType(type), mQuantity(quantity), mUnit(unit), mDescription(desc), mInternal(internal) {}
 
     bool hasBooleanValue() const;
     bool hasIntegerValue() const;
@@ -119,6 +119,7 @@ public:
     QString mAlias;
     QString mValue;
     QString mType;
+    bool mInternal = false;
     QString mQuantity;
     QString mUnit;
     QString mDescription;

@@ -81,6 +81,7 @@ void copyParameterData(const hopsan::ParameterEvaluator *pCoreParam, CoreParamet
     {
         rGUIParam.mConditions.append(QString(pCoreParam->getConditions()[c].c_str()));
     }
+    rGUIParam.mInternal = pCoreParam->isInternal();
 }
 
 
@@ -1114,6 +1115,7 @@ bool CoreSystemAccess::setSystemParameter(const CoreParameterData &rParameter, b
                     rParameter.mType.toStdString().c_str(),
                     rParameter.mDescription.toStdString().c_str(),
                     rParameter.mQuantity.toStdString().c_str(),
+                    rParameter.mInternal,
                     force);
     }
     else
@@ -1124,6 +1126,7 @@ bool CoreSystemAccess::setSystemParameter(const CoreParameterData &rParameter, b
                     rParameter.mType.toStdString().c_str(),
                     rParameter.mDescription.toStdString().c_str(),
                     rParameter.mQuantity.toStdString().c_str(),
+                    rParameter.mInternal,
                     force);
     }
 }

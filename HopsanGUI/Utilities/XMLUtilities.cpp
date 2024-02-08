@@ -631,7 +631,7 @@ void updateRenamedComponentType(QDomElement &rDomElement, const QString oldType,
 
 void updateRenamedComponentName(QDomElement &rDomElement, const QString oldName, const QString newName)
 {
-    if((rDomElement.tagName() == HMF_COMPONENTTAG) && rDomElement.attribute(HMF_NAMETAG) == oldName)
+    if((rDomElement.tagName() == HMF_COMPONENT) && rDomElement.attribute(HMF_NAMETAG) == oldName)
     {
         rDomElement.setAttribute(HMF_NAMETAG, newName);
         gpMessageHandler->addWarningMessage("Renamed component: "+oldName+" to "+newName);
@@ -775,10 +775,10 @@ void updateHmfSystemProperties(QDomElement &systemElement, const QString hmfVers
         for (const auto& oldName : invalidNames) {
             QString newName = oldName+"_INVALID_NAME";
 
-            QDomElement xmlComponent = systemElement.firstChildElement(HMF_OBJECTS).firstChildElement(HMF_COMPONENTTAG);
+            QDomElement xmlComponent = systemElement.firstChildElement(HMF_OBJECTS).firstChildElement(HMF_COMPONENT);
             while (!xmlComponent.isNull()) {
                 updateRenamedComponentName(xmlComponent, oldName, newName);
-                xmlComponent = xmlComponent.nextSiblingElement(HMF_COMPONENTTAG);
+                xmlComponent = xmlComponent.nextSiblingElement(HMF_COMPONENT);
             }
 
             QDomElement xmlConnection = systemElement.firstChildElement(HMF_CONNECTIONS).firstChildElement(HMF_CONNECTORTAG);

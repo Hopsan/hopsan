@@ -63,7 +63,7 @@ using namespace std;
 //! @param [in] pDataPtr Only used by Components, system parameters don't use this, default: 0
 //! @param [in] pParentParameters A pointer to the Parameters object that contains the Parameter
 ParameterEvaluator::ParameterEvaluator(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rQuantity, const HString &rUnit,
-                                       const HString &rType, void* pDataPtr, ParameterEvaluatorHandler* pParameterEvalHandler)
+                                       const HString &rType, const bool internal, void* pDataPtr, ParameterEvaluatorHandler* pParameterEvalHandler)
 {
     mDepthCounter=0;
     mParameterName = rName;
@@ -73,6 +73,7 @@ ParameterEvaluator::ParameterEvaluator(const HString &rName, const HString &rVal
     mQuantity = rQuantity;
     mUnit = rUnit;
     mTriggersReconfiguration = false;
+    mInternal = internal;
 
     mpData = pDataPtr;
     mpParameterEvaluatorHandler = pParameterEvalHandler;
@@ -87,7 +88,7 @@ void* ParameterEvaluator::getDataPtr()
     return mpData;
 }
 
-bool ParameterEvaluator::setParameter(const HString &rValue, const HString &rDescription, const HString &rQuantity, const HString &rUnit, const HString &rType, ParameterEvaluator **pNeedEvaluation, bool force)
+bool ParameterEvaluator::setParameter(const HString &rValue, const HString &rDescription, const HString &rQuantity, const HString &rUnit, const HString &rType, ParameterEvaluator **pNeedEvaluation, bool internal, bool force)
 {
     bool success;
     HString oldValue = mParameterValue;
@@ -95,6 +96,7 @@ bool ParameterEvaluator::setParameter(const HString &rValue, const HString &rDes
     HString oldUnit = mUnit;
     HString oldType = mType;
     HString oldQuantity = mQuantity;
+    bool oldInternal = mInternal;
     if(!rDescription.empty())
     {
         mDescription = rDescription;
@@ -111,6 +113,7 @@ bool ParameterEvaluator::setParameter(const HString &rValue, const HString &rDes
     {
         mType = rType;
     }
+    mInternal = internal;
     success = setParameterValue(rValue, pNeedEvaluation);
     if((force) && !(success))
     {
@@ -124,6 +127,7 @@ bool ParameterEvaluator::setParameter(const HString &rValue, const HString &rDes
         mQuantity = oldQuantity;
         mUnit = oldUnit;
         mType = oldType;
+        mInternal = oldInternal;
     }
     return success;
 }
@@ -461,6 +465,11 @@ const std::vector<HString> &ParameterEvaluator::getConditions() const
     return mConditions;
 }
 
+bool ParameterEvaluator::isInternal() const
+{
+    return mInternal;
+}
+
 void ParameterEvaluator::setTriggersReconfiguration()
 {
     mTriggersReconfiguration = true;
@@ -548,7 +557,7 @@ ParameterEvaluatorHandler::~ParameterEvaluatorHandler()
 //! @param [in] force Should we force to add parameter even if it fails to evaluate
 //! @param [in] conditions Conditions for a conditional constant parameter
 //! @return true if success, otherwise false
-bool ParameterEvaluatorHandler::addParameter(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rQuantity, const HString &rUnit, const HString &rType, void* pData, bool force, std::vector<HString> conditions)
+bool ParameterEvaluatorHandler::addParameter(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rQuantity, const HString &rUnit, const HString &rType, void* pData, bool internal, bool force, std::vector<HString> conditions)
 {
     bool success = false;
     if (!rName.empty())
@@ -556,7 +565,7 @@ bool ParameterEvaluatorHandler::addParameter(const HString &rName, const HString
         if(!hasParameter(rName))
         {
             //! @todo should make sure that parameter names do not have + - * / . or similar as first character
-            ParameterEvaluator* newParameter = new ParameterEvaluator(rName, rValue, rDescription, rQuantity, rUnit, rType, pData, this);
+            ParameterEvaluator* newParameter = new ParameterEvaluator(rName, rValue, rDescription, rQuantity, rUnit, rType, internal, pData, this);
             if(rType == "conditional")
             {
                 newParameter->mConditions = conditions;
@@ -688,9 +697,10 @@ const std::vector<ParameterEvaluator*> *ParameterEvaluatorHandler::getParameters
 
 
 bool ParameterEvaluatorHandler::setParameter(const HString &rName, const HString &rValue, const HString &rDescription,
-                                             const HString &rQuantity, const HString &rUnit, const HString &rType,  const bool force)
+                                             const HString &rQuantity, const HString &rUnit, const HString &rType, const bool internal, const bool force)
 {
     bool success = false;
+    std::cout << "Setting hidden to " << internal << "\n";
 
     // Try to find the parameter among the existing parameters
     for(size_t i=0; i<mParameters.size(); ++i)
@@ -699,7 +709,7 @@ bool ParameterEvaluatorHandler::setParameter(const HString &rName, const HString
         if( (rName == mParameters[i]->getName()) )//&& (value != mParameters[i]->getName()) ) //By commenting this a parameter can be set to a systems parameter with same name as component parameter e.g. mass m = m (system parameter) related to issue #783
         {
             ParameterEvaluator *needEvaluation=0;
-            success = mParameters[i]->setParameter(rValue, rDescription, rQuantity, rUnit, rType, &needEvaluation, force); //Sets the new value, if the parameter is of the type to need evaluation e.g. if it is a system parameter needEvaluation points to the parameter
+            success = mParameters[i]->setParameter(rValue, rDescription, rQuantity, rUnit, rType, &needEvaluation, internal, force); //Sets the new value, if the parameter is of the type to need evaluation e.g. if it is a system parameter needEvaluation points to the parameter
             if(needEvaluation)
             {
                 if(mParametersNeedEvaluation.end() == find(mParametersNeedEvaluation.begin(), mParametersNeedEvaluation.end(), needEvaluation))
