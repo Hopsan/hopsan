@@ -44,9 +44,11 @@
 #include "GUIPortAppearance.h"
 
 //Define for the root xml element name, and the element name for each component (modelobject)
-#define CAF_VERSION "version"
-#define CAF_ROOT "hopsanobjectappearance"
-#define CAF_MODELOBJECT "modelobject"
+namespace caf {
+    constexpr auto version = "version";
+    constexpr auto root = "hopsanobjectappearance";
+    constexpr auto modelobject = "modelobject";
+}
 
 enum AbsoluteRelativeEnumT {Absolute, Relative};
 

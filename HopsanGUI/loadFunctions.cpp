@@ -61,10 +61,10 @@ bool loadConnector(QDomElement &rDomElement, SystemObject* pContainer, UndoStatu
     QStringList geometryList;
 
     // Read core specific stuff
-    startComponentName  = rDomElement.attribute(HMF_CONNECTORSTARTCOMPONENTTAG);
-    startPortName       = rDomElement.attribute(HMF_CONNECTORSTARTPORTTAG);
-    endComponentName    = rDomElement.attribute(HMF_CONNECTORENDCOMPONENTTAG);
-    endPortName         = rDomElement.attribute(HMF_CONNECTORENDPORTTAG);
+    startComponentName  = rDomElement.attribute(hmf::connector::startcomponent);
+    startPortName       = rDomElement.attribute(hmf::connector::startport);
+    endComponentName    = rDomElement.attribute(hmf::connector::endcomponent);
+    endPortName         = rDomElement.attribute(hmf::connector::endport);
     //qDebug() << "loadConnector: " << startComponentName << " " << startPortName << " " << endComponentName << " " << endPortName;
 
     //! @todo To upconvert old models these are needed, may not be necessary later
@@ -75,32 +75,32 @@ bool loadConnector(QDomElement &rDomElement, SystemObject* pContainer, UndoStatu
 
     // Read gui specific stuff
     double x,y;
-    QDomElement guiData         = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
-    QDomElement guiCoordinates  = guiData.firstChildElement(HMF_COORDINATES);
-    QDomElement coordTag        = guiCoordinates.firstChildElement(HMF_COORDINATETAG);
+    QDomElement guiData         = rDomElement.firstChildElement(hmf::hopsangui);
+    QDomElement guiCoordinates  = guiData.firstChildElement(hmf::connector::coordinates);
+    QDomElement coordTag        = guiCoordinates.firstChildElement(hmf::connector::coordinate);
     while (!coordTag.isNull())
     {
         parseCoordinateTag(coordTag, x, y);
         pointVector.push_back(QPointF(x,y));
-        coordTag = coordTag.nextSiblingElement(HMF_COORDINATETAG);
+        coordTag = coordTag.nextSiblingElement(hmf::connector::coordinate);
     }
-    QDomElement guiGeometries   = guiData.firstChildElement(HMF_GEOMETRIES);
-    QDomElement geometryTag     = guiGeometries.firstChildElement(HMF_GEOMETRYTAG);
+    QDomElement guiGeometries   = guiData.firstChildElement(hmf::connector::geometries);
+    QDomElement geometryTag     = guiGeometries.firstChildElement(hmf::connector::geometry);
     while (!geometryTag.isNull())
     {
         geometryList.append(geometryTag.text());
-        geometryTag = geometryTag.nextSiblingElement(HMF_GEOMETRYTAG);
+        geometryTag = geometryTag.nextSiblingElement(hmf::connector::geometry);
     }
-    QDomElement styleTag = guiData.firstChildElement(HMF_STYLETAG);
+    QDomElement styleTag = guiData.firstChildElement(hmf::connector::style);
     if(!styleTag.isNull())
     {
-        isDashed = (styleTag.text() == "dashed");
+        isDashed = (styleTag.text() == hmf::connector::dashed);
     }
     else
     {
         isDashed = false;
     }
-    QDomElement colorTag = guiData.firstChildElement(HMF_COLORTAG);
+    QDomElement colorTag = guiData.firstChildElement(hmf::connector::color);
     QColor color =  QColor();
     if(!colorTag.isNull())
     {
@@ -123,7 +123,7 @@ bool loadConnector(QDomElement &rDomElement, SystemObject* pContainer, UndoStatu
             pointVector.push_back(pConn->getStartPort()->boundingRect().center());
             pointVector.push_back(pConn->getEndPort()->boundingRect().center());
             geometryList.clear();
-            geometryList.append("diagonal");
+            geometryList.append(hmf::connector::diagonal);
         }
         pConn->setPointsAndGeometries(pointVector, geometryList);
         pConn->setDashed(isDashed);
@@ -168,11 +168,11 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStat
     QString parameterValue;
     QString parameterType;
 
-    parameterName = rDomElement.attribute(HMF_NAMETAG);
+    parameterName = rDomElement.attribute(hmf::name);
     parameterName.replace("::","#"); //!< @todo this can be removed in the future (after 0.7), used to upconvert old hmf file formats
-    parameterValue = rDomElement.attribute(HMF_VALUETAG);
-    parameterType = rDomElement.attribute(HMF_TYPE);
-    parameterType = rDomElement.attribute(HMF_TYPENAME, parameterType); //!< @deprecated load old typename
+    parameterValue = rDomElement.attribute(hmf::value);
+    parameterType = rDomElement.attribute(hmf::type);
+    parameterType = rDomElement.attribute(hmf::typenametag, parameterType); //!< @deprecated load old typename
 
     //! @todo Remove this check in the future when models should have been updated
     QStringList existingNames = pObject->getParameterNames();
@@ -205,11 +205,11 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStat
     if (!tryingToAddColonColonValue && parameterName.contains("::Value"))
     {
         QStringList theotherparameternames;
-        QDomElement parameterDOM = rDomElement.parentNode().firstChildElement(HMF_PARAMETERTAG);
+        QDomElement parameterDOM = rDomElement.parentNode().firstChildElement(hmf::parameter::root);
         while (!parameterDOM.isNull())
         {
-            theotherparameternames.append(parameterDOM.attribute(HMF_NAMETAG));
-            parameterDOM = parameterDOM.nextSiblingElement(HMF_PARAMETERTAG);
+            theotherparameternames.append(parameterDOM.attribute(hmf::name));
+            parameterDOM = parameterDOM.nextSiblingElement(hmf::parameter::root);
         }
 
         QString portparname = parameterName.split("::")[0];
@@ -231,9 +231,9 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStat
 //! @deprecated This StartValue load code is only kept for upconverting old files, we should keep it here until we have some other way of upconverting old formats
 void loadStartValue(QDomElement &rDomElement, ModelObject* pObject, UndoStatusEnumT /*undoSettings*/)
 {
-    QString portName = rDomElement.attribute("portname");
-    QString variable = rDomElement.attribute("variable");
-    QString startValue = rDomElement.attribute("value");
+    QString portName = rDomElement.attribute(hmf::deprecated::portname);
+    QString variable = rDomElement.attribute(hmf::deprecated::variable);
+    QString startValue = rDomElement.attribute(hmf::deprecated::value);
 
 //    bool isDbl;
 //    //Assumes that if it is convertible to a double it is a plain value otherwise it is assumed to be mapped to a System parameter
@@ -260,32 +260,32 @@ ModelObject* loadModelObject(const QDomElement &domElement, SystemObject* pSyste
     QDomElement loadDomElement = domElement.cloneNode().toElement();
 
     //Read core specific data
-    QString type = loadDomElement.attribute(HMF_TYPENAME);
-    QString subtype = loadDomElement.attribute(HMF_SUBTYPENAME);
-    QString name = loadDomElement.attribute(HMF_NAMETAG);
-    bool locked = parseAttributeBool(loadDomElement, HMF_LOCKEDTAG, false);
-    bool disabled = parseAttributeBool(loadDomElement, HMF_DISABLEDTAG, false);
+    QString type = loadDomElement.attribute(hmf::typenametag);
+    QString subtype = loadDomElement.attribute(hmf::subtypename);
+    QString name = loadDomElement.attribute(hmf::name);
+    bool locked = parseAttributeBool(loadDomElement, hmf::appearance::locked, false);
+    bool disabled = parseAttributeBool(loadDomElement, hmf::appearance::disabled, false);
 
 
     //Read gui specific data
     double posX, posY, target_rotation;
     bool isFlipped;
 
-    QDomElement guiData = loadDomElement.firstChildElement(HMF_HOPSANGUITAG);
-    parsePoseTag(guiData.firstChildElement(HMF_POSETAG), posX, posY, target_rotation, isFlipped);
+    QDomElement guiData = loadDomElement.firstChildElement(hmf::hopsangui);
+    parsePoseTag(guiData.firstChildElement(hmf::appearance::pose), posX, posY, target_rotation, isFlipped);
     target_rotation = normDeg360(target_rotation); //Make sure target rotation between 0 and 359.999
 
-    bool alwaysVisible = parseAttributeBool(guiData, "alwaysvisible", false);
+    bool alwaysVisible = parseAttributeBool(guiData, hmf::appearance::alwaysvisible, false);
 
-    int nameTextPos = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("position").toInt();
-    bool nameTextVisible = parseAttributeBool(guiData.firstChildElement(HMF_NAMETEXTTAG), "visible", false);
+    int nameTextPos = guiData.firstChildElement(hmf::appearance::nametext).attribute(hmf::appearance::position).toInt();
+    bool nameTextVisible = parseAttributeBool(guiData.firstChildElement(hmf::appearance::nametext), hmf::appearance::visible, false);
 
     const SharedModelObjectAppearanceT pAppearanceData = gpLibraryHandler->getModelObjectAppearancePtr(type, subtype);
     if (pAppearanceData && gpLibraryHandler->getEntry(type).state != Disabled)
     {
         ModelObjectAppearance appearanceData = *pAppearanceData; //Make a copy
 
-        QDomElement animationElement = guiData.firstChildElement(HMF_ANIMATION);
+        QDomElement animationElement = guiData.firstChildElement(hmf::animation);
         if(!animationElement.isNull() && appearanceData.getTypeName() == type)
         {
             appearanceData.getAnimationDataPtr()->readFromDomElement(animationElement, appearanceData.getBasePath());
@@ -310,7 +310,7 @@ ModelObject* loadModelObject(const QDomElement &domElement, SystemObject* pSyste
         pObj->setNameTextPos(nameTextPos);
         pObj->setNameTextAlwaysVisible(nameTextVisible);
         pObj->setSubTypeName(subtype); //!< @todo is this really needed
-        loadDomElement.setAttribute(HMF_NAMETAG, pObj->getName()); // Update name in load data to avoid additional rename
+        loadDomElement.setAttribute(hmf::name, pObj->getName()); // Update name in load data to avoid additional rename
 
         //First set flip (before rotate, Important!)
         //! @todo For now If flipped than we need to rotate in wrong direction also, saving saves flipped rotation angle i think but changing save and load would cause old models to load incorrectly
@@ -325,13 +325,13 @@ ModelObject* loadModelObject(const QDomElement &domElement, SystemObject* pSyste
         }
 
         //Read system specific core and gui data
-        if (loadDomElement.tagName() == HMF_SYSTEMTAG)
+        if (loadDomElement.tagName() == hmf::system)
         {
             //Check if we should load an embedded or external system
             QString externalFilePath = appearanceData.getBasePath()+"/"+appearanceData.getHmfFile();
             if(!QFile::exists(externalFilePath) || appearanceData.getSubTypeName().isEmpty())
             {
-                externalFilePath = loadDomElement.attribute(HMF_EXTERNALPATHTAG);
+                externalFilePath = loadDomElement.attribute(hmf::externalpath);
             }
             if (externalFilePath.isEmpty())
             {
@@ -362,10 +362,10 @@ ModelObject* loadModelObject(const QDomElement &domElement, SystemObject* pSyste
                 if (externalModelFile.exists())
                 {
                     QDomDocument domDocument;
-                    QDomElement externalRoot = loadXMLDomDocument(externalModelFile, domDocument, HMF_ROOTTAG);
-                    QDomElement externalSystemRoot = externalRoot.firstChildElement(HMF_SYSTEMTAG);
+                    QDomElement externalRoot = loadXMLDomDocument(externalModelFile, domDocument, hmf::root);
+                    QDomElement externalSystemRoot = externalRoot.firstChildElement(hmf::system);
                     //! @todo set the modefile info, maybe we should have built in helpfunction for loading directly from file in System
-                    pObj->setModelFileInfo(externalModelFile, loadDomElement.attribute(HMF_EXTERNALPATHTAG));
+                    pObj->setModelFileInfo(externalModelFile, loadDomElement.attribute(hmf::externalpath));
                     pObj->getAppearanceData()->setBasePath(extFileInfo.absolutePath()); // Set the basepath for relative icon paths
                     pObj->loadFromDomElement(externalSystemRoot);
                     //! @todo this code is duplicated with the one in system->loadfromdomelement (external code) that code will never run, as this will take care of it. When we have embedded subsystems will will need to fix this
@@ -377,13 +377,13 @@ ModelObject* loadModelObject(const QDomElement &domElement, SystemObject* pSyste
                     }
 
                     // Now load all overwritten parameters
-                    QDomElement xmlParameters = loadDomElement.firstChildElement(HMF_PARAMETERS);
-                    QDomElement xmlParameter = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
+                    QDomElement xmlParameters = loadDomElement.firstChildElement(hmf::parameters);
+                    QDomElement xmlParameter = xmlParameters.firstChildElement(hmf::parameter::root);
                     while (!xmlParameter.isNull())
                     {
                         SystemObject* pCont = dynamic_cast<SystemObject*>(pObj);
                         loadSystemParameter(xmlParameter, false, "1000", pCont);
-                        xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
+                        xmlParameter = xmlParameter.nextSiblingElement(hmf::parameter::root);
                     }
                 }
                 else
@@ -397,29 +397,29 @@ ModelObject* loadModelObject(const QDomElement &domElement, SystemObject* pSyste
         {
             //! @todo maybe this parameter load code and the one for external systems above could be the same
             //Load parameter values
-            QDomElement xmlParameters = loadDomElement.firstChildElement(HMF_PARAMETERS);
-            QDomElement xmlParameter = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
+            QDomElement xmlParameters = loadDomElement.firstChildElement(hmf::parameters);
+            QDomElement xmlParameter = xmlParameters.firstChildElement(hmf::parameter::root);
             while (!xmlParameter.isNull())
             {
                 loadParameterValue(xmlParameter, pObj, NoUndo);
-                xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
+                xmlParameter = xmlParameter.nextSiblingElement(hmf::parameter::root);
             }
 
             // Load any custom signal quantities
-            QDomElement portTag = loadDomElement.firstChildElement(HMF_PORTSTAG).firstChildElement(HMF_PORTTAG);
+            QDomElement portTag = loadDomElement.firstChildElement(hmf::ports).firstChildElement(hmf::port);
             while (!portTag.isNull())
             {
-                QString q = portTag.attribute("signalquantity");
+                QString q = portTag.attribute(hmf::signalquantity);
                 if (!q.isEmpty())
                 {
-                    pObj->setModifyableSignalQuantity(portTag.attribute("name")+"#Value", q);
+                    pObj->setModifyableSignalQuantity(portTag.attribute(hmf::name)+"#Value", q);
                 }
-                portTag = portTag.nextSiblingElement(HMF_PORTTAG);
+                portTag = portTag.nextSiblingElement(hmf::port);
             }
 
 
             // Load component specific override port data, and dynamic parameter port positions
-            QDomElement cafMoStuff = loadDomElement.firstChildElement(HMF_HOPSANGUITAG).firstChildElement(CAF_ROOT).firstChildElement(CAF_MODELOBJECT);
+            QDomElement cafMoStuff = loadDomElement.firstChildElement(hmf::hopsangui).firstChildElement(caf::root).firstChildElement(caf::modelobject);
             if (!cafMoStuff.isNull())
             {
                 //We read all model object appearance data in the hmf to get the ports
@@ -428,11 +428,11 @@ ModelObject* loadModelObject(const QDomElement &domElement, SystemObject* pSyste
                 pObj->refreshDisplayName(); //Need to refresh display name if read appearance data contained an incorrect name
 
                 // Now refresh only those ports that were new
-                QDomElement dom_port = cafMoStuff.firstChildElement("ports").firstChildElement("port");
+                QDomElement dom_port = cafMoStuff.firstChildElement(hmf::ports).firstChildElement(hmf::port);
                 while (!dom_port.isNull())
                 {
                     // Create or refresh modified ports
-                    QString portName = dom_port.attribute("name");
+                    QString portName = dom_port.attribute(hmf::name);
                     pObj->createRefreshExternalPort(portName);
 
                     Port *pPort = pObj->getPort(portName);
@@ -441,17 +441,17 @@ ModelObject* loadModelObject(const QDomElement &domElement, SystemObject* pSyste
                         pPort->setModified(true); //Tag as modified since we loaded override data
                     }
 
-                    dom_port = dom_port.nextSiblingElement("port");
+                    dom_port = dom_port.nextSiblingElement(hmf::port);
                 }
             }
 
             // Load any custom set parameter scales
-            QDomElement paramscale = loadDomElement.firstChildElement(HMF_HOPSANGUITAG).firstChildElement(HMF_PARAMETERSCALES).firstChildElement(HMF_PARAMETERSCALE);
+            QDomElement paramscale = loadDomElement.firstChildElement(hmf::hopsangui).firstChildElement(hmf::parameter::scales).firstChildElement(hmf::parameter::scale);
             while (!paramscale.isNull())
             {
-                QString quantity = paramscale.attribute(HMF_PARAMETERSCALEQUANTITY);
-                QString unit = paramscale.attribute(HMF_PARAMETERSCALEUNIT);
-                QString scale = paramscale.attribute(HMF_PARAMETERSCALESCALE);
+                QString quantity = paramscale.attribute(hmf::parameter::scalequantity);
+                QString unit = paramscale.attribute(hmf::parameter::scaleunit);
+                QString scale = paramscale.attribute(hmf::parameter::scalescale);
 
                 UnitConverter confus, us;
                 gpConfig->getUnitScale(quantity, unit, confus);
@@ -466,31 +466,31 @@ ModelObject* loadModelObject(const QDomElement &domElement, SystemObject* pSyste
                     us = UnitConverter(quantity,
                                        unit,
                                        scale,
-                                       paramscale.attribute(HMF_PARAMETERSCALEOFFSET));
+                                       paramscale.attribute(hmf::parameter::scaleoffset));
                 }
 
-                pObj->registerCustomParameterUnitScale(paramscale.attribute(HMF_PARAMETERSCALEPARAMNAME), us);
+                pObj->registerCustomParameterUnitScale(paramscale.attribute(hmf::parameter::scaleparametername), us);
                 //! @todo The actual custom value is ignored here, since only scale can be registered, custom values are not a part of parameters yet so it is difficult to support loading custom values, (rescaling will happen automatically from SI unit value loaded by core)
-                paramscale = paramscale.nextSiblingElement(HMF_PARAMETERSCALE);
+                paramscale = paramscale.nextSiblingElement(hmf::parameter::scale);
             }
 
             // Load any custom variable plot settings
-            QDomElement plotsetting = loadDomElement.firstChildElement(HMF_HOPSANGUITAG).firstChildElement(HMF_VARIABLEPLOTSETTINGS).firstChildElement(HMF_VARIABLEPLOTSETTING);
+            QDomElement plotsetting = loadDomElement.firstChildElement(hmf::hopsangui).firstChildElement(hmf::variable::plotsettings).firstChildElement(hmf::variable::plotsetting);
             while (!plotsetting.isNull())
             {
-                QString name = plotsetting.attribute("name");
+                QString name = plotsetting.attribute(hmf::name);
                 if (!name.isEmpty())
                 {
-                    if(plotsetting.hasAttribute("invert"))
+                    if(plotsetting.hasAttribute(hmf::plot::invert))
                     {
-                        pObj->setInvertPlotVariable(name, parseAttributeBool(plotsetting, "invert", false));
+                        pObj->setInvertPlotVariable(name, parseAttributeBool(plotsetting, hmf::plot::invert, false));
                     }
-                    if(plotsetting.hasAttribute("label"))
+                    if(plotsetting.hasAttribute(hmf::plot::label))
                     {
-                        pObj->setVariablePlotLabel(name, plotsetting.attribute("label"));
+                        pObj->setVariablePlotLabel(name, plotsetting.attribute(hmf::plot::label));
                     }
                 }
-                plotsetting = plotsetting.nextSiblingElement(HMF_VARIABLEPLOTSETTING);
+                plotsetting = plotsetting.nextSiblingElement(hmf::variable::plotsetting);
             }
         }
 
@@ -516,7 +516,7 @@ ModelObject* loadModelObject(const QDomElement &domElement, SystemObject* pSyste
 ModelObject* loadSystemPortObject(QDomElement &rDomElement, SystemObject* pSystem, UndoStatusEnumT undoSettings)
 {
     //! @todo this does not feel right should try to avoid it maybe
-    rDomElement.setAttribute(HMF_TYPENAME, HOPSANGUISYSTEMPORTTYPENAME); //Set the typename for the gui, or overwrite if anything was actually given in the HMF file
+    rDomElement.setAttribute(hmf::typenametag, HOPSANGUISYSTEMPORTTYPENAME); //Set the typename for the gui, or overwrite if anything was actually given in the HMF file
     return loadModelObject(rDomElement, pSystem, undoSettings); //We use the loadGUIModelObject function as it does what is needed
 }
 
@@ -527,13 +527,13 @@ ModelObject* loadSystemPortObject(QDomElement &rDomElement, SystemObject* pSyste
 //! @param[in] pContainer The Container Object to load into
 void loadSystemParameter(QDomElement &rDomElement, bool doAdd, const QString hmfVersion, SystemObject* pContainer)
 {
-    QString name = rDomElement.attribute(HMF_NAMETAG);
-    QString value = rDomElement.attribute(HMF_VALUETAG);
-    QString type = rDomElement.attribute(HMF_TYPE);
-    type = rDomElement.attribute(HMF_TYPENAME, type); //!< @deprecated load old typename
-    QString quantityORunit = rDomElement.attribute(HMF_QUANTITY, rDomElement.attribute(HMF_UNIT));
-    QString description = rDomElement.attribute(HMF_DESCRIPTIONTAG);
-    bool internal = parseAttributeBool(rDomElement, HMF_INTERNAL, false);
+    QString name = rDomElement.attribute(hmf::name);
+    QString value = rDomElement.attribute(hmf::value);
+    QString type = rDomElement.attribute(hmf::type);
+    type = rDomElement.attribute(hmf::typenametag, type); //!< @deprecated load old typename
+    QString quantityORunit = rDomElement.attribute(hmf::quantity, rDomElement.attribute(hmf::unit));
+    QString description = rDomElement.attribute(hmf::modelinfo::description);
+    bool internal = parseAttributeBool(rDomElement, hmf::internal, false);
 
     if( (hmfVersion <= "0.3") && type.isEmpty())     //Version check, types did not exist in 0.3 and bellow (everything was double)
     {
@@ -561,18 +561,18 @@ void loadPlotAlias(QDomElement &rDomElement, SystemObject* pContainer)
     //! @todo not hardcoded attrnames
     //! @todo what about type
     //! @todo actually Core should load this data
-    QString type = rDomElement.attribute("type", "UnknownAliasType");
-    aliasname = rDomElement.attribute("name", "UnknownAliasName");
-    fullName = rDomElement.firstChildElement("fullname").text();
+    QString type = rDomElement.attribute(hmf::type, "UnknownAliasType");
+    aliasname = rDomElement.attribute(hmf::name, "UnknownAliasName");
+    fullName = rDomElement.firstChildElement(hmf::fullname).text();
 
     // try the old format
     //! @todo don't know if this works, but likely only atlas cares
     if (type=="UnknownAliasType")
     {
-        aliasname = rDomElement.attribute("alias");
-        QString componentName = rDomElement.attribute("component");
-        QString portName = rDomElement.attribute("port");
-        QString dataName = rDomElement.attribute("data");
+        aliasname = rDomElement.attribute(hmf::alias);
+        QString componentName = rDomElement.attribute(hmf::component);
+        QString portName = rDomElement.attribute(hmf::port);
+        QString dataName = rDomElement.attribute(hmf::data);
 
         //! @todo we need a help function to build and to split a full variable name
         fullName = componentName+"#"+portName+"#"+dataName;

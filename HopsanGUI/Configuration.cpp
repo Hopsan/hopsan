@@ -142,11 +142,11 @@ void Configuration::saveToXml()
     {
         // Write to hopsanconfig.xml
         QDomDocument domDocument;
-        QDomElement configRoot = domDocument.createElement(CFG_HOPSANCONFIG);
-        configRoot.setAttribute(HMF_HOPSANGUIVERSIONTAG, HOPSANGUIVERSION);
+        QDomElement configRoot = domDocument.createElement(cfg::hopsanconfig);
+        configRoot.setAttribute(hmf::version::hopsangui, HOPSANGUIVERSION);
         domDocument.appendChild(configRoot);
 
-        QDomElement settings = appendDomElement(configRoot,CFG_SETTINGS);
+        QDomElement settings = appendDomElement(configRoot,cfg::settings);
 
         // Write string settings
         for(auto it=mStringSettings.begin(); it!=mStringSettings.end(); ++it)
@@ -173,11 +173,11 @@ void Configuration::saveToXml()
         }
 
         // Write other settings
-        appendDomValueNode2(settings, CFG_PLOTGFXSIZE, mPlotGfxSize.width(), mPlotGfxSize.height());
-        appendDomTextNode(settings, CFG_BACKGROUNDCOLOR, mBackgroundColor.name());
+        appendDomValueNode2(settings, cfg::plotgfxsize, mPlotGfxSize.width(), mPlotGfxSize.height());
+        appendDomTextNode(settings, cfg::backgroundcolor, mBackgroundColor.name());
 
         // Write style
-        QDomElement style = appendDomElement(configRoot, HMF_STYLETAG);
+        QDomElement style = appendDomElement(configRoot, cfg::style);
         for(auto it1 = mPenStyles.begin(); it1 != mPenStyles.end(); ++it1)
         {
             for(auto it2 = it1.value().begin(); it2 != it1.value().end(); ++it2)
@@ -190,64 +190,64 @@ void Configuration::saveToXml()
                     if(it1.key() == BrokenConnectorStyle) type = "Broken";
                     if(it1.key() == UndefinedConnectorStyle) type = "Undefined";
 
-                    QDomElement tempElement = appendDomElement(style, CFG_PENSTYLE);
-                    tempElement.setAttribute(CFG_TYPE, type);
-                    tempElement.setAttribute(CFG_GFXTYPE, it2.key());
-                    tempElement.setAttribute(CFG_SITUATION, it3.key());
-                    tempElement.setAttribute(CFG_COLOR, it3.value().color().name());
-                    setQrealAttribute(tempElement, CFG_WIDTH, it3.value().widthF());
-                    tempElement.setAttribute(HMF_STYLETAG, it3.value().style());
-                    tempElement.setAttribute(CFG_CAPSTYLE, it3.value().capStyle());
+                    QDomElement tempElement = appendDomElement(style, cfg::penstyle);
+                    tempElement.setAttribute(cfg::type, type);
+                    tempElement.setAttribute(cfg::gfxtype, it2.key());
+                    tempElement.setAttribute(cfg::situation, it3.key());
+                    tempElement.setAttribute(cfg::color, it3.value().color().name());
+                    setQrealAttribute(tempElement, cfg::width, it3.value().widthF());
+                    tempElement.setAttribute(cfg::style, it3.value().style());
+                    tempElement.setAttribute(cfg::capstyle, it3.value().capStyle());
                 }
             }
         }
 
-        QDomElement libs = appendDomElement(configRoot, XML_LIBS);
+        QDomElement libs = appendDomElement(configRoot, cfg::libs);
         for(int i=0; i<mUserLibs.size(); ++i)
         {
-            QDomElement xmlUserLib = appendDomTextNode(libs, XML_USERLIB, mUserLibs.at(i).absoluteFilePath());
-            QString typeStr = XML_LIBTYPE_INTERNAL;
+            QDomElement xmlUserLib = appendDomTextNode(libs, cfg::userlib, mUserLibs.at(i).absoluteFilePath());
+            QString typeStr = cfg::libtype::internal;
             if(mUserLibTypes.at(i) == ExternalLib)
             {
-                typeStr = XML_LIBTYPE_EXTERNAL;
+                typeStr = cfg::libtype::external;
             }
             else if(mUserLibTypes.at(i) == FmuLib)
             {
-                typeStr = XML_LIBTYPE_FMU;
+                typeStr = cfg::libtype::fmu;
             }
-            xmlUserLib.setAttribute(XML_LIBTYPE, typeStr);
+            xmlUserLib.setAttribute(cfg::libtype::root, typeStr);
         }
 
-        QDomElement models = appendDomElement(configRoot, XML_MODELS);
+        QDomElement models = appendDomElement(configRoot, cfg::models::root);
         for(int i=0; i<mLastSessionModels.size(); ++i)
         {
             if(mLastSessionModels.at(i) != "")
             {
-                appendDomTextNode(models, XML_LASTSESSIONMODEL, mLastSessionModels.at(i));
+                appendDomTextNode(models, cfg::models::lastsession, mLastSessionModels.at(i));
             }
         }
         for(int i = mRecentModels.size()-1; i>-1; --i)
         {
             if(mRecentModels.at(i) != "")
-                appendDomTextNode(models, XML_RECENTMODEL, mRecentModels.at(i));
+                appendDomTextNode(models, cfg::models::recent, mRecentModels.at(i));
         }
         for(int i = mRecentGeneratorModels.size()-1; i>-1; --i)
         {
             if(mRecentGeneratorModels.at(i) != "")
-                appendDomTextNode(models, XML_RECENTGENERATORMODEL, mRecentGeneratorModels.at(i));
+                appendDomTextNode(models, cfg::models::recentgenerator, mRecentGeneratorModels.at(i));
         }
 
 
-        QDomElement xmlUnitScales = appendDomElement(configRoot, CFG_UNITSETTINGS);
+        QDomElement xmlUnitScales = appendDomElement(configRoot, cfg::unitsettings);
         QMap<QString, QuantityUnitScale >::iterator qit;
         for(qit = mUnitScales.begin(); qit != mUnitScales.end(); ++qit)
         {
-            QDomElement xmlQuantity = appendDomElement(xmlUnitScales, CFG_QUANTITY);
-            xmlQuantity.setAttribute(HMF_NAMETAG, qit.key());
+            QDomElement xmlQuantity = appendDomElement(xmlUnitScales, cfg::quantity);
+            xmlQuantity.setAttribute(hmf::name, qit.key());
             QString baseunit = qit.value().baseunit;
             if (!baseunit.isEmpty())
             {
-                xmlQuantity.setAttribute(CFG_BASEUNIT, baseunit);
+                xmlQuantity.setAttribute(cfg::baseunit, baseunit);
             }
             xmlQuantity.setAttribute(cfg::siunits::kg, qit.value().kg);
             xmlQuantity.setAttribute(cfg::siunits::m, qit.value().m);
@@ -262,7 +262,7 @@ void Configuration::saveToXml()
             QMap<QString, QString>::iterator itdu = mSelectedDefaultUnits.find(qit.key());
             if (itdu!=mSelectedDefaultUnits.end())
             {
-                xmlQuantity.setAttribute(CFG_DEFAULTDISPALYUNIT, itdu.value());
+                xmlQuantity.setAttribute(cfg::defaultdisplayunits, itdu.value());
             }
 
             // Save all custom (non built in) unit conversions
@@ -273,19 +273,19 @@ void Configuration::saveToXml()
                 if ( (cuit.key() != baseunit) &&
                      !qit.value().builtInUnitconversions.contains(cuit.key()) )
                 {
-                    QDomElement xmlUS = appendDomElement(xmlQuantity, CFG_UNIT);
-                    xmlUS.setAttribute(CFG_NAME, cuit.key());
-                    xmlUS.setAttribute(CFG_SCALE, cuit.value().mScale);
-                    xmlUS.setAttribute(CFG_OFFSET, cuit.value().mOffset);
+                    QDomElement xmlUS = appendDomElement(xmlQuantity, cfg::unit);
+                    xmlUS.setAttribute(cfg::name, cuit.key());
+                    xmlUS.setAttribute(cfg::scale, cuit.value().mScale);
+                    xmlUS.setAttribute(cfg::offset, cuit.value().mOffset);
                 }
             }
         }
 
-        QDomElement hcom = appendDomElement(configRoot, CFG_HCOM);
-        appendDomTextNode(hcom, CFG_PWD, mHcomWorkingDirectory);
+        QDomElement hcom = appendDomElement(configRoot, cfg::hcom);
+        appendDomTextNode(hcom, cfg::pwd, mHcomWorkingDirectory);
         for(int i=0; i<mTerminalHistory.size(); ++i)
         {
-            appendDomTextNode(hcom, CFG_COMMAND, mTerminalHistory.at(i));
+            appendDomTextNode(hcom, cfg::command, mTerminalHistory.at(i));
         }
 
         appendRootXMLProcessingInstruction(domDocument);
@@ -356,7 +356,7 @@ void Configuration::loadFromXml()
     else
     {
         QDomElement configRoot = domDocument.documentElement();
-        if (configRoot.tagName() != CFG_HOPSANCONFIG)
+        if (configRoot.tagName() != cfg::hopsanconfig)
         {
             QMessageBox::information(gpMainWindowWidget, gpMainWindowWidget->tr("Hopsan"),
                                      "The file is not an Hopsan Configuration File. Incorrect hmf root tag name: "
@@ -367,38 +367,38 @@ void Configuration::loadFromXml()
             verifyConfigurationCompatibility(configRoot);     //Check version compatibility
 
             //Load user settings
-            QDomElement settingsElement = configRoot.firstChildElement(HMF_SETTINGS);
+            QDomElement settingsElement = configRoot.firstChildElement(hmf::sensitivityanalysis::settings);
             loadUserSettings(settingsElement);
 
             //Load style settings
-            QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
+            QDomElement styleElement = configRoot.firstChildElement(cfg::style);
             loadStyleSettings(styleElement);
 
             //Load library settings
-            QDomElement libsElement = configRoot.firstChildElement(XML_LIBS);
+            QDomElement libsElement = configRoot.firstChildElement(cfg::libs);
             loadLibrarySettings(libsElement);
 
             //Load model settings
-            QDomElement modelsElement = configRoot.firstChildElement(XML_MODELS);
+            QDomElement modelsElement = configRoot.firstChildElement(cfg::models::root);
             loadModelSettings(modelsElement);
 
             //Load unit settings
-            QDomElement unitscalesElement = configRoot.firstChildElement(CFG_UNITSETTINGS);
+            QDomElement unitscalesElement = configRoot.firstChildElement(cfg::unitsettings);
             loadUnitSettings(unitscalesElement, false);
 
             // ---------------------------------------------- used for backwards compatibility can be removed after 0.7.x is complete
             //! @todo deprecated
-            QDomElement unitsElement = configRoot.firstChildElement(CFG_UNITS);
+            QDomElement unitsElement = configRoot.firstChildElement(cfg::units);
             QDomElement xmlDefaultUnit = unitsElement.firstChildElement("defaultunit");
             while (!xmlDefaultUnit.isNull())
             {
-                mSelectedDefaultUnits.insert(xmlDefaultUnit.attribute(HMF_NAMETAG), xmlDefaultUnit.attribute(CFG_UNIT));
+                mSelectedDefaultUnits.insert(xmlDefaultUnit.attribute(hmf::name), xmlDefaultUnit.attribute(cfg::unit));
                 xmlDefaultUnit = xmlDefaultUnit.nextSiblingElement("defaultunit");
             }
             // ----------------------------------------------
 
             //Load settings to HcomDockWidget in MainWindow
-            QDomElement hcomElement = configRoot.firstChildElement(CFG_HCOM);
+            QDomElement hcomElement = configRoot.firstChildElement(cfg::hcom);
             loadScriptSettings(hcomElement);
         }
     }
@@ -446,15 +446,15 @@ void Configuration::loadDefaultsFromXml()
             verifyConfigurationCompatibility(configRoot);
 
             // Load default user settings
-            QDomElement settingsElement = configRoot.firstChildElement(CFG_SETTINGS);
+            QDomElement settingsElement = configRoot.firstChildElement(cfg::settings);
             loadUserSettings(settingsElement);
 
             // Load default GUI style
-            QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
+            QDomElement styleElement = configRoot.firstChildElement(cfg::style);
             loadStyleSettings(styleElement);
 
             // Load default units
-            QDomElement unitscalesElement = configRoot.firstChildElement(CFG_UNITSETTINGS);
+            QDomElement unitscalesElement = configRoot.firstChildElement(cfg::unitsettings);
             loadUnitSettings(unitscalesElement, true);
         }
     }
@@ -576,16 +576,16 @@ void Configuration::loadUserSettings(QDomElement &rDomElement)
     }
 
     // Load other settings
-    if(!rDomElement.firstChildElement(CFG_PLOTGFXSIZE).isNull())
+    if(!rDomElement.firstChildElement(cfg::plotgfxsize).isNull())
     {
         double width = mPlotGfxSize.width();
         double height = mPlotGfxSize.height();
-        parseDomValueNode2(rDomElement.firstChildElement(CFG_PLOTGFXSIZE), width, height);
+        parseDomValueNode2(rDomElement.firstChildElement(cfg::plotgfxsize), width, height);
         mPlotGfxSize.setWidth(width);
         mPlotGfxSize.setHeight(height);
     }
 
-    mBackgroundColor.setNamedColor(parseDomStringNode(rDomElement.firstChildElement(CFG_BACKGROUNDCOLOR), mBackgroundColor.name()));
+    mBackgroundColor.setNamedColor(parseDomStringNode(rDomElement.firstChildElement(cfg::backgroundcolor), mBackgroundColor.name()));
 
     refreshQuickAccessVariables();
 }
@@ -595,16 +595,16 @@ void Configuration::loadUserSettings(QDomElement &rDomElement)
 //! @brief Utility function that loads style settings from dom element
 void Configuration::loadStyleSettings(QDomElement &rDomElement)
 {
-    QDomElement penElement = rDomElement.firstChildElement(CFG_PENSTYLE);
+    QDomElement penElement = rDomElement.firstChildElement(cfg::penstyle);
     while(!penElement.isNull())
     {
-        QString type = penElement.attribute(CFG_TYPE);
-        QString gfxType = penElement.attribute(CFG_GFXTYPE);
-        QString situation = penElement.attribute(CFG_SITUATION);
-        QString color = penElement.attribute(CFG_COLOR);
-        double width = penElement.attribute(CFG_WIDTH).toDouble();
-        Qt::PenStyle penstyle = Qt::PenStyle(penElement.attribute(HMF_STYLETAG).toInt());
-        Qt::PenCapStyle capStyle = Qt::PenCapStyle(penElement.attribute(CFG_CAPSTYLE).toInt());
+        QString type = penElement.attribute(cfg::type);
+        QString gfxType = penElement.attribute(cfg::gfxtype);
+        QString situation = penElement.attribute(cfg::situation);
+        QString color = penElement.attribute(cfg::color);
+        double width = penElement.attribute(cfg::width).toDouble();
+        Qt::PenStyle penstyle = Qt::PenStyle(penElement.attribute(cfg::style).toInt());
+        Qt::PenCapStyle capStyle = Qt::PenCapStyle(penElement.attribute(cfg::capstyle).toInt());
         QPen pen = QPen(QColor(color), width, penstyle, capStyle);
 
         ConnectorStyleEnumT style;
@@ -625,7 +625,7 @@ void Configuration::loadStyleSettings(QDomElement &rDomElement)
         }
         mPenStyles.find(style).value().find(gfxType).value().insert(situation, pen);
 
-        penElement = penElement.nextSiblingElement(CFG_PENSTYLE);
+        penElement = penElement.nextSiblingElement(cfg::penstyle);
     }
     QDomElement paletteElement = rDomElement.firstChildElement("palette");
     if(!paletteElement.isNull())
@@ -670,11 +670,11 @@ void Configuration::loadStyleSettings(QDomElement &rDomElement)
 //! @brief Utility function that loads unit scales from xml
 void Configuration::loadUnitSettings(QDomElement &rDomElement, bool tagAsBuiltIn)
 {
-    QDomElement xmlQuantity = rDomElement.firstChildElement(CFG_QUANTITY);
+    QDomElement xmlQuantity = rDomElement.firstChildElement(cfg::quantity);
     while (!xmlQuantity.isNull())
     {
-        QString quantity = xmlQuantity.attribute(HMF_NAMETAG);
-        QString baseunit = xmlQuantity.attribute(CFG_BASEUNIT);
+        QString quantity = xmlQuantity.attribute(hmf::name);
+        QString baseunit = xmlQuantity.attribute(cfg::baseunit);
         int kg = parseAttributeInt(xmlQuantity, cfg::siunits::kg, 0);
         int m = parseAttributeInt(xmlQuantity, cfg::siunits::m, 0);
         int s = parseAttributeInt(xmlQuantity, cfg::siunits::s, 0);
@@ -683,7 +683,7 @@ void Configuration::loadUnitSettings(QDomElement &rDomElement, bool tagAsBuiltIn
         int mol = parseAttributeInt(xmlQuantity, cfg::siunits::mol, 0);
         int cd = parseAttributeInt(xmlQuantity, cfg::siunits::cd, 0);
         int rad = parseAttributeInt(xmlQuantity, cfg::siunits::rad, 0);
-        QString deafdisplayunit = xmlQuantity.attribute(CFG_DEFAULTDISPALYUNIT, baseunit);
+        QString deafdisplayunit = xmlQuantity.attribute(cfg::defaultdisplayunits, baseunit);
         if (!deafdisplayunit.isEmpty())
         {
             mSelectedDefaultUnits.insert(quantity, deafdisplayunit);
@@ -714,17 +714,17 @@ void Configuration::loadUnitSettings(QDomElement &rDomElement, bool tagAsBuiltIn
             }
         }
 
-        QDomElement xmlUnitscale = xmlQuantity.firstChildElement(CFG_UNIT);
+        QDomElement xmlUnitscale = xmlQuantity.firstChildElement(cfg::unit);
         while (!xmlUnitscale.isNull())
         {
-            QString unitname = xmlUnitscale.attribute(CFG_NAME);
-            QString fromBaseToUnitExpr = xmlUnitscale.attribute(CFG_FROMBASEEXPR);
-            QString toBaseUnitFromUnitExpr = xmlUnitscale.attribute(CFG_TOBBASEEXPR);
+            QString unitname = xmlUnitscale.attribute(cfg::name);
+            QString fromBaseToUnitExpr = xmlUnitscale.attribute(cfg::frombaseexpr);
+            QString toBaseUnitFromUnitExpr = xmlUnitscale.attribute(cfg::tobaseexpr);
             // prevent overwriting existing built in unit conversions
             if (!qit.value().builtInUnitconversions.contains(unitname))
             {
-                QString scale = xmlUnitscale.attribute(CFG_SCALE);
-                QString offset = xmlUnitscale.attribute(CFG_OFFSET);
+                QString scale = xmlUnitscale.attribute(cfg::scale);
+                QString offset = xmlUnitscale.attribute(cfg::offset);
                 // If scale or offset would be empty here, then result of evaluation would be "pi"
                 if (!scale.isEmpty())
                 {
@@ -745,10 +745,10 @@ void Configuration::loadUnitSettings(QDomElement &rDomElement, bool tagAsBuiltIn
                     qit.value().builtInUnitconversions.append(unitname);
                 }
             }
-            xmlUnitscale = xmlUnitscale.nextSiblingElement(CFG_UNIT);
+            xmlUnitscale = xmlUnitscale.nextSiblingElement(cfg::unit);
         }
 
-        xmlQuantity = xmlQuantity.nextSiblingElement(CFG_QUANTITY);
+        xmlQuantity = xmlQuantity.nextSiblingElement(cfg::quantity);
     }
 }
 
@@ -756,16 +756,16 @@ void Configuration::loadUnitSettings(QDomElement &rDomElement, bool tagAsBuiltIn
 //! @brief Utility function that loads library settings
 void Configuration::loadLibrarySettings(QDomElement &rDomElement)
 {
-    QDomElement userLibElement = rDomElement.firstChildElement(XML_USERLIB);
+    QDomElement userLibElement = rDomElement.firstChildElement(cfg::userlib);
     while (!userLibElement.isNull())
     {
         mUserLibs.append(QFileInfo(userLibElement.text()));
-        QString typeStr = userLibElement.attribute(XML_LIBTYPE);
-        if(typeStr == XML_LIBTYPE_EXTERNAL)
+        QString typeStr = userLibElement.attribute(cfg::libtype::root);
+        if(typeStr == cfg::libtype::external)
         {
             mUserLibTypes.append(ExternalLib);
         }
-        else if(typeStr == XML_LIBTYPE_FMU)
+        else if(typeStr == cfg::libtype::fmu)
         {
             mUserLibTypes.append(FmuLib);
         }
@@ -773,7 +773,7 @@ void Configuration::loadLibrarySettings(QDomElement &rDomElement)
         {
             mUserLibTypes.append(InternalLib);
         }
-        userLibElement = userLibElement.nextSiblingElement((XML_USERLIB));
+        userLibElement = userLibElement.nextSiblingElement((cfg::userlib));
     }
 }
 
@@ -781,23 +781,23 @@ void Configuration::loadLibrarySettings(QDomElement &rDomElement)
 //! @brief Utility function that loads model settings
 void Configuration::loadModelSettings(QDomElement &rDomElement)
 {
-    QDomElement lastSessionElement = rDomElement.firstChildElement(XML_LASTSESSIONMODEL);
+    QDomElement lastSessionElement = rDomElement.firstChildElement(cfg::models::lastsession);
     while (!lastSessionElement.isNull())
     {
         mLastSessionModels.prepend(lastSessionElement.text());
-        lastSessionElement = lastSessionElement.nextSiblingElement(XML_LASTSESSIONMODEL);
+        lastSessionElement = lastSessionElement.nextSiblingElement(cfg::models::lastsession);
     }
-    QDomElement recentModelElement = rDomElement.firstChildElement(XML_RECENTMODEL);
+    QDomElement recentModelElement = rDomElement.firstChildElement(cfg::models::recent);
     while (!recentModelElement.isNull())
     {
         mRecentModels.prepend(recentModelElement.text());
-        recentModelElement = recentModelElement.nextSiblingElement(XML_RECENTMODEL);
+        recentModelElement = recentModelElement.nextSiblingElement(cfg::models::recent);
     }
-    QDomElement recentGeneratorModelElement = rDomElement.firstChildElement(XML_RECENTGENERATORMODEL);
+    QDomElement recentGeneratorModelElement = rDomElement.firstChildElement(cfg::models::recentgenerator);
     while (!recentGeneratorModelElement.isNull())
     {
         mRecentGeneratorModels.prepend(recentGeneratorModelElement.text());
-        recentGeneratorModelElement = recentGeneratorModelElement.nextSiblingElement(XML_RECENTGENERATORMODEL);
+        recentGeneratorModelElement = recentGeneratorModelElement.nextSiblingElement(cfg::models::recentgenerator);
     }
 }
 
@@ -807,30 +807,30 @@ void Configuration::loadScriptSettings(QDomElement &rHcomElement)
 {
     if(!rHcomElement.isNull())
     {
-        QDomElement pwdElement = rHcomElement.firstChildElement(CFG_PWD);
+        QDomElement pwdElement = rHcomElement.firstChildElement(cfg::pwd);
         if(!pwdElement.isNull())
         {
             mHcomWorkingDirectory = pwdElement.text();
         }
-        QDomElement commandElement = rHcomElement.firstChildElement(CFG_COMMAND);
+        QDomElement commandElement = rHcomElement.firstChildElement(cfg::command);
         while(!commandElement.isNull())
         {
             mTerminalHistory.append(commandElement.text());
-            commandElement = commandElement.nextSiblingElement(CFG_COMMAND);
+            commandElement = commandElement.nextSiblingElement(cfg::command);
         }
     }
 }
 
 void Configuration::refreshQuickAccessVariables()
 {
-    mInvertWheel = getBoolSetting(CFG_INVERTWHEEL);
-    mShowPopupHelp = getBoolSetting(CFG_SHOWPOPUPHELP);
-    mCacheLogData = getBoolSetting(CFG_CACHELOGDATA);
-    mUseMulticore = getBoolSetting(CFG_MULTICORE);
-    mProgressBarStep = getIntegerSetting(CFG_PROGRESSBARSTEP);
-    mSnapping = getBoolSetting(CFG_SNAPPING);
-    mGenerationLimit = getIntegerSetting(CFG_GENERATIONLIMIT);
-    mZoomStep = getDoubleSetting(CFG_ZOOMSTEP);
+    mInvertWheel = getBoolSetting(cfg::invertwheel);
+    mShowPopupHelp = getBoolSetting(cfg::showpopuphelp);
+    mCacheLogData = getBoolSetting(cfg::cachelogdata);
+    mUseMulticore = getBoolSetting(cfg::multicore);
+    mProgressBarStep = getIntegerSetting(cfg::progressbarstep);
+    mSnapping = getBoolSetting(cfg::snapping);
+    mGenerationLimit = getIntegerSetting(cfg::generationlimit);
+    mZoomStep = getDoubleSetting(cfg::zoomstep);
 }
 
 
@@ -1080,7 +1080,7 @@ QPen Configuration::getPen(ConnectorStyleEnumT style, GraphicsTypeEnumT gfxType,
 
 QPalette Configuration::getPalette() const
 {
-    if(getBoolSetting(CFG_NATIVESTYLESHEET))
+    if(getBoolSetting(cfg::nativestylesheet))
     {
         QMainWindow *dummy = new QMainWindow();
         QPalette dummyPalette = dummy->palette();
@@ -1106,7 +1106,7 @@ QFont Configuration::getFont() const
 //! @brief Returns the current style sheet
 QString Configuration::getStyleSheet() const
 {
-    if(getBoolSetting(CFG_NATIVESTYLESHEET))
+    if(getBoolSetting(cfg::nativestylesheet))
         return QString();
     else
         return mStyleSheet;
@@ -1290,87 +1290,87 @@ void Configuration::setHcomWorkingDirectory(QString value)
 void Configuration::registerSettings()
 {
     // String settings
-    mStringSettings.insert(CFG_REMOTEHOPSANADDRESS, "");
-    mStringSettings.insert(CFG_REMOTEHOPSANADDRESSSERVERADDRESS, "");
-    mStringSettings.insert(CFG_REMOTEHOPSANUSERIDENTIFICATION, "");
-    mStringSettings.insert(CFG_PARAMETEREXPORTDIR, "");
-    mStringSettings.insert(CFG_PARAMETERIMPORTDIR, "");
-    mStringSettings.insert(CFG_LOADMODELDIR, gpDesktopHandler->getModelsPath());
-    mStringSettings.insert(CFG_MODELGFXDIR, gpDesktopHandler->getDocumentsPath());
-    mStringSettings.insert(CFG_PLOTDATADIR, gpDesktopHandler->getDocumentsPath());
-    mStringSettings.insert(CFG_PLOTGFXDIR, gpDesktopHandler->getDocumentsPath());
-    mStringSettings.insert(CFG_SIMULINKEXPORTDIR, gpDesktopHandler->getDocumentsPath());
-    mStringSettings.insert(CFG_SUBSYSTEMDIR, gpDesktopHandler->getModelsPath());
-    mStringSettings.insert(CFG_EXTERNALLIBDIR, gpDesktopHandler->getDocumentsPath());
-    mStringSettings.insert(CFG_SCRIPTDIR, gpDesktopHandler->getScriptsPath());
-    mStringSettings.insert(CFG_PLOTWINDOWDIR, gpDesktopHandler->getDocumentsPath());
-    mStringSettings.insert(CFG_FMUIMPORTDIR, gpDesktopHandler->getDocumentsPath());
-    mStringSettings.insert(CFG_FMUEXPORTDIR, gpDesktopHandler->getDocumentsPath());
-    mStringSettings.insert(CFG_EXEEXPORTDIR, gpDesktopHandler->getDocumentsPath());
-    mStringSettings.insert(CFG_LABVIEWEXPORTDIR, gpDesktopHandler->getDocumentsPath());
-    mStringSettings.insert(CFG_CUSTOMTEMPPATH, "");
-    mStringSettings.insert(CFG_GCC64DIR, "");
-    mStringSettings.insert(CFG_GCC32DIR, "");
+    mStringSettings.insert(cfg::remotehopsanaddress, "");
+    mStringSettings.insert(cfg::remotehopsanaddresserveraddress, "");
+    mStringSettings.insert(cfg::remotehopsanuseridentification, "");
+    mStringSettings.insert(cfg::dir::parameterexport, "");
+    mStringSettings.insert(cfg::dir::parameterimport, "");
+    mStringSettings.insert(cfg::dir::loadmodel, gpDesktopHandler->getModelsPath());
+    mStringSettings.insert(cfg::dir::modelgfx, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(cfg::dir::plotdata, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(cfg::dir::plotgfx, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(cfg::dir::simulinkexport, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(cfg::dir::subsystem, gpDesktopHandler->getModelsPath());
+    mStringSettings.insert(cfg::dir::externallib, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(cfg::dir::script, gpDesktopHandler->getScriptsPath());
+    mStringSettings.insert(cfg::dir::plotwindow, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(cfg::dir::fmuimport, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(cfg::dir::fmuexport, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(cfg::dir::exeexport, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(cfg::dir::labviewexport, gpDesktopHandler->getDocumentsPath());
+    mStringSettings.insert(cfg::dir::customtemppath, "");
+    mStringSettings.insert(cfg::dir::gcc64, "");
+    mStringSettings.insert(cfg::dir::gcc32, "");
 #ifndef _WIN32
 #ifdef HOPSANCOMPILED64BIT
-    mStringSettings.insert(CFG_GCC64DIR, "/usr/bin");
+    mStringSettings.insert(cfg::GCC64DIR, "/usr/bin");
 #else
-    mStringSettings.insert(CFG_GCC32DIR, "/usr/bin");
+    mStringSettings.insert(cfg::GCC32DIR, "/usr/bin");
 #endif
     //! @todo OSX ?
 #endif
-    mStringSettings.insert(CFG_PLOTGFXIMAGEFORMAT, "png");
-    mStringSettings.insert(CFG_PLOTGFXDIMENSIONSUNIT, "px");
+    mStringSettings.insert(cfg::plotgfximageformat, "png");
+    mStringSettings.insert(cfg::plotgfxdimensionunit, "px");
     mStringSettings.insert(cfg::paths::corelogfile, "");
 
     // Bool settings
-    mBoolSettings.insert(CFG_USEREMOTEADDRESSSERVER, false);
-    mBoolSettings.insert(CFG_USEREMOTEOPTIMIZATION, false);
-    mBoolSettings.insert(CFG_PLOTWINDOWSONTOP, true);
-    mBoolSettings.insert(CFG_PLOTGFXUSESCREENSIZE, false);
-    mBoolSettings.insert(CFG_PLOTGFXKEEPASPECT, true);
-    mBoolSettings.insert(CFG_AUTOLIMITGENERATIONS, false);
-    mBoolSettings.insert(CFG_CACHELOGDATA, true);
-    mBoolSettings.insert(CFG_SHOWHIDDENNODEDATAVARIABLES, false);
-    mBoolSettings.insert(CFG_AUTOBACKUP, true);
-    mBoolSettings.insert(CFG_GROUPMESSAGESBYTAG, true);
-    mBoolSettings.insert(CFG_GROUPMESSAGESBYTAG, true);
-    mBoolSettings.insert(CFG_TOGGLENAMESBUTTONCHECKED, true);
-    mBoolSettings.insert(CFG_TOGGLEPORTSBUTTONCHECKED, true);
-    mBoolSettings.insert(CFG_SNAPPING, true);
-    mBoolSettings.insert(CFG_INVERTWHEEL, false);
-    mBoolSettings.insert(CFG_ANTIALIASING, true);
+    mBoolSettings.insert(cfg::useremoteaddresserver, false);
+    mBoolSettings.insert(cfg::useremoteoptimization, false);
+    mBoolSettings.insert(cfg::plotwindowsontop, true);
+    mBoolSettings.insert(cfg::plotgfxusescreensize, false);
+    mBoolSettings.insert(cfg::plotgfxkeepaspect, true);
+    mBoolSettings.insert(cfg::autolimitgenerations, false);
+    mBoolSettings.insert(cfg::cachelogdata, true);
+    mBoolSettings.insert(cfg::showhiddennodedatavariables, false);
+    mBoolSettings.insert(cfg::autobackup, true);
+    mBoolSettings.insert(cfg::groupmessagesbytag, true);
+    mBoolSettings.insert(cfg::groupmessagesbytag, true);
+    mBoolSettings.insert(cfg::togglenamesbuttonchecked, true);
+    mBoolSettings.insert(cfg::toggleportsbuttonchecked, true);
+    mBoolSettings.insert(cfg::snapping, true);
+    mBoolSettings.insert(cfg::invertwheel, false);
+    mBoolSettings.insert(cfg::antialiasing, true);
 #if defined(_WIN32)
-    mBoolSettings.insert(CFG_NATIVESTYLESHEET, false);
+    mBoolSettings.insert(cfg::nativestylesheet, false);
 #else
-    mBoolSettings.insert(CFG_NATIVESTYLESHEET, true);
+    mBoolSettings.insert(cfg::NATIVESTYLESHEET, true);
 #endif
-    mBoolSettings.insert(CFG_SHOWPOPUPHELP, true);
-    mBoolSettings.insert(CFG_MULTICORE, false);
-    mBoolSettings.insert(CFG_PROGRESSBAR, true);
-    mBoolSettings.insert(CFG_SETPWDTOMWD, false);
-    mBoolSettings.insert(CFG_SHOWLICENSEONSTARTUP, true);
-    mBoolSettings.insert(CFG_CHECKFORDEVELOPMENTUPDATES, false);
-    mBoolSettings.insert(CFG_LOGDURINGSIMULATION, false);
+    mBoolSettings.insert(cfg::showpopuphelp, true);
+    mBoolSettings.insert(cfg::multicore, false);
+    mBoolSettings.insert(cfg::progressbar, true);
+    mBoolSettings.insert(cfg::setpwdtomwd, false);
+    mBoolSettings.insert(cfg::showlicenseonstartup, true);
+    mBoolSettings.insert(cfg::checkfordevelopmentupdates, false);
+    mBoolSettings.insert(cfg::logduringsimulation, false);
 #ifdef _WIN32
-    mBoolSettings.insert(CFG_PREFERINCLUDEDCOMPILER, true);
+    mBoolSettings.insert(cfg::preferincludedcompiler, true);
 #else
-    mBoolSettings.insert(CFG_PREFERINCLUDEDCOMPILER, false);
+    mBoolSettings.insert(cfg::PREFERINCLUDEDCOMPILER, false);
 #endif
 
     // Integer settings
-    mIntegerSettings.insert(CFG_LIBRARYSTYLE, 0);
-    mIntegerSettings.insert(CFG_PROGRESSBARSTEP, 100);
-    mIntegerSettings.insert(CFG_NUMBEROFTHREADS, 0);
-    mIntegerSettings.insert(CFG_GENERATIONLIMIT, 100);
-    mIntegerSettings.insert(CFG_PLOEXPORTVERSION, 1);
-    mIntegerSettings.insert(CFG_REMOTESHORTTIMEOUT, 5);
-    mIntegerSettings.insert(CFG_REMOTELONGTIMEOUT, 30);
-    mIntegerSettings.insert(CFG_LOGSTEPS, 100);
+    mIntegerSettings.insert(cfg::librarystyle, 0);
+    mIntegerSettings.insert(cfg::progressbarstep, 100);
+    mIntegerSettings.insert(cfg::numberofthreads, 0);
+    mIntegerSettings.insert(cfg::generationlimit, 100);
+    mIntegerSettings.insert(cfg::ploexportversion, 1);
+    mIntegerSettings.insert(cfg::remoteshorttimeout, 5);
+    mIntegerSettings.insert(cfg::remotelongtimeout, 30);
+    mIntegerSettings.insert(cfg::logsteps, 100);
 
     // Double settings
-    mDoubleSettings.insert(CFG_PLOTGFXDPI, 96.0);
-    mDoubleSettings.insert(CFG_ZOOMSTEP, 15.0);
+    mDoubleSettings.insert(cfg::plotgfxdpi, 96.0);
+    mDoubleSettings.insert(cfg::zoomstep, 15.0);
 }
 
 void Configuration::setParallelAlgorithm(int value)
@@ -1380,7 +1380,7 @@ void Configuration::setParallelAlgorithm(int value)
 
 QString Configuration::getGCCPath() const
 {
-    if (getBoolSetting(CFG_PREFERINCLUDEDCOMPILER))
+    if (getBoolSetting(cfg::preferincludedcompiler))
     {
         QString compilerpath = gpDesktopHandler->getIncludedCompilerPath();
         if (!compilerpath.isEmpty())
@@ -1390,17 +1390,17 @@ QString Configuration::getGCCPath() const
     }
 
 #ifdef HOPSANCOMPILED64BIT
-    return getStringSetting(CFG_GCC64DIR);
+    return getStringSetting(cfg::dir::gcc64);
 #else
-    return getStringSetting(CFG_GCC32DIR);
+    return getStringSetting(cfg::GCC32DIR);
 #endif
 }
 
 void Configuration::refreshIfDesktopPath(const QString &cfgKey)
 {
-    if (cfgKey == CFG_CUSTOMTEMPPATH)
+    if (cfgKey == cfg::dir::customtemppath)
     {
-        gpDesktopHandler->setCustomTempPath(mStringSettings[CFG_CUSTOMTEMPPATH]);
+        gpDesktopHandler->setCustomTempPath(mStringSettings[cfg::dir::customtemppath]);
     }
 }
 
@@ -1412,16 +1412,16 @@ QString Configuration::getCompilerPath(const ArchitectureEnumT arch)
     if(arch == ArchitectureEnumT::x86)
     {
         a = 32;
-        cfgkey = CFG_GCC32DIR;
+        cfgkey = cfg::dir::gcc32;
     }
     else //x64
     {
         a = 64;
-        cfgkey = CFG_GCC64DIR;
+        cfgkey = cfg::dir::gcc64;
     }
 
     QString compilerPath;
-    if (getBoolSetting(CFG_PREFERINCLUDEDCOMPILER))
+    if (getBoolSetting(cfg::preferincludedcompiler))
     {
         compilerPath = gpDesktopHandler->getIncludedCompilerPath(a);
     }

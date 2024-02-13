@@ -177,7 +177,7 @@ QStringList ModelObject::getSystemNameHieararchy() const
 
 QString ModelObject::getHmfTagName() const
 {
-    return HMF_OBJECT; //!< @todo change this
+    return hmf::object; //!< @todo change this
 }
 
 
@@ -656,9 +656,9 @@ void ModelObject::openPropertiesDialog()
 void ModelObject::saveParameterValuesToFile(QString parameterFile)
 {
     if (parameterFile.isEmpty()) {
-        QString saveDirectory = gpConfig->getStringSetting(CFG_PARAMETEREXPORTDIR);
+        QString saveDirectory = gpConfig->getStringSetting(cfg::dir::parameterexport);
         if(saveDirectory.isEmpty()) {
-            saveDirectory = gpConfig->getStringSetting(CFG_LOADMODELDIR);
+            saveDirectory = gpConfig->getStringSetting(cfg::dir::loadmodel);
         }
         parameterFile = QFileDialog::getSaveFileName(gpMainWindowWidget, tr("Save Parameter Value File"),
                                                      saveDirectory,
@@ -670,7 +670,7 @@ void ModelObject::saveParameterValuesToFile(QString parameterFile)
 
     auto saveFunction = [this]() -> QDomDocument {
             QDomDocument domDocument;
-            QDomElement rootElement = domDocument.createElement(HPF_ROOTTAG);
+            QDomElement rootElement = domDocument.createElement(hpf::root);
             domDocument.appendChild(rootElement);
             this->saveToDomElement(rootElement, SaveContentsEnumT::ParametersOnly);
             appendRootXMLProcessingInstruction(domDocument);
@@ -836,11 +836,11 @@ QMap<QString, QString> ModelObject::getVariableAliases(const QString &rPortName)
     getVariameterDescriptions(vds);
     for (int i=0; i<vds.size(); ++i)
     {
-        if ( !vds[i].mAlias.isEmpty() && rPortName.isEmpty() && (gpConfig->getBoolSetting(CFG_SHOWHIDDENNODEDATAVARIABLES) || (vds[i].mVariabelType != "Hidden")) )
+        if ( !vds[i].mAlias.isEmpty() && rPortName.isEmpty() && (gpConfig->getBoolSetting(cfg::showhiddennodedatavariables) || (vds[i].mVariabelType != "Hidden")) )
         {
             results.insert(vds[i].mPortName+"#"+vds[i].mName, vds[i].mAlias);
         }
-        else if ( !vds[i].mAlias.isEmpty() && (rPortName == vds[i].mPortName)  && (gpConfig->getBoolSetting(CFG_SHOWHIDDENNODEDATAVARIABLES) || (vds[i].mVariabelType != "Hidden")) )
+        else if ( !vds[i].mAlias.isEmpty() && (rPortName == vds[i].mPortName)  && (gpConfig->getBoolSetting(cfg::showhiddennodedatavariables) || (vds[i].mVariabelType != "Hidden")) )
         {
             results.insert(vds[i].mName, vds[i].mAlias);
         }
@@ -1052,12 +1052,12 @@ void ModelObject::setModelFileInfo(QFile &rFile, const QString relModelPath)
 
 void ModelObject::saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents)
 {
-    rDomElement.setAttribute(HMF_TYPENAME, getTypeName());
-    rDomElement.setAttribute(HMF_SUBTYPENAME, getSubTypeName());
-    rDomElement.setAttribute(HMF_NAMETAG, getName());
+    rDomElement.setAttribute(hmf::typenametag, getTypeName());
+    rDomElement.setAttribute(hmf::subtypename, getSubTypeName());
+    rDomElement.setAttribute(hmf::name, getName());
     if(contents==FullModel) {
-        rDomElement.setAttribute(HMF_CQSTYPE, getTypeCQS());
-        rDomElement.setAttribute(HMF_DISABLEDTAG, bool2str(isDisabled()));
+        rDomElement.setAttribute(hmf::cqstype, getTypeCQS());
+        rDomElement.setAttribute(hmf::appearance::disabled, bool2str(isDisabled()));
     }
 }
 
@@ -1065,74 +1065,74 @@ QDomElement ModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
 {
     if (!getSubTypeName().isEmpty())
     {
-        rDomElement.setAttribute(HMF_SUBTYPENAME, getSubTypeName());
+        rDomElement.setAttribute(hmf::subtypename, getSubTypeName());
     }
 
-    rDomElement.setAttribute(HMF_LOCKEDTAG, bool2str(mIsLocked));
+    rDomElement.setAttribute(hmf::appearance::locked, bool2str(mIsLocked));
 
     // Save GUI related stuff
-    QDomElement xmlGuiStuff = appendDomElement(rDomElement,HMF_HOPSANGUITAG);
+    QDomElement xmlGuiStuff = appendDomElement(rDomElement,hmf::hopsangui);
 
     // Save center pos in parent coordinates (same as scene coordinates for model objects)
     QPointF cpos = this->getCenterPos();
     appendPoseTag(xmlGuiStuff, cpos.x(), cpos.y(), rotation(), this->mIsFlipped, 10);
 
     // Save the alwasys visible setting
-    xmlGuiStuff.setAttribute("alwaysvisible", mAlwaysVisible);
+    xmlGuiStuff.setAttribute(hmf::appearance::alwaysvisible, mAlwaysVisible);
 
     // Save the text displaying the component name
-    QDomElement nametext = appendDomElement(xmlGuiStuff, HMF_NAMETEXTTAG);
-    nametext.setAttribute("position", getNameTextPos());
-    nametext.setAttribute("visible", mNameTextAlwaysVisible);
+    QDomElement nametext = appendDomElement(xmlGuiStuff, hmf::appearance::nametext);
+    nametext.setAttribute(hmf::appearance::position, getNameTextPos());
+    nametext.setAttribute(hmf::appearance::visible, mNameTextAlwaysVisible);
 
     // Save any custom selected parameter scales
     if (!mRegisteredCustomParameterUnitScales.isEmpty())
     {
-        QDomElement plotscales = appendDomElement(xmlGuiStuff, HMF_PARAMETERSCALES);
+        QDomElement plotscales = appendDomElement(xmlGuiStuff, hmf::parameter::scales);
         QMap<QString, UnitConverter>::iterator psit;
         for (psit=mRegisteredCustomParameterUnitScales.begin(); psit!=mRegisteredCustomParameterUnitScales.end(); ++psit)
         {
             UnitConverter &us = psit.value();
-            QDomElement plotscale = appendDomElement(plotscales, HMF_PARAMETERSCALE);
-            plotscale.setAttribute(HMF_PARAMETERSCALEPARAMNAME, psit.key());
-            plotscale.setAttribute(HMF_PARAMETERSCALEUNIT, us.mUnit);
-            plotscale.setAttribute(HMF_PARAMETERSCALESCALE, us.mScale);
+            QDomElement plotscale = appendDomElement(plotscales, hmf::parameter::scale);
+            plotscale.setAttribute(hmf::parameter::scaleparametername, psit.key());
+            plotscale.setAttribute(hmf::parameter::scaleunit, us.mUnit);
+            plotscale.setAttribute(hmf::parameter::scalescale, us.mScale);
             if (!us.mOffset.isEmpty())
             {
-                plotscale.setAttribute(HMF_PARAMETERSCALEOFFSET, us.mOffset);
+                plotscale.setAttribute(hmf::parameter::scaleoffset, us.mOffset);
             }
             if (!us.mQuantity.isEmpty())
             {
-                plotscale.setAttribute(HMF_PARAMETERSCALEQUANTITY, us.mQuantity);
+                plotscale.setAttribute(hmf::parameter::scalequantity, us.mQuantity);
             }
             CoreParameterData data;
             getParameter(psit.key(), data);
-            plotscale.setAttribute(HMF_PARAMETERSCALEVALUE, us.convertFromBase(data.mValue));
+            plotscale.setAttribute(hmf::parameter::scalevalue, us.convertFromBase(data.mValue));
         }
     }
 
     // Save custom selected plot settings
     if (!mRegisteredInvertPlotVariables.isEmpty())
     {
-        QDomElement plotsettings = appendDomElement(xmlGuiStuff, HMF_VARIABLEPLOTSETTINGS);
+        QDomElement plotsettings = appendDomElement(xmlGuiStuff, hmf::variable::plotsettings);
         QList<QString> invkeys = mRegisteredInvertPlotVariables.keys();
         QList<QString> labelkeys = mRegisteredPlotLabels.keys();
         for (QString &invkey : invkeys)
         {
-            QDomElement plotsetting = appendDomElement(plotsettings, HMF_VARIABLEPLOTSETTING);
-            plotsetting.setAttribute("name", invkey);
-            plotsetting.setAttribute("invert", mRegisteredInvertPlotVariables.value(invkey));
+            QDomElement plotsetting = appendDomElement(plotsettings, hmf::variable::plotsetting);
+            plotsetting.setAttribute(hmf::name, invkey);
+            plotsetting.setAttribute(hmf::plot::invert, mRegisteredInvertPlotVariables.value(invkey));
             if (labelkeys.contains(invkey))
             {
-                plotsetting.setAttribute("label", mRegisteredPlotLabels.value(invkey));
+                plotsetting.setAttribute(hmf::plot::label, mRegisteredPlotLabels.value(invkey));
                 labelkeys.removeAll(invkey);
             }
         }
         for (QString &labelkey : labelkeys)
         {
-            QDomElement plotsetting = appendDomElement(plotsettings, HMF_VARIABLEPLOTSETTING);
-            plotsetting.setAttribute("name", labelkey);
-            plotsetting.setAttribute("label", mRegisteredPlotLabels.value(labelkey));
+            QDomElement plotsetting = appendDomElement(plotsettings, hmf::variable::plotsetting);
+            plotsetting.setAttribute(hmf::name, labelkey);
+            plotsetting.setAttribute(hmf::variable::plotlabel, mRegisteredPlotLabels.value(labelkey));
         }
     }
 //    if (!mRegisteredCustomPlotUnitsOrScales.isEmpty())
@@ -1150,7 +1150,7 @@ QDomElement ModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
 //    }
 
     // Save animation settings
-    QDomElement animationElement = appendDomElement(xmlGuiStuff, HMF_ANIMATION);
+    QDomElement animationElement = appendDomElement(xmlGuiStuff, hmf::animation);
     mModelObjectAppearance.getAnimationDataPtr()->saveToDomElement(animationElement);
 
     // Return dom node with appended gui contents

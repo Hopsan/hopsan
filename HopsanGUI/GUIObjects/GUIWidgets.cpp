@@ -206,7 +206,7 @@ WidgetTypesEnumT TextBoxWidget::getWidgetType() const
 
 QString TextBoxWidget::getHmfTagName() const
 {
-    return HMF_TEXTBOXWIDGETTAG;
+    return hmf::widget::textboxwidget;
 }
 
 
@@ -217,39 +217,39 @@ void TextBoxWidget::saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT
     QDomElement xmlObject = appendDomElement(rDomElement, getHmfTagName());
 
     //Save GUI related stuff
-    QDomElement xmlGuiStuff = appendDomElement(xmlObject,HMF_HOPSANGUITAG);
+    QDomElement xmlGuiStuff = appendDomElement(xmlObject,hmf::hopsangui);
 
     QPointF pos = mapToScene(boundingRect().topLeft());
 
-    QDomElement xmlPose = appendDomElement(xmlGuiStuff, HMF_POSETAG);
-    setQrealAttribute(xmlPose, "x", pos.x());
-    setQrealAttribute(xmlPose, "y", pos.y());
+    QDomElement xmlPose = appendDomElement(xmlGuiStuff, hmf::appearance::pose);
+    setQrealAttribute(xmlPose, hmf::widget::x, pos.x());
+    setQrealAttribute(xmlPose, hmf::widget::y, pos.y());
 
-    QDomElement xmlText = appendDomElement(xmlGuiStuff, "textobject");
-    xmlText.setAttribute("text", mpTextItem->toPlainText());
-    xmlText.setAttribute("font", mpTextItem->font().toString());
-    xmlText.setAttribute("fontcolor", mpTextItem->defaultTextColor().name());
-    xmlText.setAttribute("reflow", mReflowText);
+    QDomElement xmlText = appendDomElement(xmlGuiStuff, hmf::widget::textobject);
+    xmlText.setAttribute(hmf::widget::text, mpTextItem->toPlainText());
+    xmlText.setAttribute(hmf::widget::font, mpTextItem->font().toString());
+    xmlText.setAttribute(hmf::widget::fontcolor, mpTextItem->defaultTextColor().name());
+    xmlText.setAttribute(hmf::widget::reflow, mReflowText);
 
-    QDomElement xmlSize = appendDomElement(xmlGuiStuff, "size");
-    setQrealAttribute(xmlSize, "width", mpBorderItem->rect().width());
-    setQrealAttribute(xmlSize, "height", mpBorderItem->rect().height());
+    QDomElement xmlSize = appendDomElement(xmlGuiStuff, hmf::widget::size);
+    setQrealAttribute(xmlSize, hmf::widget::width, mpBorderItem->rect().width());
+    setQrealAttribute(xmlSize, hmf::widget::height, mpBorderItem->rect().height());
 
-    QDomElement xmlLine = appendDomElement(xmlGuiStuff, "line");
-    xmlLine.setAttribute("visible", mpBorderItem->isVisible());
-    xmlLine.setAttribute("width", mpBorderItem->pen().width());
-    xmlLine.setAttribute("color", mpBorderItem->pen().color().name());
+    QDomElement xmlLine = appendDomElement(xmlGuiStuff, hmf::widget::line);
+    xmlLine.setAttribute(hmf::widget::visible, mpBorderItem->isVisible());
+    xmlLine.setAttribute(hmf::widget::width, mpBorderItem->pen().width());
+    xmlLine.setAttribute(hmf::widget::color, mpBorderItem->pen().color().name());
 
     QString style;
     if(mpBorderItem->pen().style() == Qt::SolidLine)
-        style = "solidline";
+        style = hmf::widget::solidline;
     else if(mpBorderItem->pen().style() == Qt::DashLine)
-        style = "dashline";
+        style = hmf::widget::dashline;
     else if(mpBorderItem->pen().style() == Qt::DotLine)
-        style = "dotline";
+        style = hmf::widget::dotline;
     else if(mpBorderItem->pen().style() == Qt::DashDotLine)
-        style = "dashdotline";
-    xmlLine.setAttribute(HMF_STYLETAG, style);
+        style = hmf::widget::dashdotline;
+    xmlLine.setAttribute(hmf::connector::style, style);
 }
 
 void TextBoxWidget::loadFromDomElement(QDomElement domElement)
@@ -258,32 +258,32 @@ void TextBoxWidget::loadFromDomElement(QDomElement domElement)
     QColor textColor, lineColor;
 
     // Read gui specific stuff
-    QDomElement guiData = domElement.firstChildElement(HMF_HOPSANGUITAG);
+    QDomElement guiData = domElement.firstChildElement(hmf::hopsangui);
 
     // Text
-    QDomElement textObject = guiData.firstChildElement("textobject");
-    QString text = textObject.attribute("text");
-    font.fromString(textObject.attribute("font"));
-    textColor.setNamedColor(textObject.attribute("fontcolor"));
-    bool reflowText = parseAttributeBool(textObject, "reflow", false);
+    QDomElement textObject = guiData.firstChildElement(hmf::widget::textobject);
+    QString text = textObject.attribute(hmf::widget::text);
+    font.fromString(textObject.attribute(hmf::widget::font));
+    textColor.setNamedColor(textObject.attribute(hmf::widget::fontcolor));
+    bool reflowText = parseAttributeBool(textObject, hmf::widget::reflow, false);
 
     // Box
-    QDomElement poseTag = guiData.firstChildElement(HMF_POSETAG);
-    QPointF point( parseAttributeQreal(poseTag,"x",0), parseAttributeQreal(poseTag,"y",0));
-    QDomElement sizeTag = guiData.firstChildElement("size");
-    double width = parseAttributeQreal(sizeTag, "width", 10);
-    double height = parseAttributeQreal(sizeTag, "height", 10);
-    QDomElement lineTag = guiData.firstChildElement("line");
-    bool lineVisible = parseAttributeBool(lineTag, "visible", true);
-    int linewidth = parseAttributeInt(lineTag, "width", 1);
+    QDomElement poseTag = guiData.firstChildElement(hmf::appearance::pose);
+    QPointF point( parseAttributeQreal(poseTag,hmf::widget::x,0), parseAttributeQreal(poseTag,hmf::widget::y,0));
+    QDomElement sizeTag = guiData.firstChildElement(hmf::widget::size);
+    double width = parseAttributeQreal(sizeTag, hmf::widget::width, 10);
+    double height = parseAttributeQreal(sizeTag, hmf::widget::height, 10);
+    QDomElement lineTag = guiData.firstChildElement(hmf::widget::line);
+    bool lineVisible = parseAttributeBool(lineTag, hmf::widget::visible, true);
+    int linewidth = parseAttributeInt(lineTag, hmf::widget::width, 1);
     //! @todo this check is for backwards compatibility, remove in the future (added 20140224)
     if (linewidth == 1)
     {
         // Try double parsing
-        linewidth = parseAttributeQreal(lineTag, "width", linewidth);
+        linewidth = parseAttributeQreal(lineTag, hmf::widget::width, linewidth);
     }
-    QString linestyle = lineTag.attribute(HMF_STYLETAG);
-    lineColor.setNamedColor(lineTag.attribute("color",textColor.name()));
+    QString linestyle = lineTag.attribute(hmf::widget::style);
+    lineColor.setNamedColor(lineTag.attribute(hmf::widget::color,textColor.name()));
 
     setText(text);
     setFont(font);
@@ -845,17 +845,17 @@ void ImageWidget::saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT c
     QDomElement xmlObject = appendDomElement(rDomElement, getHmfTagName());
 
     //Save GUI related stuff
-    QDomElement xmlGuiStuff = appendDomElement(xmlObject,HMF_HOPSANGUITAG);
+    QDomElement xmlGuiStuff = appendDomElement(xmlObject,hmf::hopsangui);
 
     QPointF pos = mapToScene(boundingRect().topLeft());
 
-    QDomElement xmlPose = appendDomElement(xmlGuiStuff, HMF_POSETAG);
-    setQrealAttribute(xmlPose, hmf::x, pos.x());
-    setQrealAttribute(xmlPose, hmf::y, pos.y());
+    QDomElement xmlPose = appendDomElement(xmlGuiStuff, hmf::appearance::pose);
+    setQrealAttribute(xmlPose, hmf::widget::x, pos.x());
+    setQrealAttribute(xmlPose, hmf::widget::y, pos.y());
 
-    QDomElement xmlImage = appendDomElement(xmlGuiStuff, hmf::image);
-    xmlImage.setAttribute(hmf::path, mImagePath);
-    xmlImage.setAttribute(hmf::scale, mpImage->scale());
+    QDomElement xmlImage = appendDomElement(xmlGuiStuff, hmf::widget::image);
+    xmlImage.setAttribute(hmf::widget::path, mImagePath);
+    xmlImage.setAttribute(hmf::widget::scale, mpImage->scale());
 }
 
 WidgetTypesEnumT ImageWidget::getWidgetType() const
@@ -865,7 +865,7 @@ WidgetTypesEnumT ImageWidget::getWidgetType() const
 
 QString ImageWidget::getHmfTagName() const
 {
-    return hmf::imagewidget;
+    return hmf::widget::imagewidget;
 }
 
 void ImageWidget::setImage(const QString &path, double iconScale)
@@ -1006,7 +1006,7 @@ void ImageWidget::flipHorizontal(UndoStatusEnumT undoSettings)
 void ImageWidget::browseForImageFile()
 {
     QString filePath = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Select Image File"),
-                                                    gpConfig->getStringSetting(CFG_MODELGFXDIR),
+                                                    gpConfig->getStringSetting(cfg::dir::modelgfx),
                                                     tr("Scalar Vector Graphics (*.svg)"));
     if(!filePath.isEmpty()) {
         mpEditDialogPathLineEdit->setText(filePath);
@@ -1033,18 +1033,18 @@ void ImageWidget::updateWidgetFromDialog()
 void ImageWidget::loadFromDomElement(QDomElement domElement)
 {
     // Read gui specific stuff
-    QDomElement guiData = domElement.firstChildElement(HMF_HOPSANGUITAG);
+    QDomElement guiData = domElement.firstChildElement(hmf::hopsangui);
 
     //Pose
-    QDomElement poseObject = guiData.firstChildElement(HMF_POSETAG);
-    double x = parseAttributeQreal(poseObject, hmf::x, 0);
-    double y = parseAttributeQreal(poseObject, hmf::y, 0);
+    QDomElement poseObject = guiData.firstChildElement(hmf::appearance::pose);
+    double x = parseAttributeQreal(poseObject, hmf::widget::x, 0);
+    double y = parseAttributeQreal(poseObject, hmf::widget::y, 0);
     this->setPos(x, y);
 
     // Image
-    QDomElement imageObject = guiData.firstChildElement(hmf::image);
-    QString path = imageObject.attribute(hmf::path);
-    double scale = parseAttributeQreal(imageObject, hmf::scale, 1.0);
+    QDomElement imageObject = guiData.firstChildElement(hmf::widget::image);
+    QString path = imageObject.attribute(hmf::widget::path);
+    double scale = parseAttributeQreal(imageObject, hmf::widget::scale, 1.0);
 
     setImage(path, scale);
     refreshWidgetSize();

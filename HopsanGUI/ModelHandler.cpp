@@ -237,12 +237,12 @@ void ModelHandler::loadModel()
 {
     QDir fileDialogOpenDir;
     QStringList modelFileNames = QFileDialog::getOpenFileNames(gpMainWindowWidget, tr("Choose Model File"),
-                                                         gpConfig->getStringSetting(CFG_LOADMODELDIR),
+                                                               gpConfig->getStringSetting(cfg::dir::loadmodel),
                                                          tr("Hopsan Model Files (*.hmf *.xml)"));
     for(const QString &modelFileName : modelFileNames) {
         loadModel(modelFileName);
         QFileInfo fileInfo = QFileInfo(modelFileName);
-        gpConfig->setStringSetting(CFG_LOADMODELDIR, fileInfo.absolutePath());
+        gpConfig->setStringSetting(cfg::dir::loadmodel, fileInfo.absolutePath());
     }
 }
 
@@ -252,7 +252,7 @@ void ModelHandler::loadModel()
 void ModelHandler::loadTextFile()
 {
     QStringList fileNames = QFileDialog::getOpenFileNames(gpMainWindowWidget, tr("Choose Text File"),
-                                                                gpConfig->getStringSetting(CFG_LOADSCRIPTDIR),
+                                                          gpConfig->getStringSetting(cfg::dir::loadscript),
                                                                 tr("All Supported Files (*.hcom *.hpp *.h *.cpp *.cc *.c *.xml *.mo *.py);;HCOM Script Files (*.hcom);;C++ Header Files (*.hpp *.h);;C++ Source Files (*.cpp *.cc *.c);;XML files (*.xml);;Modelica files (*.mo);;Python Script Files (*.py)"));
     for(const auto &fileName : fileNames)
     {
@@ -269,7 +269,7 @@ void ModelHandler::loadTextFile()
         }
 
         loadTextFile(fileName);
-        gpConfig->setStringSetting(CFG_LOADSCRIPTDIR, fileInfo.absolutePath());
+        gpConfig->setStringSetting(cfg::dir::loadscript, fileInfo.absolutePath());
     }
 }
 
@@ -853,6 +853,7 @@ void ModelHandler::restoreState()
 //        mStateInfoLogDataHandlersList[i]->setParentContainerObject(getCurrentTopLevelSystem());
     }
     gpCentralTabWidget->setCurrentIndex(mStateInfoIndex);
+    gpPlotWidget->updateList();
     mStateInfoList.clear();
 }
 

@@ -1548,22 +1548,22 @@ void SystemObject::copySelected(CopyStack *xmlStack)
                 if(thisSystemsParameterNames.contains(var)) {
                     CoreParameterData systemParameterData;
                     getParameter(var, systemParameterData);
-                    QDomElement xmlParameter = appendDomElement(*copyRoot, HMF_PARAMETERTAG);
-                    xmlParameter.setAttribute(HMF_NAMETAG, systemParameterData.mName);
-                    xmlParameter.setAttribute(HMF_VALUETAG, systemParameterData.mValue);
-                    xmlParameter.setAttribute(HMF_TYPE, systemParameterData.mType);
-                    xmlParameter.setAttribute(HMF_INTERNAL, systemParameterData.mInternal);
+                    QDomElement xmlParameter = appendDomElement(*copyRoot, hmf::parameter::root);
+                    xmlParameter.setAttribute(hmf::name, systemParameterData.mName);
+                    xmlParameter.setAttribute(hmf::value, systemParameterData.mValue);
+                    xmlParameter.setAttribute(hmf::type, systemParameterData.mType);
+                    xmlParameter.setAttribute(hmf::internal, systemParameterData.mInternal);
                     if (!systemParameterData.mQuantity.isEmpty())
                     {
-                        xmlParameter.setAttribute(HMF_QUANTITY, systemParameterData.mQuantity);
+                        xmlParameter.setAttribute(hmf::quantity, systemParameterData.mQuantity);
                     }
                     if (!systemParameterData.mUnit.isEmpty())
                     {
-                        xmlParameter.setAttribute(HMF_UNIT, systemParameterData.mUnit);
+                        xmlParameter.setAttribute(hmf::unit, systemParameterData.mUnit);
                     }
                     if (!systemParameterData.mDescription.isEmpty())
                     {
-                        xmlParameter.setAttribute(HMF_DESCRIPTIONTAG, systemParameterData.mDescription);
+                        xmlParameter.setAttribute(hmf::modelinfo::description, systemParameterData.mDescription);
                     }
                 }
             }
@@ -1627,7 +1627,7 @@ void SystemObject::paste(CopyStack *xmlStack)
     QHash<QString, RenamedCompOrSysport> renamedMap;
 
     // Determine paste offset (will paste components at mouse position
-    QDomElement coordTag = copyRoot->firstChildElement(HMF_COORDINATETAG);
+    QDomElement coordTag = copyRoot->firstChildElement(hmf::connector::coordinate);
     double x, y;
     parseCoordinateTag(coordTag, x, y);
     QPointF oldCenter(x, y);
@@ -1655,7 +1655,7 @@ void SystemObject::paste(CopyStack *xmlStack)
                 const auto prevPos = pObj->pos();
                 pObj->moveBy(offset.x(), offset.y());
                 // Map renamed components
-                const QString desiredName = objectElement.attribute(HMF_NAMETAG);
+                const QString desiredName = objectElement.attribute(hmf::name);
                 const QString actualNameAfterLoad = pObj->getName();
                 renamedMap.insert(desiredName, {actualNameAfterLoad, false});
                 didPaste = true;
@@ -1678,7 +1678,7 @@ void SystemObject::paste(CopyStack *xmlStack)
             const auto prevPos = pObj->pos();
             pObj->moveBy(offset.x(), offset.y());
             // Map renamed components
-            const QString desiredName = systemPortElement.attribute(HMF_NAMETAG);
+            const QString desiredName = systemPortElement.attribute(hmf::name);
             const QString actualNameAfterLoad = pObj->getName();
             renamedMap.insert(desiredName, {actualNameAfterLoad, true});
             didPaste = true;
@@ -1688,38 +1688,38 @@ void SystemObject::paste(CopyStack *xmlStack)
     }
 
     // Paste connectors
-    QDomElement connectorElement = copyRoot->firstChildElement(HMF_CONNECTORTAG);
+    QDomElement connectorElement = copyRoot->firstChildElement(hmf::connector::root);
     while(!connectorElement.isNull()) {
         QDomElement tempConnectorElement = connectorElement.cloneNode(true).toElement();
-        const RenamedCompOrSysport actualStartComp = renamedMap.value(connectorElement.attribute(HMF_CONNECTORSTARTCOMPONENTTAG));
-        const RenamedCompOrSysport actualEndComp = renamedMap.value(connectorElement.attribute(HMF_CONNECTORENDCOMPONENTTAG));
+        const RenamedCompOrSysport actualStartComp = renamedMap.value(connectorElement.attribute(hmf::connector::startcomponent));
+        const RenamedCompOrSysport actualEndComp = renamedMap.value(connectorElement.attribute(hmf::connector::endcomponent));
 
         // Replace component names with actual names
-        tempConnectorElement.setAttribute(HMF_CONNECTORSTARTCOMPONENTTAG, actualStartComp.actualName);
-        tempConnectorElement.setAttribute(HMF_CONNECTORENDCOMPONENTTAG, actualEndComp.actualName);
+        tempConnectorElement.setAttribute(hmf::connector::startcomponent, actualStartComp.actualName);
+        tempConnectorElement.setAttribute(hmf::connector::endcomponent, actualEndComp.actualName);
         // Replace system port port names with actual names
         if (actualStartComp.isSystemPort) {
-            tempConnectorElement.setAttribute(HMF_CONNECTORSTARTPORTTAG, actualStartComp.actualName);
+            tempConnectorElement.setAttribute(hmf::connector::startport, actualStartComp.actualName);
         }
         if (actualEndComp.isSystemPort) {
-            tempConnectorElement.setAttribute(HMF_CONNECTORENDPORTTAG, actualStartComp.actualName);
+            tempConnectorElement.setAttribute(hmf::connector::endport, actualStartComp.actualName);
         }
 
         bool sucess = loadConnector(tempConnectorElement, this, Undo);
         if (sucess) {
-            Connector *tempConnector = this->findConnector(tempConnectorElement.attribute(HMF_CONNECTORSTARTCOMPONENTTAG), tempConnectorElement.attribute(HMF_CONNECTORSTARTPORTTAG),
-                                                           tempConnectorElement.attribute(HMF_CONNECTORENDCOMPONENTTAG), tempConnectorElement.attribute(HMF_CONNECTORENDPORTTAG));
+            Connector *tempConnector = this->findConnector(tempConnectorElement.attribute(hmf::connector::startcomponent), tempConnectorElement.attribute(hmf::connector::startport),
+                                                           tempConnectorElement.attribute(hmf::connector::endcomponent), tempConnectorElement.attribute(hmf::connector::endport));
             // Apply offset to connector
             tempConnector->moveAllPoints(offset.x(), offset.y());
             tempConnector->drawConnector(true);
             didPaste = true;
         }
 
-        connectorElement = connectorElement.nextSiblingElement(HMF_CONNECTORTAG);
+        connectorElement = connectorElement.nextSiblingElement(hmf::connector::root);
     }
 
-    // Paste text box widgets
-    QDomElement textBoxElement = copyRoot->firstChildElement(HMF_TEXTBOXWIDGETTAG);
+    // Paste widgets
+    QDomElement textBoxElement = copyRoot->firstChildElement(hmf::widget::textboxwidget);
     while(!textBoxElement.isNull())
     {
         TextBoxWidget *pWidget = loadTextBoxWidget(textBoxElement, this, Undo);
@@ -1730,11 +1730,11 @@ void SystemObject::paste(CopyStack *xmlStack)
             didPaste = true;
             mpUndoStack->registerMovedWidget(pWidget, prevPos, pWidget->pos());
         }
-        textBoxElement = textBoxElement.nextSiblingElement(HMF_TEXTBOXWIDGETTAG);
+        textBoxElement = textBoxElement.nextSiblingElement(hmf::widget::textboxwidget);
     }
 
     // Paste image widgets
-    QDomElement imageElement = copyRoot->firstChildElement(hmf::imagewidget);
+    QDomElement imageElement = copyRoot->firstChildElement(hmf::widget::imagewidget);
     while(!imageElement.isNull())
     {
         ImageWidget *pWidget = loadImageWidget(imageElement, this, Undo);
@@ -1745,27 +1745,27 @@ void SystemObject::paste(CopyStack *xmlStack)
             didPaste = true;
             mpUndoStack->registerMovedWidget(pWidget, prevPos, pWidget->pos());
         }
-        imageElement = imageElement.nextSiblingElement(hmf::imagewidget);
+        imageElement = imageElement.nextSiblingElement(hmf::widget::imagewidget);
     }
 
     // Paste system parameters
-    QDomElement parElement = copyRoot->firstChildElement(HMF_PARAMETERTAG);
+    QDomElement parElement = copyRoot->firstChildElement(hmf::parameter::root);
     while(!parElement.isNull())
     {
-        QString name = parElement.attribute(HMF_NAMETAG);
+        QString name = parElement.attribute(hmf::name);
         if(!getParameterNames().contains(name))
         {
-            QString value = parElement.attribute(HMF_VALUETAG);
-            QString type = parElement.attribute(HMF_TYPE);
-            QString quantityORunit = parElement.attribute(HMF_QUANTITY, parElement.attribute(HMF_UNIT));
-            QString description = parElement.attribute(HMF_DESCRIPTIONTAG);
-            bool internal = parseAttributeBool(parElement, HMF_INTERNAL, false);
+            QString value = parElement.attribute(hmf::value);
+            QString type = parElement.attribute(hmf::type);
+            QString quantityORunit = parElement.attribute(hmf::quantity, parElement.attribute(hmf::unit));
+            QString description = parElement.attribute(hmf::modelinfo::description);
+            bool internal = parseAttributeBool(parElement, hmf::internal, false);
 
             CoreParameterData parData = CoreParameterData(name, value, type, quantityORunit, "", description, internal);
             setOrAddParameter(parData);
             didPaste = true;
         }
-        parElement = parElement.nextSiblingElement(HMF_PARAMETERTAG);
+        parElement = parElement.nextSiblingElement(hmf::parameter::root);
     }
 
     if (didPaste) {
@@ -2024,7 +2024,7 @@ void SystemObject::replaceComponent(QString name, QString newType)
     renameModelObject(newObj->getName(), name);
 
         //Paste connectors
-    QDomElement connectorElement = copyRoot->firstChildElement(HMF_CONNECTORTAG);
+    QDomElement connectorElement = copyRoot->firstChildElement(hmf::connector::root);
     while(!connectorElement.isNull())
     {
         bool sucess = loadConnector(connectorElement, this, Undo);
@@ -3157,12 +3157,12 @@ void SystemObject::plotMeasuredSimulationTime()
 void SystemObject::exportMesasuredSimulationTime()
 {
     //! @todo Ask for filename
-    QString pathStr = QFileDialog::getSaveFileName(gpMainWindowWidget, "Save measured simulation times", gpConfig->getStringSetting(CFG_PLOTDATADIR), "*.csv");
+    QString pathStr = QFileDialog::getSaveFileName(gpMainWindowWidget, "Save measured simulation times", gpConfig->getStringSetting(cfg::dir::plotdata), "*.csv");
 
     if(pathStr.isEmpty())
         return; //User aborted
 
-    gpConfig->setStringSetting(CFG_PLOTDATADIR, QFileInfo(pathStr).absolutePath());
+    gpConfig->setStringSetting(cfg::dir::plotdata, QFileInfo(pathStr).absolutePath());
 
 
     QFile csvFile(pathStr);
@@ -3294,12 +3294,12 @@ void SystemObject::exportToLabView()
     //Open file dialogue and initialize the file stream
     QString filePath;
     filePath = QFileDialog::getSaveFileName(gpMainWindowWidget, tr("Export Project to HopsanRT Wrapper Code"),
-                                            gpConfig->getStringSetting(CFG_LABVIEWEXPORTDIR),
+                                            gpConfig->getStringSetting(cfg::dir::labviewexport),
                                             tr("C++ Source File (*.cpp)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
 
     QFileInfo file(filePath);
-    gpConfig->setStringSetting(CFG_LABVIEWEXPORTDIR, file.absolutePath());
+    gpConfig->setStringSetting(cfg::dir::labviewexport, file.absolutePath());
 
     auto spGenerator = createDefaultExportGenerator();
     if (!spGenerator->generateToLabViewSIT(filePath, mpCoreSystemAccess->getCoreSystemPtr()))
@@ -3347,14 +3347,14 @@ void SystemObject::exportToFMU(QString savePath, int version, ArchitectureEnumT 
         //Open file dialogue and initialize the file stream
         QDir fileDialogSaveDir;
         savePath = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Create Functional Mockup Unit"),
-                                                        gpConfig->getStringSetting(CFG_FMUEXPORTDIR),
+                                                        gpConfig->getStringSetting(cfg::dir::fmuexport),
                                                         QFileDialog::ShowDirsOnly
                                                         | QFileDialog::DontResolveSymlinks);
         if(savePath.isEmpty()) return;    //Don't save anything if user presses cancel
 
         QDir saveDir;
         saveDir.setPath(savePath);
-        gpConfig->setStringSetting(CFG_FMUEXPORTDIR, saveDir.absolutePath());
+        gpConfig->setStringSetting(cfg::dir::fmuexport, saveDir.absolutePath());
         saveDir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot);
         if(!saveDir.entryList().isEmpty())
         {
@@ -3495,12 +3495,12 @@ void SystemObject::exportToSimulink()
         //Open file dialogue and initialize the file stream
     QString savePath;
     savePath = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Create Simulink Source Files"),
-                                                    gpConfig->getStringSetting(CFG_SIMULINKEXPORTDIR),
+                                                    gpConfig->getStringSetting(cfg::dir::simulinkexport),
                                                     QFileDialog::ShowDirsOnly
                                                     | QFileDialog::DontResolveSymlinks);
     if(savePath.isEmpty()) return;    //Don't save anything if user presses cancel
     QFileInfo file(savePath);
-    gpConfig->setStringSetting(CFG_SIMULINKEXPORTDIR, file.absolutePath());
+    gpConfig->setStringSetting(cfg::dir::simulinkexport, file.absolutePath());
 
     // Save xml document
     mpModelWidget->saveTo(savePath+"/"+fileName);
@@ -3554,14 +3554,14 @@ void SystemObject::exportToExecutableModel(QString savePath, ArchitectureEnumT a
         //Open file dialog and initialize the file stream
         QDir fileDialogSaveDir;
         savePath = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Compile Executable Model"),
-                                                        gpConfig->getStringSetting(CFG_EXEEXPORTDIR),
+                                                        gpConfig->getStringSetting(cfg::dir::exeexport),
                                                         QFileDialog::ShowDirsOnly
                                                         | QFileDialog::DontResolveSymlinks);
         if(savePath.isEmpty()) return;    //Don't save anything if user presses cancel
 
         QDir saveDir;
         saveDir.setPath(savePath);
-        gpConfig->setStringSetting(CFG_EXEEXPORTDIR, saveDir.absolutePath());
+        gpConfig->setStringSetting(cfg::dir::exeexport, saveDir.absolutePath());
         saveDir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot);
         if(!saveDir.entryList().isEmpty())
         {
@@ -3755,7 +3755,7 @@ void SystemObject::saveCoreDataToDomElement(QDomElement &rDomElement, SaveConten
 
         // This information should ONLY be used to indicate that a subsystem is external, it SHOULD NOT be included in the actual external system
         // If it would be, the load function will fail
-        rDomElement.setAttribute( HMF_EXTERNALPATHTAG, relPath );
+        rDomElement.setAttribute( hmf::externalpath, relPath );
     }
 
     if (mLoadType != "EXTERNAL" && contents == FullModel)
@@ -3767,43 +3767,43 @@ void SystemObject::saveCoreDataToDomElement(QDomElement &rDomElement, SaveConten
     // Save the NumHop script
     if (!mNumHopScript.isEmpty())
     {
-        appendDomTextNode(rDomElement, HMF_NUMHOPSCRIPT, mNumHopScript);
+        appendDomTextNode(rDomElement, hmf::numhopscript, mNumHopScript);
     }
 
     // Save the parameter values for the system
     QVector<CoreParameterData> paramDataVector;
     this->getParameters(paramDataVector);
-    QDomElement xmlParameters = appendDomElement(rDomElement, HMF_PARAMETERS);
+    QDomElement xmlParameters = appendDomElement(rDomElement, hmf::parameters);
     for(int i=0; i<paramDataVector.size(); ++i)
     {
-        QDomElement xmlParameter = appendDomElement(xmlParameters, HMF_PARAMETERTAG);
-        xmlParameter.setAttribute(HMF_NAMETAG, paramDataVector[i].mName);
-        xmlParameter.setAttribute(HMF_VALUETAG, paramDataVector[i].mValue);
-        xmlParameter.setAttribute(HMF_TYPE, paramDataVector[i].mType);
-        xmlParameter.setAttribute(HMF_INTERNAL, bool2str(paramDataVector[i].mInternal));
+        QDomElement xmlParameter = appendDomElement(xmlParameters, hmf::parameter::root);
+        xmlParameter.setAttribute(hmf::name, paramDataVector[i].mName);
+        xmlParameter.setAttribute(hmf::value, paramDataVector[i].mValue);
+        xmlParameter.setAttribute(hmf::type, paramDataVector[i].mType);
+        xmlParameter.setAttribute(hmf::internal, bool2str(paramDataVector[i].mInternal));
         if (!paramDataVector[i].mQuantity.isEmpty())
         {
-            xmlParameter.setAttribute(HMF_QUANTITY, paramDataVector[i].mQuantity);
+            xmlParameter.setAttribute(hmf::quantity, paramDataVector[i].mQuantity);
         }
         if (!paramDataVector[i].mUnit.isEmpty())
         {
-            xmlParameter.setAttribute(HMF_UNIT, paramDataVector[i].mUnit);
+            xmlParameter.setAttribute(hmf::unit, paramDataVector[i].mUnit);
         }
         if (!paramDataVector[i].mDescription.isEmpty())
         {
-            xmlParameter.setAttribute(HMF_DESCRIPTIONTAG, paramDataVector[i].mDescription);
+            xmlParameter.setAttribute(hmf::modelinfo::description, paramDataVector[i].mDescription);
         }
     }
 
     // Save the alias names in this system
-    QDomElement xmlAliases = appendDomElement(rDomElement, HMF_ALIASES);
+    QDomElement xmlAliases = appendDomElement(rDomElement, hmf::aliases);
     QStringList aliases = getAliasNames();
     //! @todo need one function that gets both alias and full maybe
     for (int i=0; i<aliases.size(); ++i)
     {
-        QDomElement alias = appendDomElement(xmlAliases, HMF_ALIAS);
-        alias.setAttribute(HMF_TYPE, "variable"); //!< @todo not manual type
-        alias.setAttribute(HMF_NAMETAG, aliases[i]);
+        QDomElement alias = appendDomElement(xmlAliases, hmf::alias);
+        alias.setAttribute(hmf::type, "variable"); //!< @todo not manual type
+        alias.setAttribute(hmf::name, aliases[i]);
         QString fullName = getFullNameFromAlias(aliases[i]);
         appendDomTextNode(alias, "fullname",fullName );
     }
@@ -3844,14 +3844,14 @@ void SystemObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     if (pAction == loadAction)
     {
         QString modelFilePath = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Choose Subsystem File"),
-                                                             gpConfig->getStringSetting(CFG_SUBSYSTEMDIR),
+                                                             gpConfig->getStringSetting(cfg::dir::subsystem),
                                                              tr("Hopsan Model Files (*.hmf)"));
         if (!modelFilePath.isNull())
         {
             QFile file;
             file.setFileName(modelFilePath);
             QFileInfo fileInfo(file);
-            gpConfig->setStringSetting(CFG_SUBSYSTEMDIR, fileInfo.absolutePath());
+            gpConfig->setStringSetting(cfg::dir::subsystem, fileInfo.absolutePath());
 
             bool doIt = true;
             if (mModelObjectMap.size() > 0)
@@ -3887,7 +3887,7 @@ void SystemObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         //Get file name
         QString modelFilePath;
         modelFilePath = QFileDialog::getSaveFileName(gpMainWindowWidget, tr("Save Subsystem As"),
-                                                     gpConfig->getStringSetting(CFG_LOADMODELDIR),
+                                                     gpConfig->getStringSetting(cfg::dir::loadmodel),
                                                      tr("Hopsan Model Files (*.hmf)"));
 
         if(modelFilePath.isEmpty())     //Don't save anything if user presses cancel
@@ -3940,7 +3940,7 @@ void SystemObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         //Get file name
         QString cafFilePath;
         cafFilePath = QFileDialog::getSaveFileName(gpMainWindowWidget, tr("Save Subsystem As"),
-                                                   gpConfig->getStringSetting(CFG_LOADMODELDIR),
+                                                   gpConfig->getStringSetting(cfg::dir::loadmodel),
                                                    tr("Hopsan Component Appearance Files (*.xml)"));
 
         if(cafFilePath.isEmpty())     //Don't save anything if user presses cancel
@@ -4066,38 +4066,38 @@ void SystemObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 void SystemObject::saveSensitivityAnalysisSettingsToDomElement(QDomElement &rDomElement)
 {
-    QDomElement XMLsens = appendDomElement(rDomElement, HMF_SENSITIVITYANALYSIS);
-    QDomElement XMLsetting = appendDomElement(XMLsens, HMF_SETTINGS);
-    appendDomIntegerNode(XMLsetting, HMF_ITERATIONS, mSensSettings.nIter);
+    QDomElement XMLsens = appendDomElement(rDomElement, hmf::sensitivityanalysis::root);
+    QDomElement XMLsetting = appendDomElement(XMLsens, hmf::sensitivityanalysis::settings);
+    appendDomIntegerNode(XMLsetting, hmf::sensitivityanalysis::iterations, mSensSettings.nIter);
     if(mSensSettings.distribution == SensitivityAnalysisSettings::UniformDistribution)
     {
-        appendDomTextNode(XMLsetting, HMF_DISTRIBUTIONTYPE, HMF_UNIFORMDIST);
+        appendDomTextNode(XMLsetting, hmf::sensitivityanalysis::distribution, hmf::sensitivityanalysis::uniformdistribution);
     }
     else if(mSensSettings.distribution == SensitivityAnalysisSettings::NormalDistribution)
     {
-        appendDomTextNode(XMLsetting, HMF_DISTRIBUTIONTYPE, HMF_NORMALDIST);
+        appendDomTextNode(XMLsetting, hmf::sensitivityanalysis::distribution, hmf::sensitivityanalysis::normaldistribution);
     }
 
     //Parameters
-    QDomElement XMLparameters = appendDomElement(XMLsens, HMF_PARAMETERS);
+    QDomElement XMLparameters = appendDomElement(XMLsens, hmf::parameters);
     for(int i = 0; i < mSensSettings.parameters.size(); ++i)
     {
-        QDomElement XMLparameter = appendDomElement(XMLparameters, HMF_PARAMETERTAG);
+        QDomElement XMLparameter = appendDomElement(XMLparameters, hmf::parameter::root);
         appendDomTextNode(XMLparameter, hmf::component, mSensSettings.parameters.at(i).compName);
-        appendDomTextNode(XMLparameter, HMF_PARAMETERTAG, mSensSettings.parameters.at(i).parName);
-        appendDomValueNode2(XMLparameter, HMF_MINMAX, mSensSettings.parameters.at(i).min, mSensSettings.parameters.at(i).max);
-        appendDomValueNode(XMLparameter, HMF_AVERAGE, mSensSettings.parameters.at(i).aver);
-        appendDomValueNode(XMLparameter, HMF_SIGMA, mSensSettings.parameters.at(i).sigma);
+        appendDomTextNode(XMLparameter, hmf::parameter::root, mSensSettings.parameters.at(i).parName);
+        appendDomValueNode2(XMLparameter, hmf::sensitivityanalysis::minmax, mSensSettings.parameters.at(i).min, mSensSettings.parameters.at(i).max);
+        appendDomValueNode(XMLparameter, hmf::sensitivityanalysis::average, mSensSettings.parameters.at(i).aver);
+        appendDomValueNode(XMLparameter, hmf::sensitivityanalysis::sigma, mSensSettings.parameters.at(i).sigma);
     }
 
     //Variables
-    QDomElement XMLobjectives = appendDomElement(XMLsens, HMF_PLOTVARIABLES);
+    QDomElement XMLobjectives = appendDomElement(XMLsens, hmf::sensitivityanalysis::plotvariables);
     for(int i = 0; i < mSensSettings.variables.size(); ++i)
     {
-        QDomElement XMLobjective = appendDomElement(XMLobjectives, HMF_PLOTVARIABLE);
+        QDomElement XMLobjective = appendDomElement(XMLobjectives, hmf::sensitivityanalysis::plotvariable);
         appendDomTextNode(XMLobjective, hmf::component, mSensSettings.variables.at(i).compName);
-        appendDomTextNode(XMLobjective, HMF_PORTTAG, mSensSettings.variables.at(i).portName);
-        appendDomTextNode(XMLobjective, HMF_PLOTVARIABLE, mSensSettings.variables.at(i).varName);
+        appendDomTextNode(XMLobjective, hmf::port, mSensSettings.variables.at(i).portName);
+        appendDomTextNode(XMLobjective, hmf::sensitivityanalysis::plotvariable, mSensSettings.variables.at(i).varName);
     }
 }
 
@@ -4106,53 +4106,53 @@ void SystemObject::loadSensitivityAnalysisSettingsFromDomElement(QDomElement &rD
 {
     qDebug() << rDomElement.toDocument().toString();
 
-    QDomElement settingsElement = rDomElement.firstChildElement(HMF_SETTINGS);
+    QDomElement settingsElement = rDomElement.firstChildElement(hmf::sensitivityanalysis::settings);
     if(!settingsElement.isNull())
     {
-        mSensSettings.nIter = parseDomIntegerNode(settingsElement.firstChildElement(HMF_ITERATIONS), mSensSettings.nIter);
-        QDomElement distElement = settingsElement.firstChildElement(HMF_DISTRIBUTIONTYPE);
-        if(!distElement.isNull() && distElement.text() == HMF_UNIFORMDIST)
+        mSensSettings.nIter = parseDomIntegerNode(settingsElement.firstChildElement(hmf::sensitivityanalysis::iterations), mSensSettings.nIter);
+        QDomElement distElement = settingsElement.firstChildElement(hmf::sensitivityanalysis::distribution);
+        if(!distElement.isNull() && distElement.text() == hmf::sensitivityanalysis::uniformdistribution)
         {
             mSensSettings.distribution = SensitivityAnalysisSettings::UniformDistribution;
         }
-        else if(!distElement.isNull() && distElement.text() == HMF_NORMALDIST)
+        else if(!distElement.isNull() && distElement.text() == hmf::sensitivityanalysis::normaldistribution)
         {
             mSensSettings.distribution = SensitivityAnalysisSettings::NormalDistribution;
         }
     }
 
-    QDomElement parametersElement = rDomElement.firstChildElement(HMF_PARAMETERS);
+    QDomElement parametersElement = rDomElement.firstChildElement(hmf::parameters);
     if(!parametersElement.isNull())
     {
-        QDomElement parameterElement =parametersElement.firstChildElement(HMF_PARAMETERTAG);
+        QDomElement parameterElement =parametersElement.firstChildElement(hmf::parameter::root);
         while (!parameterElement.isNull())
         {
             SensitivityAnalysisParameter par;
             par.compName = parameterElement.firstChildElement(hmf::component).text();
-            par.parName = parameterElement.firstChildElement(HMF_PARAMETERTAG).text();
-            parseDomValueNode2(parameterElement.firstChildElement(HMF_MINMAX), par.min, par.max);
-            par.aver = parseDomValueNode(parameterElement.firstChildElement(HMF_AVERAGE), 0);
-            par.sigma = parseDomValueNode(parameterElement.firstChildElement(HMF_SIGMA), 0);
+            par.parName = parameterElement.firstChildElement(hmf::parameter::root).text();
+            parseDomValueNode2(parameterElement.firstChildElement(hmf::sensitivityanalysis::minmax), par.min, par.max);
+            par.aver = parseDomValueNode(parameterElement.firstChildElement(hmf::sensitivityanalysis::average), 0);
+            par.sigma = parseDomValueNode(parameterElement.firstChildElement(hmf::sensitivityanalysis::sigma), 0);
             mSensSettings.parameters.append(par);
 
-            parameterElement = parameterElement.nextSiblingElement(HMF_PARAMETERTAG);
+            parameterElement = parameterElement.nextSiblingElement(hmf::parameter::root);
         }
     }
 
-    QDomElement variablesElement = rDomElement.firstChildElement(HMF_PLOTVARIABLES);
+    QDomElement variablesElement = rDomElement.firstChildElement(hmf::sensitivityanalysis::plotvariables);
     if(!variablesElement.isNull())
     {
-        QDomElement variableElement = variablesElement.firstChildElement(HMF_PLOTVARIABLE);
+        QDomElement variableElement = variablesElement.firstChildElement(hmf::sensitivityanalysis::plotvariable);
         while (!variableElement.isNull())
         {
             SensitivityAnalysisVariable var;
 
             var.compName = variableElement.firstChildElement(hmf::component).text();
-            var.portName = variableElement.firstChildElement(HMF_PORTTAG).text();
-            var.varName = variableElement.firstChildElement(HMF_PLOTVARIABLE).text();
+            var.portName = variableElement.firstChildElement(hmf::port).text();
+            var.varName = variableElement.firstChildElement(hmf::sensitivityanalysis::plotvariable).text();
             mSensSettings.variables.append(var);
 
-            variableElement = variableElement.nextSiblingElement((HMF_PLOTVARIABLE));
+            variableElement = variableElement.nextSiblingElement((hmf::sensitivityanalysis::plotvariable));
         }
     }
 }
@@ -4160,59 +4160,59 @@ void SystemObject::loadSensitivityAnalysisSettingsFromDomElement(QDomElement &rD
 
 void SystemObject::saveOptimizationSettingsToDomElement(QDomElement &rDomElement)
 {
-    QDomElement XMLopt = appendDomElement(rDomElement, HMF_OPTIMIZATION);
-    QDomElement XMLsetting = appendDomElement(XMLopt, HMF_SETTINGS);
-    appendDomTextNode(XMLsetting, HMF_SCRIPTFILETAG, mOptSettings.mScriptFile);
-    appendDomIntegerNode(XMLsetting, HMF_ITERATIONS, mOptSettings.mNiter);
-    appendDomIntegerNode(XMLsetting, HMF_SEARCHPOINTS, mOptSettings.mNsearchp);
-    appendDomValueNode(XMLsetting, HMF_REFLCOEFF, mOptSettings.mRefcoeff);
-    appendDomValueNode(XMLsetting, HMF_RANDOMFACTOR, mOptSettings.mRandfac);
-    appendDomValueNode(XMLsetting, HMF_FORGETTINGFACTOR, mOptSettings.mForgfac);
-    appendDomValueNode(XMLsetting, HMF_PARTOL, mOptSettings.mPartol);
-    appendDomBooleanNode(XMLsetting, HMF_PLOT, mOptSettings.mPlot);
-    appendDomBooleanNode(XMLsetting, HMF_SAVECSV, mOptSettings.mSavecsv);
-    appendDomBooleanNode(XMLsetting, HMF_FINALEVAL, mOptSettings.mFinalEval);
+    QDomElement XMLopt = appendDomElement(rDomElement, hmf::optimization::root);
+    QDomElement XMLsetting = appendDomElement(XMLopt, hmf::sensitivityanalysis::settings);
+    appendDomTextNode(XMLsetting, hmf::scriptfile, mOptSettings.mScriptFile);
+    appendDomIntegerNode(XMLsetting, hmf::sensitivityanalysis::iterations, mOptSettings.mNiter);
+    appendDomIntegerNode(XMLsetting, hmf::optimization::numberofsearchpoints, mOptSettings.mNsearchp);
+    appendDomValueNode(XMLsetting, hmf::optimization::reflectioncoefficient, mOptSettings.mRefcoeff);
+    appendDomValueNode(XMLsetting, hmf::optimization::randomfactor, mOptSettings.mRandfac);
+    appendDomValueNode(XMLsetting, hmf::optimization::forgettingfactor, mOptSettings.mForgfac);
+    appendDomValueNode(XMLsetting, hmf::optimization::partol, mOptSettings.mPartol);
+    appendDomBooleanNode(XMLsetting, hmf::optimization::plot, mOptSettings.mPlot);
+    appendDomBooleanNode(XMLsetting, hmf::optimization::savecsv, mOptSettings.mSavecsv);
+    appendDomBooleanNode(XMLsetting, hmf::optimization::finaleval, mOptSettings.mFinalEval);
 
     //Parameters
-    appendDomBooleanNode(XMLsetting, HMF_LOGPAR, mOptSettings.mlogPar);
-    QDomElement XMLparameters = appendDomElement(XMLopt, HMF_PARAMETERS);
+    appendDomBooleanNode(XMLsetting, hmf::optimization::logpar, mOptSettings.mlogPar);
+    QDomElement XMLparameters = appendDomElement(XMLopt, hmf::parameters);
     for(int i = 0; i < mOptSettings.mParamters.size(); ++i)
     {
-        QDomElement XMLparameter = appendDomElement(XMLparameters, HMF_PARAMETERTAG);
+        QDomElement XMLparameter = appendDomElement(XMLparameters, hmf::parameter::root);
         appendDomTextNode(XMLparameter, hmf::component, mOptSettings.mParamters.at(i).mComponentName);
-        appendDomTextNode(XMLparameter, HMF_PARAMETERTAG, mOptSettings.mParamters.at(i).mParameterName);
-        appendDomValueNode2(XMLparameter, HMF_MINMAX, mOptSettings.mParamters.at(i).mMin, mOptSettings.mParamters.at(i).mMax);
+        appendDomTextNode(XMLparameter, hmf::parameter::root, mOptSettings.mParamters.at(i).mParameterName);
+        appendDomValueNode2(XMLparameter, hmf::sensitivityanalysis::minmax, mOptSettings.mParamters.at(i).mMin, mOptSettings.mParamters.at(i).mMax);
     }
 
     //Objective Functions
-    QDomElement XMLobjectives = appendDomElement(XMLopt, HMF_OBJECTIVES);
+    QDomElement XMLobjectives = appendDomElement(XMLopt, hmf::optimization::objectives);
     for(int i = 0; i < mOptSettings.mObjectives.size(); ++i)
     {
-        QDomElement XMLobjective = appendDomElement(XMLobjectives, HMF_OBJECTIVE);
-        appendDomTextNode(XMLobjective, HMF_FUNCNAME, mOptSettings.mObjectives.at(i).mFunctionName);
-        appendDomValueNode(XMLobjective, HMF_WEIGHT, mOptSettings.mObjectives.at(i).mWeight);
-        appendDomValueNode(XMLobjective, HMF_NORM, mOptSettings.mObjectives.at(i).mNorm);
-        appendDomValueNode(XMLobjective, HMF_EXP, mOptSettings.mObjectives.at(i).mExp);
+        QDomElement XMLobjective = appendDomElement(XMLobjectives, hmf::optimization::objective);
+        appendDomTextNode(XMLobjective, hmf::optimization::functionname, mOptSettings.mObjectives.at(i).mFunctionName);
+        appendDomValueNode(XMLobjective, hmf::optimization::weight, mOptSettings.mObjectives.at(i).mWeight);
+        appendDomValueNode(XMLobjective, hmf::optimization::norm, mOptSettings.mObjectives.at(i).mNorm);
+        appendDomValueNode(XMLobjective, hmf::optimization::exp, mOptSettings.mObjectives.at(i).mExp);
 
-        QDomElement XMLObjectiveVariables = appendDomElement(XMLobjective, HMF_PLOTVARIABLES);
+        QDomElement XMLObjectiveVariables = appendDomElement(XMLobjective, hmf::sensitivityanalysis::plotvariables);
         if(!(mOptSettings.mObjectives.at(i).mVariableInfo.isEmpty()))
         {
             for(int j = 0; j < mOptSettings.mObjectives.at(i).mVariableInfo.size(); ++j)
             {
-                QDomElement XMLObjectiveVariable = appendDomElement(XMLObjectiveVariables, HMF_PLOTVARIABLE);
+                QDomElement XMLObjectiveVariable = appendDomElement(XMLObjectiveVariables, hmf::sensitivityanalysis::plotvariable);
                 appendDomTextNode(XMLObjectiveVariable, hmf::component, mOptSettings.mObjectives.at(i).mVariableInfo.at(j).at(0));
-                appendDomTextNode(XMLObjectiveVariable, HMF_PORTTAG, mOptSettings.mObjectives.at(i).mVariableInfo.at(j).at(1));
-                appendDomTextNode(XMLObjectiveVariable, HMF_PLOTVARIABLE, mOptSettings.mObjectives.at(i).mVariableInfo.at(j).at(2));
+                appendDomTextNode(XMLObjectiveVariable, hmf::port, mOptSettings.mObjectives.at(i).mVariableInfo.at(j).at(1));
+                appendDomTextNode(XMLObjectiveVariable, hmf::sensitivityanalysis::plotvariable, mOptSettings.mObjectives.at(i).mVariableInfo.at(j).at(2));
             }
         }
 
 
         if(!(mOptSettings.mObjectives.at(i).mData.isEmpty()))
         {
-            QDomElement XMLdata = appendDomElement(XMLobjective, HMF_DATA);
+            QDomElement XMLdata = appendDomElement(XMLobjective, hmf::optimization::data);
             for(int j = 0; j < mOptSettings.mObjectives.at(i).mData.size(); ++j)
             {
-                appendDomTextNode(XMLdata, HMF_PARAMETERTAG, mOptSettings.mObjectives.at(i).mData.at(j));
+                appendDomTextNode(XMLdata, hmf::parameter::root, mOptSettings.mObjectives.at(i).mData.at(j));
             }
         }
     }
@@ -4223,82 +4223,82 @@ void SystemObject::loadOptimizationSettingsFromDomElement(QDomElement &rDomEleme
 {
     qDebug() << rDomElement.toDocument().toString();
 
-    QDomElement settingsElement = rDomElement.firstChildElement(HMF_SETTINGS);
+    QDomElement settingsElement = rDomElement.firstChildElement(hmf::sensitivityanalysis::settings);
     if(!settingsElement.isNull())
     {
-        mOptSettings.mScriptFile = parseDomStringNode(settingsElement.firstChildElement(HMF_SCRIPTFILETAG), mOptSettings.mScriptFile);
-        mOptSettings.mNiter = parseDomIntegerNode(settingsElement.firstChildElement(HMF_ITERATIONS), mOptSettings.mNiter);
-        mOptSettings.mNsearchp = parseDomIntegerNode(settingsElement.firstChildElement(HMF_SEARCHPOINTS), mOptSettings.mNsearchp);
-        mOptSettings.mRefcoeff = parseDomValueNode(settingsElement.firstChildElement(HMF_REFLCOEFF), mOptSettings.mRefcoeff);
-        mOptSettings.mRandfac = parseDomValueNode(settingsElement.firstChildElement(HMF_RANDOMFACTOR), mOptSettings.mRandfac);
-        mOptSettings.mForgfac = parseDomValueNode(settingsElement.firstChildElement(HMF_FORGETTINGFACTOR), mOptSettings.mForgfac);
-        mOptSettings.mPartol = parseDomValueNode(settingsElement.firstChildElement(HMF_PARTOL), mOptSettings.mPartol);
-        mOptSettings.mPlot = parseDomBooleanNode(settingsElement.firstChildElement(HMF_PLOT), mOptSettings.mPlot);
-        mOptSettings.mSavecsv = parseDomBooleanNode(settingsElement.firstChildElement(HMF_SAVECSV), mOptSettings.mSavecsv);
-        mOptSettings.mFinalEval = parseDomBooleanNode(settingsElement.firstChildElement(HMF_FINALEVAL), mOptSettings.mFinalEval);
-        mOptSettings.mlogPar = parseDomBooleanNode(settingsElement.firstChildElement(HMF_LOGPAR), mOptSettings.mlogPar);
+        mOptSettings.mScriptFile = parseDomStringNode(settingsElement.firstChildElement(hmf::scriptfile), mOptSettings.mScriptFile);
+        mOptSettings.mNiter = parseDomIntegerNode(settingsElement.firstChildElement(hmf::sensitivityanalysis::iterations), mOptSettings.mNiter);
+        mOptSettings.mNsearchp = parseDomIntegerNode(settingsElement.firstChildElement(hmf::optimization::numberofsearchpoints), mOptSettings.mNsearchp);
+        mOptSettings.mRefcoeff = parseDomValueNode(settingsElement.firstChildElement(hmf::optimization::reflectioncoefficient), mOptSettings.mRefcoeff);
+        mOptSettings.mRandfac = parseDomValueNode(settingsElement.firstChildElement(hmf::optimization::randomfactor), mOptSettings.mRandfac);
+        mOptSettings.mForgfac = parseDomValueNode(settingsElement.firstChildElement(hmf::optimization::forgettingfactor), mOptSettings.mForgfac);
+        mOptSettings.mPartol = parseDomValueNode(settingsElement.firstChildElement(hmf::optimization::partol), mOptSettings.mPartol);
+        mOptSettings.mPlot = parseDomBooleanNode(settingsElement.firstChildElement(hmf::optimization::plot), mOptSettings.mPlot);
+        mOptSettings.mSavecsv = parseDomBooleanNode(settingsElement.firstChildElement(hmf::optimization::savecsv), mOptSettings.mSavecsv);
+        mOptSettings.mFinalEval = parseDomBooleanNode(settingsElement.firstChildElement(hmf::optimization::finaleval), mOptSettings.mFinalEval);
+        mOptSettings.mlogPar = parseDomBooleanNode(settingsElement.firstChildElement(hmf::optimization::logpar), mOptSettings.mlogPar);
     }
 
-    QDomElement parametersElement = rDomElement.firstChildElement(HMF_PARAMETERS);
+    QDomElement parametersElement = rDomElement.firstChildElement(hmf::parameters);
     if(!parametersElement.isNull())
     {
-        QDomElement parameterElement = parametersElement.firstChildElement(HMF_PARAMETERTAG);
+        QDomElement parameterElement = parametersElement.firstChildElement(hmf::parameter::root);
         while (!parameterElement.isNull())
         {
             OptParameter parameter;
             parameter.mComponentName = parameterElement.firstChildElement(hmf::component).text();
-            parameter.mParameterName = parameterElement.firstChildElement(HMF_PARAMETERTAG).text();
-            parseDomValueNode2(parameterElement.firstChildElement(HMF_MINMAX), parameter.mMin, parameter.mMax);
+            parameter.mParameterName = parameterElement.firstChildElement(hmf::parameter::root).text();
+            parseDomValueNode2(parameterElement.firstChildElement(hmf::sensitivityanalysis::minmax), parameter.mMin, parameter.mMax);
             mOptSettings.mParamters.append(parameter);
 
-            parameterElement = parameterElement.nextSiblingElement(HMF_PARAMETERTAG);
+            parameterElement = parameterElement.nextSiblingElement(hmf::parameter::root);
         }
     }
 
-    QDomElement objectivesElement = rDomElement.firstChildElement(HMF_OBJECTIVES);
+    QDomElement objectivesElement = rDomElement.firstChildElement(hmf::optimization::objectives);
     if(!objectivesElement.isNull())
     {
-        QDomElement objElement = objectivesElement.firstChildElement(HMF_OBJECTIVE);
+        QDomElement objElement = objectivesElement.firstChildElement(hmf::optimization::objective);
         while (!objElement.isNull())
         {
             Objectives objectives;
 
-            objectives.mFunctionName = objElement.firstChildElement(HMF_FUNCNAME).text();
-            objectives.mWeight = objElement.firstChildElement(HMF_WEIGHT).text().toDouble();
-            objectives.mNorm = objElement.firstChildElement(HMF_NORM).text().toDouble();
-            objectives.mExp = objElement.firstChildElement(HMF_EXP).text().toDouble();
+            objectives.mFunctionName = objElement.firstChildElement(hmf::optimization::functionname).text();
+            objectives.mWeight = objElement.firstChildElement(hmf::optimization::weight).text().toDouble();
+            objectives.mNorm = objElement.firstChildElement(hmf::optimization::norm).text().toDouble();
+            objectives.mExp = objElement.firstChildElement(hmf::optimization::exp).text().toDouble();
 
-            QDomElement variablesElement = objElement.firstChildElement(HMF_PLOTVARIABLES);
+            QDomElement variablesElement = objElement.firstChildElement(hmf::sensitivityanalysis::plotvariables);
             if(!variablesElement.isNull())
             {
-                QDomElement varElement = variablesElement.firstChildElement(HMF_PLOTVARIABLE);
+                QDomElement varElement = variablesElement.firstChildElement(hmf::sensitivityanalysis::plotvariable);
                 while (!varElement.isNull())
                 {
                     QStringList variableInfo;
 
                     variableInfo.append(varElement.firstChildElement(hmf::component).text());
-                    variableInfo.append(varElement.firstChildElement(HMF_PORTTAG).text());
-                    variableInfo.append(varElement.firstChildElement(HMF_PLOTVARIABLE).text());
+                    variableInfo.append(varElement.firstChildElement(hmf::port).text());
+                    variableInfo.append(varElement.firstChildElement(hmf::sensitivityanalysis::plotvariable).text());
 
                     objectives.mVariableInfo.append(variableInfo);
 
-                    varElement = varElement.nextSiblingElement(HMF_PLOTVARIABLE);
+                    varElement = varElement.nextSiblingElement(hmf::sensitivityanalysis::plotvariable);
                 }
             }
 
-            QDomElement dataElement = objElement.firstChildElement(HMF_DATA);
+            QDomElement dataElement = objElement.firstChildElement(hmf::optimization::data);
             if(!dataElement.isNull())
             {
-                QDomElement parElement = dataElement.firstChildElement(HMF_PARAMETERTAG);
+                QDomElement parElement = dataElement.firstChildElement(hmf::parameter::root);
                 while (!parElement.isNull())
                 {
                     objectives.mData.append(parElement.text());
 
-                    parElement = parElement.nextSiblingElement(HMF_PARAMETERTAG);
+                    parElement = parElement.nextSiblingElement(hmf::parameter::root);
                 }
             }
 
-            objElement = objElement.nextSiblingElement(HMF_OBJECTIVE);
+            objElement = objElement.nextSiblingElement(hmf::optimization::objective);
 
             mOptSettings.mObjectives.append(objectives);
         }
@@ -4337,8 +4337,8 @@ QDomElement SystemObject::saveGuiDataToDomElement(QDomElement &rDomElement)
     QDomElement guiStuff = ModelObject::saveGuiDataToDomElement(rDomElement);
 
     //Save animation disabled setting
-    QDomElement animationElement = guiStuff.firstChildElement(HMF_ANIMATION);
-    animationElement.setAttribute(HMF_DISABLEDTAG, bool2str(mAnimationDisabled));
+    QDomElement animationElement = guiStuff.firstChildElement(hmf::animation);
+    animationElement.setAttribute(hmf::appearance::disabled, bool2str(mAnimationDisabled));
 
     //Should we try to append appearancedata stuff, we don't want this in external systems as they contain their own appearance
     if (mLoadType!="EXTERNAL")
@@ -4348,25 +4348,25 @@ QDomElement SystemObject::saveGuiDataToDomElement(QDomElement &rDomElement)
         getModelInfo(author, email, affiliation, description);
         if (!(author.isEmpty() && email.isEmpty() && affiliation.isEmpty() && description.isEmpty()))
         {
-            QDomElement infoElement = appendDomElement(guiStuff, HMF_INFOTAG);
-            appendDomTextNode(infoElement, HMF_AUTHORTAG, author);
-            appendDomTextNode(infoElement, HMF_EMAILTAG, email);
-            appendDomTextNode(infoElement, HMF_AFFILIATIONTAG, affiliation);
-            appendDomTextNode(infoElement, HMF_DESCRIPTIONTAG, description);
+            QDomElement infoElement = appendDomElement(guiStuff, hmf::modelinfo::root);
+            appendDomTextNode(infoElement, hmf::modelinfo::author, author);
+            appendDomTextNode(infoElement, hmf::modelinfo::email, email);
+            appendDomTextNode(infoElement, hmf::modelinfo::affiliation, affiliation);
+            appendDomTextNode(infoElement, hmf::modelinfo::description, description);
         }
 
         GraphicsViewPort vp = this->getGraphicsViewport();
         appendViewPortTag(guiStuff, vp.mCenter.x(), vp.mCenter.y(), vp.mZoom);
 
-        QDomElement portsHiddenElement = appendDomElement(guiStuff, HMF_PORTSTAG);
+        QDomElement portsHiddenElement = appendDomElement(guiStuff, hmf::ports);
         portsHiddenElement.setAttribute("hidden", !mShowSubComponentPorts);
-        QDomElement namesHiddenElement = appendDomElement(guiStuff, HMF_NAMESTAG);
+        QDomElement namesHiddenElement = appendDomElement(guiStuff, hmf::names);
         namesHiddenElement.setAttribute("hidden", !mShowSubComponentNames);
 
         QString gfxType = "iso";
         if(mGfxType == UserGraphics)
             gfxType = "user";
-        QDomElement gfxTypeElement = appendDomElement(guiStuff, HMF_GFXTAG);
+        QDomElement gfxTypeElement = appendDomElement(guiStuff, hmf::appearance::graphics);
         gfxTypeElement.setAttribute("type", gfxType);
 
         this->refreshExternalPortsAppearanceAndPosition();
@@ -4494,7 +4494,7 @@ void SystemObject::saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT 
             }
 
                 //Save the connectors
-            QDomElement xmlConnections = appendDomElement(xmlSubsystem, HMF_CONNECTIONS);
+            QDomElement xmlConnections = appendDomElement(xmlSubsystem, hmf::connections);
             for(int i=0; i<mSubConnectorList.size(); ++i)
             {
                 mSubConnectorList[i]->saveToDomElement(xmlConnections);
@@ -4536,60 +4536,60 @@ void SystemObject::saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT 
 void SystemObject::loadFromDomElement(QDomElement domElement)
 {
     // Loop back up to root level to get version numbers
-    QString hmfFormatVersion = domElement.ownerDocument().firstChildElement(hmf::root).attribute(HMF_VERSIONTAG, "0");
-    QString coreHmfVersion = domElement.ownerDocument().firstChildElement(hmf::root).attribute(HMF_HOPSANCOREVERSIONTAG, "0");
+    QString hmfFormatVersion = domElement.ownerDocument().firstChildElement(hmf::root).attribute(hmf::version::hmf, "0");
+    QString coreHmfVersion = domElement.ownerDocument().firstChildElement(hmf::root).attribute(hmf::version::hopsancore, "0");
 
     // Check if the subsystem is external or internal, and load appropriately
-    QString external_path = domElement.attribute(HMF_EXTERNALPATHTAG);
+    QString external_path = domElement.attribute(hmf::externalpath);
     if (external_path.isEmpty())
     {
         // Load embedded subsystem
         // 0. Load core and gui stuff
         //! @todo might need some error checking here in case some fields are missing
         // Now load the core specific data, might need inherited function for this
-        this->setName(domElement.attribute(HMF_NAMETAG));
+        this->setName(domElement.attribute(hmf::name));
 
         // Load the NumHop script
-        setNumHopScript(parseDomStringNode(domElement.firstChildElement(HMF_NUMHOPSCRIPT), ""));
+        setNumHopScript(parseDomStringNode(domElement.firstChildElement(hmf::numhopscript), ""));
 
         // Begin loading GUI stuff like appearance data and viewport
-        QDomElement guiStuff = domElement.firstChildElement(HMF_HOPSANGUITAG);
-        mModelObjectAppearance.readFromDomElement(guiStuff.firstChildElement(CAF_ROOT).firstChildElement(CAF_MODELOBJECT));
+        QDomElement guiStuff = domElement.firstChildElement(hmf::hopsangui);
+        mModelObjectAppearance.readFromDomElement(guiStuff.firstChildElement(caf::root).firstChildElement(caf::modelobject));
         refreshDisplayName(); // This must be done because in some occasions the loadAppearanceData line above will overwrite the correct name
 
-        QDomElement animationElement = guiStuff.firstChildElement(HMF_ANIMATION);
+        QDomElement animationElement = guiStuff.firstChildElement(hmf::animation);
         bool animationDisabled = false;
         if(!animationElement.isNull())
         {
-            animationDisabled = parseAttributeBool(animationElement, HMF_DISABLEDTAG, false);
+            animationDisabled = parseAttributeBool(animationElement, hmf::appearance::disabled, false);
         }
         setAnimationDisabled(animationDisabled);
 
         // Load system/model info
-        QDomElement infoElement = domElement.parentNode().firstChildElement(HMF_INFOTAG); //!< @deprecated info tag is in the system from 0.7.5 an onwards, this line loads from old models
+        QDomElement infoElement = domElement.parentNode().firstChildElement(hmf::modelinfo::root); //!< @deprecated info tag is in the system from 0.7.5 an onwards, this line loads from old models
         if (infoElement.isNull())
         {
-            infoElement = guiStuff.firstChildElement(HMF_INFOTAG);
+            infoElement = guiStuff.firstChildElement(hmf::modelinfo::root);
         }
         if(!infoElement.isNull())
         {
             QString author, email, affiliation, description;
-            QDomElement authorElement = infoElement.firstChildElement(HMF_AUTHORTAG);
+            QDomElement authorElement = infoElement.firstChildElement(hmf::modelinfo::author);
             if(!authorElement.isNull())
             {
                 author = authorElement.text();
             }
-            QDomElement emailElement = infoElement.firstChildElement(HMF_EMAILTAG);
+            QDomElement emailElement = infoElement.firstChildElement(hmf::modelinfo::email);
             if(!emailElement.isNull())
             {
                 email = emailElement.text();
             }
-            QDomElement affiliationElement = infoElement.firstChildElement(HMF_AFFILIATIONTAG);
+            QDomElement affiliationElement = infoElement.firstChildElement(hmf::modelinfo::affiliation);
             if(!affiliationElement.isNull())
             {
                 affiliation = affiliationElement.text();
             }
-            QDomElement descriptionElement = infoElement.firstChildElement(HMF_DESCRIPTIONTAG);
+            QDomElement descriptionElement = infoElement.firstChildElement(hmf::modelinfo::description);
             if(!descriptionElement.isNull())
             {
                 description = descriptionElement.text();
@@ -4619,22 +4619,22 @@ void SystemObject::loadFromDomElement(QDomElement domElement)
         }
 
         // Continue loading GUI stuff like appearance data and viewport
-        this->mShowSubComponentNames = !parseAttributeBool(guiStuff.firstChildElement(HMF_NAMESTAG),"hidden",true);
-        this->mShowSubComponentPorts = !parseAttributeBool(guiStuff.firstChildElement(HMF_PORTSTAG),"hidden",true);
-        QString gfxType = guiStuff.firstChildElement(HMF_GFXTAG).attribute("type");
+        this->mShowSubComponentNames = !parseAttributeBool(guiStuff.firstChildElement(hmf::names),"hidden",true);
+        this->mShowSubComponentPorts = !parseAttributeBool(guiStuff.firstChildElement(hmf::ports),"hidden",true);
+        QString gfxType = guiStuff.firstChildElement(hmf::appearance::graphics).attribute("type");
         if(gfxType == "user") { mGfxType = UserGraphics; }
         else if(gfxType == "iso") { mGfxType = ISOGraphics; }
         //! @todo these two should not be set here
         gpToggleNamesAction->setChecked(mShowSubComponentNames);
         gpTogglePortsAction->setChecked(mShowSubComponentPorts);
-        double x = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("x").toDouble();
-        double y = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("y").toDouble();
-        double zoom = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("zoom").toDouble();
+        double x = guiStuff.firstChildElement(hmf::appearance::viewport).attribute("x").toDouble();
+        double y = guiStuff.firstChildElement(hmf::appearance::viewport).attribute("y").toDouble();
+        double zoom = guiStuff.firstChildElement(hmf::appearance::viewport).attribute("zoom").toDouble();
 
         bool dontClearUndo = false;
-        if(!guiStuff.firstChildElement(HMF_UNDO).isNull())
+        if(!guiStuff.firstChildElement(hmf::undo).isNull())
         {
-            QDomElement undoElement = guiStuff.firstChildElement(HMF_UNDO);
+            QDomElement undoElement = guiStuff.firstChildElement(hmf::undo);
             mpUndoStack->fromXml(undoElement);
             dontClearUndo = true;
             mSaveUndoStack = true;      //Set save undo stack setting to true if loading a hmf file with undo stack saved
@@ -4651,16 +4651,16 @@ void SystemObject::loadFromDomElement(QDomElement domElement)
         //Load simulation time
         QString startT,stepT,stopT;
         bool inheritTs;
-        parseSimulationTimeTag(domElement.firstChildElement(HMF_SIMULATIONTIMETAG), startT, stepT, stopT, inheritTs);
+        parseSimulationTimeTag(domElement.firstChildElement(hmf::simulationtime), startT, stepT, stopT, inheritTs);
         this->setTimeStep(stepT.toDouble());
         mpCoreSystemAccess->setInheritTimeStep(inheritTs);
 
         // Load number of log samples
-        parseLogSettingsTag(domElement.firstChildElement(HMF_SIMULATIONLOGSETTINGS), mLogStartTime, mNumberOfLogSamples);
+        parseLogSettingsTag(domElement.firstChildElement(hmf::simulationlogsettings), mLogStartTime, mNumberOfLogSamples);
         //! @deprecated 20131002 we keep this below for backwards compatibility for a while
-        if(domElement.hasAttribute(HMF_LOGSAMPLES))
+        if(domElement.hasAttribute(hmf::logsamples))
         {
-            mNumberOfLogSamples = domElement.attribute(HMF_LOGSAMPLES).toInt();
+            mNumberOfLogSamples = domElement.attribute(hmf::logsamples).toInt();
         }
 
         // Only set start stop time for the top level system
@@ -4673,12 +4673,12 @@ void SystemObject::loadFromDomElement(QDomElement domElement)
         updateHmfSystemProperties(domElement, hmfFormatVersion, coreHmfVersion);
 
         //1. Load global parameters
-        QDomElement xmlParameters = domElement.firstChildElement(HMF_PARAMETERS);
-        QDomElement xmlSubObject = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
+        QDomElement xmlParameters = domElement.firstChildElement(hmf::parameters);
+        QDomElement xmlSubObject = xmlParameters.firstChildElement(hmf::parameter::root);
         while (!xmlSubObject.isNull())
         {
             loadSystemParameter(xmlSubObject, true, hmfFormatVersion, this);
-            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_PARAMETERTAG);
+            xmlSubObject = xmlSubObject.nextSiblingElement(hmf::parameter::root);
         }
 
         //2. Load all sub-components
@@ -4692,14 +4692,14 @@ void SystemObject::loadFromDomElement(QDomElement domElement)
             if(pObj == nullptr)
             {
                 gpMessageHandler->addErrorMessage(QString("Model contains component from a library that has not been loaded. TypeName: ") +
-                                                                    xmlSubObject.attribute(HMF_TYPENAME) + QString(", Name: ") + xmlSubObject.attribute(HMF_NAMETAG));
+                                                                    xmlSubObject.attribute(hmf::typenametag) + QString(", Name: ") + xmlSubObject.attribute(hmf::name));
 
                 // Insert missing component dummy instead
-                QString typeName = xmlSubObject.attribute(HMF_TYPENAME);
-                xmlSubObject.setAttribute(HMF_TYPENAME, "MissingComponent");
-                xmlSubObject.setAttribute(HMF_SUBTYPENAME, "");
+                QString typeName = xmlSubObject.attribute(hmf::typenametag);
+                xmlSubObject.setAttribute(hmf::typenametag, "MissingComponent");
+                xmlSubObject.setAttribute(hmf::subtypename, "");
                 pObj = loadModelObject(xmlSubObject, this, NoUndo);
-                xmlSubObject.setAttribute(HMF_TYPENAME, typeName);
+                xmlSubObject.setAttribute(hmf::typenametag, typeName);
                 pObj->setFallbackDomElement(xmlSubObject);
             }
             else
@@ -4709,12 +4709,12 @@ void SystemObject::loadFromDomElement(QDomElement domElement)
 
                 //! @deprecated This StartValue load code is only kept for up converting old files, we should keep it here until we have some other way of up converting old formats
                 //Load start values //Is not needed, start values are saved as ordinary parameters! This code snippet can probably be removed.
-                QDomElement xmlStartValues = xmlSubObject.firstChildElement(HMF_STARTVALUES);
-                QDomElement xmlStartValue = xmlStartValues.firstChildElement(HMF_STARTVALUE);
+                QDomElement xmlStartValues = xmlSubObject.firstChildElement(hmf::startvalues);
+                QDomElement xmlStartValue = xmlStartValues.firstChildElement(hmf::startvalue);
                 while (!xmlStartValue.isNull())
                 {
                     loadStartValue(xmlStartValue, pObj, NoUndo);
-                    xmlStartValue = xmlStartValue.nextSiblingElement(HMF_STARTVALUE);
+                    xmlStartValue = xmlStartValue.nextSiblingElement(hmf::startvalue);
                 }
             }
             if(xmlSubObject.attribute("volunector") == "true")
@@ -4726,19 +4726,19 @@ void SystemObject::loadFromDomElement(QDomElement domElement)
         }
 
         //3. Load all text box widgets
-        xmlSubObject = xmlSubObjects.firstChildElement(HMF_TEXTBOXWIDGETTAG);
+        xmlSubObject = xmlSubObjects.firstChildElement(hmf::widget::textboxwidget);
         while (!xmlSubObject.isNull())
         {
             loadTextBoxWidget(xmlSubObject, this, NoUndo);
-            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_TEXTBOXWIDGETTAG);
+            xmlSubObject = xmlSubObject.nextSiblingElement(hmf::widget::textboxwidget);
         }
 
         //4. Load all image widgets
-        xmlSubObject = xmlSubObjects.firstChildElement(hmf::imagewidget);
+        xmlSubObject = xmlSubObjects.firstChildElement(hmf::widget::imagewidget);
         while (!xmlSubObject.isNull())
         {
             loadImageWidget(xmlSubObject, this, NoUndo);
-            xmlSubObject = xmlSubObject.nextSiblingElement(hmf::imagewidget);
+            xmlSubObject = xmlSubObject.nextSiblingElement(hmf::widget::imagewidget);
         }
 
         //5. Load all sub-systems
@@ -4758,8 +4758,8 @@ void SystemObject::loadFromDomElement(QDomElement domElement)
         }
 
         //7. Load all connectors
-        QDomElement xmlConnections = domElement.firstChildElement(HMF_CONNECTIONS);
-        xmlSubObject = xmlConnections.firstChildElement(HMF_CONNECTORTAG);
+        QDomElement xmlConnections = domElement.firstChildElement(hmf::connections);
+        xmlSubObject = xmlConnections.firstChildElement(hmf::connector::root);
         QList<QDomElement> failedConnections;
         while (!xmlSubObject.isNull())
         {
@@ -4767,7 +4767,7 @@ void SystemObject::loadFromDomElement(QDomElement domElement)
             {
 //                failedConnections.append(xmlSubObject);
             }
-            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_CONNECTORTAG);
+            xmlSubObject = xmlSubObject.nextSiblingElement(hmf::connector::root);
         }
 //        //If some connectors failed to load, it could mean that they were loaded in wrong order.
 //        //Try again until they work, or abort if number of attempts are greater than maximum possible for success.
@@ -4786,38 +4786,38 @@ void SystemObject::loadFromDomElement(QDomElement domElement)
 
 
         //8. Load system parameters again in case we need to reregister system port start values
-        xmlParameters = domElement.firstChildElement(HMF_PARAMETERS);
-        xmlSubObject = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
+        xmlParameters = domElement.firstChildElement(hmf::parameters);
+        xmlSubObject = xmlParameters.firstChildElement(hmf::parameter::root);
         while (!xmlSubObject.isNull())
         {
             loadSystemParameter(xmlSubObject, false, hmfFormatVersion, this);
-            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_PARAMETERTAG);
+            xmlSubObject = xmlSubObject.nextSiblingElement(hmf::parameter::root);
         }
 
         //9. Load plot variable aliases
-        QDomElement xmlAliases = domElement.firstChildElement(HMF_ALIASES);
-        QDomElement xmlAlias = xmlAliases.firstChildElement(HMF_ALIAS);
+        QDomElement xmlAliases = domElement.firstChildElement(hmf::aliases);
+        QDomElement xmlAlias = xmlAliases.firstChildElement(hmf::alias);
         while (!xmlAlias.isNull())
         {
             loadPlotAlias(xmlAlias, this);
-            xmlAlias = xmlAlias.nextSiblingElement(HMF_ALIAS);
+            xmlAlias = xmlAlias.nextSiblingElement(hmf::alias);
         }
 
         //9.1 Load plot variable aliases
         //! @deprecated Remove in the future when hmf format stabilized and everyone has upgraded
-        xmlSubObject = xmlParameters.firstChildElement(HMF_ALIAS);
+        xmlSubObject = xmlParameters.firstChildElement(hmf::alias);
         while (!xmlSubObject.isNull())
         {
             loadPlotAlias(xmlSubObject, this);
-            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_ALIAS);
+            xmlSubObject = xmlSubObject.nextSiblingElement(hmf::alias);
         }
 
         //10. Load optimization settings
-        xmlSubObject = guiStuff.firstChildElement(HMF_OPTIMIZATION);
+        xmlSubObject = guiStuff.firstChildElement(hmf::optimization::root);
         loadOptimizationSettingsFromDomElement(xmlSubObject);
 
         //11. Load sensitivity analysis settings
-        xmlSubObject = guiStuff.firstChildElement(HMF_SENSITIVITYANALYSIS);
+        xmlSubObject = guiStuff.firstChildElement(hmf::sensitivityanalysis::root);
         loadSensitivityAnalysisSettingsFromDomElement(xmlSubObject);
 
 
@@ -4917,9 +4917,9 @@ void SystemObject::setModelFileInfo(QFile &rFile, const QString relModelPath)
 void SystemObject::loadParameterValuesFromFile(QString parameterFile)
 {
     if(parameterFile.isEmpty()) {
-        QString openLocation = gpConfig->getStringSetting(CFG_PARAMETERIMPORTDIR);
+        QString openLocation = gpConfig->getStringSetting(cfg::dir::parameterimport);
         if (openLocation.isEmpty()) {
-            openLocation = gpConfig->getStringSetting(CFG_LOADMODELDIR);
+            openLocation = gpConfig->getStringSetting(cfg::dir::loadmodel);
         }
         parameterFile = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Load Parameter File"),
                                                      openLocation,
@@ -4933,7 +4933,7 @@ void SystemObject::loadParameterValuesFromFile(QString parameterFile)
             // Trigger system parameter widget refresh, regardless if any system parameters actually changed
             emit systemParametersChanged();
         }
-        gpConfig->setStringSetting(CFG_PARAMETERIMPORTDIR,  QFileInfo(parameterFile).absolutePath());
+        gpConfig->setStringSetting(cfg::dir::parameterimport,  QFileInfo(parameterFile).absolutePath());
     }
     emit checkMessages();
 }

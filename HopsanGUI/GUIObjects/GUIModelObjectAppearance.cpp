@@ -43,103 +43,89 @@
 
 #include <QIcon>
 
-// ========== Defines for load/save common strings ==========
-#define CAF_TYPENAME "typename"
-#define CAF_SUBTYPENAME "subtypename"
-#define CAF_TYPE "type"
-#define CAF_DISPLAYNAME "displayname"
-#define CAF_SOURCECODE "sourcecode"
-#define CAF_LIBPATH "libpath"
-#define CAF_RECOMPILABLE "recompilable"
-#define CAF_NAME "name"
-#define CAF_IDX "idx"
-
-#define CAF_HMFFILE "hmffile"
-
-#define CAF_ICON "icon"
-#define CAF_ICONS "icons"
-#define CAF_PATH "path"
-#define CAF_SCALE "scale"
-#define CAF_ICONROTATION "iconrotation"
-#define CAF_USERPATH "userpath"
-#define CAF_ISOPATH "isopath"
-#define CAF_USERSCALE "userscale"
-#define CAF_ISOSCALE "isoscale"
-
-#define CAF_HELP "help"
-#define CAF_HELPTEXT "text"
-#define CAF_HELPPICTURE "picture"
-#define CAF_HELPLINK "link"
-#define CAF_HELPHTML "html"
-#define CAF_HELPMARKDOWN "md"
-
 namespace caf {
     constexpr auto name = "name";
     constexpr auto path = "path";
     constexpr auto parametersets = "parametersets";
     constexpr auto parameterset = "parameterset";
+    constexpr auto typenametag = "typename";
+    constexpr auto subtypename = "subtypename";
+    constexpr auto type = "type";
+    constexpr auto displayname = "displayname";
+    constexpr auto sourcecode = "sourcecode";
+    constexpr auto libpath = "libpath";
+    constexpr auto recompilable = "recompilable";
+    constexpr auto idx = "idx";
+    constexpr auto hmffile = "hmffile";
+    constexpr auto icon = "icon";
+    constexpr auto icons = "icons";
+    constexpr auto scale = "scale";
+    constexpr auto iconrotation = "iconrotation";
+    constexpr auto userpath = "userpath";
+    constexpr auto isopath = "isopath";
+    constexpr auto userscasle = "userscale";
+    constexpr auto isoscale = "isoscale";
+    constexpr auto parameters = "defaultparameters";
+    constexpr auto parameter = "parameter";
+    constexpr auto hidden = "hidden";
+    constexpr auto ports = "ports";
+    constexpr auto port = "port";
+    constexpr auto portpositions = "portpositions";
+    constexpr auto portpose = "portpose";
+    constexpr auto replacables = "replacables";
+    constexpr auto replacable = "replacable";
+    constexpr auto autoplaced = "autoplaced";
+    constexpr auto enabled = "enabled";
+    namespace help {
+        constexpr auto root = "help";
+        constexpr auto text = "text";
+        constexpr auto picture = "picture";
+        constexpr auto link = "link";
+        constexpr auto html = "html";
+        constexpr auto markdown = "md";
+    }
+    namespace animation {
+        constexpr auto root = "animation";
+        constexpr auto adjustable = "adjustable";
+        constexpr auto xgain = "xgain";
+        constexpr auto ygain = "ygain";
+        constexpr auto switchable = "switchable";
+        constexpr auto momentary = "momentary";
+        constexpr auto indicator = "indicator";
+        constexpr auto portname = "portname";
+        constexpr auto startx = "startx";
+        constexpr auto starty = "starty";
+        constexpr auto movingport = "movingport";
+        constexpr auto relative = "relative";
+        constexpr auto movable = "movable";
+        constexpr auto hideicon = "hideicon";
+        constexpr auto dataname = "dataname";
+        constexpr auto onvalue = "onvalue";
+        constexpr auto offvalue = "offvalue";
+        constexpr auto xmin = "xmin";
+        constexpr auto xmax = "xmax";
+        constexpr auto ymin = "ymin";
+        constexpr auto ymax = "ymax"     ;
+        constexpr auto multiplier = "multiplier";
+        constexpr auto divisor = "divisor";
+        constexpr auto start = "start";
+        constexpr auto movement = "movement";
+        constexpr auto initscale = "initscale";
+        constexpr auto resize = "resize";
+        constexpr auto initcolor = "initcolor";
+        constexpr auto color = "color";
+        constexpr auto transformorigin = "transformorigin";
+        constexpr auto flowspeed = "flowspeed";
+        constexpr auto hydraulicminpressure = "hydraulicminpressure";
+        constexpr auto hydraulicmaxpressure = "hydraulicmaxpressure";
+    }
 }
-
-#define CAF_PARAMETERS "defaultparameters"
-#define CAF_PARAMETER "parameter"
-#define CAF_NAME "name"
-#define CAF_HIDDEN "hidden"
-
-#define CAF_PORTS "ports"
-#define CAF_PORT "port"
-#define CAF_DESCRIPTION "description"
-#define CAF_PORTPOSITIONS "portpositions"
-#define CAF_PORTPOSE "portpose"
-
-#define CAF_REPLACABLES "replacables"
-#define CAF_REPLACABLE "replacable"
-
-#define CAF_AUTOPLACED "autoplaced"
-#define CAF_ENABLED "enabled"
-
-#define CAF_ANIMATION "animation"
-
-#define CAF_DATANAME "dataname"
-#define CAF_ONVALUE "onvalue"
-#define CAF_OFFVALUE "offvalue"
-#define CAF_XMIN "xmin"
-#define CAF_XMAX "xmax"
-#define CAF_YMIN "ymin"
-#define CAF_YMAX "ymax"
-
-#define CAF_MULTIPLIER "multiplier"
-#define CAF_DIVISOR "divisor"
-#define CAF_START "start"
-#define CAF_MOVEMENT "movement"
-#define CAF_INITSCALE "initscale"
-#define CAF_RESIZE "resize"
-#define CAF_INITCOLOR "initcolor"
-#define CAF_COLOR "color"
-#define CAF_TRANSFORMORIGIN "transformorigin"
-#define CAF_FLOWSPEED "flowspeed"
-#define CAF_HYDRAULICMINPRESSURE "hydraulicminpressure"
-#define CAF_HYDRAULICMAXPRESSURE "hydraulicmaxpressure"
-
-#define CAF_ADJUSTABLE "adjustable"
-#define CAF_XGAIN "xgain"
-#define CAF_YGAIN "ygain"
-#define CAF_SWITCHABLE "switchable"
-#define CAF_MOMENTARY "momentary"
-#define CAF_INDICATOR "indicator"
-#define CAF_PORTNAME "portname"
-#define CAF_STARTX "startx"
-#define CAF_STARTY "starty"
-#define CAF_MOVINGPORT "movingport"
-#define CAF_RELATIVE "relative"
-#define CAF_MOVABLE "movable"
-#define CAF_HIDEICON "hideicon"
-
 
 // =============== Help Functions ===============
 QDomElement appendOrGetCAFRootTag(QDomElement parentElement)
 {
-   QDomElement cafroot = getOrAppendNewDomElement(parentElement, CAF_ROOT);
-   cafroot.setAttribute(CAF_VERSION, CAF_VERSIONNUM);
+   QDomElement cafroot = getOrAppendNewDomElement(parentElement, caf::root);
+   cafroot.setAttribute(caf::version, CAF_VERSIONNUM);
    return cafroot;
 }
 
@@ -152,7 +138,7 @@ QDomElement appendOrGetCAFRootTag(QDomElement parentElement)
 //! @deprecated Only use for loading old version files
 void parsePortPoseTag(QDomElement domElement, QString &rName, double &rX, double &rY, double &rTheta)
 {
-    rName = domElement.attribute(CAF_NAME);
+    rName = domElement.attribute(caf::name);
     bool dummy;
     parsePoseTag(domElement, rX, rY, rTheta, dummy);
 }
@@ -163,26 +149,26 @@ void parsePortPoseTag(QDomElement domElement, QString &rName, double &rX, double
 //! @param [in] rPortAppearance Reference to PortAppearance object to be written
 void appendPortDomElement(QDomElement &rDomElement, const QString portName, const PortAppearance &rPortAppearance)
 {
-    QDomElement xmlPort = appendDomElement(rDomElement, CAF_PORT);
-    xmlPort.setAttribute(CAF_NAME, portName);
+    QDomElement xmlPort = appendDomElement(rDomElement, caf::port);
+    xmlPort.setAttribute(caf::name, portName);
     setQrealAttribute(xmlPort, "x", rPortAppearance.x, 10, 'g');
     setQrealAttribute(xmlPort, "y", rPortAppearance.y, 10, 'g');
     setQrealAttribute(xmlPort, "a", rPortAppearance.rot, 6, 'g');
     if(rPortAppearance.mAutoPlaced)
     {
-        xmlPort.setAttribute(CAF_AUTOPLACED, HMF_TRUETAG);
+        xmlPort.setAttribute(caf::autoplaced, hmf::truetag);
     }
     else
     {
-        xmlPort.setAttribute(CAF_AUTOPLACED, HMF_FALSETAG);
+        xmlPort.setAttribute(caf::autoplaced, hmf::falsetag);
     }
     if(rPortAppearance.mEnabled)
     {
-        xmlPort.setAttribute(CAF_ENABLED, HMF_TRUETAG);
+        xmlPort.setAttribute(caf::enabled, hmf::truetag);
     }
     else
     {
-        xmlPort.setAttribute(CAF_ENABLED, HMF_FALSETAG);
+        xmlPort.setAttribute(caf::enabled, hmf::falsetag);
     }
 }
 
@@ -192,13 +178,13 @@ void appendPortDomElement(QDomElement &rDomElement, const QString portName, cons
 //! @param [out] rPortAppearance Reference to PortAppearance object that will contain parsed data
 void parsePortDomElement(QDomElement domElement, QString &rPortName, PortAppearance &rPortAppearance)
 {
-    rPortName = domElement.attribute(CAF_NAME);
+    rPortName = domElement.attribute(caf::name);
     rPortAppearance.x = parseAttributeQreal(domElement, "x", 0);
     rPortAppearance.y = parseAttributeQreal(domElement, "y", 0);
     rPortAppearance.rot = parseAttributeQreal(domElement, "a", 0);
 
-    rPortAppearance.mAutoPlaced = parseAttributeBool(domElement, CAF_AUTOPLACED, true);
-    rPortAppearance.mEnabled = parseAttributeBool(domElement, CAF_ENABLED, true);
+    rPortAppearance.mAutoPlaced = parseAttributeBool(domElement, caf::autoplaced, true);
+    rPortAppearance.mEnabled = parseAttributeBool(domElement, caf::enabled, true);
 }
 
 
@@ -219,10 +205,10 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
 {
     if(!rDomElement.isNull())
     {
-        QDomElement iconElement = rDomElement.firstChildElement(CAF_ICON);
+        QDomElement iconElement = rDomElement.firstChildElement(caf::icon);
         if(!iconElement.isNull())
         {
-            baseIconPath = iconElement.attribute(CAF_USERPATH);
+            baseIconPath = iconElement.attribute(caf::userpath);
         }
 
         QFileInfo baseIconFileInfo(baseIconPath);
@@ -232,34 +218,34 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
             baseIconPath = baseIconFileInfo.absoluteFilePath();
         }
 
-        if(rDomElement.hasAttribute(CAF_FLOWSPEED))
+        if(rDomElement.hasAttribute(caf::animation::flowspeed))
         {
-            flowSpeed = rDomElement.attribute(CAF_FLOWSPEED).toDouble();
+            flowSpeed = rDomElement.attribute(caf::animation::flowspeed).toDouble();
         }
         else
         {
             flowSpeed = 100;
         }
 
-        if(rDomElement.hasAttribute(CAF_HYDRAULICMINPRESSURE))
+        if(rDomElement.hasAttribute(caf::animation::hydraulicminpressure))
         {
-            hydraulicMinPressure = rDomElement.attribute(CAF_HYDRAULICMINPRESSURE).toDouble();
+            hydraulicMinPressure = rDomElement.attribute(caf::animation::hydraulicminpressure).toDouble();
         }
         else
         {
             hydraulicMinPressure = 0;
         }
 
-        if(rDomElement.hasAttribute(CAF_HYDRAULICMAXPRESSURE))
+        if(rDomElement.hasAttribute(caf::animation::hydraulicmaxpressure))
         {
-            hydraulicMaxPressure = rDomElement.attribute(CAF_HYDRAULICMAXPRESSURE).toDouble();
+            hydraulicMaxPressure = rDomElement.attribute(caf::animation::hydraulicmaxpressure).toDouble();
         }
         else
         {
             hydraulicMaxPressure = 2e7;
         }
 
-        QDomElement xmlMovable = rDomElement.firstChildElement(CAF_MOVABLE);
+        QDomElement xmlMovable = rDomElement.firstChildElement(caf::animation::movable);
         int idx=0;
         while(!xmlMovable.isNull())
         {
@@ -273,7 +259,7 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
 
             }
             ++idx;
-            xmlMovable = xmlMovable.nextSiblingElement(CAF_MOVABLE);
+            xmlMovable = xmlMovable.nextSiblingElement(caf::animation::movable);
         }
 
         //Sort movables by indexes (no index = leave at bottom)
@@ -297,11 +283,11 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
 
 void ModelObjectAnimationData::saveToDomElement(QDomElement &rDomElement)
 {
-    rDomElement.setAttribute(CAF_FLOWSPEED, flowSpeed);
-    rDomElement.setAttribute(CAF_HYDRAULICMINPRESSURE, hydraulicMinPressure);
-    rDomElement.setAttribute(CAF_HYDRAULICMAXPRESSURE, hydraulicMaxPressure);
+    rDomElement.setAttribute(caf::animation::flowspeed, flowSpeed);
+    rDomElement.setAttribute(caf::animation::hydraulicminpressure, hydraulicMinPressure);
+    rDomElement.setAttribute(caf::animation::hydraulicmaxpressure, hydraulicMaxPressure);
     for(const ModelObjectAnimationMovableData &m : movables) {
-        QDomElement movableElement = appendDomElement(rDomElement, CAF_MOVABLE);
+        QDomElement movableElement = appendDomElement(rDomElement, caf::animation::movable);
 
         //! @note Saving icons is disabled, because it probably makes no sense (paths will not work if moving hmf to other location)
         //QDomElement iconElement = appendDomElement(movableElement, CAF_ICON);
@@ -309,7 +295,7 @@ void ModelObjectAnimationData::saveToDomElement(QDomElement &rDomElement)
 
         if(m.idx >= 0)
         {
-            movableElement.setAttribute(CAF_IDX, m.idx);
+            movableElement.setAttribute(caf::idx, m.idx);
         }
 
         for(int i=0; i<m.dataNames.size(); ++i)
@@ -317,110 +303,110 @@ void ModelObjectAnimationData::saveToDomElement(QDomElement &rDomElement)
             if(!m.dataNames[i].isEmpty())
             {
                 QDomElement dataElement = appendDomElement(movableElement, "data");
-                dataElement.setAttribute(CAF_PORT, m.dataPorts[i]);
-                dataElement.setAttribute(CAF_DATANAME, m.dataNames[i]);
-                dataElement.setAttribute(CAF_IDX, i);
+                dataElement.setAttribute(caf::port, m.dataPorts[i]);
+                dataElement.setAttribute(caf::animation::dataname, m.dataNames[i]);
+                dataElement.setAttribute(caf::idx, i);
             }
         }
 
         for(int i=0; i<m.multipliers.size(); ++i)
         {
-            QDomElement multiplierElement = appendDomElement(movableElement, CAF_MULTIPLIER);
-            multiplierElement.setAttribute(CAF_NAME, m.multipliers[i]);
+            QDomElement multiplierElement = appendDomElement(movableElement, caf::animation::multiplier);
+            multiplierElement.setAttribute(caf::name, m.multipliers[i]);
         }
 
         for(int i=0; i<m.divisors.size(); ++i)
         {
-            QDomElement divisorElement = appendDomElement(movableElement, CAF_DIVISOR);
-            divisorElement.setAttribute(CAF_NAME, m.divisors[i]);
+            QDomElement divisorElement = appendDomElement(movableElement, caf::animation::divisor);
+            divisorElement.setAttribute(caf::name, m.divisors[i]);
         }
 
-        QDomElement startElement = appendDomElement(movableElement, CAF_START);
+        QDomElement startElement = appendDomElement(movableElement, caf::animation::start);
         setQrealAttribute(startElement, "x", m.startX);
         setQrealAttribute(startElement, "y", m.startY);
         setQrealAttribute(startElement, "a", m.startTheta);
 
         for(int i=0; i<m.movementData.size(); ++i)
         {
-            QDomElement movementElement = appendDomElement(movableElement, CAF_MOVEMENT);
+            QDomElement movementElement = appendDomElement(movableElement, caf::animation::movement);
             m.movementData[i].saveToDomElement(movementElement);
         }
 
-        QDomElement initScaleElement = appendDomElement(movableElement, CAF_INITSCALE);
+        QDomElement initScaleElement = appendDomElement(movableElement, caf::animation::initscale);
         setQrealAttribute(initScaleElement, "x", m.initScaleX);
         setQrealAttribute(initScaleElement, "y", m.initScaleY);
 
         for(int i=0; i<m.resizeData.size(); ++i)
         {
-            QDomElement resizeElement = appendDomElement(movableElement, CAF_RESIZE);
+            QDomElement resizeElement = appendDomElement(movableElement, caf::animation::resize);
             m.resizeData[i].saveToDomElement(resizeElement);
         }
 
-        QDomElement initColorElement = appendDomElement(movableElement, CAF_INITCOLOR);
-        QDomElement colorElement = appendDomElement(movableElement, CAF_COLOR);
+        QDomElement initColorElement = appendDomElement(movableElement, caf::animation::initcolor);
+        QDomElement colorElement = appendDomElement(movableElement, caf::animation::color);
         m.colorData.saveToDomElements(initColorElement, colorElement);
 
-        QDomElement transformOriginElement = appendDomElement(movableElement, CAF_TRANSFORMORIGIN);
+        QDomElement transformOriginElement = appendDomElement(movableElement, caf::animation::transformorigin);
         setQrealAttribute(transformOriginElement, "x", m.transformOriginX);
         setQrealAttribute(transformOriginElement, "y", m.transformOriginY);
 
         for(int i=0; i<m.movablePortNames.size(); ++i)
         {
-            QDomElement movingPortElement = appendDomElement(movableElement, CAF_MOVINGPORT);
-            movingPortElement.setAttribute(CAF_PORTNAME, m.movablePortNames[i]);
-            setQrealAttribute(movingPortElement, CAF_STARTX, m.movablePortStartX[i]);
-            setQrealAttribute(movingPortElement, CAF_STARTY, m.movablePortStartY[i]);
+            QDomElement movingPortElement = appendDomElement(movableElement, caf::animation::movingport);
+            movingPortElement.setAttribute(caf::animation::portname, m.movablePortNames[i]);
+            setQrealAttribute(movingPortElement, caf::animation::startx, m.movablePortStartX[i]);
+            setQrealAttribute(movingPortElement, caf::animation::starty, m.movablePortStartY[i]);
         }
 
-        QDomElement relativeElement = appendDomElement(movableElement, CAF_RELATIVE);
-        relativeElement.setAttribute(CAF_IDX, m.movableRelative);
+        QDomElement relativeElement = appendDomElement(movableElement, caf::animation::relative);
+        relativeElement.setAttribute(caf::idx, m.movableRelative);
 
         if(m.isAdjustable)
         {
-            QDomElement adjustableElement = appendDomElement(movableElement, CAF_ADJUSTABLE);
-            setQrealAttribute(adjustableElement, CAF_XMIN, m.adjustableMinX);
-            setQrealAttribute(adjustableElement, CAF_XMAX, m.adjustableMaxX);
-            setQrealAttribute(adjustableElement, CAF_YMIN, m.adjustableMinY);
-            setQrealAttribute(adjustableElement, CAF_YMAX, m.adjustableMaxY);
-            adjustableElement.setAttribute(CAF_DATANAME, m.adjustableDataName);
-            adjustableElement.setAttribute(CAF_PORT, m.adjustablePort);
-            setQrealAttribute(adjustableElement, CAF_XGAIN, m.adjustableGainX);
-            setQrealAttribute(adjustableElement, CAF_YGAIN, m.adjustableGainY);
+            QDomElement adjustableElement = appendDomElement(movableElement, caf::animation::adjustable);
+            setQrealAttribute(adjustableElement, caf::animation::xmin, m.adjustableMinX);
+            setQrealAttribute(adjustableElement, caf::animation::xmax, m.adjustableMaxX);
+            setQrealAttribute(adjustableElement, caf::animation::ymin, m.adjustableMinY);
+            setQrealAttribute(adjustableElement, caf::animation::ymax, m.adjustableMaxY);
+            adjustableElement.setAttribute(caf::animation::dataname, m.adjustableDataName);
+            adjustableElement.setAttribute(caf::port, m.adjustablePort);
+            setQrealAttribute(adjustableElement, caf::animation::xgain, m.adjustableGainX);
+            setQrealAttribute(adjustableElement, caf::animation::ygain, m.adjustableGainY);
         }
 
         if(m.isSwitchable)
         {
-            QDomElement switchableElement = appendDomElement(movableElement, CAF_SWITCHABLE);
-            switchableElement.setAttribute(CAF_DATANAME, m.switchableDataName);
-            switchableElement.setAttribute(CAF_PORT, m.switchablePort);
+            QDomElement switchableElement = appendDomElement(movableElement, caf::animation::switchable);
+            switchableElement.setAttribute(caf::animation::dataname, m.switchableDataName);
+            switchableElement.setAttribute(caf::port, m.switchablePort);
 
-            setQrealAttribute(switchableElement, CAF_ONVALUE, m.switchableOnValue);
-            setQrealAttribute(switchableElement, CAF_OFFVALUE, m.switchableOffValue);
+            setQrealAttribute(switchableElement, caf::animation::onvalue, m.switchableOnValue);
+            setQrealAttribute(switchableElement, caf::animation::offvalue, m.switchableOffValue);
 
             if(m.isMomentary)
             {
-                switchableElement.setAttribute(CAF_MOMENTARY, HMF_TRUETAG);
+                switchableElement.setAttribute(caf::animation::momentary, hmf::truetag);
             }
             else
             {
-                switchableElement.setAttribute(CAF_MOMENTARY, HMF_FALSETAG);
+                switchableElement.setAttribute(caf::animation::momentary, hmf::falsetag);
             }
 
             if(m.hideIconOnSwitch)
             {
-                switchableElement.setAttribute(CAF_HIDEICON, HMF_TRUETAG);
+                switchableElement.setAttribute(caf::animation::hideicon, hmf::truetag);
             }
             else
             {
-                switchableElement.setAttribute(CAF_HIDEICON, HMF_FALSETAG);
+                switchableElement.setAttribute(caf::animation::hideicon, hmf::falsetag);
             }
         }
 
         if(m.isIndicator)
         {
-            QDomElement indicatorElement = appendDomElement(movableElement, CAF_INDICATOR);
-            indicatorElement.setAttribute(CAF_DATANAME, m.indicatorDataName);
-            indicatorElement.setAttribute(CAF_PORT, m.indicatorPort);
+            QDomElement indicatorElement = appendDomElement(movableElement, caf::animation::indicator);
+            indicatorElement.setAttribute(caf::animation::dataname, m.indicatorDataName);
+            indicatorElement.setAttribute(caf::port, m.indicatorPort);
         }
     }
 }
@@ -852,17 +838,17 @@ QFileInfo ModelObjectAppearance::getXMLFile() const
 //! @brief Read the ModelObjectAppearance contents from an XML DOM Element
 void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
 {
-    mHmfFile        = domElement.attribute(CAF_HMFFILE, mHmfFile);
-    mTypeName       = domElement.attribute(CAF_TYPENAME, mTypeName);
-    mSubTypeName    = domElement.attribute(CAF_SUBTYPENAME, mSubTypeName);
-    mDisplayName    = domElement.attribute(CAF_DISPLAYNAME, mDisplayName);
-    QString newSourceCode     = domElement.attribute(CAF_SOURCECODE, "");
+    mHmfFile        = domElement.attribute(caf::hmffile, mHmfFile);
+    mTypeName       = domElement.attribute(caf::typenametag, mTypeName);
+    mSubTypeName    = domElement.attribute(caf::subtypename, mSubTypeName);
+    mDisplayName    = domElement.attribute(caf::displayname, mDisplayName);
+    QString newSourceCode     = domElement.attribute(caf::sourcecode, "");
     if(!newSourceCode.isEmpty())
         mSourceCode = newSourceCode;
-    QString newLibPath        = domElement.attribute(CAF_LIBPATH, "");
+    QString newLibPath        = domElement.attribute(caf::libpath, "");
     if(!newLibPath.isEmpty())
         mLibPath = newLibPath;
-    mIsRecompilable   = parseAttributeBool(domElement, CAF_RECOMPILABLE, false);
+    mIsRecompilable   = parseAttributeBool(domElement, caf::recompilable, false);
 
     //Use typename if displayname not set
     if (mDisplayName.isEmpty())
@@ -870,10 +856,10 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
         mDisplayName = mTypeName;
     }
 
-    QDomElement xmlHelp = domElement.firstChildElement(CAF_HELP);
+    QDomElement xmlHelp = domElement.firstChildElement(caf::help::root);
     if(!xmlHelp.isNull())
     {
-        QDomElement xmlHelpText = xmlHelp.firstChildElement(CAF_HELPTEXT);
+        QDomElement xmlHelpText = xmlHelp.firstChildElement(caf::help::text);
         if (!xmlHelpText.isNull())
         {
             mHelpText.clear();
@@ -886,26 +872,26 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
             }
         }
 
-        QDomElement xmlHelpPicture = xmlHelp.firstChildElement(CAF_HELPPICTURE);
+        QDomElement xmlHelpPicture = xmlHelp.firstChildElement(caf::help::picture);
         if (!xmlHelpPicture.isNull())
         {
             mHelpPicture = xmlHelpPicture.text();
         }
 
-        QDomElement xmlHelpLink = xmlHelp.firstChildElement(CAF_HELPLINK);
+        QDomElement xmlHelpLink = xmlHelp.firstChildElement(caf::help::link);
         while (!xmlHelpLink.isNull())
         {
             mHelpLinks.append(xmlHelpLink.text());
-            xmlHelpLink = xmlHelpLink.nextSiblingElement(CAF_HELPLINK);
+            xmlHelpLink = xmlHelpLink.nextSiblingElement(caf::help::link);
         }
 
-        QDomElement xmlHelpHtml = xmlHelp.firstChildElement(CAF_HELPHTML);
+        QDomElement xmlHelpHtml = xmlHelp.firstChildElement(caf::help::html);
         if (!xmlHelpHtml.isNull())
         {
             mHelpHtmlPath = xmlHelpHtml.text();
         }
 
-        QDomElement xmlHelpMD = xmlHelp.firstChildElement(CAF_HELPMARKDOWN);
+        QDomElement xmlHelpMD = xmlHelp.firstChildElement(caf::help::markdown);
         if (!xmlHelpMD.isNull())
         {
             mHelpHtmlPath = xmlHelpMD.text();
@@ -926,55 +912,55 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
         }
     }
 
-    QDomElement xmlParameters = domElement.firstChildElement(CAF_PARAMETERS);
+    QDomElement xmlParameters = domElement.firstChildElement(caf::parameters);
     if(!xmlParameters.isNull())
     {
-        QDomElement xmlParameter = xmlParameters.firstChildElement(CAF_PARAMETER);
+        QDomElement xmlParameter = xmlParameters.firstChildElement(caf::parameter);
         while(!xmlParameter.isNull())
         {
-            QString name = xmlParameter.attribute(CAF_NAME);
+            QString name = xmlParameter.attribute(caf::name);
             QString value = xmlParameter.text();
             mOverridedDefaultParameters.insert(name, value);
-            if(parseAttributeBool(xmlParameter, CAF_HIDDEN, false))
+            if(parseAttributeBool(xmlParameter, caf::hidden, false))
             {
                 mHiddenParameters.append(name);
             }
-            xmlParameter = xmlParameter.nextSiblingElement(CAF_PARAMETER);
+            xmlParameter = xmlParameter.nextSiblingElement(caf::parameter);
         }
     }
 
     //We assume only one icons element
-    QDomElement xmlIcons = domElement.firstChildElement(CAF_ICONS);
-    QDomElement xmlIcon = xmlIcons.firstChildElement(CAF_ICON);
+    QDomElement xmlIcons = domElement.firstChildElement(caf::icons);
+    QDomElement xmlIcon = xmlIcons.firstChildElement(caf::icon);
     while (!xmlIcon.isNull())
     {
-        QString type = xmlIcon.attribute(CAF_TYPE);
+        QString type = xmlIcon.attribute(caf::type);
         if (type == "iso")
         {
-            mIsoIconAppearance.mRelativePath = xmlIcon.attribute(CAF_PATH);
-            mIsoIconAppearance.mScale = parseAttributeQreal(xmlIcon, CAF_SCALE, 1.0);
-            mIsoIconAppearance.mRotationBehaviour = xmlIcon.attribute(CAF_ICONROTATION,mIsoIconAppearance.mRotationBehaviour);
+            mIsoIconAppearance.mRelativePath = xmlIcon.attribute(caf::path);
+            mIsoIconAppearance.mScale = parseAttributeQreal(xmlIcon, caf::scale, 1.0);
+            mIsoIconAppearance.mRotationBehaviour = xmlIcon.attribute(caf::iconrotation,mIsoIconAppearance.mRotationBehaviour);
         }
         else if (type == "user")
         {
-            mUserIconAppearance.mRelativePath = xmlIcon.attribute(CAF_PATH);
-            mUserIconAppearance.mScale = parseAttributeQreal(xmlIcon, CAF_SCALE, 1.0);
-            mUserIconAppearance.mRotationBehaviour = xmlIcon.attribute(CAF_ICONROTATION,mUserIconAppearance.mRotationBehaviour);
+            mUserIconAppearance.mRelativePath = xmlIcon.attribute(caf::path);
+            mUserIconAppearance.mScale = parseAttributeQreal(xmlIcon, caf::scale, 1.0);
+            mUserIconAppearance.mRotationBehaviour = xmlIcon.attribute(caf::iconrotation,mUserIconAppearance.mRotationBehaviour);
         }
         else if (type == "defaultmissing")
         {
             //! @todo maybe have a DefaultIconAppearance object to, an load all data
-            mDefaultMissingIconPath = xmlIcon.attribute(CAF_PATH);
+            mDefaultMissingIconPath = xmlIcon.attribute(caf::path);
         }
         //else ignore, maybe should give warning
 
-        xmlIcon = xmlIcon.nextSiblingElement(CAF_ICON);
+        xmlIcon = xmlIcon.nextSiblingElement(caf::icon);
     }
 
-    QDomElement xmlPorts = domElement.firstChildElement(CAF_PORTS);
+    QDomElement xmlPorts = domElement.firstChildElement(caf::ports);
     while (!xmlPorts.isNull())
     {
-        QDomElement xmlPort = xmlPorts.firstChildElement(CAF_PORT);
+        QDomElement xmlPort = xmlPorts.firstChildElement(caf::port);
         while (!xmlPort.isNull())
         {
             QString portname;
@@ -989,85 +975,85 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
             {
                 mPortAppearanceMap.insert(portname, SharedPortAppearanceT(new PortAppearance(portApp)));
             }
-            xmlPort = xmlPort.nextSiblingElement(CAF_PORT);
+            xmlPort = xmlPort.nextSiblingElement(caf::port);
         }
         // There should only be one <ports>, but lets check for more just in case
-        xmlPorts = xmlPorts.nextSiblingElement(CAF_PORTS);
+        xmlPorts = xmlPorts.nextSiblingElement(caf::ports);
     }
 
-    QDomElement xmlReplacables = domElement.firstChildElement(CAF_REPLACABLES);
+    QDomElement xmlReplacables = domElement.firstChildElement(caf::replacables);
     while (!xmlReplacables.isNull())
     {
-        QDomElement xmlReplacable = xmlReplacables.firstChildElement(CAF_REPLACABLE);
+        QDomElement xmlReplacable = xmlReplacables.firstChildElement(caf::replacable);
         while (!xmlReplacable.isNull())
         {
-            QString typeName = xmlReplacable.attribute(CAF_TYPENAME);
+            QString typeName = xmlReplacable.attribute(caf::typenametag);
             gpLibraryHandler->addReplacement(mTypeName, typeName); //!< @todo mainwindow and library should not be called in this file it is supposed to be a leaf class
-            xmlReplacable = xmlReplacable.nextSiblingElement(CAF_REPLACABLE);
+            xmlReplacable = xmlReplacable.nextSiblingElement(caf::replacable);
         }
 
-        xmlReplacables = xmlReplacables.nextSiblingElement(CAF_REPLACABLES);
+        xmlReplacables = xmlReplacables.nextSiblingElement(caf::replacables);
     }
 
 
     // vvvvvvvvvvvvvvvvvvvvv=== Bellow Reads old Format 0.2 Tags ===vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
-    QDomElement xmlHelp_02 = domElement.firstChildElement(CAF_HELP);
+    QDomElement xmlHelp_02 = domElement.firstChildElement(caf::help::root);
     if(!xmlHelp_02.isNull())
     {
-        if (xmlHelp_02.hasAttribute(CAF_HELPPICTURE))
+        if (xmlHelp_02.hasAttribute(caf::help::picture))
         {
-            mHelpPicture = xmlHelp_02.attribute(CAF_HELPPICTURE);
+            mHelpPicture = xmlHelp_02.attribute(caf::help::picture);
         }
 
-        if (xmlHelp_02.hasAttribute(CAF_HELPTEXT))
+        if (xmlHelp_02.hasAttribute(caf::help::text))
         {
-            mHelpText = xmlHelp_02.attribute(CAF_HELPTEXT);
+            mHelpText = xmlHelp_02.attribute(caf::help::text);
         }
     }
 
     QString portname;
-    QDomElement xmlPorts_02 = domElement.firstChildElement(CAF_PORTPOSITIONS);
+    QDomElement xmlPorts_02 = domElement.firstChildElement(caf::portpositions);
     while (!xmlPorts_02.isNull())
     {
-        QDomElement xmlPortPose = xmlPorts_02.firstChildElement(CAF_PORTPOSE);
+        QDomElement xmlPortPose = xmlPorts_02.firstChildElement(caf::portpose);
         while (!xmlPortPose.isNull())
         {
             PortAppearance portApp;
             parsePortPoseTag(xmlPortPose, portname, portApp.x, portApp.y, portApp.rot);
             mPortAppearanceMap.insert(portname, SharedPortAppearanceT(new PortAppearance(portApp)));
-            xmlPortPose = xmlPortPose.nextSiblingElement(CAF_PORTPOSE);
+            xmlPortPose = xmlPortPose.nextSiblingElement(caf::portpose);
         }
         // There should only be one <ports>, but lets check for more just in case
-        xmlPorts_02 = xmlPorts_02.nextSiblingElement(CAF_PORTPOSITIONS);
+        xmlPorts_02 = xmlPorts_02.nextSiblingElement(caf::portpositions);
     }
     
-    QDomElement xmlAnimation = domElement.firstChildElement(CAF_ANIMATION);
+    QDomElement xmlAnimation = domElement.firstChildElement(caf::animation::root);
     mAnimationData.readFromDomElement(xmlAnimation, mBasePath);
     
 
     // vvvvvvvvvvvvvvvvvvvvv=== Bellow Reads old Format 0.1 Tags ===vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
     // Read old style icons
-    QDomElement xmlIcon2 = domElement.firstChildElement(CAF_ICON);
+    QDomElement xmlIcon2 = domElement.firstChildElement(caf::icon);
     if (!xmlIcon2.isNull())
     {
-        mIsoIconAppearance.mRelativePath = xmlIcon2.attribute(CAF_ISOPATH);
-        mUserIconAppearance.mRelativePath = xmlIcon2.attribute(CAF_USERPATH);
-        mIsoIconAppearance.mRotationBehaviour = xmlIcon2.attribute(CAF_RELATIVE);
-        mUserIconAppearance.mRotationBehaviour = xmlIcon2.attribute(CAF_RELATIVE);
-        mUserIconAppearance.mScale = parseAttributeQreal(xmlIcon2, CAF_USERSCALE, 1.0);
-        mIsoIconAppearance.mScale = parseAttributeQreal(xmlIcon2, CAF_ISOSCALE, 1.0);
+        mIsoIconAppearance.mRelativePath = xmlIcon2.attribute(caf::isopath);
+        mUserIconAppearance.mRelativePath = xmlIcon2.attribute(caf::userpath);
+        mIsoIconAppearance.mRotationBehaviour = xmlIcon2.attribute(caf::animation::relative);
+        mUserIconAppearance.mRotationBehaviour = xmlIcon2.attribute(caf::animation::relative);
+        mUserIconAppearance.mScale = parseAttributeQreal(xmlIcon2, caf::userscasle, 1.0);
+        mIsoIconAppearance.mScale = parseAttributeQreal(xmlIcon2, caf::isoscale, 1.0);
     }
 
     // Read old style portposes, where portposes were not contained inside a common "ports" element
-    QDomElement xmlPortPose = domElement.firstChildElement(CAF_PORTPOSE);
+    QDomElement xmlPortPose = domElement.firstChildElement(caf::portpose);
     while (!xmlPortPose.isNull())
     {
         PortAppearance portApp;
         parsePortPoseTag(xmlPortPose, portname, portApp.x, portApp.y, portApp.rot);
         mPortAppearanceMap.insert(portname, SharedPortAppearanceT(new PortAppearance(portApp)));
-        xmlPortPose = xmlPortPose.nextSiblingElement(CAF_PORTPOSE);
+        xmlPortPose = xmlPortPose.nextSiblingElement(caf::portpose);
     }
 
     // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1081,12 +1067,12 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
 //! @brief Adds the model object root dom element, or returns one that already exist
 QDomElement ModelObjectAppearance::addModelObjectRootElement(QDomElement parentDomElement)
 {
-    QDomElement more = getOrAppendNewDomElement(parentDomElement, CAF_MODELOBJECT);
-    more.setAttribute(CAF_TYPENAME, mTypeName);
-    more.setAttribute(CAF_DISPLAYNAME, mDisplayName);
+    QDomElement more = getOrAppendNewDomElement(parentDomElement, caf::modelobject);
+    more.setAttribute(caf::typenametag, mTypeName);
+    more.setAttribute(caf::displayname, mDisplayName);
     if (!mSubTypeName.isEmpty())
     {
-        more.setAttribute(CAF_SUBTYPENAME, mSubTypeName);
+        more.setAttribute(caf::subtypename, mSubTypeName);
     }
     return more;
 }
@@ -1099,61 +1085,61 @@ void ModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
     QDomElement xmlObject = addModelObjectRootElement(rDomElement);
 
     //  Save icon data
-    QDomElement xmlIcons = appendDomElement(xmlObject, CAF_ICONS);
+    QDomElement xmlIcons = appendDomElement(xmlObject, caf::icons);
     if (hasIcon(UserGraphics))
     {
-        QDomElement xmlIcon = appendDomElement(xmlIcons, CAF_ICON);
-        xmlIcon.setAttribute(CAF_TYPE, "user");
-        xmlIcon.setAttribute(CAF_PATH, mUserIconAppearance.mRelativePath);
-        setQrealAttribute(xmlIcon, CAF_SCALE, mUserIconAppearance.mScale, 6, 'g');
-        xmlIcon.setAttribute(CAF_ICONROTATION, mUserIconAppearance.mRotationBehaviour);
+        QDomElement xmlIcon = appendDomElement(xmlIcons, caf::icon);
+        xmlIcon.setAttribute(caf::type, "user");
+        xmlIcon.setAttribute(caf::path, mUserIconAppearance.mRelativePath);
+        setQrealAttribute(xmlIcon, caf::scale, mUserIconAppearance.mScale, 6, 'g');
+        xmlIcon.setAttribute(caf::iconrotation, mUserIconAppearance.mRotationBehaviour);
     }
     if (hasIcon(ISOGraphics))
     {
-        QDomElement xmlIcon = appendDomElement(xmlIcons, CAF_ICON);
-        xmlIcon.setAttribute(CAF_TYPE, "iso");
-        xmlIcon.setAttribute(CAF_PATH, mIsoIconAppearance.mRelativePath);
-        setQrealAttribute(xmlIcon, CAF_SCALE, mIsoIconAppearance.mScale, 6, 'g');
-        xmlIcon.setAttribute(CAF_ICONROTATION, mIsoIconAppearance.mRotationBehaviour);
+        QDomElement xmlIcon = appendDomElement(xmlIcons, caf::icon);
+        xmlIcon.setAttribute(caf::type, "iso");
+        xmlIcon.setAttribute(caf::path, mIsoIconAppearance.mRelativePath);
+        setQrealAttribute(xmlIcon, caf::scale, mIsoIconAppearance.mScale, 6, 'g');
+        xmlIcon.setAttribute(caf::iconrotation, mIsoIconAppearance.mRotationBehaviour);
     }
 
     // If default missing have changed, then save that data as well
     //! @todo not hardcoded should be defined
     if (mDefaultMissingIconPath != "missingcomponenticon.svg")
     {
-        QDomElement xmlIcon = appendDomElement(xmlIcons, CAF_ICON);
-        xmlIcon.setAttribute(CAF_TYPE, "defaultmissing");
-        xmlIcon.setAttribute(CAF_PATH, mDefaultMissingIconPath);
+        QDomElement xmlIcon = appendDomElement(xmlIcons, caf::icon);
+        xmlIcon.setAttribute(caf::type, "defaultmissing");
+        xmlIcon.setAttribute(caf::path, mDefaultMissingIconPath);
     }
 
     // Save help text and picture data
     if(!mHelpText.isEmpty() || !mHelpPicture.isEmpty() || !mHelpLinks.isEmpty() || !mHelpHtmlPath.isEmpty() )
     {
-        QDomElement xmlHelp = appendDomElement(xmlObject, CAF_HELP);
+        QDomElement xmlHelp = appendDomElement(xmlObject, caf::help::root);
         if( !mHelpText.isEmpty() )
         {
-            appendDomTextNode(xmlHelp, CAF_HELPTEXT, mHelpText);
+            appendDomTextNode(xmlHelp, caf::help::text, mHelpText);
         }
 
         if( !mHelpPicture.isEmpty() )
         {
-            appendDomTextNode(xmlHelp, CAF_HELPPICTURE, mHelpPicture);
+            appendDomTextNode(xmlHelp, caf::help::picture, mHelpPicture);
         }
 
         for( QString &link : mHelpLinks )
         {
-            appendDomTextNode(xmlHelp, CAF_HELPLINK, link);
+            appendDomTextNode(xmlHelp, caf::help::link, link);
         }
 
         if( !mHelpHtmlPath.isEmpty() )
         {
-            appendDomTextNode(xmlHelp, CAF_HELPHTML, mHelpHtmlPath);
+            appendDomTextNode(xmlHelp, caf::help::html, mHelpHtmlPath);
         }
     }
 
     // Save port data
     //! @todo maybe make the port appearance  class capable of saving itself to DOM
-    QDomElement xmlPorts = appendDomElement(xmlObject, CAF_PORTS);
+    QDomElement xmlPorts = appendDomElement(xmlObject, caf::ports);
     PortAppearanceMapT::iterator pit;
     for (pit=mPortAppearanceMap.begin(); pit!=mPortAppearanceMap.end(); ++pit)
     {
@@ -1161,13 +1147,13 @@ void ModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
     }
 
     QDomElement xmlAnimation;
-    if(xmlObject.firstChildElement(CAF_ANIMATION).isNull())
+    if(xmlObject.firstChildElement(caf::animation::root).isNull())
     {
-        xmlAnimation = appendDomElement(xmlObject, CAF_ANIMATION);
+        xmlAnimation = appendDomElement(xmlObject, caf::animation::root);
     }
     else
     {
-        xmlAnimation = xmlObject.firstChildElement(CAF_ANIMATION);
+        xmlAnimation = xmlObject.firstChildElement(caf::animation::root);
     }
     mAnimationData.saveToDomElement(xmlAnimation);
 }
@@ -1179,7 +1165,7 @@ void ModelObjectAppearance::saveSpecificPortsToDomElement(QDomElement &rDomEleme
     QDomElement xmlModelObject = addModelObjectRootElement(rDomElement);
 
     // First check if the ports element already exist, else add the element
-    QDomElement xmlPorts = getOrAppendNewDomElement(xmlModelObject, CAF_PORTS);
+    QDomElement xmlPorts = getOrAppendNewDomElement(xmlModelObject, caf::ports);
     for (const QString &portName : rPortNames)
     {
         const SharedPortAppearanceT pData = mPortAppearanceMap.value(portName);
@@ -1195,9 +1181,9 @@ void ModelObjectAppearance::saveToXMLFile(QString filename)
 {
     //Save to file
     QDomDocument doc;
-    QDomElement cafroot = doc.createElement(CAF_ROOT);
+    QDomElement cafroot = doc.createElement(caf::root);
     doc.appendChild(cafroot);
-    cafroot.setAttribute(CAF_VERSION, CAF_VERSIONNUM);
+    cafroot.setAttribute(caf::version, CAF_VERSIONNUM);
     this->saveToDomElement(cafroot);
     appendRootXMLProcessingInstruction(doc); //The xml "comment" on the first line
     saveXmlFile(filename, gpMessageHandler, [&](){return doc;});
@@ -1366,14 +1352,14 @@ GraphicsTypeEnumT ModelObjectAppearance::selectAvailableGraphicsType(const Graph
 
 void ModelObjectAnimationMovableData::readFromDomElement(QDomElement &rDomElement, QString basePath)
 {
-    if(rDomElement.hasAttribute(CAF_IDX))
+    if(rDomElement.hasAttribute(caf::idx))
     {
-        idx = rDomElement.attribute(CAF_IDX).toInt();
+        idx = rDomElement.attribute(caf::idx).toInt();
     }
 
-    if(iconPath.isEmpty() && !rDomElement.firstChildElement(CAF_ICON).isNull() && !rDomElement.firstChildElement(CAF_ICON).attribute(CAF_USERPATH).isEmpty())
+    if(iconPath.isEmpty() && !rDomElement.firstChildElement(caf::icon).isNull() && !rDomElement.firstChildElement(caf::icon).attribute(caf::userpath).isEmpty())
     {
-        iconPath = rDomElement.firstChildElement(CAF_ICON).attribute(CAF_USERPATH);
+        iconPath = rDomElement.firstChildElement(caf::icon).attribute(caf::userpath);
     }
 
     QDomElement dataElement = rDomElement.firstChildElement("data");
@@ -1384,40 +1370,40 @@ void ModelObjectAnimationMovableData::readFromDomElement(QDomElement &rDomElemen
     }
     while(!dataElement.isNull())
     {
-        int idx = dataElement.attribute(CAF_IDX).toInt();
+        int idx = dataElement.attribute(caf::idx).toInt();
         while(dataPorts.size() < idx+1)
         {
             dataPorts.append("");
             dataNames.append(""); //Assume names and ports always have same size
         }
-        dataPorts[idx] = dataElement.attribute(CAF_PORT);
-        dataNames[idx] = dataElement.attribute(CAF_DATANAME);
+        dataPorts[idx] = dataElement.attribute(caf::port);
+        dataNames[idx] = dataElement.attribute(caf::animation::dataname);
         dataElement = dataElement.nextSiblingElement("data");
     }
 
-    QDomElement multiplierElement = rDomElement.firstChildElement(CAF_MULTIPLIER);
+    QDomElement multiplierElement = rDomElement.firstChildElement(caf::animation::multiplier);
     if(!multiplierElement.isNull())
     {
         multipliers.clear();
     }
     while(!multiplierElement.isNull())
     {
-        multipliers.append(multiplierElement.attribute(CAF_NAME));
-        multiplierElement = multiplierElement.nextSiblingElement(CAF_MULTIPLIER);
+        multipliers.append(multiplierElement.attribute(caf::name));
+        multiplierElement = multiplierElement.nextSiblingElement(caf::animation::multiplier);
     }
 
-    QDomElement divisorElement = rDomElement.firstChildElement(CAF_DIVISOR);
+    QDomElement divisorElement = rDomElement.firstChildElement(caf::animation::divisor);
     if(!divisorElement.isNull())
     {
         divisors.clear();
     }
     while(!divisorElement.isNull())
     {
-        divisors.append(divisorElement.attribute(CAF_NAME));
-        divisorElement = divisorElement.nextSiblingElement(CAF_DIVISOR);
+        divisors.append(divisorElement.attribute(caf::name));
+        divisorElement = divisorElement.nextSiblingElement(caf::animation::divisor);
     }
 
-    QDomElement xmlMovement = rDomElement.firstChildElement(CAF_MOVEMENT);
+    QDomElement xmlMovement = rDomElement.firstChildElement(caf::animation::movement);
     if(!xmlMovement.isNull())
     {
         movementData.clear();
@@ -1427,19 +1413,19 @@ void ModelObjectAnimationMovableData::readFromDomElement(QDomElement &rDomElemen
         ModelObjectAnimationMovementData movement;
         movement.readFromDomElement(xmlMovement);
         movementData.append(movement);
-        xmlMovement = xmlMovement.nextSiblingElement(CAF_MOVEMENT);
+        xmlMovement = xmlMovement.nextSiblingElement(caf::animation::movement);
     }
-    if(!rDomElement.firstChildElement(CAF_START).isNull())
+    if(!rDomElement.firstChildElement(caf::animation::start).isNull())
     {
-        startX = rDomElement.firstChildElement(CAF_START).attribute("x").toDouble();
-        startY = rDomElement.firstChildElement(CAF_START).attribute("y").toDouble();
-        startTheta = rDomElement.firstChildElement(CAF_START).attribute("a").toDouble();
+        startX = rDomElement.firstChildElement(caf::animation::start).attribute("x").toDouble();
+        startY = rDomElement.firstChildElement(caf::animation::start).attribute("y").toDouble();
+        startTheta = rDomElement.firstChildElement(caf::animation::start).attribute("a").toDouble();
     }
 
-    if(!rDomElement.firstChildElement(CAF_INITSCALE).isNull())
+    if(!rDomElement.firstChildElement(caf::animation::initscale).isNull())
     {
-        initScaleX = rDomElement.firstChildElement(CAF_INITSCALE).attribute("x").toDouble();
-        initScaleY = rDomElement.firstChildElement(CAF_INITSCALE).attribute("y").toDouble();
+        initScaleX = rDomElement.firstChildElement(caf::animation::initscale).attribute("x").toDouble();
+        initScaleY = rDomElement.firstChildElement(caf::animation::initscale).attribute("y").toDouble();
     }
     else
     {
@@ -1447,7 +1433,7 @@ void ModelObjectAnimationMovableData::readFromDomElement(QDomElement &rDomElemen
         initScaleY = 1;
     }
 
-    QDomElement xmlResize = rDomElement.firstChildElement(CAF_RESIZE);
+    QDomElement xmlResize = rDomElement.firstChildElement(caf::animation::resize);
 
     resizeData.clear();
 
@@ -1456,21 +1442,21 @@ void ModelObjectAnimationMovableData::readFromDomElement(QDomElement &rDomElemen
         ModelObjectAnimationResizeData resize;
         resize.readFromDomElement(xmlResize);
         resizeData.append(resize);
-        xmlResize = xmlResize.nextSiblingElement(CAF_RESIZE);
+        xmlResize = xmlResize.nextSiblingElement(caf::animation::resize);
     }
 
 
-    QDomElement xmlInitColor = rDomElement.firstChildElement(CAF_INITCOLOR);
-    QDomElement xmlColor = rDomElement.firstChildElement(CAF_COLOR);
+    QDomElement xmlInitColor = rDomElement.firstChildElement(caf::animation::initcolor);
+    QDomElement xmlColor = rDomElement.firstChildElement(caf::animation::color);
     if(!xmlInitColor.isNull() && !xmlColor.isNull())
     {
         colorData.readFromDomElements(xmlInitColor, xmlColor);
     }
 
-    if(!rDomElement.firstChildElement(CAF_TRANSFORMORIGIN).isNull())
+    if(!rDomElement.firstChildElement(caf::animation::transformorigin).isNull())
     {
-        transformOriginX = rDomElement.firstChildElement(CAF_TRANSFORMORIGIN).attribute("x").toDouble();
-        transformOriginY = rDomElement.firstChildElement(CAF_TRANSFORMORIGIN).attribute("y").toDouble();
+        transformOriginX = rDomElement.firstChildElement(caf::animation::transformorigin).attribute("x").toDouble();
+        transformOriginY = rDomElement.firstChildElement(caf::animation::transformorigin).attribute("y").toDouble();
     }
 
     QFileInfo movableIconFileInfo(iconPath);
@@ -1479,34 +1465,34 @@ void ModelObjectAnimationMovableData::readFromDomElement(QDomElement &rDomElemen
         movableIconFileInfo.setFile(QDir(basePath), iconPath);
         iconPath = movableIconFileInfo.absoluteFilePath();
     }
-    QDomElement xmlAdjustable = rDomElement.firstChildElement(CAF_ADJUSTABLE);
+    QDomElement xmlAdjustable = rDomElement.firstChildElement(caf::animation::adjustable);
     if(!xmlAdjustable.isNull())
     {
         isAdjustable = true;
-        adjustableMinX = xmlAdjustable.attribute(CAF_XMIN).toDouble();
-        adjustableMaxX = xmlAdjustable.attribute(CAF_XMAX).toDouble();
-        adjustableMinY = xmlAdjustable.attribute(CAF_YMIN).toDouble();
-        adjustableMaxY = xmlAdjustable.attribute(CAF_YMAX).toDouble();
-        adjustablePort = xmlAdjustable.attribute(CAF_PORT);
-        adjustableDataName = xmlAdjustable.attribute(CAF_DATANAME);
-        adjustableGainX = xmlAdjustable.attribute(CAF_XGAIN).toDouble();
-        adjustableGainY = xmlAdjustable.attribute(CAF_YGAIN).toDouble();
+        adjustableMinX = xmlAdjustable.attribute(caf::animation::xmin).toDouble();
+        adjustableMaxX = xmlAdjustable.attribute(caf::animation::xmax).toDouble();
+        adjustableMinY = xmlAdjustable.attribute(caf::animation::ymin).toDouble();
+        adjustableMaxY = xmlAdjustable.attribute(caf::animation::ymax).toDouble();
+        adjustablePort = xmlAdjustable.attribute(caf::port);
+        adjustableDataName = xmlAdjustable.attribute(caf::animation::dataname);
+        adjustableGainX = xmlAdjustable.attribute(caf::animation::xgain).toDouble();
+        adjustableGainY = xmlAdjustable.attribute(caf::animation::ygain).toDouble();
     }
     else
     {
         isAdjustable = false;
     }
 
-    QDomElement xmlSwitchable = rDomElement.firstChildElement(CAF_SWITCHABLE);
+    QDomElement xmlSwitchable = rDomElement.firstChildElement(caf::animation::switchable);
     if(!xmlSwitchable.isNull())
     {
         isSwitchable = true;
-        isMomentary = parseAttributeBool(xmlSwitchable, CAF_MOMENTARY, false);
-        switchableOffValue = xmlSwitchable.attribute(CAF_OFFVALUE).toDouble();
-        switchableOnValue = xmlSwitchable.attribute(CAF_ONVALUE).toDouble();
-        switchablePort = xmlSwitchable.attribute(CAF_PORT);
-        switchableDataName = xmlSwitchable.attribute(CAF_DATANAME);
-        hideIconOnSwitch = parseAttributeBool(xmlSwitchable, CAF_HIDEICON, false);
+        isMomentary = parseAttributeBool(xmlSwitchable, caf::animation::momentary, false);
+        switchableOffValue = xmlSwitchable.attribute(caf::animation::offvalue).toDouble();
+        switchableOnValue = xmlSwitchable.attribute(caf::animation::onvalue).toDouble();
+        switchablePort = xmlSwitchable.attribute(caf::port);
+        switchableDataName = xmlSwitchable.attribute(caf::animation::dataname);
+        hideIconOnSwitch = parseAttributeBool(xmlSwitchable, caf::animation::hideicon, false);
     }
     else
     {
@@ -1519,12 +1505,12 @@ void ModelObjectAnimationMovableData::readFromDomElement(QDomElement &rDomElemen
         hideIconOnSwitch = false;
     }
 
-    QDomElement xmlIndicaor = rDomElement.firstChildElement(CAF_INDICATOR);
+    QDomElement xmlIndicaor = rDomElement.firstChildElement(caf::animation::indicator);
     if(!xmlIndicaor.isNull())
     {
         isIndicator = true;
-        indicatorPort = xmlIndicaor.attribute(CAF_PORT);
-        indicatorDataName = xmlIndicaor.attribute(CAF_DATANAME);
+        indicatorPort = xmlIndicaor.attribute(caf::port);
+        indicatorDataName = xmlIndicaor.attribute(caf::animation::dataname);
     }
     else
     {
@@ -1534,7 +1520,7 @@ void ModelObjectAnimationMovableData::readFromDomElement(QDomElement &rDomElemen
     }
 
 
-    QDomElement xmlMovingPorts = rDomElement.firstChildElement(CAF_MOVINGPORT);
+    QDomElement xmlMovingPorts = rDomElement.firstChildElement(caf::animation::movingport);
     if(!xmlMovingPorts.isNull())
     {
         movablePortNames.clear();
@@ -1543,20 +1529,20 @@ void ModelObjectAnimationMovableData::readFromDomElement(QDomElement &rDomElemen
     }
     while(!xmlMovingPorts.isNull())
     {
-        QString portName = xmlMovingPorts.attribute(CAF_PORTNAME);
+        QString portName = xmlMovingPorts.attribute(caf::animation::portname);
         if(!portName.isEmpty() && !movablePortNames.contains(portName))   //Don't load tags without a port name, and tags that has already been loaded
         {
-            movablePortNames.append(xmlMovingPorts.attribute(CAF_PORTNAME));
-            movablePortStartX.append(xmlMovingPorts.attribute(CAF_STARTX).toDouble());
-            movablePortStartY.append(xmlMovingPorts.attribute(CAF_STARTY).toDouble());
+            movablePortNames.append(xmlMovingPorts.attribute(caf::animation::portname));
+            movablePortStartX.append(xmlMovingPorts.attribute(caf::animation::startx).toDouble());
+            movablePortStartY.append(xmlMovingPorts.attribute(caf::animation::starty).toDouble());
         }
-        xmlMovingPorts = xmlMovingPorts.nextSiblingElement(CAF_MOVINGPORT);
+        xmlMovingPorts = xmlMovingPorts.nextSiblingElement(caf::animation::movingport);
     }
 
-    QDomElement xmlRelative = rDomElement.firstChildElement(CAF_RELATIVE);
+    QDomElement xmlRelative = rDomElement.firstChildElement(caf::animation::relative);
     if(!xmlRelative.isNull())
     {
-        movableRelative = xmlRelative.attribute(CAF_IDX).toInt();
+        movableRelative = xmlRelative.attribute(caf::idx).toInt();
     }
     else
     {
@@ -1568,12 +1554,12 @@ void ModelObjectAnimationMovableData::readFromDomElement(QDomElement &rDomElemen
 //! @brief Loads animation movement data from dom element
 void ModelObjectAnimationMovementData::readFromDomElement(QDomElement &rDomElement)
 {
-    dataIdx = rDomElement.attribute(CAF_IDX).toDouble();
+    dataIdx = rDomElement.attribute(caf::idx).toDouble();
     x = rDomElement.attribute("x").toDouble();
     y = rDomElement.attribute("y").toDouble();
     theta = rDomElement.attribute("a").toDouble();
-    divisor = rDomElement.attribute(CAF_DIVISOR);
-    multiplier = rDomElement.attribute(CAF_MULTIPLIER);
+    divisor = rDomElement.attribute(caf::animation::divisor);
+    multiplier = rDomElement.attribute(caf::animation::multiplier);
 }
 
 
@@ -1583,9 +1569,9 @@ void ModelObjectAnimationMovementData::saveToDomElement(QDomElement &rDomElement
     setQrealAttribute(rDomElement, "x", x);
     setQrealAttribute(rDomElement, "y", y);
     setQrealAttribute(rDomElement, "a", theta);
-    rDomElement.setAttribute(CAF_IDX, dataIdx);
-    rDomElement.setAttribute(CAF_DIVISOR, divisor);
-    rDomElement.setAttribute(CAF_MULTIPLIER, multiplier);
+    rDomElement.setAttribute(caf::idx, dataIdx);
+    rDomElement.setAttribute(caf::animation::divisor, divisor);
+    rDomElement.setAttribute(caf::animation::multiplier, multiplier);
 }
 
 
@@ -1599,8 +1585,8 @@ void ModelObjectAnimationResizeData::readFromDomElement(QDomElement &rDomElement
     else
         dataIdx1 = parseAttributeInt(rDomElement, "idx", 0);   //For backwards compatibility
     dataIdx2 = parseAttributeInt(rDomElement, "idx2", -1);
-    divisor = rDomElement.attribute(CAF_DIVISOR);
-    multiplier = rDomElement.attribute(CAF_MULTIPLIER);
+    divisor = rDomElement.attribute(caf::animation::divisor);
+    multiplier = rDomElement.attribute(caf::animation::multiplier);
 }
 
 void ModelObjectAnimationResizeData::saveToDomElement(QDomElement &rDomElement) const
@@ -1609,8 +1595,8 @@ void ModelObjectAnimationResizeData::saveToDomElement(QDomElement &rDomElement) 
     setQrealAttribute(rDomElement, "y", y);
     rDomElement.setAttribute("idx1", dataIdx1);
     rDomElement.setAttribute("idx2", dataIdx2);
-    rDomElement.setAttribute(CAF_DIVISOR, divisor);
-    rDomElement.setAttribute(CAF_MULTIPLIER, multiplier);
+    rDomElement.setAttribute(caf::animation::divisor, divisor);
+    rDomElement.setAttribute(caf::animation::multiplier, multiplier);
 }
 
 
@@ -1621,13 +1607,13 @@ void ModelObjectAnimationColorData::readFromDomElements(QDomElement &rInitDomEle
     initB = rInitDomElement.attribute("b").toDouble();
     initA = rInitDomElement.attribute("a").toDouble();
 
-    dataIdx = rDomElement.attribute(CAF_IDX).toInt();
+    dataIdx = rDomElement.attribute(caf::idx).toInt();
     r = rDomElement.attribute("r").toDouble();
     g = rDomElement.attribute("g").toDouble();
     b = rDomElement.attribute("b").toDouble();
     a = rDomElement.attribute("a").toDouble();
-    divisor = rDomElement.attribute(CAF_DIVISOR);
-    multiplier = rDomElement.attribute(CAF_MULTIPLIER);
+    divisor = rDomElement.attribute(caf::animation::divisor);
+    multiplier = rDomElement.attribute(caf::animation::multiplier);
 }
 
 void ModelObjectAnimationColorData::saveToDomElements(QDomElement &rInitDomElement, QDomElement &rDomElement) const
@@ -1641,7 +1627,7 @@ void ModelObjectAnimationColorData::saveToDomElements(QDomElement &rInitDomEleme
     setQrealAttribute(rDomElement, "g", g);
     setQrealAttribute(rDomElement, "b", b);
     setQrealAttribute(rDomElement, "a", a);
-    rDomElement.setAttribute(CAF_IDX, dataIdx);
-    rDomElement.setAttribute(CAF_DIVISOR, divisor);
-    rDomElement.setAttribute(CAF_MULTIPLIER, multiplier);
+    rDomElement.setAttribute(caf::idx, dataIdx);
+    rDomElement.setAttribute(caf::animation::divisor, divisor);
+    rDomElement.setAttribute(caf::animation::multiplier, multiplier);
 }

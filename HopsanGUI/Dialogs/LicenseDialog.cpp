@@ -120,7 +120,7 @@ LicenseDialog::LicenseDialog(QWidget *pParent) :
     pLayout->addWidget(pDocsButton, 1);
 
     QCheckBox *pAlwaysShow = new QCheckBox("Always show on startup", this);
-    pAlwaysShow->setChecked(gpConfig->getBoolSetting(CFG_SHOWLICENSEONSTARTUP));
+    pAlwaysShow->setChecked(gpConfig->getBoolSetting(cfg::showlicenseonstartup));
     connect(pAlwaysShow, SIGNAL(clicked(bool)), this, SLOT(toggleAlwaysShow(bool)));
 
     QPushButton *pCloseButton = new QPushButton("Close", this);
@@ -137,7 +137,7 @@ LicenseDialog::LicenseDialog(QWidget *pParent) :
 
 void LicenseDialog::toggleAlwaysShow(bool tf)
 {
-    gpConfig->setBoolSetting(CFG_SHOWLICENSEONSTARTUP, tf);
+    gpConfig->setBoolSetting(cfg::showlicenseonstartup, tf);
 }
 
 void LicenseDialog::showLicenseDocs()

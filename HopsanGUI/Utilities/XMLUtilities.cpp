@@ -46,11 +46,11 @@ QString bool2str(const bool in)
 {
     if (in)
     {
-        return HMF_TRUETAG;
+        return hmf::truetag;
     }
     else
     {
-        return HMF_FALSETAG;
+        return hmf::falsetag;
     }
 }
 
@@ -104,11 +104,11 @@ void appendRootXMLProcessingInstruction(QDomDocument &rDomDocument)
 //! @returns The created root DOM element
 QDomElement appendHMFRootElement(QDomDocument &rDomDocument, QString hmfVersion, QString hopsanGuiVersion, QString hopsanCoreVersion)
 {
-    QDomElement hmfRoot = rDomDocument.createElement(HMF_ROOTTAG);
+    QDomElement hmfRoot = rDomDocument.createElement(hmf::root);
     rDomDocument.appendChild(hmfRoot);
-    hmfRoot.setAttribute(HMF_VERSIONTAG, hmfVersion);
-    hmfRoot.setAttribute(HMF_HOPSANGUIVERSIONTAG, hopsanGuiVersion);
-    hmfRoot.setAttribute(HMF_HOPSANCOREVERSIONTAG, hopsanCoreVersion);
+    hmfRoot.setAttribute(hmf::version::hmf, hmfVersion);
+    hmfRoot.setAttribute(hmf::version::hopsangui, hopsanGuiVersion);
+    hmfRoot.setAttribute(hmf::version::hopsancore, hopsanCoreVersion);
     return hmfRoot;
 }
 
@@ -163,11 +163,11 @@ QDomElement appendDomBooleanNode(QDomElement &rDomElement, const QString element
 {
     if(value)
     {
-        return appendDomTextNode(rDomElement, element_name, HMF_TRUETAG);
+        return appendDomTextNode(rDomElement, element_name, hmf::truetag);
     }
     else
     {
-        return appendDomTextNode(rDomElement, element_name, HMF_FALSETAG);
+        return appendDomTextNode(rDomElement, element_name, hmf::falsetag);
     }
 }
 
@@ -323,7 +323,7 @@ bool parseDomBooleanNode(QDomElement domElement, const bool defaultValue)
         return defaultValue;
     }
     // else check if it is true or not (something else = false)
-    return (domElement.text() == HMF_TRUETAG);
+    return (domElement.text() == hmf::truetag);
 }
 
 //! @brief Special purpose function for adding a Hopsan specific XML tag containing Object Pose information
@@ -334,7 +334,7 @@ bool parseDomBooleanNode(QDomElement domElement, const bool defaultValue)
 //! @param[in] flipped isFlipped status of the object
 void appendPoseTag(QDomElement &rDomElement, const double x, const double y, const double th, const bool flipped, const int precision)
 {
-    QDomElement pose = appendDomElement(rDomElement, HMF_POSETAG);
+    QDomElement pose = appendDomElement(rDomElement, hmf::appearance::pose);
 
     setQrealAttribute(pose, "x", x, precision, 'g');
     setQrealAttribute(pose, "y", y, precision, 'g');
@@ -348,7 +348,7 @@ void appendPoseTag(QDomElement &rDomElement, const double x, const double y, con
 //! @param[in] y The y coordinate
 void appendCoordinateTag(QDomElement &rDomElement, const double x, const double y, const int precision)
 {
-    QDomElement pose = appendDomElement(rDomElement, HMF_COORDINATETAG);
+    QDomElement pose = appendDomElement(rDomElement, hmf::connector::coordinate);
     setQrealAttribute(pose, "x", x, precision);
     setQrealAttribute(pose, "y", y, precision);
 }
@@ -361,7 +361,7 @@ void appendCoordinateTag(QDomElement &rDomElement, const double x, const double 
 void appendViewPortTag(QDomElement &rDomElement, const double x, const double y, const double zoom)
 {
     //qDebug() << QLocale().languageToString(QLocale().language()) << " " << QLocale().countryToString(QLocale().country()) << "DecimalPoint: " << QLocale().decimalPoint();
-    QDomElement pose = appendDomElement(rDomElement, HMF_VIEWPORTTAG);
+    QDomElement pose = appendDomElement(rDomElement, hmf::appearance::viewport);
 
     setQrealAttribute(pose, "x", x, 6, 'g');
     setQrealAttribute(pose, "y", y, 6, 'g');
@@ -377,7 +377,7 @@ void appendViewPortTag(QDomElement &rDomElement, const double x, const double y,
 //! @param[in] stop The stoptime
 void appendSimulationTimeTag(QDomElement &rDomElement, const double start, const double step, const double stop, const bool inheritTs)
 {
-    QDomElement simu = appendDomElement(rDomElement, HMF_SIMULATIONTIMETAG);
+    QDomElement simu = appendDomElement(rDomElement, hmf::simulationtime);
     setQrealAttribute(simu, "start", start, 10, 'g');
     setQrealAttribute(simu, "timestep", step, 10, 'g');
     setQrealAttribute(simu, "stop", stop, 10, 'g');
@@ -392,7 +392,7 @@ void appendSimulationTimeTag(QDomElement &rDomElement, const double start, const
 //! @param[in] stop The stoptime
 void appendLogSettingsTag(QDomElement &rDomElement, const double logStartTime, const unsigned int numLogSamples)
 {
-    QDomElement log = appendDomElement(rDomElement, HMF_SIMULATIONLOGSETTINGS);
+    QDomElement log = appendDomElement(rDomElement, hmf::simulationlogsettings);
     setQrealAttribute(log, "starttime", logStartTime, 10, 'g');
     log.setAttribute("numsamples", numLogSamples);
 }
@@ -463,7 +463,7 @@ double parseAttributeQreal(const QDomElement domElement, const QString attribute
 bool parseAttributeBool(const QDomElement domElement, const QString attributeName, const bool defaultValue)
 {
     QString attr = domElement.attribute(attributeName, bool2str(defaultValue));
-    if ( (attr==HMF_TRUETAG) || (attr=="True") || (attr=="1"))
+    if ( (attr==hmf::truetag) || (attr=="True") || (attr=="1"))
     {
         return true;
     }
@@ -539,7 +539,7 @@ void updateHmfComponentProperties(QDomElement &element, const QString /*hmfVersi
         updateRenamedPort(element, "HydraulicFlowSourceQ", "in", "q");
 
         // Fix incorrect parameter names
-        QDomElement xmlParameter = element.firstChildElement(HMF_PARAMETERS).firstChildElement(HMF_PARAMETERTAG);
+        QDomElement xmlParameter = element.firstChildElement(hmf::parameters).firstChildElement(hmf::parameter::root);
         while (!xmlParameter.isNull())
         {
             // Fix renamed node data variables
@@ -585,7 +585,7 @@ void updateHmfComponentProperties(QDomElement &element, const QString /*hmfVersi
 
                 xmlParameter.setAttribute("name", name);
             }
-            xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
+            xmlParameter = xmlParameter.nextSiblingElement(hmf::parameter::root);
         }
     }
 }
@@ -594,7 +594,7 @@ void updateHmfComponentProperties(QDomElement &element, const QString /*hmfVersi
 //! @brief Handles compatibility issues for xml data loaded from configuration file
 void verifyConfigurationCompatibility(QDomElement &rConfigElement)
 {
-    qDebug() << "Current version = " << HOPSANGUIVERSION << ", config version = " << rConfigElement.attribute(HMF_HOPSANGUIVERSIONTAG);
+    qDebug() << "Current version = " << HOPSANGUIVERSION << ", config version = " << rConfigElement.attribute(hmf::version::hopsangui);
 
     QDomElement unitsElement = rConfigElement.firstChildElement("units");
     if(!unitsElement.isNull())
@@ -613,17 +613,17 @@ void verifyConfigurationCompatibility(QDomElement &rConfigElement)
 
 void updateRenamedComponentType(QDomElement &rDomElement, const QString oldType, const QString newType)
 {
-    if(rDomElement.attribute(HMF_TYPENAME) == oldType)
+    if(rDomElement.attribute(hmf::typenametag) == oldType)
     {
-        rDomElement.setAttribute(HMF_TYPENAME, newType);
-        QDomElement guiElement = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
+        rDomElement.setAttribute(hmf::typenametag, newType);
+        QDomElement guiElement = rDomElement.firstChildElement(hmf::hopsangui);
         if(!guiElement.isNull())
         {
-            QDomElement cafElement = guiElement.firstChildElement(CAF_ROOT);
+            QDomElement cafElement = guiElement.firstChildElement(caf::root);
             if(!cafElement.isNull())
             {
-                QDomElement objectElement = cafElement.firstChildElement(CAF_MODELOBJECT);
-                objectElement.setAttribute(HMF_TYPENAME, newType);
+                QDomElement objectElement = cafElement.firstChildElement(caf::modelobject);
+                objectElement.setAttribute(hmf::typenametag, newType);
             }
         }
     }
@@ -631,26 +631,26 @@ void updateRenamedComponentType(QDomElement &rDomElement, const QString oldType,
 
 void updateRenamedComponentName(QDomElement &rDomElement, const QString oldName, const QString newName)
 {
-    if((rDomElement.tagName() == HMF_COMPONENT) && rDomElement.attribute(HMF_NAMETAG) == oldName)
+    if((rDomElement.tagName() == hmf::component) && rDomElement.attribute(hmf::name) == oldName)
     {
-        rDomElement.setAttribute(HMF_NAMETAG, newName);
+        rDomElement.setAttribute(hmf::name, newName);
         gpMessageHandler->addWarningMessage("Renamed component: "+oldName+" to "+newName);
-        QDomElement guiElement = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
+        QDomElement guiElement = rDomElement.firstChildElement(hmf::hopsangui);
         if(!guiElement.isNull())
         {
-            QDomElement cafElement = guiElement.firstChildElement(CAF_ROOT);
+            QDomElement cafElement = guiElement.firstChildElement(caf::root);
             if(!cafElement.isNull())
             {
-                QDomElement objectElement = cafElement.firstChildElement(CAF_MODELOBJECT);
+                QDomElement objectElement = cafElement.firstChildElement(caf::modelobject);
                 objectElement.setAttribute("displayname", newName);
             }
         }
     }
-    else if ((rDomElement.tagName() == HMF_CONNECTORTAG) && (rDomElement.attribute(HMF_CONNECTORSTARTCOMPONENTTAG) == oldName)) {
-        rDomElement.setAttribute(HMF_CONNECTORSTARTCOMPONENTTAG, newName);
+    else if ((rDomElement.tagName() == hmf::connector::root) && (rDomElement.attribute(hmf::connector::startcomponent) == oldName)) {
+        rDomElement.setAttribute(hmf::connector::startcomponent, newName);
     }
-    else if ((rDomElement.tagName() == HMF_CONNECTORTAG) && (rDomElement.attribute(HMF_CONNECTORENDCOMPONENTTAG) == oldName)) {
-        rDomElement.setAttribute(HMF_CONNECTORENDCOMPONENTTAG, newName);
+    else if ((rDomElement.tagName() == hmf::connector::root) && (rDomElement.attribute(hmf::connector::endcomponent) == oldName)) {
+        rDomElement.setAttribute(hmf::connector::endcomponent, newName);
     }
 
 }
@@ -660,42 +660,42 @@ void updateRenamedPort(QDomElement &rDomElement, const QString componentType, co
     if(rDomElement.attribute("typename") == componentType)
     {
         // Rename startvalue parameters
-        QDomElement parameter = rDomElement.firstChildElement(HMF_PARAMETERS).firstChildElement(HMF_PARAMETERTAG);
+        QDomElement parameter = rDomElement.firstChildElement(hmf::parameters).firstChildElement(hmf::parameter::root);
         while (!parameter.isNull())
         {
-            QString paramName = parameter.attribute(HMF_NAMETAG);
+            QString paramName = parameter.attribute(hmf::name);
             if (paramName.contains(oldName+"#"))
             {
                 paramName.replace(oldName+"#",newName+"#");
-                parameter.setAttribute(HMF_NAMETAG, paramName);
+                parameter.setAttribute(hmf::name, paramName);
             }
-            parameter = parameter.nextSiblingElement(HMF_PARAMETERTAG);
+            parameter = parameter.nextSiblingElement(hmf::parameter::root);
         }
 
         // Now try to find all connections, and replace portname
-        QString compName = rDomElement.attribute(HMF_NAMETAG);
-        QDomElement connection = rDomElement.parentNode().parentNode().firstChildElement(HMF_CONNECTIONS).firstChildElement(HMF_CONNECTORTAG);
+        QString compName = rDomElement.attribute(hmf::name);
+        QDomElement connection = rDomElement.parentNode().parentNode().firstChildElement(hmf::connections).firstChildElement(hmf::connector::root);
         while (!connection.isNull())
         {
-            QString startComp = connection.attribute(HMF_CONNECTORSTARTCOMPONENTTAG);
-            QString endComp = connection.attribute(HMF_CONNECTORENDCOMPONENTTAG);
+            QString startComp = connection.attribute(hmf::connector::startcomponent);
+            QString endComp = connection.attribute(hmf::connector::endcomponent);
 
             if (startComp == compName)
             {
-                if (connection.attribute(HMF_CONNECTORSTARTPORTTAG) == oldName)
+                if (connection.attribute(hmf::connector::startport) == oldName)
                 {
-                    connection.setAttribute(HMF_CONNECTORSTARTPORTTAG, newName);
+                    connection.setAttribute(hmf::connector::startport, newName);
                 }
             }
             if (endComp == compName)
             {
-                if (connection.attribute(HMF_CONNECTORENDPORTTAG) == oldName)
+                if (connection.attribute(hmf::connector::endport) == oldName)
                 {
-                    connection.setAttribute(HMF_CONNECTORENDPORTTAG, newName);
+                    connection.setAttribute(hmf::connector::endport, newName);
                 }
             }
 
-            connection = connection.nextSiblingElement(HMF_CONNECTORTAG);
+            connection = connection.nextSiblingElement(hmf::connector::root);
         }
     }
 }
@@ -704,15 +704,15 @@ void updateRenamedParameter(QDomElement &rDomElement, const QString componentTyp
 {
     if(rDomElement.attribute("typename") == componentType)
     {
-        QDomElement parameter = rDomElement.firstChildElement(HMF_PARAMETERS).firstChildElement(HMF_PARAMETERTAG);
+        QDomElement parameter = rDomElement.firstChildElement(hmf::parameters).firstChildElement(hmf::parameter::root);
         while (!parameter.isNull())
         {
-            if (parameter.attribute(HMF_NAMETAG) == oldName)
+            if (parameter.attribute(hmf::name) == oldName)
             {
-                parameter.setAttribute(HMF_NAMETAG, newName);
-                gpMessageHandler->addWarningMessage("Renamed parameter: "+oldName+" to "+newName+" in: "+rDomElement.attribute(HMF_NAMETAG));
+                parameter.setAttribute(hmf::name, newName);
+                gpMessageHandler->addWarningMessage("Renamed parameter: "+oldName+" to "+newName+" in: "+rDomElement.attribute(hmf::name));
             }
-            parameter = parameter.nextSiblingElement(HMF_PARAMETERTAG);
+            parameter = parameter.nextSiblingElement(hmf::parameter::root);
         }
     }
 }
@@ -775,16 +775,16 @@ void updateHmfSystemProperties(QDomElement &systemElement, const QString hmfVers
         for (const auto& oldName : invalidNames) {
             QString newName = oldName+"_INVALID_NAME";
 
-            QDomElement xmlComponent = systemElement.firstChildElement(HMF_OBJECTS).firstChildElement(HMF_COMPONENT);
+            QDomElement xmlComponent = systemElement.firstChildElement(hmf::objects).firstChildElement(hmf::component);
             while (!xmlComponent.isNull()) {
                 updateRenamedComponentName(xmlComponent, oldName, newName);
-                xmlComponent = xmlComponent.nextSiblingElement(HMF_COMPONENT);
+                xmlComponent = xmlComponent.nextSiblingElement(hmf::component);
             }
 
-            QDomElement xmlConnection = systemElement.firstChildElement(HMF_CONNECTIONS).firstChildElement(HMF_CONNECTORTAG);
+            QDomElement xmlConnection = systemElement.firstChildElement(hmf::connections).firstChildElement(hmf::connector::root);
             while(!xmlConnection.isNull()) {
                 updateRenamedComponentName(xmlConnection, oldName, newName);
-                xmlConnection = xmlConnection.nextSiblingElement(HMF_CONNECTORTAG);
+                xmlConnection = xmlConnection.nextSiblingElement(hmf::connector::root);
             }
 
             // This will rename the system parameter and preserve the value, but any user of the parameter must be updated manually

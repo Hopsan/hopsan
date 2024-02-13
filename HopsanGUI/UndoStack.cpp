@@ -85,7 +85,7 @@ void UndoStack::clear(QString errorMsg)
 {
     mCurrentStackPosition = -1;
     mUndoRoot.clear();
-    mUndoRoot = mDomDocument.createElement(HMF_UNDO);
+    mUndoRoot = mDomDocument.createElement(hmf::undo);
     mDomDocument.appendChild(mUndoRoot);
     QDomElement firstPost = appendDomElement(mUndoRoot, "post");
     firstPost.setAttribute("number", mCurrentStackPosition);
@@ -144,51 +144,51 @@ void UndoStack::undoOneStep()
         didSomething = true;
         if(stuffElement.attribute("what") == UNDO_DELETEDOBJECT)
         {
-            QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENT);
+            QDomElement componentElement = stuffElement.firstChildElement(hmf::component);
             ModelObject* pObj = loadModelObject(componentElement, mpParentSystemObject, NoUndo);
 
             //Load parameter values
-            QDomElement xmlParameters = componentElement.firstChildElement(HMF_PARAMETERS);
-            QDomElement xmlParameter = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
+            QDomElement xmlParameters = componentElement.firstChildElement(hmf::parameters);
+            QDomElement xmlParameter = xmlParameters.firstChildElement(hmf::parameter::root);
             while (!xmlParameter.isNull())
             {
                 loadParameterValue(xmlParameter, pObj, NoUndo);
-                xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
+                xmlParameter = xmlParameter.nextSiblingElement(hmf::parameter::root);
             }
         }
         else if(stuffElement.attribute("what") == UNDO_DELETEDSYSTEMPORT)
         {
-            QDomElement systemPortElement = stuffElement.firstChildElement(HMF_SYSTEMPORTTAG);
+            QDomElement systemPortElement = stuffElement.firstChildElement(hmf::systemport);
             loadSystemPortObject(systemPortElement, mpParentSystemObject, NoUndo);
         }
         else if(stuffElement.attribute("what") == UNDO_DELETEDSUBSYSTEM)
         {
-            QDomElement systemElement = stuffElement.firstChildElement(HMF_SYSTEMTAG);
+            QDomElement systemElement = stuffElement.firstChildElement(hmf::system);
             loadModelObject(systemElement, mpParentSystemObject, NoUndo);
         }
         else if(stuffElement.attribute("what") == UNDO_ADDEDOBJECT)
         {
-            QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENT);
+            QDomElement componentElement = stuffElement.firstChildElement(hmf::component);
             addedObjectList.append(componentElement);
         }
         else if(stuffElement.attribute("what") == UNDO_ADDEDSYSTEMPORT)
         {
-            QDomElement systemPortElement = stuffElement.firstChildElement(HMF_SYSTEMPORTTAG);
+            QDomElement systemPortElement = stuffElement.firstChildElement(hmf::systemport);
             addedsystemportsList.append(systemPortElement);
         }
         else if(stuffElement.attribute("what") == UNDO_ADDEDSUBSYSTEM)
         {
-            QDomElement systemElement = stuffElement.firstChildElement(HMF_SYSTEMTAG);
+            QDomElement systemElement = stuffElement.firstChildElement(hmf::system);
             addedsubsystemsList.append(systemElement);
         }
         else if(stuffElement.attribute("what") == UNDO_DELETEDCONNECTOR)
         {
-            QDomElement connectorElement = stuffElement.firstChildElement(HMF_CONNECTORTAG);
+            QDomElement connectorElement = stuffElement.firstChildElement(hmf::connector::root);
             deletedConnectorList.append(connectorElement);
         }
         else if(stuffElement.attribute("what") == UNDO_ADDEDCONNECTOR)
         {
-            QDomElement connectorElement = stuffElement.firstChildElement(HMF_CONNECTORTAG);
+            QDomElement connectorElement = stuffElement.firstChildElement(hmf::connector::root);
             addedConnectorList.append(connectorElement);
         }
         else if(stuffElement.attribute("what") == UNDO_RENAME)
@@ -212,7 +212,7 @@ void UndoStack::undoOneStep()
             parseDomValueNode2(newPosElement, tempX, tempY);
             QPointF newPos = QPointF(tempX, tempY);
             int lineNumber = stuffElement.attribute("linenumber").toDouble();
-            QDomElement connectorElement = stuffElement.firstChildElement(HMF_CONNECTORTAG);
+            QDomElement connectorElement = stuffElement.firstChildElement(hmf::connector::root);
             QString startComponent = connectorElement.attribute("startcomponent");
             QString startPort = connectorElement.attribute("startport");
             QString endComponent = connectorElement.attribute("endcomponent");
@@ -234,7 +234,7 @@ void UndoStack::undoOneStep()
             QDomElement oldPosElement = stuffElement.firstChildElement("oldpos");
             parseDomValueNode2(newPosElement, x_new, y_new);
             parseDomValueNode2(oldPosElement, x, y);
-            QString name = stuffElement.attribute(HMF_NAMETAG);
+            QString name = stuffElement.attribute(hmf::name);
             if(!mpParentSystemObject->hasModelObject(name))
             {
                 this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
@@ -251,7 +251,7 @@ void UndoStack::undoOneStep()
             double dx = stuffElement.attribute("dx").toDouble();
             double dy = stuffElement.attribute("dy").toDouble();
 
-            QDomElement connectorElement = stuffElement.firstChildElement(HMF_CONNECTORTAG);
+            QDomElement connectorElement = stuffElement.firstChildElement(hmf::connector::root);
             QString startComponent = connectorElement.attribute("startcomponent");
             QString startPort = connectorElement.attribute("startport");
             QString endComponent = connectorElement.attribute("endcomponent");
@@ -389,11 +389,11 @@ void UndoStack::undoOneStep()
         }
         else if(stuffElement.attribute("what") == UNDO_REMOVEDALIASES)
         {
-            QDomElement xmlAlias = stuffElement.firstChildElement(HMF_ALIAS);
+            QDomElement xmlAlias = stuffElement.firstChildElement(hmf::alias);
             while (!xmlAlias.isNull())
             {
                 loadPlotAlias(xmlAlias, mpParentSystemObject);
-                xmlAlias = xmlAlias.nextSiblingElement(HMF_ALIAS);
+                xmlAlias = xmlAlias.nextSiblingElement(hmf::alias);
             }
         }
         stuffElement = stuffElement.previousSiblingElement("stuff");
@@ -432,7 +432,7 @@ void UndoStack::undoOneStep()
     // Remove objects after removing connectors, to make sure connectors don't lose their start and end components
     for(it = addedObjectList.begin(); it!=addedObjectList.end(); ++it)
     {
-        QString name = (*it).attribute(HMF_NAMETAG);
+        QString name = (*it).attribute(hmf::name);
         if(!mpParentSystemObject->hasModelObject(name))
         {
             this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
@@ -444,7 +444,7 @@ void UndoStack::undoOneStep()
     // Remove system ports
     for(it = addedsystemportsList.begin(); it!=addedsystemportsList.end(); ++it)
     {
-        QString name = (*it).attribute(HMF_NAMETAG);
+        QString name = (*it).attribute(hmf::name);
         if(!mpParentSystemObject->hasModelObject(name))
         {
             this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
@@ -456,7 +456,7 @@ void UndoStack::undoOneStep()
     // Remove subsystems
     for(it = addedsubsystemsList.begin(); it!=addedsubsystemsList.end(); ++it)
     {
-        QString name = (*it).attribute(HMF_NAMETAG);
+        QString name = (*it).attribute(hmf::name);
         SystemObject *pSystemToRemove = qobject_cast<SystemObject *>(mpParentSystemObject->getModelObject(name));
 
         // Update information about Subsystem in DOM tree, in case it has changed inside since registered in the undo stack
@@ -514,8 +514,8 @@ void UndoStack::redoOneStep()
         didSomething = true;
         if(stuffElement.attribute("what") == UNDO_DELETEDOBJECT)
         {
-            QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENT);
-            QString name = componentElement.attribute(HMF_NAMETAG);
+            QDomElement componentElement = stuffElement.firstChildElement(hmf::component);
+            QString name = componentElement.attribute(hmf::name);
             if(mpParentSystemObject->hasModelObject(name)) {
                 mpParentSystemObject->deleteModelObject(name, NoUndo);
             }
@@ -525,8 +525,8 @@ void UndoStack::redoOneStep()
         }
         else if(stuffElement.attribute("what") == UNDO_DELETEDSYSTEMPORT)
         {
-            QDomElement systemPortElement = stuffElement.firstChildElement(HMF_SYSTEMPORTTAG);
-            QString name = systemPortElement.attribute(HMF_NAMETAG);
+            QDomElement systemPortElement = stuffElement.firstChildElement(hmf::systemport);
+            QString name = systemPortElement.attribute(hmf::name);
             if(mpParentSystemObject->hasModelObject(name)) {
                 mpParentSystemObject->deleteModelObject(name, NoUndo);
             }
@@ -537,8 +537,8 @@ void UndoStack::redoOneStep()
         }
         else if(stuffElement.attribute("what") == UNDO_DELETEDSUBSYSTEM)
         {
-            QDomElement systemElement = stuffElement.firstChildElement(HMF_SYSTEMTAG);
-            QString name = systemElement.attribute(HMF_NAMETAG);
+            QDomElement systemElement = stuffElement.firstChildElement(hmf::system);
+            QString name = systemElement.attribute(hmf::name);
             if(mpParentSystemObject->hasModelObject(name)) {
                 mpParentSystemObject->deleteModelObject(name, NoUndo);
             }
@@ -548,22 +548,22 @@ void UndoStack::redoOneStep()
         }
         else if(stuffElement.attribute("what") == UNDO_ADDEDOBJECT)
         {
-            QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENT);
+            QDomElement componentElement = stuffElement.firstChildElement(hmf::component);
             loadModelObject(componentElement, mpParentSystemObject, NoUndo);
         }
         else if(stuffElement.attribute("what") == UNDO_ADDEDSYSTEMPORT)
         {
-            QDomElement systemPortElement = stuffElement.firstChildElement(HMF_SYSTEMPORTTAG);
+            QDomElement systemPortElement = stuffElement.firstChildElement(hmf::systemport);
             loadSystemPortObject(systemPortElement, mpParentSystemObject, NoUndo);
         }
         else if(stuffElement.attribute("what") == UNDO_ADDEDSUBSYSTEM)
         {
-            QDomElement systemElement = stuffElement.firstChildElement(HMF_SYSTEMTAG);
+            QDomElement systemElement = stuffElement.firstChildElement(hmf::system);
             loadModelObject(systemElement, mpParentSystemObject, NoUndo);
         }
         else if(stuffElement.attribute("what") == UNDO_DELETEDCONNECTOR)
         {
-            QDomElement connectorElement = stuffElement.firstChildElement(HMF_CONNECTORTAG);
+            QDomElement connectorElement = stuffElement.firstChildElement(hmf::connector::root);
             QString startComponent = connectorElement.attribute("startcomponent");
             QString startPort = connectorElement.attribute("startport");
             QString endComponent = connectorElement.attribute("endcomponent");
@@ -577,7 +577,7 @@ void UndoStack::redoOneStep()
         }
         else if(stuffElement.attribute("what") == UNDO_ADDEDCONNECTOR)
         {
-            QDomElement connectorElement = stuffElement.firstChildElement(HMF_CONNECTORTAG);
+            QDomElement connectorElement = stuffElement.firstChildElement(hmf::connector::root);
             addedConnectorList.append(connectorElement);
         }
         else if(stuffElement.attribute("what") == UNDO_RENAME)
@@ -604,7 +604,7 @@ void UndoStack::redoOneStep()
             QDomElement oldPosElement = stuffElement.firstChildElement("oldpos");
             parseDomValueNode2(newPosElement, x, y);
             parseDomValueNode2(oldPosElement, x_old, y_old);
-            QString name = stuffElement.attribute(HMF_NAMETAG);
+            QString name = stuffElement.attribute(hmf::name);
             if(mpParentSystemObject->hasModelObject(name)) {
                 mpParentSystemObject->getModelObject(name)->setPos(x, y);
                 mpParentSystemObject->getModelObject(name)->rememberPos();
@@ -753,7 +753,7 @@ void UndoStack::redoOneStep()
 
         int lineNumber = (*it).attribute("linenumber").toDouble();
 
-        QDomElement connectorElement = (*it).firstChildElement(HMF_CONNECTORTAG);
+        QDomElement connectorElement = (*it).firstChildElement(hmf::connector::root);
         QString startComponent = connectorElement.attribute("startcomponent");
         QString startPort = connectorElement.attribute("startport");
         QString endComponent = connectorElement.attribute("endcomponent");
@@ -925,7 +925,7 @@ void UndoStack::registerMovedObject(QPointF oldPos, QPointF newPos, QString obje
         QDomElement currentPostElement = getCurrentPost();
         QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
         stuffElement.setAttribute("what", UNDO_MOVEDOBJECT);
-        stuffElement.setAttribute(HMF_NAMETAG, objectName);
+        stuffElement.setAttribute(hmf::name, objectName);
         appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
         appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
         gpUndoWidget->refreshList();
@@ -1021,9 +1021,9 @@ void UndoStack::registerRemovedAliases(QStringList &aliases)
         //! @todo need one function that gets both alias and full maybe
         for (int i=0; i<aliases.size(); ++i)
         {
-            QDomElement alias = appendDomElement(stuffElement, HMF_ALIAS);
-            alias.setAttribute(HMF_TYPE, "variable"); //!< @todo not manual type
-            alias.setAttribute(HMF_NAMETAG, aliases[i]);
+            QDomElement alias = appendDomElement(stuffElement, hmf::alias);
+            alias.setAttribute(hmf::type, "variable"); //!< @todo not manual type
+            alias.setAttribute(hmf::name, aliases[i]);
             QString fullName = mpParentSystemObject->getFullNameFromAlias(aliases[i]);
             appendDomTextNode(alias, "fullname",fullName );
         }
@@ -1149,7 +1149,7 @@ void UndoStack::setEnabled(bool enabled)
 
 void UndoStack::addTextboxwidget(const QDomElement &rStuffElement)
 {
-    QDomElement textBoxElement = rStuffElement.firstChildElement(HMF_TEXTBOXWIDGETTAG);
+    QDomElement textBoxElement = rStuffElement.firstChildElement(hmf::widget::textboxwidget);
     int id = parseAttributeInt(textBoxElement, "index", 0);
     TextBoxWidget *pWidget = mpParentSystemObject->addTextBoxWidget(QPointF(1,1), id, NoUndo);
     pWidget->loadFromDomElement(textBoxElement);
@@ -1169,7 +1169,7 @@ void UndoStack::modifyTextboxWidget(QDomElement &rStuffElement)
     {
         pWidget->saveToDomElement(rStuffElement);
 
-        QString tagname(HMF_TEXTBOXWIDGETTAG);
+        QString tagname(hmf::widget::textboxwidget);
         pWidget->loadFromDomElement(rStuffElement.firstChildElement(tagname));
 
         // Now remember the prevData in case we want to redo/undo again
@@ -1180,8 +1180,8 @@ void UndoStack::modifyTextboxWidget(QDomElement &rStuffElement)
 
 void UndoStack::addImageWidget(const QDomElement &rStuffElement)
 {
-    QDomElement imageElement = rStuffElement.firstChildElement(hmf::imagewidget);
-    int id = parseAttributeInt(imageElement, hmf::index, 0);
+    QDomElement imageElement = rStuffElement.firstChildElement(hmf::widget::imagewidget);
+    int id = parseAttributeInt(imageElement, hmf::widget::index, 0);
     ImageWidget *pWidget = mpParentSystemObject->addImageWidget(QPointF(1,1), id, NoUndo);
     pWidget->loadFromDomElement(imageElement);
 }
@@ -1201,7 +1201,7 @@ void UndoStack::modifyImageWidget(QDomElement &rStuffElement)
     if (pWidget) {
         pWidget->saveToDomElement(rStuffElement);
 
-        QString tagname(hmf::imagewidget);
+        QString tagname(hmf::widget::imagewidget);
         pWidget->loadFromDomElement(rStuffElement.firstChildElement(tagname));
 
         // Now remember the prevData in case we want to redo/undo again
