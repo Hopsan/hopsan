@@ -128,12 +128,12 @@ void OptimizationHandler::startOptimization(ModelWidget *pModel, QString &modelP
 //        connect(mpWorker, SIGNAL(pointChanged(int)),        this,               SLOT(logPoint(int)));
 //        connect(mpWorker, SIGNAL(stepCompleted(int)),       this,               SLOT(checkIfRescheduleIsNeeded()));
 
-        mOrgSetPwdToMwdSetting = gpConfig->getBoolSetting(CFG_SETPWDTOMWD);
-        mOrgProgressBarSetting = gpConfig->getBoolSetting(CFG_PROGRESSBAR);
-        mOrgLimitDataGenerationsSetting = gpConfig->getBoolSetting(CFG_AUTOLIMITGENERATIONS);
-        gpConfig->setBoolSetting(CFG_SETPWDTOMWD, false);
-        gpConfig->setBoolSetting(CFG_PROGRESSBAR, false);
-        gpConfig->setBoolSetting(CFG_AUTOLIMITGENERATIONS, true);
+        mOrgSetPwdToMwdSetting = gpConfig->getBoolSetting(cfg::setpwdtomwd);
+        mOrgProgressBarSetting = gpConfig->getBoolSetting(cfg::progressbar);
+        mOrgLimitDataGenerationsSetting = gpConfig->getBoolSetting(cfg::autolimitgenerations);
+        gpConfig->setBoolSetting(cfg::setpwdtomwd, false);
+        gpConfig->setBoolSetting(cfg::progressbar, false);
+        gpConfig->setBoolSetting(cfg::autolimitgenerations, true);
 
         int nModels = mpWorker->getNumberOfCandidates();
         this->initModels(pModel, nModels, modelPath);
@@ -141,7 +141,7 @@ void OptimizationHandler::startOptimization(ModelWidget *pModel, QString &modelP
 
 #ifdef USEZMQ
         // Setup parallel server queues
-        if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
+        if (gpConfig->getBoolSetting(cfg::useremoteoptimization))
         {
             int pm, pa; double su;
             rescheduleForBestSpeedup(pm,pa,su,true);
@@ -167,9 +167,9 @@ void OptimizationHandler::startOptimization(ModelWidget *pModel, QString &modelP
         printLogFile();
         printDebugFile();
 
-        gpConfig->setBoolSetting(CFG_SETPWDTOMWD, mOrgSetPwdToMwdSetting);
-        gpConfig->setBoolSetting(CFG_PROGRESSBAR, mOrgProgressBarSetting);
-        gpConfig->setBoolSetting(CFG_AUTOLIMITGENERATIONS, mOrgLimitDataGenerationsSetting);
+        gpConfig->setBoolSetting(cfg::setpwdtomwd, mOrgSetPwdToMwdSetting);
+        gpConfig->setBoolSetting(cfg::progressbar, mOrgProgressBarSetting);
+        gpConfig->setBoolSetting(cfg::autolimitgenerations, mOrgLimitDataGenerationsSetting);
     }
     else
     {
@@ -179,7 +179,7 @@ void OptimizationHandler::startOptimization(ModelWidget *pModel, QString &modelP
 
 #ifdef USEZMQ
     // Clear and disconnect from parallel server queues
-    if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
+    if (gpConfig->getBoolSetting(cfg::useremoteoptimization))
     {
         mpRemoteSimulationQueueHandler->clear();
     }
@@ -736,7 +736,7 @@ bool OptimizationHandler::evaluateAllCandidates()
 
     bool simOK=false;
 #ifdef USEZMQ
-    if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
+    if (gpConfig->getBoolSetting(cfg::useremoteoptimization))
     {
         if (mpRemoteSimulationQueueHandler && mpRemoteSimulationQueueHandler->hasServers())
         {
@@ -1327,7 +1327,7 @@ void OptimizationHandler::checkIfRescheduleIsNeeded()
             int pm, pa; double su;
             rescheduleForBestSpeedup(pm,pa,su);
             // Setup parallel server queues
-            if (gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION))
+            if (gpConfig->getBoolSetting(cfg::useremoteoptimization))
             {
                 mpRemoteSimulationQueueHandler->setupModelQueues(mModelPtrs.mid(0, mpWorker->getNumberOfCandidates()), pm);
             }

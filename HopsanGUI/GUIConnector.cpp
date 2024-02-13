@@ -628,39 +628,39 @@ void Connector::saveToDomElement(QDomElement &rDomElement)
     }
 
     //Core necessary stuff
-    QDomElement xmlConnect = appendDomElement(rDomElement, HMF_CONNECTORTAG);
+    QDomElement xmlConnect = appendDomElement(rDomElement, hmf::connector::root);
 
-    xmlConnect.setAttribute(HMF_CONNECTORSTARTCOMPONENTTAG, getStartComponentName());
-    xmlConnect.setAttribute(HMF_CONNECTORSTARTPORTTAG, getStartPortName());
-    xmlConnect.setAttribute(HMF_CONNECTORENDCOMPONENTTAG, getEndComponentName());
-    xmlConnect.setAttribute(HMF_CONNECTORENDPORTTAG, getEndPortName());
+    xmlConnect.setAttribute(hmf::connector::startcomponent, getStartComponentName());
+    xmlConnect.setAttribute(hmf::connector::startport, getStartPortName());
+    xmlConnect.setAttribute(hmf::connector::endcomponent, getEndComponentName());
+    xmlConnect.setAttribute(hmf::connector::endport, getEndPortName());
 
 
     //Save gui data to dom
-    QDomElement xmlConnectGUI = appendDomElement(xmlConnect, HMF_HOPSANGUITAG);
-    QDomElement xmlCoordinates = appendDomElement(xmlConnectGUI, HMF_COORDINATES);
+    QDomElement xmlConnectGUI = appendDomElement(xmlConnect, hmf::hopsangui);
+    QDomElement xmlCoordinates = appendDomElement(xmlConnectGUI, hmf::connector::coordinates);
     for(int j=0; j<mPoints.size(); ++j)
     {
         appendCoordinateTag(xmlCoordinates, mPoints[j].x(), mPoints[j].y());
     }
-    QDomElement xmlGeometries = appendDomElement(xmlConnectGUI, HMF_GEOMETRIES);
+    QDomElement xmlGeometries = appendDomElement(xmlConnectGUI, hmf::connector::geometries);
     for(int j=0; j<mGeometries.size(); ++j)
     {
         if(mGeometries.at(j) == Vertical)
-            appendDomTextNode(xmlGeometries, HMF_GEOMETRYTAG, "vertical");
+            appendDomTextNode(xmlGeometries, hmf::connector::geometry, "vertical");
         if(mGeometries.at(j) == Horizontal)
-            appendDomTextNode(xmlGeometries, HMF_GEOMETRYTAG, "horizontal");
+            appendDomTextNode(xmlGeometries, hmf::connector::geometry, "horizontal");
         if(mGeometries.at(j) == Diagonal)
-            appendDomTextNode(xmlGeometries, HMF_GEOMETRYTAG, "diagonal");
+            appendDomTextNode(xmlGeometries, hmf::connector::geometry, "diagonal");
     }
     if(mIsDashed)
-        appendDomTextNode(xmlConnectGUI, HMF_STYLETAG, "dashed");
+        appendDomTextNode(xmlConnectGUI, hmf::connector::style, "dashed");
     else
-        appendDomTextNode(xmlConnectGUI, HMF_STYLETAG, "solid");
+        appendDomTextNode(xmlConnectGUI, hmf::connector::style, "solid");
     QColor customColor = mpConnectorAppearance->getCustomColor();
     if(customColor != QColor())
     {
-        appendDomTextNode(xmlConnectGUI, HMF_COLORTAG, makeRgbString(customColor));
+        appendDomTextNode(xmlConnectGUI, hmf::connector::color, makeRgbString(customColor));
     }
 }
 

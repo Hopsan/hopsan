@@ -87,7 +87,9 @@ GraphicsView::GraphicsView(ModelWidget *parent)
     this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
     this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    this->setSceneRect(0,0,5000,5000);
+    //This scene rect is needed because the old scene was (0,0) - (5000,5000) with center in (2500,2500).
+    //We need to ensure the center is still at the same position even though the scene is now larger.
+    this->setSceneRect(-25000+2500,-25000+2500,25000+2500,25000+2500);
     this->centerOn(this->sceneRect().center());
 
     mIsoColor = QColor("white");
@@ -104,7 +106,7 @@ GraphicsView::GraphicsView(ModelWidget *parent)
     hideAddComponentLineEdit();
 
     this->updateViewPort();
-    this->setRenderHint(QPainter::Antialiasing, gpConfig->getBoolSetting(CFG_ANTIALIASING));
+    this->setRenderHint(QPainter::Antialiasing, gpConfig->getBoolSetting(cfg::antialiasing));
 }
 
 
@@ -836,12 +838,12 @@ void GraphicsView::print()
 void GraphicsView::exportToPDF()
 {
     QString fileName = QFileDialog::getSaveFileName(
-        this, "Export File Name", gpConfig->getStringSetting(CFG_MODELGFXDIR),
+        this, "Export File Name", gpConfig->getStringSetting(cfg::dir::modelgfx),
         "Adobe PDF Documents (*.pdf)");
     if ( !fileName.isEmpty() )
     {
         QFileInfo file(fileName);
-        gpConfig->setStringSetting(CFG_MODELGFXDIR, file.absolutePath());
+        gpConfig->setStringSetting(cfg::dir::modelgfx, file.absolutePath());
 
         //Here we set A0, Landscape and Fullpage among other things to make sure that components get large enough to be treated as vector graphics
         //Some bug or "feature" makes small objects be converted to bitmaps (ugly)
@@ -912,13 +914,13 @@ void GraphicsView::exportToPNG()
     double res = pScaleEdit->text().toDouble();
 
     // Open save dialog to get the file name
-    QString fileName = QFileDialog::getSaveFileName(this, "Export File Name", gpConfig->getStringSetting(CFG_MODELGFXDIR), "Portable Network Graphics (*.png)");
+    QString fileName = QFileDialog::getSaveFileName(this, "Export File Name", gpConfig->getStringSetting(cfg::dir::modelgfx), "Portable Network Graphics (*.png)");
 
     // Attempt to save if user did select a filename
     if(!fileName.isEmpty())
     {
         QFileInfo file(fileName);
-        gpConfig->setStringSetting(CFG_MODELGFXDIR, file.absolutePath());
+        gpConfig->setStringSetting(cfg::dir::modelgfx, file.absolutePath());
 
         pScene->setSceneRect(pScene->itemsBoundingRect());
         qDebug() << "itemsBoundingRect(): " << pScene->itemsBoundingRect().width() << "*" << pScene->itemsBoundingRect().height();
@@ -990,7 +992,7 @@ AnimatedGraphicsView::AnimatedGraphicsView(QGraphicsScene *pScene, QWidget *pPar
     mZoomFactor = 1.0;
 
     this->updateViewPort();
-    this->setRenderHint(QPainter::Antialiasing, gpConfig->getBoolSetting(CFG_ANTIALIASING));
+    this->setRenderHint(QPainter::Antialiasing, gpConfig->getBoolSetting(cfg::antialiasing));
 
     connect(this, SIGNAL(hovered()), gpLibraryWidget, SLOT(clearHoverEffects()));
     //connect(this, SIGNAL(hovered()), gpPlotWidget, SLOT(clearHoverEffects()));

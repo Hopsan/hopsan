@@ -456,7 +456,7 @@ void ModelWidget::setUseRemoteSimulation(bool useRemoteCore, bool useAddressServ
 
     if (useRemoteCore)
     {
-        int nThreads = gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS);
+        int nThreads = gpConfig->getIntegerSetting(cfg::numberofthreads);
         nThreads = qMax(nThreads, 1);
 
         QString serveraddress;
@@ -465,10 +465,10 @@ void ModelWidget::setUseRemoteSimulation(bool useRemoteCore, bool useAddressServ
             SharedRemoteCoreAddressHandlerT pAddressHandler = getSharedRemoteCoreAddressHandler();
 
             // Check if we should change server address and reconnect
-            if (!pAddressHandler.isNull() && (pAddressHandler->getAddressAndPort() != gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESSSERVERADDRESS)) )
+            if (!pAddressHandler.isNull() && (pAddressHandler->getAddressAndPort() != gpConfig->getStringSetting(cfg::remotehopsanaddresserveraddress)) )
             {
                 pAddressHandler->disconnect();
-                pAddressHandler->setHopsanAddressServer(gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESSSERVERADDRESS));
+                pAddressHandler->setHopsanAddressServer(gpConfig->getStringSetting(cfg::remotehopsanaddresserveraddress));
                 pAddressHandler->connect();
                 //! @todo what happens if it disconnects, then we would need to reconnect, we also need to keep the connection alive by polling
             }
@@ -479,14 +479,14 @@ void ModelWidget::setUseRemoteSimulation(bool useRemoteCore, bool useAddressServ
         }
         else
         {
-            serveraddress = gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESS);
+            serveraddress = gpConfig->getStringSetting(cfg::remotehopsanaddress);
         }
 
         if (!serveraddress.isEmpty())
         {
             // If we have found the best available server, then create a local remote simulation handler and connect it to the server
             mpLocalRemoteCoreSimulationHandler = SharedRemoteCoreSimulationHandlerT(new RemoteCoreSimulationHandler());
-            mpLocalRemoteCoreSimulationHandler->setUserIdentification(gpConfig->getStringSetting(CFG_REMOTEHOPSANUSERIDENTIFICATION));
+            mpLocalRemoteCoreSimulationHandler->setUserIdentification(gpConfig->getStringSetting(cfg::remotehopsanuseridentification));
             mpLocalRemoteCoreSimulationHandler->setNumThreads(nThreads);
             if (useAddressServer)
             {
@@ -586,7 +586,7 @@ void ModelWidget::setSaved(bool value)
 bool ModelWidget::simulate_nonblocking()
 {
     // Save backup copy (if needed)
-    if (!isSaved() && gpConfig->getBoolSetting(CFG_AUTOBACKUP))
+    if (!isSaved() && gpConfig->getBoolSetting(cfg::autobackup))
     {
         QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
         fileNameWithoutHmf.chop(4);
@@ -622,12 +622,12 @@ bool ModelWidget::simulate_nonblocking()
         if(!mSimulateMutex.tryLock()) return false;
 
         qDebug() << "Calling simulate_nonblocking()";
-        if(gpConfig->getBoolSetting(CFG_LOGDURINGSIMULATION)) {
+        if(gpConfig->getBoolSetting(cfg::logduringsimulation)) {
             prepareForLogDuringSimulation();
         }
         mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
         mpSimulationThreadHandler->initSimulateFinalize(mpToplevelSystem);
-        if(gpConfig->getBoolSetting(CFG_LOGDURINGSIMULATION)) {
+        if(gpConfig->getBoolSetting(cfg::logduringsimulation)) {
             cleanupAfterLogDuringSimulation();
         }
     }
@@ -639,7 +639,7 @@ bool ModelWidget::simulate_nonblocking()
 bool ModelWidget::simulate_blocking()
 {
     // Save backup copy
-    if (!isSaved() && gpConfig->getBoolSetting(CFG_AUTOBACKUP))
+    if (!isSaved() && gpConfig->getBoolSetting(cfg::autobackup))
     {
         //! @todo this should be a help function, also we may not want to call it every time when we run optimization (not sure if that is done now but probably)
         QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
@@ -733,14 +733,14 @@ void ModelWidget::exportModelParametersToSsv()
     QStringList names, values, dataTypes, quantities, units;
     getTopLevelSystemContainer()->getAllParametersAndValuesRecursively("", names, values, dataTypes, quantities, units);
 
-    QString saveDirectory = gpConfig->getStringSetting(CFG_PARAMETEREXPORTDIR);
+    QString saveDirectory = gpConfig->getStringSetting(cfg::dir::parameterexport);
     QString ssvFile = QFileDialog::getSaveFileName(gpMainWindowWidget, tr("Save Parameters to SSV"),
                                                      saveDirectory,
                                                      tr("System Structure Parameter Values (*.ssv)"));
     if(ssvFile.isEmpty()) {
         return;
     }
-    gpConfig->setStringSetting(CFG_PARAMETEREXPORTDIR, QFileInfo(ssvFile).absolutePath());
+    gpConfig->setStringSetting(cfg::dir::parameterexport, QFileInfo(ssvFile).absolutePath());
 
     //! @todo Don't assume all parameters to be of real type
 
@@ -809,15 +809,15 @@ void ModelWidget::importModelParametersFromHpf(QString parameterFile)
 void ModelWidget::importModelParametersFromSsv()
 {
     //Let user choose SSV file
-    QString openLocation = gpConfig->getStringSetting(CFG_PARAMETERIMPORTDIR);
+    QString openLocation = gpConfig->getStringSetting(cfg::dir::parameterimport);
     if (openLocation.isEmpty()) {
-        openLocation = gpConfig->getStringSetting(CFG_LOADMODELDIR);
+        openLocation = gpConfig->getStringSetting(cfg::dir::loadmodel);
     }
     QString parameterFile = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Load Parameters from SSV File"),
                                                  openLocation,
                                                  tr("System Structure Parameter Values (*.ssv)"));
     if(!parameterFile.isEmpty()) {
-        gpConfig->setStringSetting(CFG_PARAMETERIMPORTDIR,  QFileInfo(parameterFile).absolutePath());
+        gpConfig->setStringSetting(cfg::dir::parameterimport,  QFileInfo(parameterFile).absolutePath());
     }
 
     QList<SsvParameter> ssvParameters;
@@ -1091,7 +1091,7 @@ void ModelWidget::collectPlotData(bool overWriteGeneration)
 
 void ModelWidget::setUseRemoteSimulation(bool tf)
 {
-    setUseRemoteSimulation(tf, gpConfig->getBoolSetting(CFG_USEREMOTEADDRESSSERVER));
+    setUseRemoteSimulation(tf, gpConfig->getBoolSetting(cfg::useremoteaddresserver));
 }
 
 void ModelWidget::revertModel()
@@ -1197,7 +1197,7 @@ void ModelWidget::openCurrentContainerInNewTab()
 void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT contents)
 {
     // Backup old save file before saving (if old file exists)
-    if(saveAsFlag == ExistingFile && gpConfig->getBoolSetting(CFG_AUTOBACKUP))
+    if(saveAsFlag == ExistingFile && gpConfig->getBoolSetting(cfg::autobackup))
     {
         QFile backupFile(mpToplevelSystem->getModelFileInfo().filePath());
         QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
@@ -1227,14 +1227,14 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
             dialogTitle = tr("Save Model File");
             saveDirectory = modelDirPath;
             if(saveDirectory.isEmpty()) {
-                saveDirectory = gpConfig->getStringSetting(CFG_LOADMODELDIR);
+                saveDirectory = gpConfig->getStringSetting(cfg::dir::loadmodel);
             }
         }
         else if(contents==ParametersOnly)
         {
             filter = tr("Hopsan Parameter Files (*.hpf)");
             dialogTitle = tr("Save Parameter File");
-            saveDirectory = gpConfig->getStringSetting(CFG_PARAMETEREXPORTDIR);
+            saveDirectory = gpConfig->getStringSetting(cfg::dir::parameterexport);
             if(saveDirectory.isEmpty()) {
                 saveDirectory = modelDirPath;
             }
@@ -1261,7 +1261,7 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
 
         mpToplevelSystem->getCoreSystemAccessPtr()->addSearchPath(mpToplevelSystem->getModelFileInfo().absolutePath());
 
-        gpConfig->setStringSetting(CFG_LOADMODELDIR, QFileInfo(filePathToDestinationFile).absolutePath());
+        gpConfig->setStringSetting(cfg::dir::loadmodel, QFileInfo(filePathToDestinationFile).absolutePath());
         mpMessageHandler->addInfoMessage("Saved model: " + filePathToDestinationFile);
 
         emit modelSaved(this);
@@ -1276,7 +1276,7 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
     }
     else if ((contents==ParametersOnly) && success)
     {
-        gpConfig->setStringSetting(CFG_PARAMETEREXPORTDIR, QFileInfo(filePathToDestinationFile).absolutePath());
+        gpConfig->setStringSetting(cfg::dir::parameterexport, QFileInfo(filePathToDestinationFile).absolutePath());
         mpMessageHandler->addInfoMessage("Exported model parameters to: " + filePathToDestinationFile);
     }
 }
@@ -1398,14 +1398,14 @@ bool ModelWidget::loadModel(QFile &rModelFile)
 
     // Check if this is an expected hmf xml file
     QDomDocument domDocument;
-    QDomElement hmfRoot = loadXMLDomDocument(rModelFile, domDocument, HMF_ROOTTAG);
+    QDomElement hmfRoot = loadXMLDomDocument(rModelFile, domDocument, hmf::root);
     if (!hmfRoot.isNull())
     {
         //! @todo check if we could load else give error message and don't attempt to load
-        QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
+        QDomElement systemElement = hmfRoot.firstChildElement(hmf::system);
 
         // Check if Format version OK
-        QString hmfFormatVersion = hmfRoot.attribute(HMF_VERSIONTAG, "0");
+        QString hmfFormatVersion = hmfRoot.attribute(hmf::version::hmf, "0");
         if (!verifyHmfFormatVersion(hmfFormatVersion))
         {
             gpMessageHandler->addErrorMessage("Model file format: "+hmfFormatVersion+", is to old. Try to update (resave) the model in an previous version of Hopsan");
@@ -1431,7 +1431,7 @@ bool ModelWidget::loadModel(QFile &rModelFile)
             auto pRequiredLib = gpLibraryHandler->getLibrary(requiredLibID);
 
             // Print debug for "old" required data as that data was incorrect
-            if (hmfRoot.attribute(HMF_HOPSANGUIVERSIONTAG, "0") < "2.9.0.20180816.1300")
+            if (hmfRoot.attribute(hmf::version::hopsangui, "0") < "2.9.0.20180816.1300")
             {
                 // Override name due to old xml format
                 requiredLibName = compLib.text();
@@ -1461,7 +1461,7 @@ bool ModelWidget::loadModel(QFile &rModelFile)
         }
 
         // Upconvert adding self. to parameter names
-        if (hmfRoot.attribute(HMF_HOPSANGUIVERSIONTAG, "0") < "2.14.0") {
+        if (hmfRoot.attribute(hmf::version::hopsangui, "0") < "2.14.0") {
             prependSelfToParameterExpressions(mpToplevelSystem);
             QString neededChanges = checkPrependSelfToEmbeddedScripts(mpToplevelSystem);
             if (!neededChanges.isEmpty()) {
@@ -1480,7 +1480,7 @@ bool ModelWidget::loadModel(QFile &rModelFile)
     }
     else
     {
-        gpMessageHandler->addErrorMessage(QString("Model does not contain a HMF root tag: ")+HMF_ROOTTAG);
+        gpMessageHandler->addErrorMessage(QString("Model does not contain a HMF root tag: ")+hmf::root);
         return false;
     }
 }
@@ -1505,7 +1505,7 @@ QDomDocument ModelWidget::saveToDom(SaveContentsEnumT contents)
     }
     else
     {
-        rootElement = domDocument.createElement(HPF_ROOTTAG);
+        rootElement = domDocument.createElement(hpf::root);
         domDocument.appendChild(rootElement);
     }
 

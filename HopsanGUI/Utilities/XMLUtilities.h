@@ -107,164 +107,196 @@ public:
 void readFromSsv(const QString filePath, QList<SsvParameter> &rParameters);
 
 //Save Load Definitions
-//! @todo clean up this list and give some smarter names, remove TAG from end, also make sure we use theses defines where appropriate instead of hardcoded strings
-#define HPF_ROOTTAG "hopsanparameterfile"
-
-#define HMF_ROOTTAG "hopsanmodelfile"
-#define HMF_OBJECTS "objects"
-#define HMF_OBJECTTAG "object"              //Non core Gui Object
-#define HMF_MODELOBJECT "modelobject"
-#define HMF_COMPONENT "component"
-#define HMF_SYSTEMTAG "system"
-#define HMF_SYSTEMPORTTAGTAG "systemport"
-#define HMF_CONNECTIONS "connections"
-#define HMF_CONNECTORTAG "connect"
-#define HMF_PARAMETERTAG "parameter"
-#define HMF_PARAMETERS "parameters"
-#define HMF_NUMHOPSCRIPT "numhopscript"
-#define HMF_ALIASES "aliases"
-#define HMF_ALIAS "alias"
-#define HMF_STARTVALUES "startvalues"
-#define HMF_STARTVALUE "startvalue"
-#define HMF_GROUPTAG "group"
-#define HMF_TEXTBOXWIDGETTAG "textboxwidget"
-#define HMF_TEXTWIDGETTAG "textwidget"
-#define HMF_BOXWIDGETTAG "boxwidget"
-#define HMF_PORTSTAG "ports"
-#define HMF_PORTTAG "port"
-#define HMF_NAMESTAG "names"
-#define HMF_GFXTAG "graphics"
-#define HMF_LOGSAMPLES "logsamples"
-#define HMF_ANIMATION "animation"
-
-#define HMF_NAMETAG "name"
-#define HMF_TYPENAME "typename"
-#define HMF_SUBTYPENAME "subtypename"
-#define HMF_CQSTYPE "cqstype"
-#define HMF_TYPE "type"
-#define HMF_INTERNAL "internal"
-#define HMF_UNIT "unit"
-#define HMF_QUANTITY "quantity"
-#define HMF_CPPCODETAG "cppcode"
-#define HMF_CPPINPUTS "inputs"
-#define HMF_CPPOUTPUTS "outputs"
-
-#define HMF_HOPSANGUITAG "hopsangui"
-#define HMF_COORDINATES "coordinates"
-#define HMF_COORDINATETAG "coordinate"
-#define HMF_GEOMETRIES "geometries"
-#define HMF_GEOMETRYTAG "geometry"
-#define HMF_STYLETAG "style"
-#define HMF_COLORTAG "color"
-#define HMF_XYTAG "xy"                      //Contains an xy coordinate pair
-#define HMF_EXTERNALPATHTAG "external_path" //Contains the path to an external subsystem
-#define HMF_VALUETAG "value"
-#define HMF_SYSTEMPARAMETERTAG "globalkey"
-#define HMF_TRUETAG "true"
-#define HMF_FALSETAG "false"
-
-#define HMF_PARAMETERSCALES "customparamscales"
-#define HMF_PARAMETERSCALE  "customparamscale"
-#define HMF_PARAMETERSCALEPARAMNAME "parameter"
-#define HMF_PARAMETERSCALEUNIT "unit"
-#define HMF_PARAMETERSCALESCALE "scale"
-#define HMF_PARAMETERSCALEOFFSET "offset"
-#define HMF_PARAMETERSCALEVALUE "value"
-#define HMF_PARAMETERSCALEQUANTITY "quantity"
-
-#define HMF_PLOTSCALES "plotscales"
-#define HMF_PLOTSCALE "plotscale"
-#define HMF_PLOTSCALEPORTDATANAME "portdataname"
-#define HMF_PLOTSCALEDESCRIPTION "description"
-#define HMF_PLOTSCALEVALUE "scale"
-
-#define HMF_VARIABLEPLOTSETTINGS "variableplotsettings"
-#define HMF_VARIABLEPLOTSETTING "variableplotsetting"
-#define HMF_VARIABLEINVERTPLOT "variableinvertplot"
-#define HMF_VARIABLEPLOTLABEL "variableplotlabel"
-
-#define HMF_POSETAG "pose"
-#define HMF_VIEWPORTTAG "viewport"
-#define HMF_NAMETEXTTAG "nametext"
-#define HMF_NAMETEXTPOSTAG "nametextpos"
-#define HMF_VISIBLETAG "nametextvisible"
-#define HMF_LOCKEDTAG "locked"
-#define HMF_DISABLEDTAG "disabled"
-
-#define HMF_CONNECTORSTARTCOMPONENTTAG "startcomponent"
-#define HMF_CONNECTORSTARTPORTTAG "startport"
-#define HMF_CONNECTORENDCOMPONENTTAG "endcomponent"
-#define HMF_CONNECTORENDPORTTAG "endport"
-#define HMF_CONNECTORDASHEDTAG "dashed"
-
-#define HMF_SYSTEMAPPEARANCETAG "systemappearance"
-
-#define HMF_VERSIONTAG "hmfversion"
-#define HMF_HOPSANGUIVERSIONTAG "hopsanguiversion"
-#define HMF_HOPSANCOREVERSIONTAG "hopsancoreversion"
-#define HMF_SIMULATIONTIMETAG "simulationtime"
-#define HMF_SIMULATIONLOGSETTINGS "simulationlogsettings"
-#define HMF_SCRIPTFILETAG "scriptfile"
-
-#define HMF_UNDO "hopsanundo"
-
-#define HMF_INFOTAG "info"
-#define HMF_AUTHORTAG "author"
-#define HMF_EMAILTAG "email"
-#define HMF_AFFILIATIONTAG "affiliation"
-#define HMF_DESCRIPTIONTAG "description"
-
-#define HMF_OPTIMIZATION "optimization"
-#define HMF_SEARCHPOINTS "nsearchp"
-#define HMF_REFLCOEFF "refcoeff"
-#define HMF_RANDOMFACTOR "randfac"
-#define HMF_FORGETTINGFACTOR "forgfac"
-#define HMF_PARTOL "partol"
-#define HMF_PLOT "plot"
-#define HMF_SAVECSV "savecsv"
-#define HMF_FINALEVAL "finaleval"
-#define HMF_LOGPAR "logpar"
-#define HMF_OBJECTIVES "objectives"
-#define HMF_OBJECTIVE "objective"
-#define HMF_FUNCNAME "functionname"
-#define HMF_WEIGHT "weight"
-#define HMF_NORM "norm"
-#define HMF_EXP "exp"
-#define HMF_DATA "data"
-
-#define HMF_SENSITIVITYANALYSIS "senstivitityanalysis"
-#define HMF_SETTINGS "settings"
-#define HMF_ITERATIONS "iterations"
-#define HMF_DISTRIBUTIONTYPE "distribution"
-#define HMF_PLOTVARIABLES "plotvariables"
-#define HMF_PLOTVARIABLE "variable"
-#define HMF_UNIFORMDIST "uniform"
-#define HMF_NORMALDIST "normal"
-#define HMF_MINMAX "minmax"
-#define HMF_AVERAGE "average"
-#define HMF_SIGMA "sigma"
-
-namespace hmf {
-    constexpr auto imagewidget="imagewidget";
-    constexpr auto x="x";
-    constexpr auto y="y";
-    constexpr auto image="image";
-    constexpr auto path="path";
-    constexpr auto scale="scale";
-    constexpr auto index="index";
+namespace hpf {
+    constexpr auto root = "hopsanparameterfile";
 }
 
-#define XML_LIBS "libs"
-#define XML_USERLIB "userlib"
-#define XML_LIBTYPE "libtype"
-#define XML_LIBTYPE_INTERNAL "internal"
-#define XML_LIBTYPE_EXTERNAL "external"
-#define XML_LIBTYPE_FMU "fmu"
+namespace hmf {
+    constexpr auto root = "hopsanmodelfile";
+    constexpr auto truetag = "true";
+    constexpr auto falsetag = "false";
+    constexpr auto name = "name";
+    constexpr auto signalquantity = "signalquantity";
+    constexpr auto fullname = "fullname";
+    constexpr auto objects = "objects";
+    constexpr auto object = "object";              //non core gui object
+    constexpr auto modelobject = "modelobject";
+    constexpr auto component = "component";
+    constexpr auto system = "system";
+    constexpr auto systemport = "systemport";
+    constexpr auto parameters = "parameters";
+    constexpr auto numhopscript = "numhopscript";
+    constexpr auto aliases = "aliases";
+    constexpr auto alias = "alias";
+    constexpr auto startvalues = "startvalues";
+    constexpr auto startvalue = "startvalue";
+    constexpr auto group = "group";
+    constexpr auto ports = "ports";
+    constexpr auto port = "port";
+    constexpr auto names = "names";
+    constexpr auto data = "data";
 
-#define XML_MODELS "models"
-#define XML_LASTSESSIONMODEL "lastsessionmodel"
-#define XML_RECENTMODEL "recentmodel"
-#define XML_RECENTGENERATORMODEL "recentgeneratormodel"
+    constexpr auto logsamples = "logsamples";
+    constexpr auto animation = "animation";
+
+    constexpr auto typenametag = "typename";
+    constexpr auto subtypename = "subtypename";
+    constexpr auto cqstype = "cqstype";
+    constexpr auto type = "type";
+    constexpr auto internal = "internal";
+    constexpr auto unit = "unit";
+    constexpr auto quantity = "quantity";
+    constexpr auto cppcode = "cppcode";
+    constexpr auto cppinputs = "inputs";
+    constexpr auto cppoutputs = "outputs";
+    constexpr auto hopsangui = "hopsangui";
+    constexpr auto externalpath = "external_path"; //contains the path to an external subsystem
+    constexpr auto value = "value";
+    constexpr auto systemparameter = "globalkey";
+    constexpr auto connections = "connections";
+    constexpr auto simulationtime = "simulationtime";
+    constexpr auto simulationlogsettings = "simulationlogsettings";
+    constexpr auto scriptfile = "scriptfile";
+    constexpr auto undo = "hopsanundo";
+
+    namespace widget {
+        constexpr auto textboxwidget = "textboxwidget";
+        constexpr auto imagewidget = "imagewidget";
+        constexpr auto x = "x";
+        constexpr auto y = "y";
+        constexpr auto image = "image";
+        constexpr auto path = "path";
+        constexpr auto scale = "scale";
+        constexpr auto index = "index";
+        constexpr auto color = "color";
+        constexpr auto style = "style";
+        constexpr auto line = "line";
+        constexpr auto solidline = "solidline";
+        constexpr auto dashline = "dashline";
+        constexpr auto dotline = "dotline";
+        constexpr auto dashdotline = "dashdotline";
+        constexpr auto width = "width";
+        constexpr auto height = "height";
+        constexpr auto visible = "visible";
+        constexpr auto size = "size";
+        constexpr auto textobject = "textobject";
+        constexpr auto text = "text";
+        constexpr auto font = "font";
+        constexpr auto fontcolor = "fontcolor";
+        constexpr auto reflow = "reflow";
+    }
+
+
+
+
+
+    namespace parameter {
+        constexpr auto root = "parameter";
+        constexpr auto scales = "customparamscales";
+        constexpr auto scale  = "customparamscale";
+        constexpr auto scaleparametername = "parameter";
+        constexpr auto scaleunit = "unit";
+        constexpr auto scalescale = "scale";
+        constexpr auto scaleoffset = "offset";
+        constexpr auto scalevalue = "value";
+        constexpr auto scalequantity = "quantity";
+    }
+
+    namespace plot {
+        constexpr auto invert = "invert";
+        constexpr auto label = "label";
+    }
+
+    namespace variable {
+        constexpr auto plotsettings = "variableplotsettings";
+        constexpr auto plotsetting = "variableplotsetting";
+        constexpr auto invertplot = "variableinvertplot";
+        constexpr auto plotlabel = "variableplotlabel";
+    }
+
+    namespace appearance {
+
+        constexpr auto graphics = "graphics";
+        constexpr auto pose = "pose";
+        constexpr auto viewport = "viewport";
+        constexpr auto nametext = "nametext";
+        constexpr auto nametextpos = "nametextpos";
+        constexpr auto visible = "nametextvisible";
+        constexpr auto locked = "locked";
+        constexpr auto disabled = "disabled";
+        constexpr auto position = "position";
+        constexpr auto alwaysvisible = "alwaysvisible";
+    }
+
+    namespace connector {
+        constexpr auto root = "connect";
+        constexpr auto startcomponent = "startcomponent";
+        constexpr auto startport = "startport";
+        constexpr auto endcomponent = "endcomponent";
+        constexpr auto endport = "endport";
+        constexpr auto dashed = "dashed";
+        constexpr auto coordinates = "coordinates";
+        constexpr auto coordinate = "coordinate";
+        constexpr auto geometries = "geometries";
+        constexpr auto geometry = "geometry";
+        constexpr auto style = "style";
+        constexpr auto color = "color";
+        constexpr auto diagonal = "diagonal";
+    }
+
+    namespace version {
+        constexpr auto hmf = "hmfversion";
+        constexpr auto hopsangui = "hopsanguiversion";
+        constexpr auto hopsancore = "hopsancoreversion";
+    }
+
+    namespace modelinfo {
+        constexpr auto root = "info";
+        constexpr auto author = "author";
+        constexpr auto email = "email";
+        constexpr auto affiliation = "affiliation";
+        constexpr auto description = "description";
+    }
+
+    namespace optimization {
+        constexpr auto root = "optimization";
+        constexpr auto numberofsearchpoints = "nsearchp";
+        constexpr auto reflectioncoefficient = "refcoeff";
+        constexpr auto randomfactor = "randfac";
+        constexpr auto forgettingfactor = "forgfac";
+        constexpr auto partol = "partol";
+        constexpr auto plot = "plot";
+        constexpr auto savecsv = "savecsv";
+        constexpr auto finaleval = "finaleval";
+        constexpr auto logpar = "logpar";
+        constexpr auto objectives = "objectives";
+        constexpr auto objective = "objective";
+        constexpr auto functionname = "functionname";
+        constexpr auto weight = "weight";
+        constexpr auto norm = "norm";
+        constexpr auto exp = "exp";
+        constexpr auto data = "data";
+        }
+
+    namespace sensitivityanalysis {
+        constexpr auto root = "senstivitityanalysis";
+        constexpr auto settings = "settings";
+        constexpr auto iterations = "iterations";
+        constexpr auto distribution = "distribution";
+        constexpr auto plotvariables = "plotvariables";
+        constexpr auto plotvariable = "variable";
+        constexpr auto uniformdistribution = "uniform";
+        constexpr auto normaldistribution = "normal";
+        constexpr auto minmax = "minmax";
+        constexpr auto average = "average";
+        constexpr auto sigma = "sigma";
+    }
+    namespace deprecated {
+        constexpr auto variable = "variable";
+        constexpr auto portname = "portname";
+        constexpr auto value = "value";
+    }
+}
 
 namespace ssv {
     constexpr auto parameterSet = "ssv:ParameterSet";

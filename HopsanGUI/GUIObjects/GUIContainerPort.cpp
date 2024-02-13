@@ -130,7 +130,7 @@ int SystemPortObject::type() const
 
 QString SystemPortObject::getHmfTagName() const
 {
-    return HMF_SYSTEMPORTTAG;
+    return hmf::systemport;
 }
 
 //! @brief Check if this is a system port (a container port belonging to a system)

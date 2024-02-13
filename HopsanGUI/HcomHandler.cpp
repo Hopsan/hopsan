@@ -4020,7 +4020,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
             HCOMERR("Unknown value.");
             return;
         }
-        getConfigPtr()->setBoolSetting(CFG_MULTICORE, value=="on");
+        getConfigPtr()->setBoolSetting(cfg::multicore, value=="on");
     }
     else if(pref == "threads")
     {
@@ -4035,7 +4035,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
             HCOMERR("Number of simulation threads must be a positive integer.");
             return;
         }
-        getConfigPtr()->setIntegerSetting(CFG_NUMBEROFTHREADS, mAnsScalar);
+        getConfigPtr()->setIntegerSetting(cfg::numberofthreads, mAnsScalar);
     }
     else if(pref == "algorithm")
     {
@@ -4053,7 +4053,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
         {
             HCOMERR("Unknown value.");
         }
-        getConfigPtr()->setBoolSetting(CFG_CACHELOGDATA, value=="on");
+        getConfigPtr()->setBoolSetting(cfg::cachelogdata, value=="on");
     }
     else if(pref == "generationlimit")
     {
@@ -4068,7 +4068,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
             HCOMERR("Generation limit must be a positive integer.");
             return;
         }
-        getConfigPtr()->setIntegerSetting(CFG_GENERATIONLIMIT, mAnsScalar);
+        getConfigPtr()->setIntegerSetting(cfg::generationlimit, mAnsScalar);
     }
     else if(pref == "samples")
     {
@@ -4099,7 +4099,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
         {
             HCOMERR("Unknown value.");
         }
-        getConfigPtr()->setBoolSetting(CFG_AUTOBACKUP, value=="on");
+        getConfigPtr()->setBoolSetting(cfg::autobackup, value=="on");
     }
     else if(pref == "progressbar")
     {
@@ -4107,7 +4107,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
         {
             HCOMERR("Unknown value.");
         }
-        getConfigPtr()->setBoolSetting(CFG_PROGRESSBAR, value=="on");
+        getConfigPtr()->setBoolSetting(cfg::progressbar, value=="on");
     }
     else if(pref == "progressbarstep")
     {
@@ -4122,7 +4122,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
             HCOMERR("Progress bar step size must be a positive integer.");
             return;
         }
-        getConfigPtr()->setIntegerSetting(CFG_PROGRESSBARSTEP, mAnsScalar);
+        getConfigPtr()->setIntegerSetting(cfg::progressbarstep, mAnsScalar);
     }
     else
     {
@@ -4152,7 +4152,7 @@ void HcomHandler::executeGetCommand(const QString cmd)
     if(all || pref == "multicore")
     {
         QString output = "Multi-threaded simulation: ";
-        if(getConfigPtr()->getBoolSetting(CFG_MULTICORE))
+        if(getConfigPtr()->getBoolSetting(cfg::multicore))
             output.append("ON");
         else
             output.append("OFF");
@@ -4161,7 +4161,7 @@ void HcomHandler::executeGetCommand(const QString cmd)
     if(all || pref == "threads")
     {
         QString output = "Simulation threads:        ";
-        output.append(QString::number(getConfigPtr()->getIntegerSetting(CFG_NUMBEROFTHREADS))+"");
+        output.append(QString::number(getConfigPtr()->getIntegerSetting(cfg::numberofthreads))+"");
         HCOMPRINT(output);
     }
     if(all || pref == "algorithm")
@@ -4191,7 +4191,7 @@ void HcomHandler::executeGetCommand(const QString cmd)
     if(all || pref == "cachetodisk")
     {
         QString output = "Cache log data to disk:    ";
-        if(getConfigPtr()->getBoolSetting(CFG_CACHELOGDATA))
+        if(getConfigPtr()->getBoolSetting(cfg::cachelogdata))
             output.append("ON");
         else
             output.append("OFF");
@@ -4200,7 +4200,7 @@ void HcomHandler::executeGetCommand(const QString cmd)
     if(all || pref == "generationlimit")
     {
         QString output = "Generation limit:          ";
-        output.append(QString::number(getConfigPtr()->getIntegerSetting(CFG_GENERATIONLIMIT))+"");
+        output.append(QString::number(getConfigPtr()->getIntegerSetting(cfg::generationlimit))+"");
         HCOMPRINT(output);
     }
     if(all || pref == "samples")
@@ -4237,7 +4237,7 @@ void HcomHandler::executeGetCommand(const QString cmd)
     if(all || pref == "backup")
     {
         QString output = "Auto-backup:               ";
-        if(getConfigPtr()->getBoolSetting(CFG_AUTOBACKUP))
+        if(getConfigPtr()->getBoolSetting(cfg::autobackup))
             output.append("ON");
         else
             output.append("OFF");
@@ -4246,7 +4246,7 @@ void HcomHandler::executeGetCommand(const QString cmd)
     if(all || pref == "progressbar")
     {
         QString output = "Progres bar:               ";
-        if(getConfigPtr()->getBoolSetting(CFG_PROGRESSBAR))
+        if(getConfigPtr()->getBoolSetting(cfg::progressbar))
             output.append("ON");
         else
             output.append("OFF");
@@ -4255,7 +4255,7 @@ void HcomHandler::executeGetCommand(const QString cmd)
     if(all || pref == "progressbarstep")
     {
         QString output = "Progress bar step size:    ";
-        output.append(QString::number(getConfigPtr()->getIntegerSetting(CFG_PROGRESSBARSTEP))+"");
+        output.append(QString::number(getConfigPtr()->getIntegerSetting(cfg::progressbarstep))+"");
         HCOMPRINT(output);
     }
 }
@@ -5683,8 +5683,8 @@ void HcomHandler::executeSetMultiThreadingCommand(const QString cmd)
         }
     }
 
-    getConfigPtr()->setBoolSetting(CFG_MULTICORE, useMultiThreading);
-    if(nArgs > 1) getConfigPtr()->setIntegerSetting(CFG_NUMBEROFTHREADS, nThreads);
+    getConfigPtr()->setBoolSetting(cfg::multicore, useMultiThreading);
+    if(nArgs > 1) getConfigPtr()->setIntegerSetting(cfg::numberofthreads, nThreads);
     if(nArgs > 2) getConfigPtr()->setParallelAlgorithm(algorithm);
 }
 
@@ -7809,7 +7809,7 @@ void HcomHandler::splitAtFirst(QString str, QString c, QString &left, QString &r
 
 void HcomHandler::updatePwd()
 {
-    if(mpModel && mpModel->isSaved() && gpConfig->getBoolSetting(CFG_SETPWDTOMWD))
+    if(mpModel && mpModel->isSaved() && gpConfig->getBoolSetting(cfg::setpwdtomwd))
     {
         mPwd = mpModel->getTopLevelSystemContainer()->getModelFileInfo().absoluteDir().path();
     }

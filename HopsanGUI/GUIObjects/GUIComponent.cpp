@@ -232,7 +232,7 @@ void Component::loadParameterValuesFromFile(QString parameterFile)
 {
     if(parameterFile.isEmpty()) {
         parameterFile = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Load Parameter File"),
-                                                     gpConfig->getStringSetting(CFG_LOADMODELDIR),
+                                                     gpConfig->getStringSetting(cfg::dir::loadmodel),
                                                      tr("Hopsan Parameter Files (*.hpf *.xml)"));
     }
 
@@ -245,7 +245,7 @@ void Component::loadParameterValuesFromFile(QString parameterFile)
         if (numChanged > 0) {
             mpParentSystemObject->mpModelWidget->hasChanged();
         }
-        gpConfig->setStringSetting(CFG_LOADMODELDIR,  QFileInfo(parameterFile).absolutePath());
+        gpConfig->setStringSetting(cfg::dir::loadmodel,  QFileInfo(parameterFile).absolutePath());
     }
 #if QT_VERSION_MAJOR < 5
     QMetaObject::invokeMethod(mpParentSystemObject,"checkMessages");
@@ -275,7 +275,7 @@ int Component::type() const
 
 QString Component::getHmfTagName() const
 {
-    return HMF_COMPONENT;
+    return hmf::component;
 }
 
 
@@ -336,28 +336,28 @@ void Component::saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsE
     ModelObject::saveCoreDataToDomElement(rDomElement, contents);
 
     //Save parameters (also core related)
-    QDomElement xmlParameters = appendDomElement(rDomElement, HMF_PARAMETERS);
+    QDomElement xmlParameters = appendDomElement(rDomElement, hmf::parameters);
     QVector<CoreParameterData> paramDataVec;
     getParameters(paramDataVec);
     for(int i=0; i<paramDataVec.size(); ++i)
     {
-        QDomElement xmlParam = appendDomElement(xmlParameters, HMF_PARAMETERTAG);
-        xmlParam.setAttribute(HMF_NAMETAG, paramDataVec[i].mName);
-        xmlParam.setAttribute(HMF_VALUETAG, paramDataVec[i].mValue);
-        xmlParam.setAttribute(HMF_TYPE, paramDataVec[i].mType);
-        xmlParam.setAttribute(HMF_UNIT, paramDataVec[i].mUnit);
-        xmlParam.setAttribute(HMF_INTERNAL, bool2str(paramDataVec[i].mInternal));
+        QDomElement xmlParam = appendDomElement(xmlParameters, hmf::parameter::root);
+        xmlParam.setAttribute(hmf::name, paramDataVec[i].mName);
+        xmlParam.setAttribute(hmf::value, paramDataVec[i].mValue);
+        xmlParam.setAttribute(hmf::type, paramDataVec[i].mType);
+        xmlParam.setAttribute(hmf::unit, paramDataVec[i].mUnit);
+        xmlParam.setAttribute(hmf::internal, bool2str(paramDataVec[i].mInternal));
 
         /*if(this->isParameterMappedToSystemParameter(*pit))
         {
-            xmlParam.setAttribute(HMF_SYSTEMPARAMETERTAG, this->getSystemParameterKey(*pit));
+            xmlParam.setAttribute(hmf::systemparameter, this->getSystemParameterKey(*pit));
         }*/
     }
 
     if(contents==FullModel)
     {
         //Implementation of Feature #698 - Save nodetype in HMF
-        QDomElement xmlPorts = appendDomElement(rDomElement, HMF_PORTSTAG);
+        QDomElement xmlPorts = appendDomElement(rDomElement, hmf::ports);
 
         // Note! we cant loop local ports since non-enabled ports will not exist at all in the GUI
         //       Instead we ask Core for all "variameters" and extract port info from there
@@ -371,7 +371,7 @@ void Component::saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsE
             {
                 currentPort = desc.mPortName;
                 QDomElement xmlPort = appendDomElement(xmlPorts, "port");
-                xmlPort.setAttribute(HMF_NAMETAG, desc.mPortName);
+                xmlPort.setAttribute(hmf::name, desc.mPortName);
                 xmlPort.setAttribute("nodetype", desc.mNodeType);
                 Port *pPort = this->getPort(desc.mPortName);
                 if (pPort)
@@ -394,7 +394,7 @@ void Component::saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsE
 QDomElement Component::saveGuiDataToDomElement(QDomElement &rDomElement)
 {
     ModelObject::saveGuiDataToDomElement(rDomElement);
-    QDomElement guiStuff = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
+    QDomElement guiStuff = rDomElement.firstChildElement(hmf::hopsangui);
     QDomElement xmlApp = appendOrGetCAFRootTag(guiStuff);
 
     SharedModelObjectAppearanceT pLibraryAppearance = gpLibraryHandler->getModelObjectAppearancePtr(getTypeName(), getSubTypeName());

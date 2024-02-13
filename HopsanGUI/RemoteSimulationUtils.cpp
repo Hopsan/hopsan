@@ -239,7 +239,7 @@ void RemoteSimulationQueueHandler::setupModelQueues(QVector<ModelWidget *> model
                     servers.pop_front();
 
                     SharedRemoteCoreSimulationHandlerT pSH(new RemoteCoreSimulationHandler());
-                    pSH->setUserIdentification(gpConfig->getStringSetting(CFG_REMOTEHOPSANUSERIDENTIFICATION));
+                    pSH->setUserIdentification(gpConfig->getStringSetting(cfg::remotehopsanuseridentification));
                     pSH->setAddressServer(mpRemoteCoreAddressHandler->getAddressAndPort());
                     pSH->setHopsanServer(server_addr);
                     pSH->setNumThreads(mNumThreadsPerModel);
@@ -441,7 +441,7 @@ bool RemoteSimulationQueueHandler::connectToAddressServer()
     }
 
     // Disconnect if address has changed
-    if (mpRemoteCoreAddressHandler->getAddressAndPort() != gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESSSERVERADDRESS))
+    if (mpRemoteCoreAddressHandler->getAddressAndPort() != gpConfig->getStringSetting(cfg::remotehopsanaddresserveraddress))
     {
         mpRemoteCoreAddressHandler->disconnect();
     }
@@ -450,7 +450,7 @@ bool RemoteSimulationQueueHandler::connectToAddressServer()
     bool addrserver_connected = mpRemoteCoreAddressHandler->isConnected();
     if (!addrserver_connected)
     {
-        mpRemoteCoreAddressHandler->setHopsanAddressServer(gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESSSERVERADDRESS));
+        mpRemoteCoreAddressHandler->setHopsanAddressServer(gpConfig->getStringSetting(cfg::remotehopsanaddresserveraddress));
         addrserver_connected = mpRemoteCoreAddressHandler->connect();
     }
 
@@ -520,7 +520,7 @@ void RemoteSimulationQueueHandler::benchmarkModel(ModelWidget *pModel)
             // Benchmark evalTime vs numThreads
             QString server_addr = mpRemoteCoreAddressHandler->getBestAvailableServer(maxNumSlots, mServerBlacklist);
             SharedRemoteCoreSimulationHandlerT pRCSH(new RemoteCoreSimulationHandler());
-            pRCSH->setUserIdentification(gpConfig->getStringSetting(CFG_REMOTEHOPSANUSERIDENTIFICATION));
+            pRCSH->setUserIdentification(gpConfig->getStringSetting(cfg::remotehopsanuseridentification));
             pRCSH->setAddressServer(mpRemoteCoreAddressHandler->getAddressAndPort());
             pRCSH->setHopsanServer(server_addr);
             bool rc = pRCSH->connectServer();

@@ -63,7 +63,7 @@ MessageWidget::MessageWidget(QWidget *pParent)
     mpTextEdit->setMouseTracking(true);
     mpTextEdit->installEventFilter(this);
 
-    mGroupByTag = gpConfig->getBoolSetting(CFG_GROUPMESSAGESBYTAG);
+    mGroupByTag = gpConfig->getBoolSetting(cfg::groupmessagesbytag);
 
     mShowErrorMessages = true;
     mShowWarningMessages = true;
@@ -101,7 +101,7 @@ MessageWidget::MessageWidget(QWidget *pParent)
     pShowDebugMessagesButton->setToolTip("Show Debug Messages");
 
     mpGroupByTagCheckBox = new QCheckBox("Group Similar Messages");
-    mpGroupByTagCheckBox->setChecked(gpConfig->getBoolSetting(CFG_GROUPMESSAGESBYTAG));
+    mpGroupByTagCheckBox->setChecked(gpConfig->getBoolSetting(cfg::groupmessagesbytag));
 
     QGridLayout *pLayout = new QGridLayout(this);
     pLayout->addWidget(mpTextEdit,0,0,1,7);
@@ -145,7 +145,7 @@ QSize MessageWidget::sizeHint() const
 //! load the config directly in the constructor.
 void MessageWidget::loadConfig()
 {
-    mpGroupByTagCheckBox->setChecked(gpConfig->getBoolSetting(CFG_GROUPMESSAGESBYTAG));
+    mpGroupByTagCheckBox->setChecked(gpConfig->getBoolSetting(cfg::groupmessagesbytag));
 }
 
 
@@ -278,7 +278,7 @@ void MessageWidget::clear()
 void MessageWidget::setGroupByTag(bool value)
 {
     mGroupByTag = value;
-    gpConfig->setBoolSetting(CFG_GROUPMESSAGESBYTAG, value);
+    gpConfig->setBoolSetting(cfg::groupmessagesbytag, value);
     reprintEverything();
 }
 
