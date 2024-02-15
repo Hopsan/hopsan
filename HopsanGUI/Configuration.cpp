@@ -1313,9 +1313,9 @@ void Configuration::registerSettings()
     mStringSettings.insert(cfg::dir::gcc32, "");
 #ifndef _WIN32
 #ifdef HOPSANCOMPILED64BIT
-    mStringSettings.insert(cfg::GCC64DIR, "/usr/bin");
+    mStringSettings.insert(cfg::dir::gcc64, "/usr/bin");
 #else
-    mStringSettings.insert(cfg::GCC32DIR, "/usr/bin");
+    mStringSettings.insert(cfg::dir::gcc32, "/usr/bin");
 #endif
     //! @todo OSX ?
 #endif
@@ -1343,7 +1343,7 @@ void Configuration::registerSettings()
 #if defined(_WIN32)
     mBoolSettings.insert(cfg::nativestylesheet, false);
 #else
-    mBoolSettings.insert(cfg::NATIVESTYLESHEET, true);
+    mBoolSettings.insert(cfg::nativestylesheet, true);
 #endif
     mBoolSettings.insert(cfg::showpopuphelp, true);
     mBoolSettings.insert(cfg::multicore, false);
@@ -1355,7 +1355,7 @@ void Configuration::registerSettings()
 #ifdef _WIN32
     mBoolSettings.insert(cfg::preferincludedcompiler, true);
 #else
-    mBoolSettings.insert(cfg::PREFERINCLUDEDCOMPILER, false);
+    mBoolSettings.insert(cfg::preferincludedcompiler, false);
 #endif
 
     // Integer settings
@@ -1392,7 +1392,7 @@ QString Configuration::getGCCPath() const
 #ifdef HOPSANCOMPILED64BIT
     return getStringSetting(cfg::dir::gcc64);
 #else
-    return getStringSetting(cfg::GCC32DIR);
+    return getStringSetting(cfg::dir::gcc32);
 #endif
 }
 
