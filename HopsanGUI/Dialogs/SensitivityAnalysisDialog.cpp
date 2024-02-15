@@ -556,7 +556,7 @@ void SensitivityAnalysisDialog::run()
 //    }
 
 
-//    int nThreads = gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS);
+//    int nThreads = gpConfig->getIntegerSetting(cfg::numberofthreads);
 //    if(nThreads == 0)
 //    {
 //#ifdef _WIN32
@@ -606,8 +606,8 @@ void SensitivityAnalysisDialog::run()
 //        mModelPtrs.at(m)->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->addSearchPath(appearanceDataBasePath);
 //    }
 
-//    bool progressBarOrgSetting = gpConfig->getBoolSetting(CFG_PROGRESSBAR);
-//    gpConfig->setBoolSetting(CFG_PROGRESSBAR, false);
+//    bool progressBarOrgSetting = gpConfig->getBoolSetting(cfg::progressbar);
+//    gpConfig->setBoolSetting(cfg::progressbar, false);
 //    for(int i=0; i<nSteps/nThreads; ++i)
 //    {
 //        if(mAborted)
@@ -645,7 +645,7 @@ void SensitivityAnalysisDialog::run()
 //            if(!gpModelHandler->simulateMultipleModels_blocking(mModelPtrs))
 //            {
 //                gpMessageHandler->addErrorMessage("Unable to perform sensitivity analysis: Failed to simulate model.");
-//                gpConfig->setBoolSetting(CFG_PROGRESSBAR, progressBarOrgSetting);
+//                gpConfig->setBoolSetting(cfg::progressbar, progressBarOrgSetting);
 //                return;
 //            }
 //        }
@@ -657,7 +657,7 @@ void SensitivityAnalysisDialog::run()
 //    }
 
 //    mpProgressBar->setValue(100);   //Just to make it look better
-//    gpConfig->setBoolSetting(CFG_PROGRESSBAR, progressBarOrgSetting);
+//    gpConfig->setBoolSetting(cfg::progressbar, progressBarOrgSetting);
 
 //    for(int v=0; v<mOutputVariables.size(); ++v)
 //    {
@@ -743,7 +743,7 @@ void SensitivityAnalysisDialog::run()
     int nSteps = mpStepsSpinBox->value();
     int nParameters = mSelectedParameters.size();
 
-    int nThreads = gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS);
+    int nThreads = gpConfig->getIntegerSetting(cfg::numberofthreads);
     if(nThreads == 0)
     {
 #ifdef _WIN32
@@ -817,7 +817,7 @@ void SensitivityAnalysisDialog::updateProgressBar(int i)
 void SensitivityAnalysisEvaluator::plot()
 {
     mpDialog->updateProgressBar(mpWorker->getMaxNumberOfIterations());   //Just to make it look better
-    //    gpConfig->setBoolSetting(CFG_PROGRESSBAR, progressBarOrgSetting);
+    //    gpConfig->setBoolSetting(cfg::progressbar, progressBarOrgSetting);
 
     if (!mModelPtrs.empty())
     {

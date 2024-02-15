@@ -205,7 +205,7 @@ public slots:
 
     void openImportDataDialog()
     {
-        QFileDialog fd(mpParentWidget, tr("Choose Hopsan Data File"), gpConfig->getStringSetting(CFG_PLOTDATADIR),
+        QFileDialog fd(mpParentWidget, tr("Choose Hopsan Data File"), gpConfig->getStringSetting(cfg::dir::plotdata),
                        tr("Data Files (*.plo *.PLO *.csv *.CSV);; Space-separated Column Data (*.*);; All (Treat as csv) (*.*)"));
         fd.setFileMode(QFileDialog::ExistingFiles);
         const auto rc = fd.exec();
@@ -301,7 +301,7 @@ public slots:
 
             // Get save file name
             if ((pFilenameButtons->checkedButton() == pAppendGenButton) && (gens.size() > 1)) {
-                QString fileName = QFileDialog::getSaveFileName(mpParentWidget,tr("Choose Hopsan Data File Name"), gpConfig->getStringSetting(CFG_PLOTDATADIR), tr("Data Files")+QString(" (%1)").arg(suffixFilter));
+                QString fileName = QFileDialog::getSaveFileName(mpParentWidget,tr("Choose Hopsan Data File Name"), gpConfig->getStringSetting(cfg::dir::plotdata), tr("Data Files")+QString(" (%1)").arg(suffixFilter));
                 QFileInfo file(fileName);
                 for (int i=0; i<gens.size(); ++i) {
                     fNames.append(file.absolutePath()+"/"+file.baseName()+QString("_%1").arg(gens[i])+"."+file.suffix());
@@ -309,14 +309,14 @@ public slots:
             }
             else {
                 for (int i=0; i<gens.size(); ++i) {
-                    fNames.append(QFileDialog::getSaveFileName(mpParentWidget,QString("Choose File Name for Gen: %1").arg(gens[i]), gpConfig->getStringSetting(CFG_PLOTDATADIR),  tr("Data Files")+QString(" (%1)").arg(suffixFilter)));
+                    fNames.append(QFileDialog::getSaveFileName(mpParentWidget,QString("Choose File Name for Gen: %1").arg(gens[i]), gpConfig->getStringSetting(cfg::dir::plotdata),  tr("Data Files")+QString(" (%1)").arg(suffixFilter)));
                 }
             }
 
             // Remember this output dir for later use
             if (!fNames.isEmpty()) {
                 QFileInfo exportPath(fNames.last());
-                gpConfig->setStringSetting(CFG_PLOTDATADIR, exportPath.absolutePath());
+                gpConfig->setStringSetting(cfg::dir::plotdata, exportPath.absolutePath());
             }
 
             QProgressDialog progress("Exporting Data", "Cancel", 0, fNames.size(), mpParentWidget);

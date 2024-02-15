@@ -728,7 +728,7 @@ void Component::registerConditionalParameter(const HString &rName, const HString
     if(mpParameters->hasParameter(rName))
         mpParameters->deleteParameter(rName);     //Remove parameter if it is already registered
 
-    mpParameters->addParameter(rName, to_hstring(rValue), rDescription, "", "", "conditional", &rValue, false, rConditions);
+    mpParameters->addParameter(rName, to_hstring(rValue), rDescription, "", "", "conditional", &rValue, false, false, rConditions);
 }
 
 

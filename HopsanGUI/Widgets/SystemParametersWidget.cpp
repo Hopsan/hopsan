@@ -98,7 +98,7 @@ int SysParamTableModel::rowCount(const QModelIndex &parent) const
 int SysParamTableModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return 3;
+    return 4;
 }
 
 QVariant SysParamTableModel::data(const QModelIndex &index, int role) const
@@ -121,6 +121,9 @@ QVariant SysParamTableModel::data(const QModelIndex &index, int role) const
             break;
         case 2:
             return mParameterData.at(index.row()).mType;
+            break;
+        case 3:
+            return mParameterData.at(index.row()).mInternal;
             break;
         }
     }
@@ -191,6 +194,17 @@ bool SysParamTableModel::setData(const QModelIndex &index, const QVariant &value
                 emit dataChanged(index, index);
             }
             break;
+        case 3:
+            data = mParameterData[index.row()];
+            data.mInternal = value.toBool();
+            qDebug() << "hidden = " << data.mInternal;
+            isOk = addOrSetParameter(data);
+            if (isOk)
+            {
+                mParameterData[index.row()] = data;
+                emit dataChanged(index, index);
+            }
+            break;
         }
     }
     return isOk;
@@ -211,6 +225,8 @@ QVariant SysParamTableModel::headerData(int section, Qt::Orientation orientation
             return QString("Value");
         case 2:
             return QString("Type");
+        case 3:
+            return QString("Hidden");
         }
     }
     else
@@ -339,6 +355,9 @@ void SysParamTableModel::setContainer(SystemObject *pContainerObject)
         emit layoutAboutToBeChanged();
         mParameterData.clear();
         emit layoutChanged();
+    }
+    if(mParameterData.size() >= 2) {
+        qDebug() << "setContainer(): " << mParameterData[0].mInternal << ", " << mParameterData[1].mInternal;
     }
 }
 

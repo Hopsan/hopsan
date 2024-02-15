@@ -853,6 +853,9 @@ QString BuildFlags::platformString() const
 void getParameters(QList<ParameterSpecification> &parameters, hopsan::ComponentSystem *pSystem)
 {
     for(hopsan::ParameterEvaluator *par : (*pSystem->getParametersVectorPtr())) {
+        if(par->isInternal()) {
+            continue;
+        }
         ParameterSpecification spec;
         if(par->getType() == "double") {
             spec.type = "Real";

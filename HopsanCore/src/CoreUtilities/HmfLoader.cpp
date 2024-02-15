@@ -674,13 +674,14 @@ void loadSystemParameters(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSyst
             string paramName = readStringAttribute(pParameter, "name", "ERROR_NO_PARAM_NAME_GIVEN");
             string val = readStringAttribute(pParameter, "value", "ERROR_NO_PARAM_VALUE_GIVEN");
             string type = readStringAttribute(pParameter, "type", "ERROR_NO_PARAM_TYPE_GIVEN");
+            bool internal = readBoolAttribute(pParameter, "internal", false);
             //! @todo maybe type should be data type or value type or something
             string quantityORunit = readStringAttribute(pParameter, "quantity", readStringAttribute(pParameter, "unit", ""));
             string description = readStringAttribute(pParameter, "description", "");
 
             // Here we use force=true to make sure system parameters load even if they do not evaluate
             //! @todo if system parameters are loaded in the correct order (top to bottom) they should evaluate, why don't they?
-            bool ok = pSystem->setOrAddSystemParameter(paramName.c_str(), val.c_str(), type.c_str(), description.c_str(), quantityORunit.c_str(), true);
+            bool ok = pSystem->setOrAddSystemParameter(paramName.c_str(), val.c_str(), type.c_str(), description.c_str(), quantityORunit.c_str(), internal, true);
             if(!ok)
             {
                 pSystem->addErrorMessage(HString("Failed to load parameter: ")+(paramName+"="+val).c_str());

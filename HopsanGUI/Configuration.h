@@ -34,114 +34,7 @@
 #ifndef CONFIGURATION_H
 #define CONFIGURATION_H
 
-#define CFG_HOPSANCONFIG "hopsanconfig"
-#define CFG_SETTINGS "settings"
 
-#define CFG_LIBRARYSTYLE "librarystyle"
-#define CFG_PLOEXPORTVERSION "ploexportversion"
-
-#define CFG_CHECKFORDEVELOPMENTUPDATES "checkfordevelopmentupdates"
-#define CFG_SHOWLICENSEONSTARTUP "showlicenseonstartup2"
-#define CFG_SHOWHIDDENNODEDATAVARIABLES "showhiddennodedatavariables"
-#define CFG_SHOWPOPUPHELP "showpopuphelp"
-#define CFG_NATIVESTYLESHEET "nativestylesheet"
-#define CFG_ANTIALIASING "antialiasing"
-#define CFG_INVERTWHEEL "invertwheel"
-#define CFG_ZOOMSTEP "zoomstep"
-#define CFG_SNAPPING "snapping"
-#define CFG_PROGRESSBAR "progressbar"
-#define CFG_PROGRESSBARSTEP "progressbar_step"
-#define CFG_MULTICORE "multicore"
-#define CFG_NUMBEROFTHREADS "numberofthreads"
-#define CFG_TOGGLENAMESBUTTONCHECKED "togglenamesbuttonchecked"
-#define CFG_TOGGLEPORTSBUTTONCHECKED "toggleportsbuttonchecked"
-#define CFG_GROUPMESSAGESBYTAG "groupmessagesbytag"
-#define CFG_GENERATIONLIMIT "generationlimit"
-#define CFG_CACHELOGDATA "cachelogdata"
-#define CFG_AUTOBACKUP "autobackup"
-#define CFG_AUTOLIMITGENERATIONS "autolimitgenerations"
-#define CFG_SETPWDTOMWD "setpwdtomwd"
-#define CFG_PLOTWINDOWSONTOP "plotwindowsontop"
-#define CFG_LOGDURINGSIMULATION "logduringsimulation"
-#define CFG_LOGSTEPS "logsteps"
-
-#define CFG_PLOTGFXIMAGEFORMAT "plotgfximageformat"
-#define CFG_PLOTGFXDIMENSIONSUNIT "plotgfxdimensionsunit"
-#define CFG_PLOTGFXDPI "plotgfxdpi"
-#define CFG_PLOTGFXSIZE "plotgfxsize"
-#define CFG_PLOTGFXKEEPASPECT "plotgfxkeepaspect"
-#define CFG_PLOTGFXUSESCREENSIZE "plotgfxusescreensize"
-#define CFG_BACKGROUNDCOLOR "backgroundcolor"
-
-#define CFG_PARAMETEREXPORTDIR "parameterexportdir"
-#define CFG_PARAMETERIMPORTDIR "parameterimportdir"
-#define CFG_LOADMODELDIR "loadmodeldir"
-#define CFG_LOADSCRIPTDIR "loadmodeldir"
-#define CFG_MODELGFXDIR "modelgfxdir"
-#define CFG_PLOTDATADIR "plotdatadir"
-#define CFG_PLOTGFXDIR "plotgfxdir"
-#define CFG_SIMULINKEXPORTDIR "simulinkexportdir"
-#define CFG_SUBSYSTEMDIR "subsystemdir"
-#define CFG_EXTERNALLIBDIR "externallibdir"
-#define CFG_SCRIPTDIR "scriptdir"
-#define CFG_PLOTWINDOWDIR "plotwindowdir"
-#define CFG_FMUDIR "fmudir"
-#define CFG_FMUIMPORTDIR "fmuimportdir"
-#define CFG_FMUEXPORTDIR "fmuexportdir"
-#define CFG_EXEEXPORTDIR "exeexportdir"
-#define CFG_LABVIEWEXPORTDIR "labviewexportdir"
-#define CFG_PREFERINCLUDEDCOMPILER "preferincludedcompiler"
-#define CFG_GCC32DIR "gcc32dir"
-#define CFG_GCC64DIR "gcc64dir"
-#define CFG_CUSTOMTEMPPATH "customtemppath"
-
-#define CFG_REMOTEHOPSANADDRESS "remotehopsanaddress"
-#define CFG_REMOTEHOPSANADDRESSSERVERADDRESS "remotehopsanaddressserveraddress"
-#define CFG_USEREMOTEADDRESSSERVER "useremotehopsanaddressserver"
-#define CFG_USEREMOTEOPTIMIZATION "useremoteoptimization"
-#define CFG_REMOTEHOPSANUSERIDENTIFICATION "remotehopsanuserid"
-#define CFG_REMOTESHORTTIMEOUT "remoteshorttimeout"
-#define CFG_REMOTELONGTIMEOUT "remotelongtimeout"
-
-#define CFG_PENSTYLE "penstyle"
-#define CFG_TYPE "type"
-#define CFG_GFXTYPE "gfxtype"
-#define CFG_SITUATION "situation"
-#define CFG_COLOR "color"
-#define CFG_WIDTH "width"
-#define CFG_CAPSTYLE "capstyle"
-
-#define CFG_UNITSETTINGS "unitsettings"
-#define CFG_QUANTITY "quantity"
-
-namespace cfg {
-    namespace siunits {
-        constexpr auto kg = "kg";
-        constexpr auto m = "m";
-        constexpr auto s = "s";
-        constexpr auto A = "A";
-        constexpr auto K = "K";
-        constexpr auto mol = "mol";
-        constexpr auto cd = "cd";
-        constexpr auto rad = "rad";
-    }
-}
-
-#define CFG_BASEUNIT "baseunit"
-#define CFG_UNIT "unit"
-#define CFG_UNITS "units"
-#define CFG_DEFAULTDISPALYUNIT "defaultdisplayunit"
-#define CFG_NAME "name"
-#define CFG_UNIT "unit"
-#define CFG_CUSTOMUNIT "customunit"
-#define CFG_SCALE "scale"
-#define CFG_OFFSET "offset"
-#define CFG_FROMBASEEXPR "frombaseexpr"
-#define CFG_TOBBASEEXPR "tobaseexpr"
-
-#define CFG_HCOM "hcom"
-#define CFG_PWD "pwd"
-#define CFG_COMMAND "command"
 
 namespace cfg {
     namespace paths {
@@ -160,6 +53,120 @@ namespace cfg {
 
 #include "common.h"
 #include "UnitScale.h"
+
+namespace cfg {
+    constexpr auto hopsanconfig = "hopsanconfig";
+    constexpr auto settings = "settings";
+    constexpr auto librarystyle = "librarystyle";
+    constexpr auto ploexportversion = "ploexportversion";
+    constexpr auto checkfordevelopmentupdates = "checkfordevelopmentupdates";
+    constexpr auto showlicenseonstartup = "showlicenseonstartup2";
+    constexpr auto showhiddennodedatavariables = "showhiddennodedatavariables";
+    constexpr auto showpopuphelp = "showpopuphelp";
+    constexpr auto nativestylesheet = "nativestylesheet";
+    constexpr auto antialiasing = "antialiasing";
+    constexpr auto invertwheel = "invertwheel";
+    constexpr auto zoomstep = "zoomstep";
+    constexpr auto snapping = "snapping";
+    constexpr auto progressbar = "progressbar";
+    constexpr auto progressbarstep = "progressbar_step";
+    constexpr auto multicore = "multicore";
+    constexpr auto numberofthreads = "numberofthreads";
+    constexpr auto togglenamesbuttonchecked = "togglenamesbuttonchecked";
+    constexpr auto toggleportsbuttonchecked = "toggleportsbuttonchecked";
+    constexpr auto groupmessagesbytag = "groupmessagesbytag";
+    constexpr auto generationlimit = "generationlimit";
+    constexpr auto cachelogdata = "cachelogdata";
+    constexpr auto autobackup = "autobackup";
+    constexpr auto autolimitgenerations = "autolimitgenerations";
+    constexpr auto setpwdtomwd = "setpwdtomwd";
+    constexpr auto plotwindowsontop = "plotwindowsontop";
+    constexpr auto logduringsimulation = "logduringsimulation";
+    constexpr auto logsteps = "logsteps";
+    constexpr auto plotgfximageformat = "plotgfximageformat";
+    constexpr auto plotgfxdimensionunit = "plotgfxdimensionsunit";
+    constexpr auto plotgfxdpi = "plotgfxdpi";
+    constexpr auto plotgfxsize = "plotgfxsize";
+    constexpr auto plotgfxkeepaspect = "plotgfxkeepaspect";
+    constexpr auto plotgfxusescreensize = "plotgfxusescreensize";
+    constexpr auto backgroundcolor = "backgroundcolor";
+    namespace dir {
+        constexpr auto parameterexport = "parameterexportdir";
+        constexpr auto parameterimport = "parameterimportdir";
+        constexpr auto loadmodel = "loadmodeldir";
+        constexpr auto loadscript = "loadmodeldir";
+        constexpr auto modelgfx = "modelgfxdir";
+        constexpr auto plotdata = "plotdatadir";
+        constexpr auto plotgfx = "plotgfxdir";
+        constexpr auto simulinkexport = "simulinkexportdir";
+        constexpr auto subsystem = "subsystemdir";
+        constexpr auto externallib = "externallibdir";
+        constexpr auto script = "scriptdir";
+        constexpr auto plotwindow = "plotwindowdir";
+        constexpr auto fmuimport = "fmuimportdir";
+        constexpr auto fmuexport = "fmuexportdir";
+        constexpr auto exeexport = "exeexportdir";
+        constexpr auto labviewexport = "labviewexportdir";
+        constexpr auto gcc32 = "gcc32dir";
+        constexpr auto gcc64 = "gcc64dir";
+        constexpr auto customtemppath = "customtemppath";
+    }
+    constexpr auto preferincludedcompiler = "preferincludedcompiler";
+    constexpr auto remotehopsanaddress = "remotehopsanaddress";
+    constexpr auto remotehopsanaddresserveraddress = "remotehopsanaddresserveraddress";
+    constexpr auto useremoteaddresserver = "useremotehopsanaddressserver";
+    constexpr auto useremoteoptimization = "useremoteoptimization";
+    constexpr auto remotehopsanuseridentification = "remotehopsanuserid";
+    constexpr auto remoteshorttimeout = "remoteshorttimeout";
+    constexpr auto remotelongtimeout = "remotelongtimeout";
+    constexpr auto penstyle = "penstyle";
+    constexpr auto type = "type";
+    constexpr auto gfxtype = "gfxtype";
+    constexpr auto situation = "situation";
+    constexpr auto color = "color";
+    constexpr auto width = "width";
+    constexpr auto capstyle = "capstyle";
+    constexpr auto style = "style";
+    constexpr auto unitsettings = "unitsettings";
+    constexpr auto quantity = "quantity";
+    constexpr auto baseunit = "baseunit";
+    constexpr auto unit = "unit";
+    constexpr auto units = "units";
+    constexpr auto defaultdisplayunits = "defaultdisplayunit";
+    constexpr auto name = "name";
+    constexpr auto customunit = "customunit";
+    constexpr auto scale = "scale";
+    constexpr auto offset = "offset";
+    constexpr auto frombaseexpr = "frombaseexpr";
+    constexpr auto tobaseexpr = "tobaseexpr";
+    constexpr auto hcom = "hcom";
+    constexpr auto pwd = "pwd";
+    constexpr auto command = "command";
+    constexpr auto libs = "libs";
+    constexpr auto userlib = "userlib";
+    namespace libtype {
+        constexpr auto root = "libtype";
+        constexpr auto internal = "internal";
+        constexpr auto external = "external";
+        constexpr auto fmu = "fmu";
+    }
+    namespace models {
+        constexpr auto root = "models";
+        constexpr auto lastsession = "lastsessionmodel";
+        constexpr auto recent = "recentmodel";
+        constexpr auto recentgenerator = "recentgeneratormodel";
+    }
+    namespace siunits {
+        constexpr auto kg = "kg";
+        constexpr auto m = "m";
+        constexpr auto s = "s";
+        constexpr auto A = "A";
+        constexpr auto K = "K";
+        constexpr auto mol = "mol";
+        constexpr auto cd = "cd";
+        constexpr auto rad = "rad";
+    }
+}
 
 class Configuration : public QObject
 {

@@ -32,20 +32,25 @@
 //$Id$
 
 //Defines
-#define XML_LIBRARY "hopsancomponentlibrary"
-#define XML_VERSION "version"
-#define XML_RECOMPILABLE "recompilable"
-#define XML_LIBRARY_NAME "name"
-#define XML_LIBRARY_ID "id"
-#define XML_LIBRARY_LIB "lib"
-#define XML_LIBRARY_LIB_DBGEXT "debug_ext"
-#define XML_LIBRARY_CAF "caf"
-#define XML_LIBRARY_SOURCE "source"
-#define XML_LIBRARY_EXTRA_SOURCE "extrasource"
-#define XML_LIBRARY_INCLUDEPATH "includepath"
-#define XML_LIBRARY_LINKPATH "linkpath"
-#define XML_LIBRARY_LINKLIBRARY "linklibrary"
-#define XML_COMPONENT_XML "componentxml"
+namespace libxml {
+    constexpr auto root = "hopsancomponentlibrary";
+    constexpr auto version = "version";
+    constexpr auto recompilable = "recompilable";
+    constexpr auto name = "name";
+    constexpr auto id = "id";
+    constexpr auto lib = "lib";
+    constexpr auto source = "source";
+    constexpr auto extrasource = "extrasource";
+    constexpr auto includepath = "includepath";
+    constexpr auto linkpath = "linkpath";
+    constexpr auto linklibrary = "linklibrary";
+    constexpr auto componentxml = "componentxml";
+    constexpr auto debugextension = "debug_ext";
+    constexpr auto componentappearancefile = "caf";
+    constexpr auto buildflags = "buildflags";
+    constexpr auto cflags = "cflags";
+    constexpr auto lflags = "lflags";
+}
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -131,7 +136,7 @@ LibraryHandler::LibraryHandler(QObject *parent)
 void LibraryHandler::loadLibrary()
 {
     QString libDir = QFileDialog::getExistingDirectory(gpMainWindowWidget, tr("Choose Library Directory"),
-                                                   gpConfig->getStringSetting(CFG_EXTERNALLIBDIR),
+                                                   gpConfig->getStringSetting(cfg::dir::externallib),
                                                    QFileDialog::ShowDirsOnly
                                                    | QFileDialog::DontResolveSymlinks);
     if(libDir.isEmpty())
@@ -140,7 +145,7 @@ void LibraryHandler::loadLibrary()
     }
     else
     {
-        gpConfig->setStringSetting(CFG_EXTERNALLIBDIR,libDir);
+        gpConfig->setStringSetting(cfg::dir::externallib,libDir);
 
         loadLibrary(libDir);
 
@@ -199,7 +204,7 @@ void LibraryHandler::loadLibrary(QString loadPath, LibraryTypeEnumT type, Hidden
                 {
                     // Here only library xml files are interesting, other xml files are ignored
                     QDomElement xmlRoot = domDocument.documentElement();
-                    if(xmlRoot.tagName() == QString(XML_LIBRARY))
+                    if(xmlRoot.tagName() == QString(libxml::root))
                     {
                         foundLibraryXmlFiles.append(fileInfo.canonicalFilePath());
                     }
@@ -237,14 +242,14 @@ void LibraryHandler::loadLibrary(QString loadPath, LibraryTypeEnumT type, Hidden
                 {
                     // The document must have library root tag to be valid
                     QDomElement xmlRoot = domDocument.documentElement();
-                    if(xmlRoot.tagName() == QString(XML_LIBRARY))
+                    if(xmlRoot.tagName() == QString(libxml::root))
                     {
                         foundLibraryXmlFiles.append(fileInfo.canonicalFilePath());
                     }
                     else
                     {
                         gpMessageHandler->addErrorMessage(QString("The specified XML file does not have Hopsan library root element. Expected: %1, Found: %2, In: %3")
-                                                          .arg(XML_LIBRARY).arg(xmlRoot.tagName()).arg(fileInfo.canonicalFilePath()));
+                                                          .arg(libxml::root).arg(xmlRoot.tagName()).arg(fileInfo.canonicalFilePath()));
                     }
                 }
                 else
@@ -913,7 +918,7 @@ void LibraryHandler::createNewLibrary() {
         return;
     }
     if(!libName.isEmpty()) {
-        QString libDirPath = QFileDialog::getExistingDirectory(gpMainWindowWidget, "Choose Library Directory", gpConfig->getStringSetting(CFG_EXTERNALLIBDIR));
+        QString libDirPath = QFileDialog::getExistingDirectory(gpMainWindowWidget, "Choose Library Directory", gpConfig->getStringSetting(cfg::dir::externallib));
         QDir libDir(libDirPath);
         if(libDir.entryList(QDir::AllDirs).contains(libName)) {
             QMessageBox existWarningBox(QMessageBox::Warning, "Warning", "Directory already contains a sub-folder with specified type name. Do you want to create new library here anyway?", nullptr, nullptr);
@@ -1124,16 +1129,16 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
             if(domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
             {
                 QDomElement xmlRoot = domDocument.documentElement();
-                if(xmlRoot.tagName() == QString(XML_LIBRARY))
+                if(xmlRoot.tagName() == QString(libxml::root))
                 {
-                    pLibrary->version = xmlRoot.attribute(XML_VERSION);
-                    pLibrary->recompilable = parseAttributeBool(xmlRoot, XML_RECOMPILABLE, true);
+                    pLibrary->version = xmlRoot.attribute(libxml::version);
+                    pLibrary->recompilable = parseAttributeBool(xmlRoot, libxml::recompilable, true);
                     // Read name of library
-                    pLibrary->name = xmlRoot.firstChildElement(XML_LIBRARY_NAME).text();
+                    pLibrary->name = xmlRoot.firstChildElement(libxml::name).text();
                     if (pLibrary->name.isEmpty()) {
                         // Try fall-back loading deprecated name attribute
-                        if(xmlRoot.hasAttribute(XML_LIBRARY_NAME)) {
-                            pLibrary->name = xmlRoot.attribute(XML_LIBRARY_NAME);
+                        if(xmlRoot.hasAttribute(libxml::name)) {
+                            pLibrary->name = xmlRoot.attribute(libxml::name);
                         }
                     }
 
@@ -1145,7 +1150,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                     }
 
                     // Read id of library
-                    pLibrary->id = xmlRoot.firstChildElement(XML_LIBRARY_ID).text();
+                    pLibrary->id = xmlRoot.firstChildElement(libxml::id).text();
                     if (pLibrary->id.isEmpty()) {
                         gpMessageHandler->addWarningMessage(QString("Library: %1 is missing the <id> element, or id is empty. Using name '%2' as fall-back.")
                                                             .arg(libraryMainFileInfo.canonicalFilePath()).arg(pLibrary->name));
@@ -1162,10 +1167,10 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                     }
 
                     // Read library share lib file
-                    QDomElement libElement = xmlRoot.firstChildElement(XML_LIBRARY_LIB);
+                    QDomElement libElement = xmlRoot.firstChildElement(libxml::lib);
                     if(!libElement.isNull())
                     {
-                        pLibrary->debugExtension = libElement.attribute(XML_LIBRARY_LIB_DBGEXT,"");
+                        pLibrary->debugExtension = libElement.attribute(libxml::debugextension,"");
                         pLibrary->libFilePath = libraryMainFileInfo.canonicalPath()+"/"+QString(LIBPREFIX)+libElement.text();
 #ifdef HOPSAN_BUILD_TYPE_DEBUG
                         pLibrary->libFilePath += pLibrary->debugExtension;
@@ -1174,14 +1179,14 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                     }
 
                     // Read build flags
-                    QDomElement bfElement = xmlRoot.firstChildElement("buildflags").firstChildElement();
+                    QDomElement bfElement = xmlRoot.firstChildElement(libxml::buildflags).firstChildElement();
                     while (!bfElement.isNull())
                     {
-                        if (bfElement.tagName() == "cflags")
+                        if (bfElement.tagName() == libxml::cflags)
                         {
                             pLibrary->cflags.append(" "+bfElement.text());
                         }
-                        else if (bfElement.tagName() == "lflags")
+                        else if (bfElement.tagName() == libxml::lflags)
                         {
                             pLibrary->lflags.append(" "+bfElement.text());
                         }
@@ -1189,46 +1194,46 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                         bfElement = bfElement.nextSiblingElement();
                     }
 
-                    QDomElement includePathElement = xmlRoot.firstChildElement(QString(XML_LIBRARY_INCLUDEPATH));
+                    QDomElement includePathElement = xmlRoot.firstChildElement(QString(libxml::includepath));
                     while(!includePathElement.isNull()) {
                         pLibrary->includePaths.append(includePathElement.text());
-                        includePathElement = includePathElement.nextSiblingElement(QString(XML_LIBRARY_INCLUDEPATH));
+                        includePathElement = includePathElement.nextSiblingElement(QString(libxml::includepath));
                     }
 
-                    QDomElement linkPathElement = xmlRoot.firstChildElement(QString(XML_LIBRARY_LINKPATH));
+                    QDomElement linkPathElement = xmlRoot.firstChildElement(QString(libxml::linkpath));
                     while(!linkPathElement.isNull()) {
                         pLibrary->linkPaths.append(linkPathElement.text());
-                        linkPathElement = linkPathElement.nextSiblingElement(QString(XML_LIBRARY_LINKPATH));
+                        linkPathElement = linkPathElement.nextSiblingElement(QString(libxml::linkpath));
                     }
 
-                    QDomElement linkLibraryElement = xmlRoot.firstChildElement(QString(XML_LIBRARY_LINKLIBRARY));
+                    QDomElement linkLibraryElement = xmlRoot.firstChildElement(QString(libxml::linklibrary));
                     while(!linkLibraryElement.isNull()) {
                         pLibrary->linkLibraries.append(linkLibraryElement.text());
-                        linkLibraryElement = linkLibraryElement.nextSiblingElement(QString(XML_LIBRARY_LINKLIBRARY));
+                        linkLibraryElement = linkLibraryElement.nextSiblingElement(QString(libxml::linklibrary));
                     }
 
                     // Read source files
-                    QDomElement sourceElement = xmlRoot.firstChildElement(QString(XML_LIBRARY_SOURCE));
+                    QDomElement sourceElement = xmlRoot.firstChildElement(QString(libxml::source));
                     while(!sourceElement.isNull())
                     {
                         pLibrary->sourceFiles.append(QFileInfo(file).canonicalPath()+"/"+sourceElement.text());
-                        sourceElement = sourceElement.nextSiblingElement(QString(XML_LIBRARY_SOURCE));
+                        sourceElement = sourceElement.nextSiblingElement(QString(libxml::source));
                     }
 
                     // Read extra source files
-                    QDomElement extraSourceElement = xmlRoot.firstChildElement(QString(XML_LIBRARY_EXTRA_SOURCE));
+                    QDomElement extraSourceElement = xmlRoot.firstChildElement(QString(libxml::extrasource));
                     while(!extraSourceElement.isNull())
                     {
                         pLibrary->sourceFiles.append(QFileInfo(file).canonicalPath()+"/"+extraSourceElement.text());
-                        extraSourceElement = extraSourceElement.nextSiblingElement(QString(XML_LIBRARY_EXTRA_SOURCE));
+                        extraSourceElement = extraSourceElement.nextSiblingElement(QString(libxml::extrasource));
                     }
 
                     // Read components
                     if(!libraryFormatVersionLessThen(pLibrary->version.toDouble(), 0.3)) {
-                        QDomElement cafElement = xmlRoot.firstChildElement(QString(XML_COMPONENT_XML));
+                        QDomElement cafElement = xmlRoot.firstChildElement(QString(libxml::componentxml));
                         while(!cafElement.isNull()) {
                             pLibrary->cafFiles.append(libraryRootDir.absoluteFilePath(cafElement.text()));
-                            cafElement = cafElement.nextSiblingElement(QString(XML_COMPONENT_XML));
+                            cafElement = cafElement.nextSiblingElement(QString(libxml::componentxml));
                         }
                         qDebug() << "CAF files: " << pLibrary->cafFiles;
                     }
@@ -1273,7 +1278,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                 else
                 {
                     gpMessageHandler->addErrorMessage(QString("The specified XML file does not have Hopsan library root element. Expected: %1, Found: %2, In: %3")
-                                                      .arg(XML_LIBRARY).arg(xmlRoot.tagName()).arg(libraryMainFileInfo.canonicalFilePath()));
+                                                      .arg(libxml::root).arg(xmlRoot.tagName()).arg(libraryMainFileInfo.canonicalFilePath()));
                     return false;
                 }
             }
@@ -1316,7 +1321,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                 if(domDocument.setContent(&cafFile, false, &errorStr, &errorLine, &errorColumn))
                 {
                     QDomElement cafRoot = domDocument.documentElement();
-                    if(cafRoot.tagName() == QString(CAF_ROOT))
+                    if(cafRoot.tagName() == QString(caf::root))
                     {
                         pLibrary->cafFiles.append(cafFileInfo.absoluteFilePath());
                     }
@@ -1349,9 +1354,9 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
             int errorLine, errorColumn;
             if(domDocument.setContent(&cafFile, false, &errorStr, &errorLine, &errorColumn)) {
                 QDomElement cafRoot = domDocument.documentElement();
-                if(cafRoot.tagName() == QString(CAF_ROOT))  {
+                if(cafRoot.tagName() == QString(caf::root))  {
                     //Read appearance data from the caf xml file, begin with the first
-                    QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(CAF_MODELOBJECT); //! @todo extend this code to be able to read many appearance objects from same file
+                    QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(caf::modelobject); //! @todo extend this code to be able to read many appearance objects from same file
                     SharedModelObjectAppearanceT pAppearanceData = SharedModelObjectAppearanceT(new ModelObjectAppearance);
                     pAppearanceData->setBasePath(QFileInfo(cafFile).absolutePath()+"/");
                     pAppearanceData->setXMLFile(QFileInfo(cafFile));
@@ -1359,7 +1364,7 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                     pAppearanceData->cacheIcons();
 
                     // Check CAF version, and ask user if they want to update to latest version
-                    QString caf_version = cafRoot.attribute(CAF_VERSION);
+                    QString caf_version = cafRoot.attribute(caf::version);
 
                     if (caf_version < CAF_VERSIONNUM) {
                         bool doSave=false;
@@ -1659,7 +1664,7 @@ void LibraryHandler::importFmu()
 {
     //Load .fmu file and create paths
     QString filePath = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Import Functional Mockup Unit (FMU)"),
-                                                    gpConfig->getStringSetting(CFG_FMUIMPORTDIR),
+                                                    gpConfig->getStringSetting(cfg::dir::fmuimport),
                                                     tr("Functional Mockup Unit (*.fmu)"));
     if(filePath.isEmpty())      //Cancelled by user
         return;
@@ -1670,7 +1675,7 @@ void LibraryHandler::importFmu()
         gpMessageHandler->addErrorMessage("File not found: "+filePath);
         return;
     }
-    gpConfig->setStringSetting(CFG_FMUIMPORTDIR, fmuFileInfo.absolutePath());
+    gpConfig->setStringSetting(cfg::dir::fmuimport, fmuFileInfo.absolutePath());
 
     SystemObject *pSystem = gpModelHandler->getCurrentTopLevelSystem();
     if(pSystem) {

@@ -116,7 +116,7 @@ void LogDataHandler2::exportToPlo(const QString &rFilePath, QList<SharedVectorVa
 {
     if ( (version < 1) || (version > 3) )
     {
-        version = gpConfig->getIntegerSetting(CFG_PLOEXPORTVERSION);
+        version = gpConfig->getIntegerSetting(cfg::ploexportversion);
     }
 
     if (variables.isEmpty())
@@ -408,7 +408,7 @@ void LogDataHandler2::importFromPlo(QString importFilePath)
     {
 
         importFilePath = QFileDialog::getOpenFileName(0,tr("Choose Hopsan .plo File"),
-                                                       gpConfig->getStringSetting(CFG_PLOTDATADIR),
+                                                       gpConfig->getStringSetting(cfg::dir::plotdata),
                                                        tr("Hopsan File (*.plo)"));
     }
     if(importFilePath.isEmpty())
@@ -418,7 +418,7 @@ void LogDataHandler2::importFromPlo(QString importFilePath)
 
     QFile file(importFilePath);
     QFileInfo fileInfo(file);
-    gpConfig->setStringSetting(CFG_PLOTDATADIR, fileInfo.absolutePath());
+    gpConfig->setStringSetting(cfg::dir::plotdata, fileInfo.absolutePath());
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -618,7 +618,7 @@ void LogDataHandler2::importFromCSV_AutoFormat(QString importFilePath)
     {
 
         importFilePath = QFileDialog::getOpenFileName(0,tr("Choose .csv File"),
-                                                       gpConfig->getStringSetting(CFG_PLOTDATADIR),
+                                                       gpConfig->getStringSetting(cfg::dir::plotdata),
                                                        tr("Comma-separated values files (*.csv)"));
     }
     if(importFilePath.isEmpty())
@@ -698,7 +698,7 @@ void LogDataHandler2::importHopsanRowCSV(QString importFilePath)
     {
 
         importFilePath = QFileDialog::getOpenFileName(0,tr("Choose .csv File"),
-                                                       gpConfig->getStringSetting(CFG_PLOTDATADIR),
+                                                       gpConfig->getStringSetting(cfg::dir::plotdata),
                                                        tr("Hopsan row based csv files (*.csv)"));
     }
     if(importFilePath.isEmpty())
@@ -708,7 +708,7 @@ void LogDataHandler2::importHopsanRowCSV(QString importFilePath)
 
     QFile file(importFilePath);
     QFileInfo fileInfo(file);
-    gpConfig->setStringSetting(CFG_PLOTDATADIR, fileInfo.absolutePath());
+    gpConfig->setStringSetting(cfg::dir::plotdata, fileInfo.absolutePath());
 
     bool parseOk = true;
 
@@ -797,7 +797,7 @@ void LogDataHandler2::importFromPlainColumnCsv(QString importFilePath, const QCh
     if(importFilePath.isEmpty())
     {
         importFilePath = QFileDialog::getOpenFileName(0,tr("Choose .csv File"),
-                                                       gpConfig->getStringSetting(CFG_PLOTDATADIR),
+                                                       gpConfig->getStringSetting(cfg::dir::plotdata),
                                                        tr("Comma-separated values files (*.csv)"));
     }
     if(importFilePath.isEmpty())
@@ -807,7 +807,7 @@ void LogDataHandler2::importFromPlainColumnCsv(QString importFilePath, const QCh
 
     QFile file(importFilePath);
     QFileInfo fileInfo(file);
-    gpConfig->setStringSetting(CFG_PLOTDATADIR, fileInfo.absolutePath());
+    gpConfig->setStringSetting(cfg::dir::plotdata, fileInfo.absolutePath());
 
     QTextStream ts(&file);
     QStringList names;
@@ -874,7 +874,7 @@ void LogDataHandler2::importFromPlainRowCsv(QString importFilePath, const QChar 
     if(importFilePath.isEmpty())
     {
         importFilePath = QFileDialog::getOpenFileName(0,tr("Choose .csv File"),
-                                                       gpConfig->getStringSetting(CFG_PLOTDATADIR),
+                                                       gpConfig->getStringSetting(cfg::dir::plotdata),
                                                        tr("Comma-separated values files (*.csv)"));
     }
     if(importFilePath.isEmpty())
@@ -884,7 +884,7 @@ void LogDataHandler2::importFromPlainRowCsv(QString importFilePath, const QChar 
 
     QFile file(importFilePath);
     QFileInfo fileInfo(file);
-    gpConfig->setStringSetting(CFG_PLOTDATADIR, fileInfo.absolutePath());
+    gpConfig->setStringSetting(cfg::dir::plotdata, fileInfo.absolutePath());
 
     bool parseOk = true;
 
@@ -1226,7 +1226,7 @@ bool LogDataHandler2::collectLogDataFromSystem(SystemObject *pCurrentSystem, con
             for(auto &varDesc : varDescs)
             {
                 // Skip hidden variables
-                if ( gpConfig->getBoolSetting(CFG_SHOWHIDDENNODEDATAVARIABLES) || (varDesc.mNodeDataVariableType != "Hidden") )
+                if ( gpConfig->getBoolSetting(cfg::showhiddennodedatavariables) || (varDesc.mNodeDataVariableType != "Hidden") )
                 {
                     // Fetch variable data
                     QVector<double> dataVec;
@@ -1564,7 +1564,7 @@ void LogDataHandler2::limitPlotGenerations()
     const int generationLimit = gpConfig->getGenerationLimit();
     if (numGens > generationLimit)
     {
-        if(!gpConfig->getBoolSetting(CFG_AUTOLIMITGENERATIONS))
+        if(!gpConfig->getBoolSetting(cfg::autolimitgenerations))
         {
             QDialog dialog(gpMainWindowWidget);
             dialog.setWindowTitle("Hopsan");
@@ -1573,7 +1573,7 @@ void LogDataHandler2::limitPlotGenerations()
                                         "<br>Number of data generations: "+QString::number(numGens)+
                                         "<br><br><b>Discard "+QString::number(numGens-generationLimit)+" generations(s)?</b>");
             QCheckBox *pAutoLimitCheckBox = new QCheckBox("Automatically discard old generations", &dialog);
-            pAutoLimitCheckBox->setChecked(gpConfig->getBoolSetting(CFG_AUTOLIMITGENERATIONS));
+            pAutoLimitCheckBox->setChecked(gpConfig->getBoolSetting(cfg::autolimitgenerations));
             QDialogButtonBox *pButtonBox = new QDialogButtonBox(&dialog);
             QPushButton *pDiscardButton = pButtonBox->addButton("Discard", QDialogButtonBox::AcceptRole);
             QPushButton *pKeepButton = pButtonBox->addButton("Keep", QDialogButtonBox::RejectRole);
@@ -1585,7 +1585,7 @@ void LogDataHandler2::limitPlotGenerations()
             pLayout->addWidget(pButtonBox);
 
             int retval = dialog.exec();
-            gpConfig->setBoolSetting(CFG_AUTOLIMITGENERATIONS, pAutoLimitCheckBox->isChecked());
+            gpConfig->setBoolSetting(cfg::autolimitgenerations, pAutoLimitCheckBox->isChecked());
 
             if(retval == QDialog::Rejected)
             {

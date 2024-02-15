@@ -201,7 +201,7 @@ Arguments:
         gpMessageHandler->startPublish();
 
         // Show license dialog
-        if (gpConfig->getBoolSetting(CFG_SHOWLICENSEONSTARTUP))
+        if (gpConfig->getBoolSetting(cfg::showlicenseonstartup))
         {
             (new LicenseDialog(gpMainWindowWidget))->show();
             // Note! it will delete on close automatically

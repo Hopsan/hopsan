@@ -330,7 +330,7 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     mpEnableProgressBarCheckBox->setCheckable(true);
 
     QLabel *pProgressBarLabel = new QLabel(tr("Progress Bar Time Step [ms]"));
-    pProgressBarLabel->setEnabled(gpConfig->getBoolSetting(CFG_PROGRESSBAR));
+    pProgressBarLabel->setEnabled(gpConfig->getBoolSetting(cfg::progressbar));
     mpProgressBarSpinBox = new QSpinBox();
     mpProgressBarSpinBox->setMinimum(1);
     mpProgressBarSpinBox->setMaximum(5000);
@@ -482,8 +482,8 @@ OptionsDialog::OptionsDialog(QWidget *parent)
     pCompilersLayout->addWidget(new QWidget(this),                     ++row,0,1,3);
     pCompilersLayout->setRowStretch(row,1);
 
-    setCompiler32Path(gpConfig->getStringSetting(CFG_GCC32DIR));
-    setCompiler64Path(gpConfig->getStringSetting(CFG_GCC64DIR));
+    setCompiler32Path(gpConfig->getStringSetting(cfg::dir::gcc32));
+    setCompiler64Path(gpConfig->getStringSetting(cfg::dir::gcc64));
 
     connect(pCompiler32Button, SIGNAL(clicked()), this, SLOT(setCompiler32Path()));
     connect(mpCompiler32LineEdit, SIGNAL(textChanged(QString)), this, SLOT(setCompiler32Path(QString)));
@@ -601,11 +601,11 @@ void OptionsDialog::setValues()
     // Toggle writing to disk off, since we would write many times fore each set below
     gpConfig->beginMultiSet();
 
-    gpConfig->setBoolSetting(CFG_SHOWPOPUPHELP, mpShowPopupHelpCheckBox->isChecked());
-    gpConfig->setBoolSetting(CFG_NATIVESTYLESHEET, mpNativeStyleSheetCheckBox->isChecked());
-    gpConfig->setBoolSetting(CFG_CHECKFORDEVELOPMENTUPDATES, mpCheckDevelopmentUpdatesCheckBox->isChecked());
+    gpConfig->setBoolSetting(cfg::showpopuphelp, mpShowPopupHelpCheckBox->isChecked());
+    gpConfig->setBoolSetting(cfg::nativestylesheet, mpNativeStyleSheetCheckBox->isChecked());
+    gpConfig->setBoolSetting(cfg::checkfordevelopmentupdates, mpCheckDevelopmentUpdatesCheckBox->isChecked());
 
-    if(gpConfig->getBoolSetting(CFG_NATIVESTYLESHEET))
+    if(gpConfig->getBoolSetting(cfg::nativestylesheet))
     {
         gpMainWindowWidget->setStyleSheet((" "));
         QMainWindow dummy;
@@ -619,33 +619,33 @@ void OptionsDialog::setValues()
         this->setPalette(gpConfig->getPalette());
     }
     emit paletteChanged();
-    gpConfig->setBoolSetting(CFG_INVERTWHEEL, mpInvertWheelCheckBox->isChecked());
-    gpConfig->setBoolSetting(CFG_ANTIALIASING, mpAntiAliasingCheckBox->isChecked());
-    gpConfig->setBoolSetting(CFG_SNAPPING, mpSnappingCheckBox->isChecked());
-    gpConfig->setBoolSetting(CFG_SETPWDTOMWD, mpAutoSetPwdToMwdCheckBox->isChecked());
-    gpConfig->setDoubleSetting(CFG_ZOOMSTEP, mpZoomStepSpinBox->value());
+    gpConfig->setBoolSetting(cfg::invertwheel, mpInvertWheelCheckBox->isChecked());
+    gpConfig->setBoolSetting(cfg::antialiasing, mpAntiAliasingCheckBox->isChecked());
+    gpConfig->setBoolSetting(cfg::snapping, mpSnappingCheckBox->isChecked());
+    gpConfig->setBoolSetting(cfg::setpwdtomwd, mpAutoSetPwdToMwdCheckBox->isChecked());
+    gpConfig->setDoubleSetting(cfg::zoomstep, mpZoomStepSpinBox->value());
     for(int i=0; i<gpModelHandler->count(); ++i)
     {
-        gpModelHandler->getModel(i)->getGraphicsView()->setRenderHint(QPainter::Antialiasing, gpConfig->getBoolSetting(CFG_ANTIALIASING));
+        gpModelHandler->getModel(i)->getGraphicsView()->setRenderHint(QPainter::Antialiasing, gpConfig->getBoolSetting(cfg::antialiasing));
     }
     gpConfig->setBackgroundColor(mPickedBackgroundColor);
     for(int i=0; i<gpModelHandler->count(); ++i)
     {
         gpModelHandler->getModel(i)->getGraphicsView()->updateViewPort();
     }
-    gpConfig->setBoolSetting(CFG_PROGRESSBAR, mpEnableProgressBarCheckBox->isChecked());
-    gpConfig->setIntegerSetting(CFG_PROGRESSBARSTEP, mpProgressBarSpinBox->value());
-    gpConfig->setBoolSetting(CFG_MULTICORE, mpUseMulticoreCheckBox->isChecked());
-    gpConfig->setIntegerSetting(CFG_NUMBEROFTHREADS, mpThreadsSpinBox->value());
-    gpConfig->setBoolSetting(CFG_LOGDURINGSIMULATION, mpLogDuringSimulationCheckBox->isChecked());
-    gpConfig->setIntegerSetting(CFG_LOGSTEPS, mpLogStepsSpinBox->value());
-    gpConfig->setBoolSetting(CFG_AUTOLIMITGENERATIONS, mpAutoLimitGenerationsCheckBox->isChecked());
-    gpConfig->setBoolSetting(CFG_SHOWHIDDENNODEDATAVARIABLES, mpShowHiddenNodeDataVarCheckBox->isChecked());
-    gpConfig->setBoolSetting(CFG_PLOTWINDOWSONTOP, mpPlotWindowsOnTop->isChecked());
-    gpConfig->setIntegerSetting(CFG_GENERATIONLIMIT, mpGenerationLimitSpinBox->value());
-    gpConfig->setIntegerSetting(CFG_PLOEXPORTVERSION, mpDefaultPloExportVersion->value());
-    gpConfig->setBoolSetting(CFG_CACHELOGDATA, mpCacheLogDataCeckBox->isChecked());
-    gpConfig->setStringSetting(CFG_CUSTOMTEMPPATH, mpCustomTempPathLineEdit->text());
+    gpConfig->setBoolSetting(cfg::progressbar, mpEnableProgressBarCheckBox->isChecked());
+    gpConfig->setIntegerSetting(cfg::progressbarstep, mpProgressBarSpinBox->value());
+    gpConfig->setBoolSetting(cfg::multicore, mpUseMulticoreCheckBox->isChecked());
+    gpConfig->setIntegerSetting(cfg::numberofthreads, mpThreadsSpinBox->value());
+    gpConfig->setBoolSetting(cfg::logduringsimulation, mpLogDuringSimulationCheckBox->isChecked());
+    gpConfig->setIntegerSetting(cfg::logsteps, mpLogStepsSpinBox->value());
+    gpConfig->setBoolSetting(cfg::autolimitgenerations, mpAutoLimitGenerationsCheckBox->isChecked());
+    gpConfig->setBoolSetting(cfg::showhiddennodedatavariables, mpShowHiddenNodeDataVarCheckBox->isChecked());
+    gpConfig->setBoolSetting(cfg::plotwindowsontop, mpPlotWindowsOnTop->isChecked());
+    gpConfig->setIntegerSetting(cfg::generationlimit, mpGenerationLimitSpinBox->value());
+    gpConfig->setIntegerSetting(cfg::ploexportversion, mpDefaultPloExportVersion->value());
+    gpConfig->setBoolSetting(cfg::cachelogdata, mpCacheLogDataCeckBox->isChecked());
+    gpConfig->setStringSetting(cfg::dir::customtemppath, mpCustomTempPathLineEdit->text());
     for(int i=0; i<gpModelHandler->count(); ++i)       //Loop through all containers and reduce their plot data
     {
         gpModelHandler->getModel(i)->getLogDataHandler()->limitPlotGenerations();
@@ -662,17 +662,17 @@ void OptionsDialog::setValues()
         }
     }
 
-    gpConfig->setStringSetting(CFG_GCC32DIR, mpCompiler32LineEdit->text());
-    gpConfig->setStringSetting(CFG_GCC64DIR, mpCompiler64LineEdit->text());
-    gpConfig->setBoolSetting(CFG_PREFERINCLUDEDCOMPILER, mpPrefereIncludedCompiler->isChecked());
+    gpConfig->setStringSetting(cfg::dir::gcc32, mpCompiler32LineEdit->text());
+    gpConfig->setStringSetting(cfg::dir::gcc64, mpCompiler64LineEdit->text());
+    gpConfig->setBoolSetting(cfg::preferincludedcompiler, mpPrefereIncludedCompiler->isChecked());
 
-    gpConfig->setStringSetting(CFG_REMOTEHOPSANADDRESS, mpRemoteHopsanAddress->text());
-    gpConfig->setStringSetting(CFG_REMOTEHOPSANADDRESSSERVERADDRESS, mpRemoteHopsanAddressServerAddress->text());
-    gpConfig->setStringSetting(CFG_REMOTEHOPSANUSERIDENTIFICATION, mpRemoteHopsanUserId->text());
-    gpConfig->setBoolSetting(CFG_USEREMOTEADDRESSSERVER, mpUseRemoteHopsanAddressServer->isChecked());
-    gpConfig->setBoolSetting(CFG_USEREMOTEOPTIMIZATION, mpUseRemoteOptimization->isChecked());
-    gpConfig->setIntegerSetting(CFG_REMOTESHORTTIMEOUT, mpRemoteShortTOSpinbox->value());
-    gpConfig->setIntegerSetting(CFG_REMOTELONGTIMEOUT, mpRemoteLongTOSpinbox->value());
+    gpConfig->setStringSetting(cfg::remotehopsanaddress, mpRemoteHopsanAddress->text());
+    gpConfig->setStringSetting(cfg::remotehopsanaddresserveraddress, mpRemoteHopsanAddressServerAddress->text());
+    gpConfig->setStringSetting(cfg::remotehopsanuseridentification, mpRemoteHopsanUserId->text());
+    gpConfig->setBoolSetting(cfg::useremoteaddresserver, mpUseRemoteHopsanAddressServer->isChecked());
+    gpConfig->setBoolSetting(cfg::useremoteoptimization, mpUseRemoteOptimization->isChecked());
+    gpConfig->setIntegerSetting(cfg::remoteshorttimeout, mpRemoteShortTOSpinbox->value());
+    gpConfig->setIntegerSetting(cfg::remotelongtimeout, mpRemoteLongTOSpinbox->value());
 
     // Toggle writing to disk back on before saving
     gpConfig->endMultiSet();
@@ -734,46 +734,46 @@ void OptionsDialog::show()
     mpBackgroundColorButton->setStyleSheet(buttonStyle);
     mPickedBackgroundColor = gpConfig->getBackgroundColor();
 
-    mpCheckDevelopmentUpdatesCheckBox->setChecked(gpConfig->getBoolSetting(CFG_CHECKFORDEVELOPMENTUPDATES));
-    mpNativeStyleSheetCheckBox->setChecked(gpConfig->getBoolSetting(CFG_NATIVESTYLESHEET));
-    mpShowPopupHelpCheckBox->setChecked(gpConfig->getBoolSetting(CFG_SHOWPOPUPHELP));
-    mpAntiAliasingCheckBox->setChecked(gpConfig->getBoolSetting(CFG_ANTIALIASING));
-    mpInvertWheelCheckBox->setChecked(gpConfig->getBoolSetting(CFG_INVERTWHEEL));
-    mpSnappingCheckBox->setChecked(gpConfig->getBoolSetting(CFG_SNAPPING));
-    mpZoomStepSpinBox->setValue(gpConfig->getDoubleSetting(CFG_ZOOMSTEP));
-    mpAutoSetPwdToMwdCheckBox->setChecked(gpConfig->getBoolSetting(CFG_SETPWDTOMWD));
-    mpEnableProgressBarCheckBox->setChecked(gpConfig->getBoolSetting(CFG_PROGRESSBAR));
-    mpProgressBarSpinBox->setValue(gpConfig->getIntegerSetting(CFG_PROGRESSBARSTEP));
-    mpProgressBarSpinBox->setEnabled(gpConfig->getBoolSetting(CFG_PROGRESSBAR));
-    mpThreadsSpinBox->setEnabled(gpConfig->getBoolSetting(CFG_MULTICORE));
-    mpUseMulticoreCheckBox->setChecked(gpConfig->getBoolSetting(CFG_MULTICORE));
-    mpThreadsSpinBox->setValue(gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS));
-    mpThreadsLabel->setEnabled(gpConfig->getBoolSetting(CFG_MULTICORE));
-    mpLogDuringSimulationCheckBox->setChecked(gpConfig->getBoolSetting(CFG_LOGDURINGSIMULATION));
-    mpLogStepsLabel->setEnabled(gpConfig->getBoolSetting(CFG_LOGDURINGSIMULATION));
-    mpLogStepsSpinBox->setEnabled(gpConfig->getBoolSetting(CFG_LOGDURINGSIMULATION));
-    mpLogStepsSpinBox->setValue(gpConfig->getIntegerSetting(CFG_LOGSTEPS));
-    mpGenerationLimitSpinBox->setValue(gpConfig->getIntegerSetting(CFG_GENERATIONLIMIT));
-    mpDefaultPloExportVersion->setValue(gpConfig->getIntegerSetting(CFG_PLOEXPORTVERSION));
-    mpAutoLimitGenerationsCheckBox->setChecked(gpConfig->getBoolSetting(CFG_AUTOLIMITGENERATIONS));
-    mpShowHiddenNodeDataVarCheckBox->setChecked(gpConfig->getBoolSetting(CFG_SHOWHIDDENNODEDATAVARIABLES));
-    mpPlotWindowsOnTop->setChecked(gpConfig->getBoolSetting(CFG_PLOTWINDOWSONTOP));
-    mpCacheLogDataCeckBox->setChecked(gpConfig->getBoolSetting(CFG_CACHELOGDATA));
-    mpCustomTempPathLineEdit->setText(gpConfig->getStringSetting(CFG_CUSTOMTEMPPATH));
+    mpCheckDevelopmentUpdatesCheckBox->setChecked(gpConfig->getBoolSetting(cfg::checkfordevelopmentupdates));
+    mpNativeStyleSheetCheckBox->setChecked(gpConfig->getBoolSetting(cfg::nativestylesheet));
+    mpShowPopupHelpCheckBox->setChecked(gpConfig->getBoolSetting(cfg::showpopuphelp));
+    mpAntiAliasingCheckBox->setChecked(gpConfig->getBoolSetting(cfg::antialiasing));
+    mpInvertWheelCheckBox->setChecked(gpConfig->getBoolSetting(cfg::invertwheel));
+    mpSnappingCheckBox->setChecked(gpConfig->getBoolSetting(cfg::snapping));
+    mpZoomStepSpinBox->setValue(gpConfig->getDoubleSetting(cfg::zoomstep));
+    mpAutoSetPwdToMwdCheckBox->setChecked(gpConfig->getBoolSetting(cfg::setpwdtomwd));
+    mpEnableProgressBarCheckBox->setChecked(gpConfig->getBoolSetting(cfg::progressbar));
+    mpProgressBarSpinBox->setValue(gpConfig->getIntegerSetting(cfg::progressbarstep));
+    mpProgressBarSpinBox->setEnabled(gpConfig->getBoolSetting(cfg::progressbar));
+    mpThreadsSpinBox->setEnabled(gpConfig->getBoolSetting(cfg::multicore));
+    mpUseMulticoreCheckBox->setChecked(gpConfig->getBoolSetting(cfg::multicore));
+    mpThreadsSpinBox->setValue(gpConfig->getIntegerSetting(cfg::numberofthreads));
+    mpThreadsLabel->setEnabled(gpConfig->getBoolSetting(cfg::multicore));
+    mpLogDuringSimulationCheckBox->setChecked(gpConfig->getBoolSetting(cfg::logduringsimulation));
+    mpLogStepsLabel->setEnabled(gpConfig->getBoolSetting(cfg::logduringsimulation));
+    mpLogStepsSpinBox->setEnabled(gpConfig->getBoolSetting(cfg::logduringsimulation));
+    mpLogStepsSpinBox->setValue(gpConfig->getIntegerSetting(cfg::logsteps));
+    mpGenerationLimitSpinBox->setValue(gpConfig->getIntegerSetting(cfg::generationlimit));
+    mpDefaultPloExportVersion->setValue(gpConfig->getIntegerSetting(cfg::ploexportversion));
+    mpAutoLimitGenerationsCheckBox->setChecked(gpConfig->getBoolSetting(cfg::autolimitgenerations));
+    mpShowHiddenNodeDataVarCheckBox->setChecked(gpConfig->getBoolSetting(cfg::showhiddennodedatavariables));
+    mpPlotWindowsOnTop->setChecked(gpConfig->getBoolSetting(cfg::plotwindowsontop));
+    mpCacheLogDataCeckBox->setChecked(gpConfig->getBoolSetting(cfg::cachelogdata));
+    mpCustomTempPathLineEdit->setText(gpConfig->getStringSetting(cfg::dir::customtemppath));
 
-    mpRemoteHopsanAddress->setText(gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESS));
-    mpRemoteHopsanAddressServerAddress->setText(gpConfig->getStringSetting(CFG_REMOTEHOPSANADDRESSSERVERADDRESS));
-    mpRemoteHopsanUserId->setText(gpConfig->getStringSetting(CFG_REMOTEHOPSANUSERIDENTIFICATION));
-    mpUseRemoteHopsanAddressServer->setChecked(gpConfig->getBoolSetting(CFG_USEREMOTEADDRESSSERVER));
-    mpUseRemoteOptimization->setChecked(gpConfig->getBoolSetting(CFG_USEREMOTEOPTIMIZATION));
-    mpRemoteShortTOSpinbox->setValue(gpConfig->getIntegerSetting(CFG_REMOTESHORTTIMEOUT));
-    mpRemoteLongTOSpinbox->setValue(gpConfig->getIntegerSetting(CFG_REMOTELONGTIMEOUT));
+    mpRemoteHopsanAddress->setText(gpConfig->getStringSetting(cfg::remotehopsanaddress));
+    mpRemoteHopsanAddressServerAddress->setText(gpConfig->getStringSetting(cfg::remotehopsanaddresserveraddress));
+    mpRemoteHopsanUserId->setText(gpConfig->getStringSetting(cfg::remotehopsanuseridentification));
+    mpUseRemoteHopsanAddressServer->setChecked(gpConfig->getBoolSetting(cfg::useremoteaddresserver));
+    mpUseRemoteOptimization->setChecked(gpConfig->getBoolSetting(cfg::useremoteoptimization));
+    mpRemoteShortTOSpinbox->setValue(gpConfig->getIntegerSetting(cfg::remoteshorttimeout));
+    mpRemoteLongTOSpinbox->setValue(gpConfig->getIntegerSetting(cfg::remotelongtimeout));
 
-    setCompiler32Path(gpConfig->getStringSetting(CFG_GCC32DIR));
-    setCompiler64Path(gpConfig->getStringSetting(CFG_GCC64DIR));
+    setCompiler32Path(gpConfig->getStringSetting(cfg::dir::gcc32));
+    setCompiler64Path(gpConfig->getStringSetting(cfg::dir::gcc64));
 
     QString compilerpath = gpDesktopHandler->getIncludedCompilerPath();
-    mpPrefereIncludedCompiler->setChecked(gpConfig->getBoolSetting(CFG_PREFERINCLUDEDCOMPILER));
+    mpPrefereIncludedCompiler->setChecked(gpConfig->getBoolSetting(cfg::preferincludedcompiler));
     if (compilerpath.isEmpty())
     {
         mpIncludedCompilerLabel->setText("Not present!");
@@ -803,7 +803,7 @@ void OptionsDialog::show()
 
 void OptionsDialog::setCompiler32Path()
 {
-    QString path = QFileDialog::getExistingDirectory(this, "Set Compiler Path:", gpConfig->getStringSetting(CFG_GCC32DIR));
+    QString path = QFileDialog::getExistingDirectory(this, "Set Compiler Path:", gpConfig->getStringSetting(cfg::dir::gcc32));
 
     if(path.isEmpty()) return;
 
@@ -819,7 +819,7 @@ void OptionsDialog::setCompiler32Path(QString path)
 
 void OptionsDialog::setCompiler64Path()
 {
-    QString path = QFileDialog::getExistingDirectory(this, "Set Compiler Path:", gpConfig->getStringSetting(CFG_GCC64DIR));
+    QString path = QFileDialog::getExistingDirectory(this, "Set Compiler Path:", gpConfig->getStringSetting(cfg::dir::gcc64));
 
     if(path.isEmpty()) return;
 

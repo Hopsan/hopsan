@@ -95,7 +95,7 @@ TerminalWidget::TerminalWidget(QWidget *pParent)
     pShowDebugMessagesButton->setToolTip("Show Debug Messages");
 
     mpGroupByTagCheckBox = new QCheckBox("Group Similar Messages");
-    mpGroupByTagCheckBox->setChecked(gpConfig->getBoolSetting(CFG_GROUPMESSAGESBYTAG));
+    mpGroupByTagCheckBox->setChecked(gpConfig->getBoolSetting(cfg::groupmessagesbytag));
 
     mpConsole = new TerminalConsole(this);
     mpHandler = new HcomHandler(mpConsole);
@@ -144,7 +144,7 @@ QSize TerminalWidget::sizeHint() const
 //! load the config directly in the constructor.
 void TerminalWidget::loadConfig()
 {
-    mpGroupByTagCheckBox->setChecked(gpConfig->getBoolSetting(CFG_GROUPMESSAGESBYTAG));
+    mpGroupByTagCheckBox->setChecked(gpConfig->getBoolSetting(cfg::groupmessagesbytag));
     mpConsole->mHistory = gpConfig->getTerminalHistory();
 
     if(!gpConfig->getHcomWorkingDirectory().isEmpty())
@@ -221,7 +221,7 @@ TerminalConsole::TerminalConsole(TerminalWidget *pParent)
     //this->setTextColor(QColor("Black"));
     //this->setStyleSheet(QString::fromUtf8("QTextEdit {background-color: white; border: 1px solid gray;}"));
 
-    mGroupByTag = gpConfig->getBoolSetting(CFG_GROUPMESSAGESBYTAG);
+    mGroupByTag = gpConfig->getBoolSetting(cfg::groupmessagesbytag);
 
     mDontPrint = false;
     mDontPrintErrors = false;
@@ -397,7 +397,7 @@ void TerminalConsole::abortHCOM()
 void TerminalConsole::setGroupByTag(bool value)
 {
     mGroupByTag = value;
-    gpConfig->setBoolSetting(CFG_GROUPMESSAGESBYTAG, value);
+    gpConfig->setBoolSetting(cfg::groupmessagesbytag, value);
 }
 
 

@@ -218,7 +218,7 @@ void TextEditorWidget::save(SaveTargetEnumT saveAsFlag)
     }
 
     QFile file(mFileInfo.absoluteFilePath());
-    gpConfig->setStringSetting(CFG_LOADSCRIPTDIR, mFileInfo.absolutePath());
+    gpConfig->setStringSetting(cfg::dir::loadscript, mFileInfo.absolutePath());
 
     if(!file.open(QFile::WriteOnly | QFile::Text))
     {

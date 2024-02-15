@@ -686,7 +686,7 @@ void WelcomeWidget::checkVersion(QNetworkReply *pReply)
                     official_releases = parseHopsanReleases(reader, HOPSANRELEASEVERSION);
                 }
 
-                if (reader.readNextStartElement() && gpConfig->getBoolSetting(CFG_CHECKFORDEVELOPMENTUPDATES) && reader.name() == "development")
+                if (reader.readNextStartElement() && gpConfig->getBoolSetting(cfg::checkfordevelopmentupdates) && reader.name() == "development")
                 {
                     development_release = parseHopsanReleases(reader, HOPSANRELEASEVERSION);
                 }

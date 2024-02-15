@@ -290,14 +290,14 @@ void ComponentSystem::addSearchPath(HString searchPath)
 
 
 //! @brief Set, add or change a system parameter including all meta data
-bool ComponentSystem::setOrAddSystemParameter(const HString &rName, const HString &rValue, const HString &rType, const HString &rDescription, const HString &rUnitOrQuantity, const bool force)
+bool ComponentSystem::setOrAddSystemParameter(const HString &rName, const HString &rValue, const HString &rType, const HString &rDescription, const HString &rUnitOrQuantity, const bool internal, const bool force)
 {
     bool success;
     HString quantity, bu;
     if(mpParameters->hasParameter(rName))
     {
         checkIfQuantityOrUnit(rUnitOrQuantity, quantity, bu);
-        success = mpParameters->setParameter(rName, rValue, rDescription, quantity, bu, rType, force);
+        success = mpParameters->setParameter(rName, rValue, rDescription, quantity, bu, rType, internal, force);
     }
     else
     {
@@ -309,7 +309,7 @@ bool ComponentSystem::setOrAddSystemParameter(const HString &rName, const HStrin
         else
         {
             checkIfQuantityOrUnit(rUnitOrQuantity, quantity, bu);
-            success = mpParameters->addParameter(rName, rValue, rDescription, quantity, bu, rType, 0, force);
+            success = mpParameters->addParameter(rName, rValue, rDescription, quantity, bu, rType, 0, internal, force);
             if (success)
             {
                 reserveUniqueName(rName,UniqueSysparamNameType);
@@ -322,11 +322,11 @@ bool ComponentSystem::setOrAddSystemParameter(const HString &rName, const HStrin
 
 
 //! @brief Set or change a system parameter including all meta data
-bool ComponentSystem::setSystemParameter(const HString &rName, const HString &rValue, const HString &rType, const HString &rDescription, const HString &rUnitOrQuantity, const bool force)
+bool ComponentSystem::setSystemParameter(const HString &rName, const HString &rValue, const HString &rType, const HString &rDescription, const HString &rUnitOrQuantity, const bool internal, const bool force)
 {
     if(mpParameters->hasParameter(rName))
     {
-        return setOrAddSystemParameter(rName, rValue, rType, rDescription, rUnitOrQuantity, force);
+        return setOrAddSystemParameter(rName, rValue, rType, rDescription, rUnitOrQuantity, internal, force);
     }
     addErrorMessage("No such system parameter: "+rName);
     return false;

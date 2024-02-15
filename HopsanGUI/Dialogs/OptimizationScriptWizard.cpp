@@ -174,7 +174,7 @@ OptimizationScriptWizard::OptimizationScriptWizard(SystemObject* pSystem, QWidge
     mpElitesLineEdit->setValidator(new QIntValidator());
 
     mpNumModelsLabel = new QLabel("Number of models: ");
-    mpNumModelsLineEdit = new QLineEdit(QString::number(qMax(1,gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS))), this);
+    mpNumModelsLineEdit = new QLineEdit(QString::number(qMax(1,gpConfig->getIntegerSetting(cfg::numberofthreads))), this);
     mpNumModelsLineEdit->setValidator(new QIntValidator());
 
     mpMethodLabel = new QLabel("Parallel method: ");
@@ -1202,7 +1202,7 @@ void OptimizationScriptWizard::generateParameterSweepScript()
     generateParameterCode(templateCode);
     generateCommonOptions(templateCode);
 
-    int nThreads = gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS);
+    int nThreads = gpConfig->getIntegerSetting(cfg::numberofthreads);
     templateCode.replace("<<<evals>>>", QString::number(mpLengthSpinBox->value()/double(nThreads)));
     templateCode.replace("<<<nmodels>>>", QString::number(nThreads));
 

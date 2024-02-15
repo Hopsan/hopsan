@@ -48,11 +48,11 @@ class HOPSANCORE_DLLAPI ParameterEvaluator
     friend class ParameterEvaluatorHandler;
 public:
     ParameterEvaluator(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rQuantity, const HString &rUnit,
-                       const HString &rType, void* pDataPtr=0, ParameterEvaluatorHandler* pParameterEvalHandler=0);
+                       const HString &rType, const bool internal=false, void* pDataPtr=0, ParameterEvaluatorHandler* pParameterEvalHandler=0);
 
     bool setParameterValue(const HString &rValue, ParameterEvaluator **ppNeedEvaluation=0, bool force=false);
     bool setParameter(const HString &rValue, const HString &rDescription, const HString &rQuantity, const HString &rUnit,
-                      const HString &rType, ParameterEvaluator **pNeedEvaluation=0, bool force=false);
+                      const HString &rType, ParameterEvaluator **pNeedEvaluation=0, bool internal=false, bool force=false);
 
     bool evaluate(HString &rResult);
     bool evaluate();
@@ -67,6 +67,7 @@ public:
     const HString &getDescription() const;
     const HString &getQuantity() const;
     const std::vector<HString> &getConditions() const;
+    bool isInternal() const;
 
     void setTriggersReconfiguration();
     bool triggersReconfiguration();
@@ -85,6 +86,7 @@ protected:
     size_t mDepthCounter;
     ParameterEvaluatorHandler* mpParameterEvaluatorHandler;
     std::vector<HString> mConditions;
+    bool mInternal;
     bool mTriggersReconfiguration;
 };
 
@@ -97,7 +99,7 @@ public:
 
     bool addParameter(const HString &rName, const HString &rValue, const HString &rDescription,
                       const HString &rQuantity, const HString &rUnit, const HString &rType,
-                      void* pData=0, bool force=false, std::vector<HString> conditions = std::vector<HString>());
+                      void* pData=0, bool internal=false, bool force=false, std::vector<HString> conditions = std::vector<HString>());
     void deleteParameter(const HString &rName);
     bool renameParameter(const HString &rOldName, const HString &rNewName);
 
@@ -105,7 +107,7 @@ public:
     const ParameterEvaluator* getParameter(const HString &rName) const;
     void getParameterNames(std::vector<HString> &rParameterNames);
     bool setParameter(const HString &rName, const HString &rValue, const HString &rDescription="", const HString &rQuantity="",
-                      const HString &rUnit="", const HString &rType="", const bool force=false);
+                      const HString &rUnit="", const HString &rType="", const bool internal=false, const bool force=false);
 
     void getParameterValue(const HString &rName, HString &rValue);
     bool setParameterValue(const HString &rName, const HString &rValue, bool force=false);

@@ -96,18 +96,18 @@ void LocalSimulationWorkerObject::initSimulateFinalize()
         // Check if we should simulate multiple systems at the same time using multicore
         if ((coreSystemAccessVector.size() > 1) && (gpConfig->getUseMulticore()))
         {
-            simulateSuccess = simuHandler.simulate(mStartTime, mStopTime, gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS), coreSystemAccessVector, mNoChanges);
+            simulateSuccess = simuHandler.simulate(mStartTime, mStopTime, gpConfig->getIntegerSetting(cfg::numberofthreads), coreSystemAccessVector, mNoChanges);
         }
-        else if (gpConfig->getUseMulticore() && !gpConfig->getBoolSetting(CFG_LOGDURINGSIMULATION))
+        else if (gpConfig->getUseMulticore() && !gpConfig->getBoolSetting(cfg::logduringsimulation))
         {
             // Choose if we should simulate each system (or just the one system) using multiple cores (but each system in sequence)
             timer.start();
-            simulateSuccess = simuHandler.simulate(mStartTime, mStopTime, gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS), coreSystemAccessVector, mNoChanges);
+            simulateSuccess = simuHandler.simulate(mStartTime, mStopTime, gpConfig->getIntegerSetting(cfg::numberofthreads), coreSystemAccessVector, mNoChanges);
         }
-        else if (gpConfig->getUseMulticore() && gpConfig->getBoolSetting(CFG_LOGDURINGSIMULATION))
+        else if (gpConfig->getUseMulticore() && gpConfig->getBoolSetting(cfg::logduringsimulation))
         {
             // Choose if we should simulate each system (or just the one system) using multiple cores (but each system in sequence)
-            int logSteps = gpConfig->getBoolSetting(CFG_LOGSTEPS);
+            int logSteps = gpConfig->getBoolSetting(cfg::logsteps);
             timer.start();
             double time = mStartTime;
             simulateSuccess = true;
@@ -118,11 +118,11 @@ void LocalSimulationWorkerObject::initSimulateFinalize()
                 time += mStopTime/logSteps;
                 emit stepFinished();
             }
-            simulateSuccess = simuHandler.simulate(mStartTime, mStopTime, gpConfig->getIntegerSetting(CFG_NUMBEROFTHREADS), coreSystemAccessVector, mNoChanges);
+            simulateSuccess = simuHandler.simulate(mStartTime, mStopTime, gpConfig->getIntegerSetting(cfg::numberofthreads), coreSystemAccessVector, mNoChanges);
         }
-        else if(!gpConfig->getUseMulticore() && gpConfig->getBoolSetting(CFG_LOGDURINGSIMULATION))
+        else if(!gpConfig->getUseMulticore() && gpConfig->getBoolSetting(cfg::logduringsimulation))
         {
-            int logSteps = gpConfig->getIntegerSetting(CFG_LOGSTEPS);
+            int logSteps = gpConfig->getIntegerSetting(cfg::logsteps);
             timer.start();
             double time = mStartTime;
             simulateSuccess = true;
@@ -350,7 +350,7 @@ void SimulationThreadHandler::initSimulateFinalizePrivate()
     mInitSuccess=false; mSimuSucess=false; mFiniSucess=false; mAborted=false;
     mpSimulationWorkerObject->moveToThread(&mSimulationWorkerThread);
 
-    if (gpConfig->getBoolSetting(CFG_PROGRESSBAR) && mProgressBarEnabled)
+    if (gpConfig->getBoolSetting(cfg::progressbar) && mProgressBarEnabled)
     {
         // Create it if it does not exist (first time)
         if (!mpProgressDialog) {
@@ -398,7 +398,7 @@ void SimulationThreadHandler::initSimulateFinalizePrivate()
             mpCheckMessagesTimer = new QTimer(this);
         }
         connect(mpSimulationWorkerObject, &SimulationWorkerObjectBase::simulateDone, mpCheckMessagesTimer, &QTimer::stop, Qt::BlockingQueuedConnection);
-        if(gpConfig->getBoolSetting(CFG_LOGDURINGSIMULATION)) {
+        if(gpConfig->getBoolSetting(cfg::logduringsimulation)) {
             connect(mpSimulationWorkerObject, SIGNAL(stepFinished()), this, SIGNAL(stepFinished()));
         }
         connect(mpCheckMessagesTimer, &QTimer::timeout, mpMessageHandler, &GUIMessageHandler::collectHopsanCoreMessages);

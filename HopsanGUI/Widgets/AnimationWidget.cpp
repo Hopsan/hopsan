@@ -89,7 +89,7 @@ AnimationWidget::AnimationWidget(QWidget *parent) :
     mpGraphicsView->setOptimizationFlags(QGraphicsView::DontSavePainterState | QGraphicsView::DontAdjustForAntialiasing);
     //mpGraphicsView->centerOn(mpGraphicsView->sceneRect().topLeft());
     mpGraphicsView->setZoomFactor(pOrgView->getZoomFactor());
-    mpGraphicsView->setRenderHint(QPainter::Antialiasing, gpConfig->getBoolSetting(CFG_ANTIALIASING));
+    mpGraphicsView->setRenderHint(QPainter::Antialiasing, gpConfig->getBoolSetting(cfg::antialiasing));
     double X,Y,Z;
     pOrgView->getViewPort(X,Y,Z);
     mpGraphicsView->centerOn(X,Y+3/Z);
@@ -621,7 +621,7 @@ void AnimationWidget::resetAllAnimationDataToDefault()
         AnimatedComponent *pComp = mAnimatedComponentList.at(c);
 
         QDomDocument domDocument;
-        QDomElement animationRoot = domDocument.createElement(HMF_ANIMATION);
+        QDomElement animationRoot = domDocument.createElement(hmf::animation);
         domDocument.appendChild(animationRoot);
 
         QString subTypeName = pComp->mpModelObject->getSubTypeName();
