@@ -827,8 +827,8 @@ void HopsanFMIGenerator::replaceNameSpace(const QString &savePath, int version) 
 bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QString &fmuStagePath, const QString &modelName, const int version, bool x64) const
 {
     const QString vStr = QString::number(version);
-    const QString fmiLibDir=mHopsanRootPath+"/dependencies/fmilibrary";
-    const QString fmi4cIncludeDir=mHopsanRootPath+"/dependencies/fmi4c/include";
+    const QString fmiLibDir="\""+mHopsanRootPath+"/dependencies/fmilibrary\"";
+    const QString fmi4cIncludeDir="\""+mHopsanRootPath+"/dependencies/fmi4c/include\"";
 
     printMessage("------------------------------------------------------------------------");
     printMessage("Compiling FMU source code");
