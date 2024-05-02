@@ -107,7 +107,7 @@ void LocalSimulationWorkerObject::initSimulateFinalize()
         else if (gpConfig->getUseMulticore() && gpConfig->getBoolSetting(cfg::logduringsimulation))
         {
             // Choose if we should simulate each system (or just the one system) using multiple cores (but each system in sequence)
-            int logSteps = gpConfig->getBoolSetting(cfg::logsteps);
+            int logSteps = gpConfig->getIntegerSetting(cfg::logsteps);
             timer.start();
             double time = mStartTime;
             simulateSuccess = true;
@@ -398,15 +398,15 @@ void SimulationThreadHandler::initSimulateFinalizePrivate()
             mpCheckMessagesTimer = new QTimer(this);
         }
         connect(mpSimulationWorkerObject, &SimulationWorkerObjectBase::simulateDone, mpCheckMessagesTimer, &QTimer::stop, Qt::BlockingQueuedConnection);
-        if(gpConfig->getBoolSetting(cfg::logduringsimulation)) {
-            connect(mpSimulationWorkerObject, SIGNAL(stepFinished()), this, SIGNAL(stepFinished()));
-        }
         connect(mpCheckMessagesTimer, &QTimer::timeout, mpMessageHandler, &GUIMessageHandler::collectHopsanCoreMessages);
         mpCheckMessagesTimer->setSingleShot(false);
         mpCheckMessagesTimer->start(1000);
     }
 
     // Connect simulation worker object signals
+    if(gpConfig->getBoolSetting(cfg::logduringsimulation)) {
+        connect(mpSimulationWorkerObject, SIGNAL(stepFinished()), this, SIGNAL(stepFinished()));
+    }
     connect(this, &SimulationThreadHandler::startSimulation, mpSimulationWorkerObject, &SimulationWorkerObjectBase::initSimulateFinalize);
     connect(mpSimulationWorkerObject, &SimulationWorkerObjectBase::initDone, this, &SimulationThreadHandler::initDone);
     connect(mpSimulationWorkerObject, &SimulationWorkerObjectBase::simulateDone, this, &SimulationThreadHandler::simulateDone);
