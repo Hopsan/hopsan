@@ -2427,6 +2427,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 
             // Re-initialize the system to reset values and timers
             //! @note This only work for top level systems where the simulateMultiThreaded will not be called more than once
+            this->finalize(); //Always run finalize before initialize
             this->initialize(startT, stopT);
         }
         else
