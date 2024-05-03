@@ -118,6 +118,10 @@ public:
     QVector<double> *beginFullVectorOperation();
     bool endFullVectorOperation(QVector<double> *&rpData);
 
+    bool hasWarning() const;
+    QString getWarning() const;
+    QString getAndClearWarning();
+
     bool hasError() const;
     QString getError() const;
     QString getAndClearError();
@@ -126,6 +130,7 @@ private:
     bool moveToCache();
     bool copyToMem();
 
+    QString mWarning;
     QString mError;
     SharedMultiDataVectorCacheT mpMultiCache;
     QVector<double> mDataVector;
