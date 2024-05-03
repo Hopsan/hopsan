@@ -1398,7 +1398,6 @@ public:
             if(NULL == fmu) {
                 return;
             }
-            fmi1_terminateSlave(fmu);
             fmi1_freeSlaveInstance(fmu);
             fmi4c_freeFmu(fmu);
             fmu = NULL;
@@ -1407,7 +1406,6 @@ public:
             if(NULL == fmu) {
                 return;
             }
-            fmi2_terminate(fmu);
             fmi2_freeInstance(fmu);
             fmi4c_freeFmu(fmu);
             fmu = NULL;
@@ -1416,7 +1414,6 @@ public:
             if(NULL == fmu) {
                 return;
             }
-            fmi3_terminate(fmu);
             fmi3_freeInstance(fmu);
             fmi4c_freeFmu(fmu);
             fmu = NULL;
