@@ -349,7 +349,7 @@ CachableDataVector::CachableDataVector(const QVector<double> &rDataVector, Share
         }
         else
         {
-            mError = "MultiCache Error, falling back to RAM storage: "+mpMultiCache->getError();
+            mWarning = "Failed to cache log data on disk, falling back to RAM storage: "+mpMultiCache->getError();
             mDataVector = rDataVector;
         }
     }
@@ -589,6 +589,23 @@ bool CachableDataVector::endFullVectorOperation(QVector<double> *&rpData)
     }
     rpData = 0;
     return rc;
+}
+
+bool CachableDataVector::hasWarning() const
+{
+    return !mWarning.isEmpty();
+}
+
+QString CachableDataVector::getWarning() const
+{
+    return mWarning;
+}
+
+QString CachableDataVector::getAndClearWarning()
+{
+    QString error = mWarning;
+    mWarning.clear();
+    return error;
 }
 
 bool CachableDataVector::hasError() const

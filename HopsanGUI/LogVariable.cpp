@@ -261,9 +261,11 @@ VectorVariable::VectorVariable(const QVector<double> &rData, const int generatio
     mpVariableDescription = varDesc;
     mGeneration = generation;
     mpCachedDataVector = new CachableDataVector(rData, pGenerationMultiCache, gpConfig->getCacheLogData());
-    if (mpCachedDataVector->hasError())
-    {
+    if(mpCachedDataVector->hasError()) {
         gpMessageHandler->addErrorMessage(mpCachedDataVector->getAndClearError(), "CachedDataVectorErr");
+    }
+    if(mpCachedDataVector->hasWarning()) {
+        gpMessageHandler->addWarningMessage(mpCachedDataVector->getAndClearWarning(), "CachedDataVectorWarning");
     }
 }
 
