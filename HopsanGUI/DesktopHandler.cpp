@@ -43,7 +43,10 @@
 #include <QDebug>
 #include <QApplication>
 #include <QTimer>
+#include <QProcess>
 #include "Utilities/GUIUtilities.h"
+#include "MessageHandler.h"
+#include "global.h"
 
 namespace {
 
@@ -431,24 +434,28 @@ void DesktopHandler::checkLogCacheForOldFiles()
         QStringList enteries = logcache.entryList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
         if (!enteries.isEmpty())
         {
-            QMessageBox msgBox;
-            msgBox.setText("There are files present in the LogCache directory!\n\n"
-                           "They may be used by an other instance of Hopsan or be leftover\n"
-                           "from an abnormal program termination\n\n"
-                           "(This message will automatically close after 10 seconds!)");
-            msgBox.setInformativeText("Do you want to clear them?");
-            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-            msgBox.setDefaultButton(QMessageBox::No);
-            QTimer t;
-            t.setSingleShot(true);
-            t.connect(&t, SIGNAL(timeout()), &msgBox, SLOT(reject()));
-            t.start(10000);
-            int ret = msgBox.exec();
-            if (ret == QMessageBox::Yes)
-            {
+            bool otherHopsanIsRunning;
+#ifdef _WIN32
+            QProcess tasklist;
+            tasklist.start("tasklist", QStringList() << "/NH" << "/FO" << "CSV" << "/FI" << "IMAGENAME eq hopsangui.exe" << "/FI" << "STATUS eq RUNNING");
+            tasklist.waitForFinished();
+            QString output = tasklist.readAllStandardOutput();
+            otherHopsanIsRunning = output.contains("hopsangui.exe"); //On Windows systems, this process has not officially started yet
+#else
+            QProcess ps;
+            ps.start("ps", QStringList() << "-a");
+            ps.waitForFinished();
+            QString output = ps.readAllStandardOutput();
+            otherHopsanIsRunning = output.count("hopsangui") > 1;   //On Unix systems, this process has already started
+#endif
+
+            if(otherHopsanIsRunning) {
+                gpMessageHandler->addWarningMessage("I found old log data on disk and will not remove it because another instance of Hopsan is running.");
+            }
+            else {
+                gpMessageHandler->addWarningMessage("I found old log data on disk, but I will remove it because no other instance of Hopsan is running.");
                 removeDir(getLogDataPath());
             }
-            t.stop();
         }
     }
 }
