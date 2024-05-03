@@ -863,7 +863,12 @@ public:
                 fmi2ValueReference vr;
                 Node *pNode = mPorts[i]->getNodePtr();
                 for(size_t j=0; j<specs.size()-1; ++j) {
-                    vr = (fmi2ValueReference)fmi2_getVariableValueReference(fmi2_getVariableByName(fmu, specs[j+1].c_str()));
+                    fmi1VariableHandle *var = fmi1_getVariableByName(fmu, specs[j+1].c_str());
+                    if(nullptr == var) {
+                        stopSimulation("Did not find variable named \""+specs[j+1]+", check your port specifications.");
+                        return;
+                    }
+                    vr = (fmi1ValueReference)fmi1_getVariableValueReference(var);
                     if(pNode->getDataDescription(j)->varType == TLMType) {
                         mRealInputs[vr] = getSafeNodeDataPtr(pPort, (int)j);
                     }
@@ -936,7 +941,12 @@ public:
                 fmi2ValueReference vr;
                 Node *pNode = mPorts[i]->getNodePtr();
                 for(size_t j=0; j<specs.size()-1; ++j) {
-                    vr = (fmi2ValueReference)fmi2_getVariableValueReference(fmi2_getVariableByName(fmu, specs[j+1].c_str()));
+                    fmi2VariableHandle *var = fmi2_getVariableByName(fmu, specs[j+1].c_str());
+                    if(nullptr == var) {
+                        stopSimulation("Did not find variable named \""+specs[j+1]+", check your port specifications.");
+                        return;
+                    }
+                    vr = (fmi2ValueReference)fmi2_getVariableValueReference(var);
                     if(pNode->getDataDescription(j)->varType == TLMType) {
                         mRealInputs[vr] = getSafeNodeDataPtr(pPort, (int)j);
                     }
@@ -1021,7 +1031,12 @@ public:
                 fmi2ValueReference vr;
                 Node *pNode = mPorts[i]->getNodePtr();
                 for(size_t j=0; j<specs.size()-1; ++j) {
-                    vr = (fmi2ValueReference)fmi2_getVariableValueReference(fmi2_getVariableByName(fmu, specs[j+1].c_str()));
+                    fmi3VariableHandle *var = fmi3_getVariableByName(fmu, specs[j+1].c_str());
+                    if(nullptr == var) {
+                        stopSimulation("Did not find variable named \""+specs[j+1]+", check your port specifications.");
+                        return;
+                    }
+                    vr = (fmi3ValueReference)fmi3_getVariableValueReference(var);
                     if(pNode->getDataDescription(j)->varType == TLMType) {
                         mFloat64Inputs[vr] = getSafeNodeDataPtr(pPort, (int)j);
                     }
