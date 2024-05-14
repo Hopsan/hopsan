@@ -2142,10 +2142,19 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
             }
         }
 
+        bool containsSystemParameter = false;
+        SymHop::Expression expr(splitCmd[1]);
+        for(const auto &var : expr.getVariables()) {
+            if(mpModel->getViewContainerObject()->hasParameter(var.toString())) {
+                containsSystemParameter = true;
+                abort;
+            }
+        }
+
         QString newValueStr;
-        if(mpModel->getViewContainerObject()->hasParameter(splitCmd[1]))
+        if(containsSystemParameter)
         {
-            newValueStr = splitCmd[1];  //If it is a system parameter, don't evaluate it!
+            newValueStr = splitCmd[1];  //If string contains a system parameter, don't evaluate it!
                                         //We want to assign the parameter value with the
                                         //name of the system parameter, not the value.
         }
