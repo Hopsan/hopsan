@@ -2470,9 +2470,9 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     size_t nSteps = calcNumSimSteps(startT, stopT);
 
     //Execute simulation
-    if(algorithm == OfflineSchedulingAlgorithm)
+    if(algorithm == APrioriScheduling)
     {
-        addInfoMessage("Using offline scheduling algorithm with "+threadStr+" threads.");
+        addInfoMessage("Using a priori scheduling algorithm with "+threadStr+" threads.");
 
         mpMultiThreadPrivates->mvTimePtrs.push_back(&mTime);
         BarrierLock *pBarrierLock_S = new BarrierLock(nThreads);    //Create synchronization barriers
@@ -2611,7 +2611,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     }
     else if(algorithm == TaskStealingAlgorithm)
     {
-        addInfoMessage("Using task stealing algorithm with "+threadStr+" threads.");
+        addInfoMessage("Using task-stealing algorithm with "+threadStr+" threads.");
 
         mpMultiThreadPrivates->mvTimePtrs.push_back(&mTime);
         BarrierLock *pBarrierLock_S = new BarrierLock(nThreads);    //Create synchronization barriers
@@ -2684,9 +2684,9 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         delete(pVectorsC);
         delete(pVectorsQ);
     }
-    else if(algorithm == ParallelForAlgorithm)
+    else if(algorithm == ForkJoinAlgorithm)
     {
-        addInfoMessage("Using parallel for-loop algorithm 1 with unlimited number of threads.");
+        addInfoMessage("Using fork-join algorithm with unlimited number of threads.");
 
         // Round to nearest, we may not get exactly the stop time that we want
         size_t numSimulationSteps = calcNumSimSteps(mTime, stopT); //Here mTime is the last time step since it is not updated yet
@@ -2743,9 +2743,9 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
             logTimeAndNodes(mTotalTakenSimulationSteps);
         }
     }
-    else if(algorithm == GroupedParallelForAlgorithm)
+    else if(algorithm == ClusteredForkJoinAlgorithm)
     {
-        addInfoMessage("Using grouped parallel for loop algorithm with unlimited number of threads.");
+        addInfoMessage("Using clustered fork-join algorithm with unlimited number of threads.");
 
         // Round to nearest, we may not get exactly the stop time that we want
         size_t numSimulationSteps = calcNumSimSteps(mTime, stopT); //Here mTime is the last time step since it is not updated yet

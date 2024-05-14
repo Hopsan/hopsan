@@ -40,11 +40,11 @@
 
 namespace hopsan {
 
-enum ParallelAlgorithmT {OfflineSchedulingAlgorithm,
+enum ParallelAlgorithmT {APrioriScheduling,
                          TaskPoolAlgorithm,
                          TaskStealingAlgorithm,
-                         ParallelForAlgorithm,
-                         GroupedParallelForAlgorithm};
+                         ForkJoinAlgorithm,
+                         ClusteredForkJoinAlgorithm};
 
 // Forward declaration
 class ComponentSystem;
@@ -59,8 +59,8 @@ public:
     bool initializeSystem(const double startT, const double stopT, ComponentSystem* pSystem);
     bool initializeSystem(const double startT, const double stopT, std::vector<ComponentSystem*> &rSystemVector);
 
-    bool simulateSystem(const double startT, const double stopT, const int nDesiredThreads, ComponentSystem* pSystem, bool noChanges=false, ParallelAlgorithmT algorithm=OfflineSchedulingAlgorithm);
-    bool simulateSystem(const double startT, const double stopT, const int nDesiredThreads, std::vector<ComponentSystem*> &rSystemVector, bool noChanges=false, ParallelAlgorithmT algorithm=OfflineSchedulingAlgorithm);
+    bool simulateSystem(const double startT, const double stopT, const int nDesiredThreads, ComponentSystem* pSystem, bool noChanges=false, ParallelAlgorithmT algorithm=APrioriScheduling);
+    bool simulateSystem(const double startT, const double stopT, const int nDesiredThreads, std::vector<ComponentSystem*> &rSystemVector, bool noChanges=false, ParallelAlgorithmT algorithm=APrioriScheduling);
 
     bool startRealtimeSimulation(ComponentSystem *pSystem, double realtimeFactor=1);
     void stopRealtimeSimulation(ComponentSystem *pSystem);
