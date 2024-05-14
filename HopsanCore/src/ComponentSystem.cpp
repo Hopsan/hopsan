@@ -2770,28 +2770,28 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
             }
 
             //C components
-            tt = new std::thread[mComponentCptrs.size()];
-            for (size_t c=0; c < mComponentCptrs.size(); ++c)
+            tt = new std::thread[mpMultiThreadPrivates->mSplitCVector.size()];
+            for (size_t c=0; c < mpMultiThreadPrivates->mSplitCVector.size(); ++c)
             {
                 tt[c] = std::thread(simOneStep,
                                     &mpMultiThreadPrivates->mSplitCVector[c],
                                     mTime);
             }
-            for(size_t c=0; c<mComponentCptrs.size(); ++c)
+            for(size_t c=0; c<mpMultiThreadPrivates->mSplitCVector.size(); ++c)
             {
                 tt[c].join();
             }
             delete[] tt;
 
             //Q components
-            tt = new std::thread[mComponentQptrs.size()];
-            for (size_t q=0; q < mComponentQptrs.size(); ++q)
+            tt = new std::thread[mpMultiThreadPrivates->mSplitQVector.size()];
+            for (size_t q=0; q < mpMultiThreadPrivates->mSplitQVector.size(); ++q)
             {
                 tt[q] = std::thread(simOneStep,
                                     &mpMultiThreadPrivates->mSplitQVector[q],
                                     mTime);
             }
-            for(size_t q=0; q<mComponentQptrs.size(); ++q)
+            for(size_t q=0; q<mpMultiThreadPrivates->mSplitQVector.size(); ++q)
             {
                 tt[q].join();
             }
