@@ -4179,8 +4179,8 @@ void HcomHandler::executeGetCommand(const QString cmd)
 
         switch (getConfigPtr()->getParallelAlgorithm())
         {
-        case hopsan::OfflineSchedulingAlgorithm :
-            output.append("pre-simulation scheduling");
+        case hopsan::APrioriScheduling :
+            output.append("a priori scheduling");
             break;
         case hopsan::TaskPoolAlgorithm :
             output.append("task pool scheduling");
@@ -4188,8 +4188,11 @@ void HcomHandler::executeGetCommand(const QString cmd)
         case hopsan::TaskStealingAlgorithm :
             output.append("task-stealing");
             break;
-        case hopsan::ParallelForAlgorithm :
+        case hopsan::ForkJoinAlgorithm :
             output.append("fork-join scheduling");
+            break;
+        case hopsan::ClusteredForkJoinAlgorithm :
+            output.append("clustered fork-join scheduling");
             break;
         default :
             output.append("unknown ("+QString::number(getConfigPtr()->getParallelAlgorithm())+")");
