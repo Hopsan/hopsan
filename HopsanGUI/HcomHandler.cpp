@@ -4133,6 +4133,14 @@ void HcomHandler::executeSetCommand(const QString cmd)
         }
         getConfigPtr()->setIntegerSetting(cfg::progressbarstep, mAnsScalar);
     }
+    else if(pref == "logduringsimulation")
+    {
+        if(value != "on" && value != "off")
+        {
+            HCOMERR("Unknown value.");
+        }
+        getConfigPtr()->setBoolSetting(cfg::logduringsimulation, value=="on");
+    }
     else
     {
         HCOMERR("Unknown command.");
@@ -4268,6 +4276,15 @@ void HcomHandler::executeGetCommand(const QString cmd)
     {
         QString output = "Progress bar step size:    ";
         output.append(QString::number(getConfigPtr()->getIntegerSetting(cfg::progressbarstep))+"");
+        HCOMPRINT(output);
+    }
+    if(all || pref == "logduringsimulation")
+    {
+        QString output = "Collect log data during simulation:               ";
+        if(getConfigPtr()->getBoolSetting(cfg::logduringsimulation))
+            output.append("ON");
+        else
+            output.append("OFF");
         HCOMPRINT(output);
     }
 }
