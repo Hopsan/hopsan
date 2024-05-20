@@ -177,12 +177,12 @@ void UndoWidget::refreshList()
                 }
                 else
                 {
-                    QDomElement stuffElement = postElement.firstChildElement("stuff");
+                    QDomElement stuffElement = postElement.firstChildElement(undo::stuff);
                     while(!stuffElement.isNull())
                     {
                         item = new QTableWidgetItem();
                         item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-                        item->setText(translateTag(stuffElement.attribute("what")));
+                        item->setText(translateTag(stuffElement.attribute(undo::what)));
                         if(pos == gpModelHandler->getCurrentViewContainerObject()->getUndoStackPtr()->mCurrentStackPosition)
                         {
                             item->setBackgroundColor(activeColor);
@@ -201,7 +201,7 @@ void UndoWidget::refreshList()
                         }
                         mUndoTable->insertRow(0);
                         mUndoTable->setItem(0,0,item);
-                        stuffElement = stuffElement.nextSiblingElement("stuff");
+                        stuffElement = stuffElement.nextSiblingElement(undo::stuff);
                     }
                 }
                 break;
@@ -219,44 +219,44 @@ void UndoWidget::refreshList()
 QString UndoWidget::translateTag(QString tag)
 {
     QMap<QString, QString> tagMap;
-    tagMap.insert(UNDO_ADDEDOBJECT,             "Added Object");
-    tagMap.insert(UNDO_ADDEDCONNECTOR,          "Added Connector");
-    tagMap.insert(UNDO_DELETEDOBJECT,           "Deleted Object");
-    tagMap.insert(UNDO_DELETEDCONNECTOR,        "Deleted Connector");
-    tagMap.insert(UNDO_MOVEDOBJECT,             "Moved Object");
-    tagMap.insert(UNDO_RENAME,                  "Renamed Object");
-    tagMap.insert(UNDO_MODIFIEDCONNECTOR,       "Modified Connector");
-    tagMap.insert(UNDO_ROTATE,                  "Rotated Object");
-    tagMap.insert(UNDO_VERTICALFLIP,            "Flipped Vertical");
-    tagMap.insert(UNDO_HORIZONTALFLIP,          "Flipped Horizontal");
-    tagMap.insert(UNDO_NAMEVISIBILITYCHANGE,    "Changed Name Visibility");
-    tagMap.insert(UNDO_ALWAYSVISIBLECHANGE,     "Toggle Component Always Visible");
-    tagMap.insert(UNDO_PASTE,                   "Paste");
-    tagMap.insert(UNDO_MOVEDMULTIPLE,           "Moved Objects");
-    tagMap.insert(UNDO_CUT,                     "Cut");
-    tagMap.insert(UNDO_CHANGEDPARAMETERS,       "Changed Parameter(s)");
-    tagMap.insert(UNDO_HIDEALLNAMES,            "Hide All Name Text");
-    tagMap.insert(UNDO_SHOWALLNAMES,            "Show All Name Text");
-    tagMap.insert(UNDO_MOVEDWIDGET,             "Moved Widget");
-    tagMap.insert(UNDO_MOVEDMULTIPLEWIDGETS,    "Moved Widgets");
-    tagMap.insert(UNDO_ALIGNX,                  "Align Vertical");
-    tagMap.insert(UNDO_ALIGNY,                  "Align Horizontal");
-    tagMap.insert(UNDO_DISTRIBUTEX,             "Distribute Horizontally");
-    tagMap.insert(UNDO_DISTRIBUTEY,             "Distribute Vertically");
-    tagMap.insert(UNDO_DELETEDSYSTEMPORT,       "Deleted System Port");
-    tagMap.insert(UNDO_DELETEDSUBSYSTEM,        "Deleted Subsystem");
-    tagMap.insert(UNDO_ADDEDSYSTEMPORT,         "Added System Port");
-    tagMap.insert(UNDO_ADDEDSUBSYSTEM,          "Added Subsystem");
-    tagMap.insert(UNDO_MOVEDCONNECTOR,          "Moved Connector");
-    tagMap.insert(UNDO_CHANGEDPARAMETER,        "Changed Parameter");
-    tagMap.insert(UNDO_ADDEDTEXTBOXWIDGET,      "Added Text Box Widget");
-    tagMap.insert(UNDO_ADDEDIMAGEWIDGET,        "Added Image Widget");
-    tagMap.insert(UNDO_DELETEDIMAGEWIDGET,      "Deleted Image Widget");
-    tagMap.insert(UNDO_MODIFIEDIMAGEWIDGET,     "Modified Image Widget");
-    tagMap.insert(UNDO_DELETEDTEXTBOXWIDGET,    "Deleted Text Box Widget");
-    tagMap.insert(UNDO_RESIZEDTEXTBOXWIDGET,    "Resized Text Box Widget");
-    tagMap.insert(UNDO_MODIFIEDTEXTBOXWIDGET,   "Modified Text Box Widget");
-    tagMap.insert(UNDO_SIMULATIONTIMECHANGED,   "Simulation Time Settings Changed");
+    tagMap.insert(undo::addedobject,             "Added Object");
+    tagMap.insert(undo::addedconnector,          "Added Connector");
+    tagMap.insert(undo::deletedobject,           "Deleted Object");
+    tagMap.insert(undo::deletedconnector,        "Deleted Connector");
+    tagMap.insert(undo::movedobject,             "Moved Object");
+    tagMap.insert(undo::rename,                  "Renamed Object");
+    tagMap.insert(undo::modifiedconnector,       "Modified Connector");
+    tagMap.insert(undo::rotate,                  "Rotated Object");
+    tagMap.insert(undo::verticalflip,            "Flipped Vertical");
+    tagMap.insert(undo::horizontalflip,          "Flipped Horizontal");
+    tagMap.insert(undo::namevisibilitychange,    "Changed Name Visibility");
+    tagMap.insert(undo::alwaysvisiblechange,     "Toggle Component Always Visible");
+    tagMap.insert(undo::paste,                   "Paste");
+    tagMap.insert(undo::movedmultiple,           "Moved Objects");
+    tagMap.insert(undo::cut,                     "Cut");
+    tagMap.insert(undo::changedparameters,       "Changed Parameter(s)");
+    tagMap.insert(undo::hideallnames,            "Hide All Name Text");
+    tagMap.insert(undo::showallnames,            "Show All Name Text");
+    tagMap.insert(undo::movedwidget,             "Moved Widget");
+    tagMap.insert(undo::movedmultiplewidgets,    "Moved Widgets");
+    tagMap.insert(undo::alignx,                  "Align Vertical");
+    tagMap.insert(undo::aligny,                  "Align Horizontal");
+    tagMap.insert(undo::distributex,             "Distribute Horizontally");
+    tagMap.insert(undo::distributey,             "Distribute Vertically");
+    tagMap.insert(undo::deletedsystemport,       "Deleted System Port");
+    tagMap.insert(undo::deletedsubsystem,        "Deleted Subsystem");
+    tagMap.insert(undo::addedsystemport,         "Added System Port");
+    tagMap.insert(undo::addedsubsystem,          "Added Subsystem");
+    tagMap.insert(undo::movedconnector,          "Moved Connector");
+    tagMap.insert(undo::changedparameter,        "Changed Parameter");
+    tagMap.insert(undo::addedtextboxwidget,      "Added Text Box Widget");
+    tagMap.insert(undo::addedimagewidget,        "Added Image Widget");
+    tagMap.insert(undo::deletedimagewidget,      "Deleted Image Widget");
+    tagMap.insert(undo::modifiedimagewidget,     "Modified Image Widget");
+    tagMap.insert(undo::deletedtextboxwidget,    "Deleted Text Box Widget");
+    tagMap.insert(undo::resizedtextboxwidget,    "Resized Text Box Widget");
+    tagMap.insert(undo::modifiedtextboxwidget,   "Modified Text Box Widget");
+    tagMap.insert(undo::simulationtimechanged,   "Simulation Time Settings Changed");
 
     if(tagMap.contains(tag))
         return tagMap.find(tag).value();

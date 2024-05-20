@@ -761,7 +761,7 @@ void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
             mpParentModelWidget->hasChanged();
             if(!createdUndoPost)
             {
-                mpContainerObject->getUndoStackPtr()->newPost(UNDO_MOVEDMULTIPLE);
+                mpContainerObject->getUndoStackPtr()->newPost(undo::movedmultiple);
                 createdUndoPost = true;
             }
             mpContainerObject->getUndoStackPtr()->registerMovedObject(pSelectedMO->getPreviousPos(), pSelectedMO->pos(), pSelectedMO->getName());

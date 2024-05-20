@@ -1297,7 +1297,7 @@ void ModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
             {
                 if(mpParentSystemObject->getSelectedModelObjectPtrs().size() > 1)
                 {
-                    mpParentSystemObject->getUndoStackPtr()->newPost(UNDO_MOVEDMULTIPLE);
+                    mpParentSystemObject->getUndoStackPtr()->newPost(undo::movedmultiple);
                 }
                 else
                 {
