@@ -139,11 +139,11 @@ void UndoStack::undoOneStep()
     QList<QDomElement> addedsubsystemsList;
     QStringList movedObjects;
     int dx=0, dy=0;
-    QDomElement stuffElement = getCurrentPost().lastChildElement("stuff");
+    QDomElement stuffElement = getCurrentPost().lastChildElement(undo::stuff);
     while(!stuffElement.isNull())
     {
         didSomething = true;
-        if(stuffElement.attribute("what") == UNDO_DELETEDOBJECT)
+        if(stuffElement.attribute(undo::what) == undo::deletedobject)
         {
             QDomElement componentElement = stuffElement.firstChildElement(hmf::component);
             ModelObject* pObj = loadModelObject(componentElement, mpParentSystemObject, NoUndo);
@@ -157,42 +157,42 @@ void UndoStack::undoOneStep()
                 xmlParameter = xmlParameter.nextSiblingElement(hmf::parameter::root);
             }
         }
-        else if(stuffElement.attribute("what") == UNDO_DELETEDSYSTEMPORT)
+        else if(stuffElement.attribute(undo::what) == undo::deletedsystemport)
         {
             QDomElement systemPortElement = stuffElement.firstChildElement(hmf::systemport);
             loadSystemPortObject(systemPortElement, mpParentSystemObject, NoUndo);
         }
-        else if(stuffElement.attribute("what") == UNDO_DELETEDSUBSYSTEM)
+        else if(stuffElement.attribute(undo::what) == undo::deletedsubsystem)
         {
             QDomElement systemElement = stuffElement.firstChildElement(hmf::system);
             loadModelObject(systemElement, mpParentSystemObject, NoUndo);
         }
-        else if(stuffElement.attribute("what") == UNDO_ADDEDOBJECT)
+        else if(stuffElement.attribute(undo::what) == undo::addedobject)
         {
             QDomElement componentElement = stuffElement.firstChildElement(hmf::component);
             addedObjectList.append(componentElement);
         }
-        else if(stuffElement.attribute("what") == UNDO_ADDEDSYSTEMPORT)
+        else if(stuffElement.attribute(undo::what) == undo::addedsystemport)
         {
             QDomElement systemPortElement = stuffElement.firstChildElement(hmf::systemport);
             addedsystemportsList.append(systemPortElement);
         }
-        else if(stuffElement.attribute("what") == UNDO_ADDEDSUBSYSTEM)
+        else if(stuffElement.attribute(undo::what) == undo::addedsubsystem)
         {
             QDomElement systemElement = stuffElement.firstChildElement(hmf::system);
             addedsubsystemsList.append(systemElement);
         }
-        else if(stuffElement.attribute("what") == UNDO_DELETEDCONNECTOR)
+        else if(stuffElement.attribute(undo::what) == undo::deletedconnector)
         {
             QDomElement connectorElement = stuffElement.firstChildElement(hmf::connector::root);
             deletedConnectorList.append(connectorElement);
         }
-        else if(stuffElement.attribute("what") == UNDO_ADDEDCONNECTOR)
+        else if(stuffElement.attribute(undo::what) == undo::addedconnector)
         {
             QDomElement connectorElement = stuffElement.firstChildElement(hmf::connector::root);
             addedConnectorList.append(connectorElement);
         }
-        else if(stuffElement.attribute("what") == UNDO_RENAME)
+        else if(stuffElement.attribute(undo::what) == undo::rename)
         {
             QString newName = stuffElement.attribute("newname");
             QString oldName = stuffElement.attribute("oldname");
@@ -203,7 +203,7 @@ void UndoStack::undoOneStep()
             }
             mpParentSystemObject->renameModelObject(newName, oldName, NoUndo);
         }
-        else if(stuffElement.attribute("what") == UNDO_MODIFIEDCONNECTOR)
+        else if(stuffElement.attribute(undo::what) == undo::modifiedconnector)
         {
             double tempX, tempY;
             QDomElement oldPosElement = stuffElement.firstChildElement("oldpos");
@@ -228,7 +228,7 @@ void UndoStack::undoOneStep()
             item->getLine(lineNumber)->setPos(item->getLine(lineNumber)->pos()-dXY);
             item->updateLine(lineNumber);
         }
-        else if(stuffElement.attribute("what") == UNDO_MOVEDOBJECT)
+        else if(stuffElement.attribute(undo::what) == undo::movedobject)
         {
             double x, y, x_new, y_new;
             QDomElement newPosElement = stuffElement.firstChildElement("newpos");
@@ -247,7 +247,7 @@ void UndoStack::undoOneStep()
             dx = x_new - x;
             dy = y_new - y;
         }
-        else if(stuffElement.attribute("what") == UNDO_MOVEDCONNECTOR)
+        else if(stuffElement.attribute(undo::what) == undo::movedconnector)
         {
             double dx = stuffElement.attribute("dx").toDouble();
             double dy = stuffElement.attribute("dy").toDouble();
@@ -265,7 +265,7 @@ void UndoStack::undoOneStep()
             }
             mpParentSystemObject->findConnector(startComponent, startPort, endComponent, endPort)->moveAllPoints(-dx, -dy);
         }
-        else if(stuffElement.attribute("what") == UNDO_ROTATE)
+        else if(stuffElement.attribute(undo::what) == undo::rotate)
         {
             QString name = stuffElement.attribute("objectname");
             double angle = stuffElement.attribute("angle").toDouble();
@@ -280,7 +280,7 @@ void UndoStack::undoOneStep()
             mpParentSystemObject->getModelObject(name)->rotate(-angle, NoUndo);
 
         }
-        else if(stuffElement.attribute("what") == UNDO_VERTICALFLIP)
+        else if(stuffElement.attribute(undo::what) == undo::verticalflip)
         {
             QString name = stuffElement.attribute("objectname");
             if(!mpParentSystemObject->hasModelObject(name))
@@ -290,7 +290,7 @@ void UndoStack::undoOneStep()
             }
             mpParentSystemObject->getModelObject(name)->flipVertical(NoUndo);
         }
-        else if(stuffElement.attribute("what") == UNDO_HORIZONTALFLIP)
+        else if(stuffElement.attribute(undo::what) == undo::horizontalflip)
         {
             QString name = stuffElement.attribute("objectname");
             if(!mpParentSystemObject->hasModelObject(name))
@@ -300,7 +300,7 @@ void UndoStack::undoOneStep()
             }
             mpParentSystemObject->getModelObject(name)->flipHorizontal(NoUndo);
         }
-        else if(stuffElement.attribute("what") == UNDO_CHANGEDPARAMETER)
+        else if(stuffElement.attribute(undo::what) == undo::changedparameter)
         {
             QString objectName = stuffElement.attribute("objectname");
             QString parameterName = stuffElement.attribute("parametername");
@@ -312,7 +312,7 @@ void UndoStack::undoOneStep()
             }
             mpParentSystemObject->getModelObject(objectName)->setParameterValue(parameterName, oldValue);
         }
-        else if(stuffElement.attribute("what") == UNDO_NAMEVISIBILITYCHANGE)
+        else if(stuffElement.attribute(undo::what) == undo::namevisibilitychange)
         {
             QString objectName = stuffElement.attribute("objectname");
             bool isVisible = (stuffElement.attribute("isvisible").toInt() == 1);
@@ -325,21 +325,21 @@ void UndoStack::undoOneStep()
                 mpParentSystemObject->getModelObject(objectName)->showName(NoUndo);
             }
         }
-        else if(stuffElement.attribute("what") == UNDO_ALWAYSVISIBLECHANGE)
+        else if(stuffElement.attribute(undo::what) == undo::alwaysvisiblechange)
         {
             QString objectName = stuffElement.attribute("objectname");
             bool isVisible = (stuffElement.attribute("isvisible").toInt() == 1);
             mpParentSystemObject->getModelObject(objectName)->setAlwaysVisible(!isVisible, NoUndo);
         }
-        else if(stuffElement.attribute("what") == UNDO_ADDEDTEXTBOXWIDGET)
+        else if(stuffElement.attribute(undo::what) == undo::addedtextboxwidget)
         {
             removeTextboxWidget(stuffElement);
         }
-        else if(stuffElement.attribute("what") == UNDO_DELETEDTEXTBOXWIDGET)
+        else if(stuffElement.attribute(undo::what) == undo::deletedtextboxwidget)
         {
             addTextboxwidget(stuffElement);
         }
-        else if(stuffElement.attribute("what") == UNDO_RESIZEDTEXTBOXWIDGET)
+        else if(stuffElement.attribute(undo::what) == undo::resizedtextboxwidget)
         {
             size_t index = stuffElement.attribute("index").toInt();
             double w_old = stuffElement.attribute("w_old").toDouble();
@@ -354,23 +354,23 @@ void UndoStack::undoOneStep()
                 pTempWidget->setPos(x_old, y_old);
             }
         }
-        else if(stuffElement.attribute("what") == UNDO_MODIFIEDTEXTBOXWIDGET)
+        else if(stuffElement.attribute(undo::what) == undo::modifiedtextboxwidget)
         {
             modifyTextboxWidget(stuffElement);
         }
-        else if(stuffElement.attribute("what") == UNDO_ADDEDIMAGEWIDGET)
+        else if(stuffElement.attribute(undo::what) == undo::addedimagewidget)
         {
             removeImageWidget(stuffElement);
         }
-        else if(stuffElement.attribute("what") == UNDO_DELETEDIMAGEWIDGET)
+        else if(stuffElement.attribute(undo::what) == undo::deletedimagewidget)
         {
             addImageWidget(stuffElement);
         }
-        else if(stuffElement.attribute("what") == UNDO_MODIFIEDIMAGEWIDGET)
+        else if(stuffElement.attribute(undo::what) == undo::modifiedimagewidget)
         {
             modifyImageWidget(stuffElement);
         }
-        else if(stuffElement.attribute("what") == UNDO_MOVEDWIDGET)
+        else if(stuffElement.attribute(undo::what) == undo::movedwidget)
         {
             double x_old, y_old;
             QDomElement oldPosElement = stuffElement.firstChildElement("oldpos");
@@ -388,14 +388,14 @@ void UndoStack::undoOneStep()
                 return;
             }
         }
-        else if(stuffElement.attribute("what") == UNDO_SIMULATIONTIMECHANGED)
+        else if(stuffElement.attribute(undo::what) == undo::simulationtimechanged)
         {
             QString oldStartTime = stuffElement.attribute("oldStartTime");
             QString oldTimeStep = stuffElement.attribute("oldTimeStep");
             QString oldStopTime = stuffElement.attribute("oldStopTime");
             mpParentSystemObject->mpModelWidget->setTopLevelSimulationTime(oldStartTime, oldTimeStep, oldStopTime, NoUndo);
         }
-        else if(stuffElement.attribute("what") == UNDO_REMOVEDALIASES)
+        else if(stuffElement.attribute(undo::what) == undo::removedaliases)
         {
             QDomElement xmlAlias = stuffElement.firstChildElement(hmf::alias);
             while (!xmlAlias.isNull())
@@ -404,7 +404,7 @@ void UndoStack::undoOneStep()
                 xmlAlias = xmlAlias.nextSiblingElement(hmf::alias);
             }
         }
-        stuffElement = stuffElement.previousSiblingElement("stuff");
+        stuffElement = stuffElement.previousSiblingElement(undo::stuff);
     }
 
     // Re-add connectors after components, to make sure start and end component exist
@@ -470,9 +470,9 @@ void UndoStack::undoOneStep()
         // Update information about Subsystem in DOM tree, in case it has changed inside since registered in the undo stack
         QDomElement oldElement = (*it).parentNode().toElement();
         QDomElement parentElement = (*it).parentNode().parentNode().toElement();
-        QDomElement newStuffElement = oldElement.ownerDocument().createElement("stuff");
+        QDomElement newStuffElement = oldElement.ownerDocument().createElement(undo::stuff);
         parentElement.insertAfter(newStuffElement, oldElement); //Note! cant use append, because then order will be changed and redo will fail some operations
-        newStuffElement.setAttribute("what", UNDO_ADDEDSUBSYSTEM);
+        newStuffElement.setAttribute(undo::what, undo::addedsubsystem);
         pSystemToRemove->saveToDomElement(newStuffElement);
         parentElement.removeChild(oldElement);
 
@@ -516,11 +516,11 @@ void UndoStack::redoOneStep()
     QList<QDomElement> modifiedConnectorList;
     QStringList movedObjects;
     int dx=0, dy=0;
-    QDomElement stuffElement = getCurrentPost().firstChildElement("stuff");
+    QDomElement stuffElement = getCurrentPost().firstChildElement(undo::stuff);
     while(!stuffElement.isNull())
     {
         didSomething = true;
-        if(stuffElement.attribute("what") == UNDO_DELETEDOBJECT)
+        if(stuffElement.attribute(undo::what) == undo::deletedobject)
         {
             QDomElement componentElement = stuffElement.firstChildElement(hmf::component);
             QString name = componentElement.attribute(hmf::name);
@@ -531,7 +531,7 @@ void UndoStack::redoOneStep()
                 gpMessageHandler->addErrorMessage("Undo stack (redo) attempted to access non-existing component: "+name);
             }
         }
-        else if(stuffElement.attribute("what") == UNDO_DELETEDSYSTEMPORT)
+        else if(stuffElement.attribute(undo::what) == undo::deletedsystemport)
         {
             QDomElement systemPortElement = stuffElement.firstChildElement(hmf::systemport);
             QString name = systemPortElement.attribute(hmf::name);
@@ -543,7 +543,7 @@ void UndoStack::redoOneStep()
             }
 
         }
-        else if(stuffElement.attribute("what") == UNDO_DELETEDSUBSYSTEM)
+        else if(stuffElement.attribute(undo::what) == undo::deletedsubsystem)
         {
             QDomElement systemElement = stuffElement.firstChildElement(hmf::system);
             QString name = systemElement.attribute(hmf::name);
@@ -554,22 +554,22 @@ void UndoStack::redoOneStep()
                 gpMessageHandler->addErrorMessage("Undo stack (redo) attempted to access non-existing component: "+name);
             }
         }
-        else if(stuffElement.attribute("what") == UNDO_ADDEDOBJECT)
+        else if(stuffElement.attribute(undo::what) == undo::addedobject)
         {
             QDomElement componentElement = stuffElement.firstChildElement(hmf::component);
             loadModelObject(componentElement, mpParentSystemObject, NoUndo);
         }
-        else if(stuffElement.attribute("what") == UNDO_ADDEDSYSTEMPORT)
+        else if(stuffElement.attribute(undo::what) == undo::addedsystemport)
         {
             QDomElement systemPortElement = stuffElement.firstChildElement(hmf::systemport);
             loadSystemPortObject(systemPortElement, mpParentSystemObject, NoUndo);
         }
-        else if(stuffElement.attribute("what") == UNDO_ADDEDSUBSYSTEM)
+        else if(stuffElement.attribute(undo::what) == undo::addedsubsystem)
         {
             QDomElement systemElement = stuffElement.firstChildElement(hmf::system);
             loadModelObject(systemElement, mpParentSystemObject, NoUndo);
         }
-        else if(stuffElement.attribute("what") == UNDO_DELETEDCONNECTOR)
+        else if(stuffElement.attribute(undo::what) == undo::deletedconnector)
         {
             QDomElement connectorElement = stuffElement.firstChildElement(hmf::connector::root);
             QString startComponent = connectorElement.attribute("startcomponent");
@@ -583,12 +583,12 @@ void UndoStack::redoOneStep()
             }
             mpParentSystemObject->removeSubConnector(mpParentSystemObject->findConnector(startComponent, startPort, endComponent, endPort), NoUndo);
         }
-        else if(stuffElement.attribute("what") == UNDO_ADDEDCONNECTOR)
+        else if(stuffElement.attribute(undo::what) == undo::addedconnector)
         {
             QDomElement connectorElement = stuffElement.firstChildElement(hmf::connector::root);
             addedConnectorList.append(connectorElement);
         }
-        else if(stuffElement.attribute("what") == UNDO_RENAME)
+        else if(stuffElement.attribute(undo::what) == undo::rename)
         {
             QString newName = stuffElement.attribute("newname");
             QString oldName = stuffElement.attribute("oldname");
@@ -600,12 +600,12 @@ void UndoStack::redoOneStep()
             }
 
         }
-        else if(stuffElement.attribute("what") == UNDO_MODIFIEDCONNECTOR)
+        else if(stuffElement.attribute(undo::what) == undo::modifiedconnector)
         {
             QDomElement tempElement = stuffElement;
             modifiedConnectorList.append(tempElement);
         }
-        else if(stuffElement.attribute("what") == UNDO_MOVEDOBJECT)
+        else if(stuffElement.attribute(undo::what) == undo::movedobject)
         {
             double x, y, x_old, y_old;
             QDomElement newPosElement = stuffElement.firstChildElement("newpos");
@@ -624,7 +624,7 @@ void UndoStack::redoOneStep()
                 gpMessageHandler->addErrorMessage("Undo stack (redo) attempted to access non-existing component: "+name);
             }
         }
-        else if(stuffElement.attribute("what") == UNDO_ROTATE)
+        else if(stuffElement.attribute(undo::what) == undo::rotate)
         {
             QString name = stuffElement.attribute("objectname");
             double angle = stuffElement.attribute("angle").toDouble();
@@ -636,7 +636,7 @@ void UndoStack::redoOneStep()
             }
 
         }
-        else if(stuffElement.attribute("what") == UNDO_VERTICALFLIP)
+        else if(stuffElement.attribute(undo::what) == undo::verticalflip)
         {
             QString name = stuffElement.attribute("objectname");
             if(mpParentSystemObject->hasModelObject(name)) {
@@ -647,7 +647,7 @@ void UndoStack::redoOneStep()
             }
 
         }
-        else if(stuffElement.attribute("what") == UNDO_HORIZONTALFLIP)
+        else if(stuffElement.attribute(undo::what) == undo::horizontalflip)
         {
             QString name = stuffElement.attribute("objectname");
             if(mpParentSystemObject->hasModelObject(name)) {
@@ -658,7 +658,7 @@ void UndoStack::redoOneStep()
             }
 
         }
-        else if(stuffElement.attribute("what") == UNDO_CHANGEDPARAMETER)
+        else if(stuffElement.attribute(undo::what) == undo::changedparameter)
         {
             QString objectName = stuffElement.attribute("objectname");
             QString parameterName = stuffElement.attribute("parametername");
@@ -671,7 +671,7 @@ void UndoStack::redoOneStep()
             }
 
         }
-        else if(stuffElement.attribute("what") == UNDO_NAMEVISIBILITYCHANGE)
+        else if(stuffElement.attribute(undo::what) == undo::namevisibilitychange)
         {
             QString objectName = stuffElement.attribute("objectname");
             bool isVisible = (stuffElement.attribute("isvisible").toInt() == 1);
@@ -684,21 +684,21 @@ void UndoStack::redoOneStep()
                 mpParentSystemObject->getModelObject(objectName)->hideName(NoUndo);
             }
         }
-        else if(stuffElement.attribute("what") == UNDO_ALWAYSVISIBLECHANGE)
+        else if(stuffElement.attribute(undo::what) == undo::alwaysvisiblechange)
         {
             QString objectName = stuffElement.attribute("objectname");
             bool isVisible = (stuffElement.attribute("isvisible").toInt() == 1);
             mpParentSystemObject->getModelObject(objectName)->setAlwaysVisible(isVisible, NoUndo);
         }
-        else if(stuffElement.attribute("what") == UNDO_ADDEDTEXTBOXWIDGET)
+        else if(stuffElement.attribute(undo::what) == undo::addedtextboxwidget)
         {
             addTextboxwidget(stuffElement);
         }
-        else if(stuffElement.attribute("what") == UNDO_DELETEDTEXTBOXWIDGET)
+        else if(stuffElement.attribute(undo::what) == undo::deletedtextboxwidget)
         {
             removeTextboxWidget(stuffElement);
         }
-        else if(stuffElement.attribute("what") == UNDO_RESIZEDTEXTBOXWIDGET)
+        else if(stuffElement.attribute(undo::what) == undo::resizedtextboxwidget)
         {
             size_t index = stuffElement.attribute("index").toInt();
             double w_new = stuffElement.attribute("w_new").toDouble();
@@ -710,23 +710,23 @@ void UndoStack::redoOneStep()
             tempWidget->setSize(w_new, h_new);
             tempWidget->setPos(x_new, y_new);
         }
-        else if(stuffElement.attribute("what") == UNDO_MODIFIEDTEXTBOXWIDGET)
+        else if(stuffElement.attribute(undo::what) == undo::modifiedtextboxwidget)
         {
             modifyTextboxWidget(stuffElement);
         }
-        else if(stuffElement.attribute("what") == UNDO_ADDEDIMAGEWIDGET)
+        else if(stuffElement.attribute(undo::what) == undo::addedimagewidget)
         {
             addImageWidget(stuffElement);
         }
-        else if(stuffElement.attribute("what") == UNDO_DELETEDIMAGEWIDGET)
+        else if(stuffElement.attribute(undo::what) == undo::deletedimagewidget)
         {
             removeImageWidget(stuffElement);
         }
-        else if(stuffElement.attribute("what") == UNDO_MODIFIEDIMAGEWIDGET)
+        else if(stuffElement.attribute(undo::what) == undo::modifiedimagewidget)
         {
             modifyImageWidget(stuffElement);
         }
-        else if(stuffElement.attribute("what") == UNDO_MOVEDWIDGET)
+        else if(stuffElement.attribute(undo::what) == undo::movedwidget)
         {
             double x_new, y_new;
             QDomElement newPosElement = stuffElement.firstChildElement("newpos");
@@ -739,14 +739,14 @@ void UndoStack::redoOneStep()
             }
             mpParentSystemObject->mWidgetMap.find(index).value()->setPos(x_new, y_new);
         }
-        else if(stuffElement.attribute("what") == UNDO_SIMULATIONTIMECHANGED)
+        else if(stuffElement.attribute(undo::what) == undo::simulationtimechanged)
         {
             QString newStartTime = stuffElement.attribute("newStartTime");
             QString newTimeStep = stuffElement.attribute("newTimeStep");
             QString newStopTime = stuffElement.attribute("newStopTime");
             mpParentSystemObject->mpModelWidget->setTopLevelSimulationTime(newStartTime, newTimeStep, newStopTime, NoUndo);
         }
-        stuffElement = stuffElement.nextSiblingElement("stuff");
+        stuffElement = stuffElement.nextSiblingElement(undo::stuff);
     }
 
         //Create connectors after everything else, to make sure components are created before connectors
@@ -816,18 +816,18 @@ void UndoStack::registerDeletedObject(ModelObject *item)
         QDomElement currentPostElement = getCurrentPost();
         if (currentPostElement.isNull())
             return;
-        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        QDomElement stuffElement = appendDomElement(currentPostElement, undo::stuff);
         if(item->getTypeName() == HOPSANGUISYSTEMPORTTYPENAME)
         {
-            stuffElement.setAttribute("what", UNDO_DELETEDSYSTEMPORT);
+            stuffElement.setAttribute(undo::what, undo::deletedsystemport);
         }
         else if(item->getTypeName() == HOPSANGUISYSTEMTYPENAME || item->getTypeName() == HOPSANGUICONDITIONALSYSTEMTYPENAME)
         {
-            stuffElement.setAttribute("what", UNDO_DELETEDSUBSYSTEM);
+            stuffElement.setAttribute(undo::what, undo::deletedsubsystem);
         }
         else
         {
-            stuffElement.setAttribute("what", UNDO_DELETEDOBJECT);
+            stuffElement.setAttribute(undo::what, undo::deletedobject);
         }
         item->saveToDomElement(stuffElement);
         gpUndoWidget->refreshList();
@@ -844,8 +844,8 @@ void UndoStack::registerDeletedConnector(Connector *item)
         //! @todo this check below is needed elsewhere also, to prevent crash under rare circumstances
         if (currentPostElement.isNull())
             return;
-        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-        stuffElement.setAttribute("what", UNDO_DELETEDCONNECTOR);
+        QDomElement stuffElement = appendDomElement(currentPostElement, undo::stuff);
+        stuffElement.setAttribute(undo::what, undo::deletedconnector);
         item->saveToDomElement(stuffElement);
         gpUndoWidget->refreshList();
     }
@@ -858,18 +858,18 @@ void UndoStack::registerAddedObject(ModelObject *item)
 {
     if(mEnabled) {
         QDomElement currentPostElement = getCurrentPost();
-        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        QDomElement stuffElement = appendDomElement(currentPostElement, undo::stuff);
         if(item->getTypeName() == HOPSANGUISYSTEMPORTTYPENAME)
         {
-            stuffElement.setAttribute("what", UNDO_ADDEDSYSTEMPORT);
+            stuffElement.setAttribute(undo::what, undo::addedsystemport);
         }
         else if(item->getTypeName() == HOPSANGUISYSTEMTYPENAME || item->getTypeName() == HOPSANGUICONDITIONALSYSTEMTYPENAME)
         {
-            stuffElement.setAttribute("what", UNDO_ADDEDSUBSYSTEM);
+            stuffElement.setAttribute(undo::what, undo::addedsubsystem);
         }
         else
         {
-            stuffElement.setAttribute("what", UNDO_ADDEDOBJECT);
+            stuffElement.setAttribute(undo::what, undo::addedobject);
         }
         item->saveToDomElement(stuffElement);
 
@@ -884,8 +884,8 @@ void UndoStack::registerAddedConnector(Connector *pConnector)
 {
     if(mEnabled) {
         QDomElement currentPostElement = getCurrentPost();
-        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-        stuffElement.setAttribute("what", UNDO_ADDEDCONNECTOR);
+        QDomElement stuffElement = appendDomElement(currentPostElement, undo::stuff);
+        stuffElement.setAttribute(undo::what, undo::addedconnector);
         pConnector->saveToDomElement(stuffElement);
         gpUndoWidget->refreshList();
     }
@@ -899,8 +899,8 @@ void UndoStack::registerRenameObject(QString oldName, QString newName)
 {
     if(mEnabled) {
         QDomElement currentPostElement = getCurrentPost();
-        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-        stuffElement.setAttribute("what", UNDO_RENAME);
+        QDomElement stuffElement = appendDomElement(currentPostElement, undo::stuff);
+        stuffElement.setAttribute(undo::what, undo::rename);
         stuffElement.setAttribute("oldname", oldName);
         stuffElement.setAttribute("newname", newName);
         gpUndoWidget->refreshList();
@@ -916,11 +916,11 @@ void UndoStack::registerModifiedConnector(QPointF oldPos, QPointF newPos, Connec
 {
     if(mEnabled) {
         //! @todo This if statement is a very very very ugly hack...
-        if(!(getCurrentPost().attribute("type") == UNDO_PASTE))    //Connectors are modified when undoing paste operations, but this will modify them twice, so don't register it
+        if(!(getCurrentPost().attribute("type") == undo::paste))    //Connectors are modified when undoing paste operations, but this will modify them twice, so don't register it
         {
             QDomElement currentPostElement = getCurrentPost();
-            QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-            stuffElement.setAttribute("what", UNDO_MODIFIEDCONNECTOR);
+            QDomElement stuffElement = appendDomElement(currentPostElement, undo::stuff);
+            stuffElement.setAttribute(undo::what, undo::modifiedconnector);
             stuffElement.setAttribute("linenumber", lineNumber);
             appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
             appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
@@ -938,8 +938,8 @@ void UndoStack::registerMovedObject(QPointF oldPos, QPointF newPos, QString obje
 {
     if(mEnabled) {
         QDomElement currentPostElement = getCurrentPost();
-        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-        stuffElement.setAttribute("what", UNDO_MOVEDOBJECT);
+        QDomElement stuffElement = appendDomElement(currentPostElement, undo::stuff);
+        stuffElement.setAttribute(undo::what, undo::movedobject);
         stuffElement.setAttribute(hmf::name, objectName);
         appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
         appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
@@ -954,8 +954,8 @@ void UndoStack::registerRotatedObject(const QString objectName, const double ang
 {
     if(mEnabled) {
         QDomElement currentPostElement = getCurrentPost();
-        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-        stuffElement.setAttribute("what", UNDO_ROTATE);
+        QDomElement stuffElement = appendDomElement(currentPostElement, undo::stuff);
+        stuffElement.setAttribute(undo::what, undo::rotate);
         stuffElement.setAttribute("objectname", objectName);
         setQrealAttribute(stuffElement, "angle", angle);
         gpUndoWidget->refreshList();
@@ -969,8 +969,8 @@ void UndoStack::registerVerticalFlip(QString objectName)
 {
     if(mEnabled) {
         QDomElement currentPostElement = getCurrentPost();
-        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-        stuffElement.setAttribute("what", UNDO_VERTICALFLIP);
+        QDomElement stuffElement = appendDomElement(currentPostElement, undo::stuff);
+        stuffElement.setAttribute(undo::what, undo::verticalflip);
         stuffElement.setAttribute("objectname", objectName);
         gpUndoWidget->refreshList();
     }
@@ -983,8 +983,8 @@ void UndoStack::registerHorizontalFlip(QString objectName)
 {
     if(mEnabled) {
         QDomElement currentPostElement = getCurrentPost();
-        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-        stuffElement.setAttribute("what", UNDO_HORIZONTALFLIP);
+        QDomElement stuffElement = appendDomElement(currentPostElement, undo::stuff);
+        stuffElement.setAttribute(undo::what, undo::horizontalflip);
         stuffElement.setAttribute("objectname", objectName);
         gpUndoWidget->refreshList();
     }
@@ -1000,8 +1000,8 @@ void UndoStack::registerChangedParameter(QString objectName, QString parameterNa
 {
     if(mEnabled) {
         QDomElement currentPostElement = getCurrentPost();
-        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-        stuffElement.setAttribute("what", UNDO_CHANGEDPARAMETER);
+        QDomElement stuffElement = appendDomElement(currentPostElement, undo::stuff);
+        stuffElement.setAttribute(undo::what, undo::changedparameter);
         stuffElement.setAttribute("parametername", parameterName);
         stuffElement.setAttribute("oldvalue", oldValueTxt);
         stuffElement.setAttribute("newvalue", newValueTxt);
@@ -1018,8 +1018,8 @@ void UndoStack::registerNameVisibilityChange(QString objectName, bool isVisible)
 {
     if(mEnabled) {
         QDomElement currentPostElement = getCurrentPost();
-        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-        stuffElement.setAttribute("what", UNDO_NAMEVISIBILITYCHANGE);
+        QDomElement stuffElement = appendDomElement(currentPostElement, undo::stuff);
+        stuffElement.setAttribute(undo::what, undo::namevisibilitychange);
         stuffElement.setAttribute("objectname", objectName);
         stuffElement.setAttribute("isvisible", isVisible);
         gpUndoWidget->refreshList();
@@ -1030,8 +1030,8 @@ void UndoStack::registerRemovedAliases(QStringList &aliases)
 {
     if(mEnabled) {
         QDomElement currentPostElement = getCurrentPost();
-        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-        stuffElement.setAttribute("what", UNDO_REMOVEDALIASES);
+        QDomElement stuffElement = appendDomElement(currentPostElement, undo::stuff);
+        stuffElement.setAttribute(undo::what, undo::removedaliases);
 
         //! @todo need one function that gets both alias and full maybe
         for (int i=0; i<aliases.size(); ++i)
@@ -1049,8 +1049,8 @@ void UndoStack::registerAlwaysVisibleChange(QString objectName, bool isVisible)
 {
     if(mEnabled) {
         QDomElement currentPostElement = getCurrentPost();
-        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-        stuffElement.setAttribute("what", UNDO_ALWAYSVISIBLECHANGE);
+        QDomElement stuffElement = appendDomElement(currentPostElement, undo::stuff);
+        stuffElement.setAttribute(undo::what, undo::alwaysvisiblechange);
         stuffElement.setAttribute("objectname", objectName);
         stuffElement.setAttribute("isvisible", isVisible);
         gpUndoWidget->refreshList();
@@ -1062,11 +1062,11 @@ void UndoStack::registerAddedWidget(Widget *item)
 {
     if(mEnabled) {
         QDomElement currentPostElement = getCurrentPost();
-        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        QDomElement stuffElement = appendDomElement(currentPostElement, undo::stuff);
         if(item->getWidgetType() == TextBoxWidgetType)
-            stuffElement.setAttribute("what", UNDO_ADDEDTEXTBOXWIDGET);
+            stuffElement.setAttribute(undo::what, undo::addedtextboxwidget);
         if(item->getWidgetType() == ImageWidgetType)
-            stuffElement.setAttribute("what", UNDO_ADDEDIMAGEWIDGET);
+            stuffElement.setAttribute(undo::what, undo::addedimagewidget);
         stuffElement.setAttribute("index", item->getWidgetIndex());
         item->saveToDomElement(stuffElement);
         gpUndoWidget->refreshList();
@@ -1078,11 +1078,11 @@ void UndoStack::registerDeletedWidget(Widget *item)
 {
     if(mEnabled) {
         QDomElement currentPostElement = getCurrentPost();
-        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        QDomElement stuffElement = appendDomElement(currentPostElement, undo::stuff);
         if(item->getWidgetType() == TextBoxWidgetType)
-            stuffElement.setAttribute("what", UNDO_DELETEDTEXTBOXWIDGET);
+            stuffElement.setAttribute(undo::what, undo::deletedtextboxwidget);
         if(item->getWidgetType() == ImageWidgetType)
-            stuffElement.setAttribute("what", UNDO_DELETEDIMAGEWIDGET);
+            stuffElement.setAttribute(undo::what, undo::deletedimagewidget);
         stuffElement.setAttribute("index", item->getWidgetIndex());
         item->saveToDomElement(stuffElement);
         gpUndoWidget->refreshList();
@@ -1100,8 +1100,8 @@ void UndoStack::registerMovedWidget(Widget *item, QPointF oldPos, QPointF newPos
 
     if(mEnabled) {
         QDomElement currentPostElement = getCurrentPost();
-        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-        stuffElement.setAttribute("what", UNDO_MOVEDWIDGET);
+        QDomElement stuffElement = appendDomElement(currentPostElement, undo::stuff);
+        stuffElement.setAttribute(undo::what, undo::movedwidget);
         stuffElement.setAttribute("index", item->getWidgetIndex());
         appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
         appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
@@ -1123,8 +1123,8 @@ void UndoStack::registerResizedTextBoxWidget(const int index, const double w_old
 {
     if(mEnabled) {
         QDomElement currentPostElement = getCurrentPost();
-        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-        stuffElement.setAttribute("what", UNDO_RESIZEDTEXTBOXWIDGET);
+        QDomElement stuffElement = appendDomElement(currentPostElement, undo::stuff);
+        stuffElement.setAttribute(undo::what, undo::resizedtextboxwidget);
         stuffElement.setAttribute("index", index);
         setQrealAttribute(stuffElement, "w_old", w_old);
         setQrealAttribute(stuffElement, "h_old", h_old);
@@ -1140,12 +1140,12 @@ void UndoStack::registerModifiedWidget(Widget *pItem)
 {
     if(mEnabled) {
         QDomElement currentPostElement = getCurrentPost();
-        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        QDomElement stuffElement = appendDomElement(currentPostElement, undo::stuff);
         if(pItem->getWidgetType() == TextBoxWidgetType) {
-            stuffElement.setAttribute("what", UNDO_MODIFIEDTEXTBOXWIDGET);
+            stuffElement.setAttribute(undo::what, undo::modifiedtextboxwidget);
         }
         else if(pItem->getWidgetType() == ImageWidgetType) {
-            stuffElement.setAttribute("what", UNDO_MODIFIEDIMAGEWIDGET);
+            stuffElement.setAttribute(undo::what, undo::modifiedimagewidget);
         }
 
         stuffElement.setAttribute("index", pItem->getWidgetIndex());
@@ -1161,8 +1161,8 @@ void UndoStack::registerSimulationTimeChanged(QString oldStartTime, QString oldT
 {
     if(mEnabled) {
         QDomElement currentPostElement = getCurrentPost();
-        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-        stuffElement.setAttribute("what", UNDO_SIMULATIONTIMECHANGED);
+        QDomElement stuffElement = appendDomElement(currentPostElement, undo::stuff);
+        stuffElement.setAttribute(undo::what, undo::simulationtimechanged);
 
         stuffElement.setAttribute("oldStartTime", oldStartTime);
         stuffElement.setAttribute("oldTimeStep", oldTimeStep);

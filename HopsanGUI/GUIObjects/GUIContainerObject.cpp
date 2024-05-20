@@ -1475,7 +1475,7 @@ void SystemObject::cutSelected(CopyStack *xmlStack)
     }
 
     this->copySelected(xmlStack);
-    this->mpUndoStack->newPost(UNDO_CUT);
+    this->mpUndoStack->newPost(undo::cut);
     emit deleteSelected();
     mpModelWidget->getGraphicsView()->updateViewPort();
 }
@@ -1604,7 +1604,7 @@ void SystemObject::paste(CopyStack *xmlStack)
     }
 
     bool didPaste = false;
-    mpUndoStack->newPost(UNDO_PASTE);
+    mpUndoStack->newPost(undo::paste);
 
     QDomElement *copyRoot;
     if(xmlStack == nullptr) {
@@ -1798,7 +1798,7 @@ void SystemObject::alignX()
 
     if(mSelectedModelObjectsList.size()+mSelectedWidgetsList.size() > 1)
     {
-        mpUndoStack->newPost(UNDO_ALIGNX);
+        mpUndoStack->newPost(undo::alignx);
         for(int i=0; i<mSelectedModelObjectsList.size()-1; ++i)
         {
             QPointF oldPos = mSelectedModelObjectsList.at(i)->pos();
@@ -1841,7 +1841,7 @@ void SystemObject::alignY()
 
     if(mSelectedModelObjectsList.size()+mSelectedWidgetsList.size() > 1)
     {
-        mpUndoStack->newPost(UNDO_ALIGNY);
+        mpUndoStack->newPost(undo::aligny);
         for(int i=0; i<mSelectedModelObjectsList.size()-1; ++i)
         {
             QPointF oldPos = mSelectedModelObjectsList.at(i)->pos();
@@ -1886,7 +1886,7 @@ void SystemObject::distributeX()
         double max = tempList.last()->getCenterPos().x();
         double diff = (max-min)/(tempList.size()-1.0);
 
-        mpUndoStack->newPost(UNDO_DISTRIBUTEX);
+        mpUndoStack->newPost(undo::distributex);
         double pos = min+diff;
         for(int i=1; i<tempList.size()-1; ++i)
         {
@@ -1928,7 +1928,7 @@ void SystemObject::distributeY()
         double max = tempList.last()->getCenterPos().y();
         double diff = (max-min)/(tempList.size()-1.0);
 
-        mpUndoStack->newPost(UNDO_DISTRIBUTEY);
+        mpUndoStack->newPost(undo::distributey);
         double pos = min+diff;
         for(int i=1; i<tempList.size()-1; ++i)
         {
@@ -2115,7 +2115,7 @@ void SystemObject::deselectAll()
 //! @see showNames()
 void SystemObject::hideNames()
 {
-    mpUndoStack->newPost(UNDO_HIDEALLNAMES);
+    mpUndoStack->newPost(undo::hideallnames);
     emit deselectAllNameText();
     emit hideAllNameText();
 }
@@ -2125,7 +2125,7 @@ void SystemObject::hideNames()
 //! @see hideNames()
 void SystemObject::showNames()
 {
-    mpUndoStack->newPost(UNDO_SHOWALLNAMES);
+    mpUndoStack->newPost(undo::showallnames);
     emit showAllNameText();
 }
 

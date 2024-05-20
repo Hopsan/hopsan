@@ -47,45 +47,49 @@
 #include <QDomDocument>
 
 //Undo defines
-#define UNDO_ADDEDOBJECT "addedobject"
-#define UNDO_ADDEDCONNECTOR "addedconnector"
-#define UNDO_DELETEDOBJECT "deletedobject"
-#define UNDO_DELETEDCONNECTOR "deletedconnector"
-#define UNDO_MOVEDOBJECT "movedobject"
-#define UNDO_RENAME "rename"
-#define UNDO_MODIFIEDCONNECTOR "modifiedconnector"
-#define UNDO_ROTATE "rotate"
-#define UNDO_VERTICALFLIP "verticalflip"
-#define UNDO_HORIZONTALFLIP "horizontalflip"
-#define UNDO_NAMEVISIBILITYCHANGE "namevisibilitychange"
-#define UNDO_ALWAYSVISIBLECHANGE "alwaysvisiblechange"
-#define UNDO_REMOVEDALIASES "removedaliases"
-#define UNDO_PASTE "paste"
-#define UNDO_MOVEDMULTIPLE "movedmultiple"
-#define UNDO_CUT "cut"
-#define UNDO_CHANGEDPARAMETERS "changedparameters"
-#define UNDO_HIDEALLNAMES "hideallnames"
-#define UNDO_SHOWALLNAMES "showallnames"
-#define UNDO_MOVEDWIDGET "movedwidget"
-#define UNDO_MOVEDMULTIPLEWIDGETS "movedmultiplewidgets"
-#define UNDO_ALIGNX "alignx"
-#define UNDO_ALIGNY "aligny"
-#define UNDO_DISTRIBUTEX "distributex"
-#define UNDO_DISTRIBUTEY "distributey"
-#define UNDO_DELETEDSYSTEMPORT "deletedsystemport"
-#define UNDO_DELETEDSUBSYSTEM "deletedsubsystem"
-#define UNDO_ADDEDSYSTEMPORT "addedsystemport"
-#define UNDO_ADDEDSUBSYSTEM "addedsubsystem"
-#define UNDO_MOVEDCONNECTOR "movedconnector"
-#define UNDO_CHANGEDPARAMETER "changedparameter"
-#define UNDO_ADDEDTEXTBOXWIDGET "addedtextboxwidget"
-#define UNDO_ADDEDIMAGEWIDGET "addedimagewidget"
-#define UNDO_DELETEDIMAGEWIDGET "deletedimagewidget"
-#define UNDO_MODIFIEDIMAGEWIDGET "modifiedimagewidget"
-#define UNDO_DELETEDTEXTBOXWIDGET "deletedtextboxwidget"
-#define UNDO_RESIZEDTEXTBOXWIDGET "resizedtextboxwidget"
-#define UNDO_MODIFIEDTEXTBOXWIDGET "modifiedtextboxwidget"
-#define UNDO_SIMULATIONTIMECHANGED "simulationtimechanged"
+namespace undo {
+    constexpr auto what = "what";
+    constexpr auto stuff = "stuff";
+    constexpr auto addedobject = "addedobject";
+    constexpr auto addedconnector = "addedconnector";
+    constexpr auto deletedobject = "deletedobject";
+    constexpr auto deletedconnector = "deletedconnector";
+    constexpr auto movedobject = "movedobject";
+    constexpr auto rename = "rename";
+    constexpr auto modifiedconnector = "modifiedconnector";
+    constexpr auto rotate = "rotate";
+    constexpr auto verticalflip = "verticalflip";
+    constexpr auto horizontalflip = "horizontalflip";
+    constexpr auto namevisibilitychange = "namevisibilitychange";
+    constexpr auto alwaysvisiblechange = "alwaysvisiblechange";
+    constexpr auto removedaliases = "removedaliases";
+    constexpr auto paste = "paste";
+    constexpr auto movedmultiple = "movedmultiple";
+    constexpr auto cut = "cut";
+    constexpr auto changedparameters = "changedparameters";
+    constexpr auto hideallnames = "hideallnames";
+    constexpr auto showallnames = "showallnames";
+    constexpr auto movedwidget = "movedwidget";
+    constexpr auto movedmultiplewidgets = "movedmultiplewidgets";
+    constexpr auto alignx = "alignx";
+    constexpr auto aligny = "aligny";
+    constexpr auto distributex = "distributex";
+    constexpr auto distributey = "distributey";
+    constexpr auto deletedsystemport = "deletedsystemport";
+    constexpr auto deletedsubsystem = "deletedsubsystem";
+    constexpr auto addedsystemport = "addedsystemport";
+    constexpr auto addedsubsystem = "addedsubsystem";
+    constexpr auto movedconnector = "movedconnector";
+    constexpr auto changedparameter = "changedparameter";
+    constexpr auto addedtextboxwidget = "addedtextboxwidget";
+    constexpr auto addedimagewidget = "addedimagewidget";
+    constexpr auto deletedimagewidget = "deletedimagewidget";
+    constexpr auto modifiedimagewidget = "modifiedimagewidget";
+    constexpr auto deletedtextboxwidget = "deletedtextboxwidget";
+    constexpr auto resizedtextboxwidget = "resizedtextboxwidget";
+    constexpr auto modifiedtextboxwidget = "modifiedtextboxwidget";
+    constexpr auto simulationtimechanged = "simulationtimechanged";
+}
 
     //Forward Declarations
 class ModelObject;
