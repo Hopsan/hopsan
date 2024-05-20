@@ -67,6 +67,7 @@
 #include "CoreAccess.h"
 #include "GeneratorUtils.h"
 #include "LibraryHandler.h"
+#include "UndoStack.h"
 
 //! @class ModelWidget
 //! @brief The ModelWidget class is a Widget to contain a simulation model
@@ -190,8 +191,13 @@ void ModelWidget::setMessageHandler(GUIMessageHandler *pMessageHandler)
     connect(this, SIGNAL(checkMessages()), mpMessageHandler, SLOT(collectHopsanCoreMessages()), Qt::UniqueConnection);
 }
 
-void ModelWidget::setTopLevelSimulationTime(const QString startTime, const QString timeStep, const QString stopTime)
+void ModelWidget::setTopLevelSimulationTime(const QString startTime, const QString timeStep, const QString stopTime, UndoStatusEnumT undoSettings)
 {
+    if(undoSettings == Undo) {
+        mpToplevelSystem->getUndoStackPtr()->newPost();
+        mpToplevelSystem->getUndoStackPtr()->registerSimulationTimeChanged(mStartTime, QString::number(mpToplevelSystem->getTimeStep()), mStopTime, startTime, timeStep, stopTime);
+    }
+
     mStartTime = startTime;
     mStopTime = stopTime;
 
@@ -208,7 +214,7 @@ void ModelWidget::setTopLevelSimulationTime(const QString startTime, const QStri
     }
     else
     {
-        getTopLevelSystemContainer()->setTimeStep(timeStep.toDouble());
+        mpToplevelSystem->setTimeStep(timeStep.toDouble());
     }
 
     // Notify about any changes made (this will go back up to the main window simtime edit

@@ -116,7 +116,7 @@ public:
     AnimationWidget *mpAnimationWidget;
 
 public slots:
-    void setTopLevelSimulationTime(const QString startTime, const QString timeStep, const QString stopTime);
+    void setTopLevelSimulationTime(const QString startTime, const QString timeStep, const QString stopTime, UndoStatusEnumT undoSettings=Undo);
     bool simulate_nonblocking();
     bool simulate_blocking();
     bool startRealtimeSimulation(const double realtimeFactor);
