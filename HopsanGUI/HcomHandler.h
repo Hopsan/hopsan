@@ -170,6 +170,7 @@ private:
     void executeAddParameterCommand(const QString cmd);
     void executeChangeParameterCommand(const QString cmd);
 
+    void executeDisplayComponentsCommand(const QString cmd);
 
     void executeHelpCommand(QString arg);
     void executeRunScriptCommand(const QString cmd);

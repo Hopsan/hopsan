@@ -666,6 +666,17 @@ void HcomHandler::createCommands()
     dipaCmd.group = "Parameter Commands";
     mCmdList << dipaCmd;
 
+    HcomCommand dicoCmd;
+    dipaCmd.cmd = "dico";
+    dipaCmd.description.append("Display components");
+    dipaCmd.help.append(" Usage: dico\n");
+    dipaCmd.help.append(" Usage: dipa [component]\n");
+    dipaCmd.help.append(" Example: Display all components starting with \"x\":");
+    dipaCmd.help.append(" >> dico x*");
+    dipaCmd.fnc = &HcomHandler::executeDisplayComponentsCommand;
+    dipaCmd.group = "Model Commands";
+    mCmdList << dipaCmd;
+
     HcomCommand adpaCmd;
     adpaCmd.cmd = "adpa";
     adpaCmd.description.append("Add (system) parameter");
@@ -2260,6 +2271,59 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
     else
     {
         HCOMERR("Wrong number of arguments.");
+    }
+}
+
+void HcomHandler::executeDisplayComponentsCommand(const QString cmd)
+{
+    QStringList args = splitCommandArguments(cmd);
+    QString nameWildcard = "*";
+    QString typeNameWildcard = "*";
+    if(args.size() > 0)
+    {
+        nameWildcard = args[0];
+    }
+    if(args.size() > 1)
+    {
+        typeNameWildcard = args[1];
+    }
+    if(args.size() > 2)
+    {
+        HCOMERR("Wrong number of arguments, should be 0, 1 or 2");
+        return;
+    }
+
+    QList<ModelObject *> components;
+    getComponents(nameWildcard, components);
+
+    int longestComponentName = 0;
+    for(const auto &component : components)
+    {
+        if(component->getName().size() > longestComponentName)
+        {
+            longestComponentName = component->getName().size();
+        }
+    }
+
+
+    for(const auto &component : components)
+    {
+        QString output = component->getName();
+        int space = longestComponentName - output.size()+3;
+        for(int s=0; s<space; ++s)
+        {
+            output.append(" ");
+        }
+        output.append("(");
+        QString outputTypeName = component->getTypeName();
+        output.append(outputTypeName);
+        output.append(")");
+
+        QRegExp rx(typeNameWildcard);
+        rx.setPatternSyntax(QRegExp::Wildcard);
+        if(rx.exactMatch(outputTypeName)) {
+            HCOMPRINT(output);
+        }
     }
 }
 
