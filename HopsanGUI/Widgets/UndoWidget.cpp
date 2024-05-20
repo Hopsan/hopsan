@@ -256,6 +256,7 @@ QString UndoWidget::translateTag(QString tag)
     tagMap.insert(UNDO_DELETEDTEXTBOXWIDGET,    "Deleted Text Box Widget");
     tagMap.insert(UNDO_RESIZEDTEXTBOXWIDGET,    "Resized Text Box Widget");
     tagMap.insert(UNDO_MODIFIEDTEXTBOXWIDGET,   "Modified Text Box Widget");
+    tagMap.insert(UNDO_SIMULATIONTIMECHANGED,   "Simulation Time Settings Changed");
 
     if(tagMap.contains(tag))
         return tagMap.find(tag).value();

@@ -41,6 +41,7 @@
 #include "GUIObjects/GUIWidgets.h"
 #include "MessageHandler.h"
 #include "Widgets/UndoWidget.h"
+#include "Widgets/ModelWidget.h"
 
 
 //! @class UndoStack
@@ -387,6 +388,13 @@ void UndoStack::undoOneStep()
                 return;
             }
         }
+        else if(stuffElement.attribute("what") == UNDO_SIMULATIONTIMECHANGED)
+        {
+            QString oldStartTime = stuffElement.attribute("oldStartTime");
+            QString oldTimeStep = stuffElement.attribute("oldTimeStep");
+            QString oldStopTime = stuffElement.attribute("oldStopTime");
+            mpParentSystemObject->mpModelWidget->setTopLevelSimulationTime(oldStartTime, oldTimeStep, oldStopTime, NoUndo);
+        }
         else if(stuffElement.attribute("what") == UNDO_REMOVEDALIASES)
         {
             QDomElement xmlAlias = stuffElement.firstChildElement(hmf::alias);
@@ -730,6 +738,13 @@ void UndoStack::redoOneStep()
                 return;
             }
             mpParentSystemObject->mWidgetMap.find(index).value()->setPos(x_new, y_new);
+        }
+        else if(stuffElement.attribute("what") == UNDO_SIMULATIONTIMECHANGED)
+        {
+            QString newStartTime = stuffElement.attribute("newStartTime");
+            QString newTimeStep = stuffElement.attribute("newTimeStep");
+            QString newStopTime = stuffElement.attribute("newStopTime");
+            mpParentSystemObject->mpModelWidget->setTopLevelSimulationTime(newStartTime, newTimeStep, newStopTime, NoUndo);
         }
         stuffElement = stuffElement.nextSiblingElement("stuff");
     }
@@ -1137,6 +1152,24 @@ void UndoStack::registerModifiedWidget(Widget *pItem)
 
         // Save the old text box widget
         pItem->saveToDomElement(stuffElement);
+
+        gpUndoWidget->refreshList();
+    }
+}
+
+void UndoStack::registerSimulationTimeChanged(QString oldStartTime, QString oldTimeStep, QString oldStopTime, QString newStartTime, QString newTimeStep, QString newStopTime)
+{
+    if(mEnabled) {
+        QDomElement currentPostElement = getCurrentPost();
+        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        stuffElement.setAttribute("what", UNDO_SIMULATIONTIMECHANGED);
+
+        stuffElement.setAttribute("oldStartTime", oldStartTime);
+        stuffElement.setAttribute("oldTimeStep", oldTimeStep);
+        stuffElement.setAttribute("oldStopTime", oldStopTime);
+        stuffElement.setAttribute("newStartTime", newStartTime);
+        stuffElement.setAttribute("newTimeStep", newTimeStep);
+        stuffElement.setAttribute("newStopTime", newStopTime);
 
         gpUndoWidget->refreshList();
     }

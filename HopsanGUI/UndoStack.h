@@ -85,6 +85,7 @@
 #define UNDO_DELETEDTEXTBOXWIDGET "deletedtextboxwidget"
 #define UNDO_RESIZEDTEXTBOXWIDGET "resizedtextboxwidget"
 #define UNDO_MODIFIEDTEXTBOXWIDGET "modifiedtextboxwidget"
+#define UNDO_SIMULATIONTIMECHANGED "simulationtimechanged"
 
     //Forward Declarations
 class ModelObject;
@@ -132,6 +133,8 @@ public:
     void registerMovedWidget(Widget *item, QPointF oldPos, QPointF newPos);
     void registerResizedTextBoxWidget(const int index, const double w_old, const double h_old, const double w_new, const double h_new, const QPointF oldPos, const QPointF newPos);
     void registerModifiedWidget(Widget *pItem);
+
+    void registerSimulationTimeChanged(QString oldStartTime, QString oldTimeStep, QString oldStopTime, QString startTime, QString timeStep, QString stopTime);
 
 private:
     SystemObject *mpParentSystemObject;
