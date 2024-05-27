@@ -427,6 +427,14 @@ Enables logging in specified ports<br>
 
 \section modelcommands Model Commands
 
+\subsection dico dico
+Display components
+ Usage: dico<br>
+ Usage: dico [component]<br>
+ <br>
+ Example: Display all components starting with "x":<br>
+ \>\> dico x*
+ 
 \subsection load load
 Loads a model file<br>
  Usage: load [filepath]
