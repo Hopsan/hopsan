@@ -2111,6 +2111,9 @@ void HcomHandler::executeAddParameterCommand(const QString cmd)
         }
         CoreParameterData paramData(args[0], args[1], type);
         pContainer->setOrAddParameter(paramData);
+
+        //Make sure to remove local variables with same name
+        mLocalVars.remove(args[0]);
     }
 }
 
