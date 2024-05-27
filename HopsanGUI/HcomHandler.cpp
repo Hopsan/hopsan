@@ -667,15 +667,15 @@ void HcomHandler::createCommands()
     mCmdList << dipaCmd;
 
     HcomCommand dicoCmd;
-    dipaCmd.cmd = "dico";
-    dipaCmd.description.append("Display components");
-    dipaCmd.help.append(" Usage: dico\n");
-    dipaCmd.help.append(" Usage: dipa [component]\n");
-    dipaCmd.help.append(" Example: Display all components starting with \"x\":");
-    dipaCmd.help.append(" >> dico x*");
-    dipaCmd.fnc = &HcomHandler::executeDisplayComponentsCommand;
-    dipaCmd.group = "Model Commands";
-    mCmdList << dipaCmd;
+    dicoCmd.cmd = "dico";
+    dicoCmd.description.append("Display components");
+    dicoCmd.help.append(" Usage: dico\n");
+    dicoCmd.help.append(" Usage: dico [component]\n");
+    dicoCmd.help.append(" Example: Display all components starting with \"x\":");
+    dicoCmd.help.append(" >> dico x*");
+    dicoCmd.fnc = &HcomHandler::executeDisplayComponentsCommand;
+    dicoCmd.group = "Model Commands";
+    mCmdList << dicoCmd;
 
     HcomCommand adpaCmd;
     adpaCmd.cmd = "adpa";
