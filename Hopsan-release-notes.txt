@@ -30,6 +30,44 @@
 ******************************
     Version History
 ******************************
+2.22.0 (2024-05-27)
+
+----- Bug Fixes -----
+- HopsanCore
+  - Fixed crash in clustered fork-join parallel algorithm
+  - Fix crash when using non-existing variables in FMIWrapper port specifications
+  - Fix bugs with collecting log data during multithreaded simulations
+  - Added missing call to finalize after measuring simulation time
+  - Multiple variables with same value reference is now supported by FMIWrapper
+  - Added missing quotation marks around include directories in FMI export Makefile
+  - Fixed broken pi() function in HCOM/SymHop
+  - Correct typenames are now used when regenerating component libraries  
+  - Fixed problem with merging divisors after removing factor in SymHop
+  - Fixed crash when connecting non-existing ports in HCOM
+  - Fix mixup between system parameters and local variables in HCOM
+  - Fix FMI export of models without .hmf extension
+
+----- Enhancements -----
+
+- HopsanGUI
+  - Option to log results during simulation (experimental)
+  - Image widgets
+  - Changes to simulation time settings are now supported by undo/redo
+  - New HCOM command: "dipa" - display components
+  - Weird multicache error was clarified and converted to a warning
+  - Existing log data is now automatically removed at startup if no other instance of Hopsan is running
+  - "log2" function is now supported by HCOM/SymHop
+  - New HCOM function: "r2d()" - radians to degrees
+  - New HCOM function: "d2r()" - degrees to radians
+  - FMIWrappers are now automatically renamed to the FMU base file name
+  - Real variable names are now used in Matlab (.m) export
+  - Variable aliases are now shown in Bode plot dialog
+  - Local HCOM functions can now be used in temporary expression evaluations
+  
+- HopsanGenerator  
+  - Timestep can now be controlled in exported FMUs
+  - Recompilation of a library can now be prevented with XML flag  
+
 2.21.1 (2023-06-20)
 
 ----- Bug Fixes -----
