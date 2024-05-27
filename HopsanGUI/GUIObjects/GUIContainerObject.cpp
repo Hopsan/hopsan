@@ -3388,7 +3388,7 @@ void SystemObject::exportToFMU(QString savePath, int version, ArchitectureEnumT 
     }
 
     //Save model to hmf in export directory
-    mpModelWidget->saveTo(savePath+"/"+mModelFileInfo.fileName().replace(" ", "_"));
+    mpModelWidget->saveTo(savePath+"/"+mModelFileInfo.completeBaseName().replace(" ", "_")+".hmf");
 
     auto spGenerator = createDefaultExportGenerator();
     spGenerator->setCompilerPath(gpConfig->getCompilerPath(arch));
