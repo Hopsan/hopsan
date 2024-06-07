@@ -89,7 +89,7 @@ GraphicsView::GraphicsView(ModelWidget *parent)
     this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     //This scene rect is needed because the old scene was (0,0) - (5000,5000) with center in (2500,2500).
     //We need to ensure the center is still at the same position even though the scene is now larger.
-    this->setSceneRect(-25000+2500,-25000+2500,25000+2500,25000+2500);
+    this->setSceneRect(-25000+2500,-25000+2500,50000,50000);
     this->centerOn(this->sceneRect().center());
 
     mIsoColor = QColor("white");
