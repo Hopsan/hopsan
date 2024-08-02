@@ -985,7 +985,7 @@ AnimatedGraphicsView::AnimatedGraphicsView(QGraphicsScene *pScene, QWidget *pPar
     this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
     this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    this->setSceneRect(0,0,5000,5000);
+    this->setSceneRect(-25000+2500,-25000+2500,50000,50000);
     this->centerOn(this->sceneRect().center());
 
     mIsoColor = QColor("white");
