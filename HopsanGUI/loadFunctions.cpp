@@ -401,7 +401,13 @@ ModelObject* loadModelObject(const QDomElement &domElement, SystemObject* pSyste
             QDomElement xmlParameter = xmlParameters.firstChildElement(hmf::parameter::root);
             while (!xmlParameter.isNull())
             {
+                QString tempName = pObj->getName();
+
                 loadParameterValue(xmlParameter, pObj, NoUndo);
+
+                //Some components might change name depending on a parameter (e.g. FMIWrapper), make sure to change it back if it was changed.
+                pSystem->renameModelObject(pObj->getName(), tempName, NoUndo);
+
                 xmlParameter = xmlParameter.nextSiblingElement(hmf::parameter::root);
             }
 
