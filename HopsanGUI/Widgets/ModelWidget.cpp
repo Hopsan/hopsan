@@ -591,6 +591,8 @@ void ModelWidget::setSaved(bool value)
 
 bool ModelWidget::simulate_nonblocking()
 {
+    this->lockModelEditingFull(true);
+
     // Save backup copy (if needed)
     if (!isSaved() && gpConfig->getBoolSetting(cfg::autobackup))
     {
@@ -644,6 +646,8 @@ bool ModelWidget::simulate_nonblocking()
 
 bool ModelWidget::simulate_blocking()
 {
+    this->lockModelEditingFull(true);
+
     // Save backup copy
     if (!isSaved() && gpConfig->getBoolSetting(cfg::autobackup))
     {
@@ -1161,6 +1165,7 @@ void ModelWidget::unlockSimulateMutex()
     disconnect(mpParentModelHandler->mpSimulationThreadHandler, SIGNAL(done(bool)), this, SIGNAL(simulationFinished()));
     qDebug() << "unlock simulation mutex";
     mSimulateMutex.unlock();
+    this->lockModelEditingFull(false);
 }
 
 
