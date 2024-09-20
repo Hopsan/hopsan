@@ -2132,6 +2132,11 @@ void HcomHandler::executeAddParameterCommand(const QString cmd)
 //! @brief Execute function for "chpa" command
 void HcomHandler::executeChangeParameterCommand(const QString cmd)
 {
+    if(mpModel->isEditingFullyDisabled()) {
+        HCOMERR("Model editing is currently disabled");
+        return;
+    }
+
     QStringList splitCmd;
     splitWithRespectToQuotations(cmd, ' ', splitCmd);
 
@@ -4801,6 +4806,11 @@ void HcomHandler::executeRenameComponentCommand(const QString cmd)
         return;
     }
 
+    if(mpModel->isEditingLimited()) {
+        HCOMERR("Model editing is currently disabled");
+        return;
+    }
+
     SystemObject *pContainer = mpModel->getViewContainerObject();
     if(pContainer)
     {
@@ -4814,6 +4824,11 @@ void HcomHandler::executeRemoveComponentCommand(const QString cmd)
     if(args.size() != 1)
     {
         HCOMERR("Wrong number of arguments");
+        return;
+    }
+
+    if(mpModel->isEditingLimited()) {
+        HCOMERR("Model editing is currently disabled");
         return;
     }
 
@@ -4944,6 +4959,11 @@ void HcomHandler::executeListFilesCommand(const QString cmd)
 //! @brief Execute function for "close" command
 void HcomHandler::executeCloseModelCommand(const QString cmd)
 {
+    if(mpModel->isEditingLimited()) {
+        HCOMERR("Model editing is currently disabled");
+        return;
+    }
+
     QStringList args = splitCommandArguments(cmd);
     if(args.size() > 2)
     {
@@ -5000,6 +5020,12 @@ void HcomHandler::executeAddComponentCommand(const QString cmd)
         HCOMERR("Wrong number of arguments");
         return;
     }
+
+    if(mpModel->isEditingLimited()) {
+        HCOMERR("Model editing is currently disabled");
+        return;
+    }
+
     QStringList args = splitCommandArguments(cmd);
 
     QString typeName = args[0];
@@ -5171,6 +5197,12 @@ void HcomHandler::executeReplaceComponentCommand(const QString cmd)
         HCOMERR("Wrong number of arguments");
         return;
     }
+
+    if(mpModel->isEditingLimited()) {
+        HCOMERR("Model editing is currently disabled");
+        return;
+    }
+
     QStringList args = splitCommandArguments(cmd);
 
     QString name = args[0];
@@ -5187,6 +5219,11 @@ void HcomHandler::executeConnectCommand(const QString cmd)
     if(args.size() != 4)
     {
         HCOMERR("Wrong number of arguments");
+        return;
+    }
+
+    if(mpModel->isEditingLimited()) {
+        HCOMERR("Model editing is currently disabled");
         return;
     }
 
