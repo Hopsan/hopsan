@@ -30,6 +30,17 @@
 ******************************
     Version History
 ******************************
+2.22.1 (2024-09-26)
+----- Bug Fixes -----
+- HopsanGUI
+  - Fixed problem with workspace size
+  - Animation mode now keeps worksapce size
+  - FMIWrapper components now appear at the center of the model
+  - "adco" command in terminal will now add components on correct place
+  - Fixed minor problems with splash screen
+  - Model can no longer be edited during simulation
+
+---------------------------------------------------------------------------------------------------------------------------------------------
 2.22.0 (2024-05-27)
 
 ----- Bug Fixes -----
@@ -68,6 +79,7 @@
   - Timestep can now be controlled in exported FMUs
   - Recompilation of a library can now be prevented with XML flag  
 
+--------------------------------------------------------------------------------------------------------------------------------------------
 2.21.1 (2023-06-20)
 
 ----- Bug Fixes -----
