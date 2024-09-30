@@ -77,6 +77,9 @@ int main(int argc, char *argv[])
     int applicationReturnCode = 0;
     QApplication app(argc, argv);
 
+    QGuiApplication::setDesktopSettingsAware(false);
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
     // Ensure C locale is used
     // Forcing numeric locale to C only using QLocale::setDefault() does not seem to help
     std::setlocale(LC_NUMERIC, "C");                // Set default C locale
