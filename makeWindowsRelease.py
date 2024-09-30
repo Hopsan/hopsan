@@ -29,7 +29,7 @@ gTemporaryBuildDir = r'C:\temp_release'
 inkscapeDirList = [r'C:\Program Files\Inkscape\bin', r'C:\Program Files (x86)\Inkscape\bin']
 innoDirList = [r'C:\Program Files\Inno Setup 6', r'C:\Program Files (x86)\Inno Setup 6', r'C:\Program Files\Inno Setup 5', r'C:\Program Files (x86)\Inno Setup 5']
 doxygenDirList = [r'C:\Program Files\doxygen\bin', r'C:\Program Files (x86)\doxygen\bin']
-gsDirList = [r'C:\Program Files\gs\gs9.27\bin', r'C:\Program Files (x86)\gs\gs9.27\bin', r'C:\Program Files\gs\gs9.22\bin', r'C:\Program Files (x86)\gs\gs9.22\bin', r'C:\Program Files\gs\gs9.21\bin', r'C:\Program Files (x86)\gs\gs9.21\bin', r'C:\Program Files\gs\gs9.19\bin', r'C:\Program Files (x86)\gs\gs9.19\bin', r'C:\Program Files\gs\gs9.18\bin', r'C:\Program Files (x86)\gs\gs9.18\bin', ]
+gsDirList = [r'C:\Program Files\gs\gs9.27\bin', r'C:\Program Files (x86)\gs\gs9.27\bin', r'C:\Program Files\gs\gs9.22\bin', r'C:\Program Files (x86)\gs\gs9.22\bin', r'C:\Program Files\gs\gs9.21\bin', r'C:\Program Files (x86)\gs\gs9.21\bin', r'C:\Program Files\gs\gs9.19\bin', r'C:\Program Files (x86)\gs\gs9.19\bin', r'C:\Program Files\gs\gs9.18\bin', r'C:\Program Files (x86)\gs\gs9.18\bin', r'C:\Program Files (x86)\gs\gs10.04.0\bin', ]
 
 # Compilers and build tools
 qtcreatorDirList = [r'C:\Qt\qtcreator-3.5.1', r'C:\Qt\qtcreator-3.6.0', r'C:\Qt\Tools\QtCreator']
