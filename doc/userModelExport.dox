@@ -54,7 +54,7 @@ Now let's add a PI-controller similar to the one we had originally in Hopsan. Al
 
 /*!
 \page fmi Functional Mock-up Interface
-The Functional Mock-up Interface is an open interface for communication between simulation environments. It is developed by the MODELISAR project, and is currently supported by more than 30 simulation tools. The concept is to exchange Functional Mock-up Units (FMUs) between different programs. An FMU is a zip-file with the file ending ".fmu", containing an XML description file and a binary file (DLL in Windows or SO in Linux) with a plain C interface which the host program can link against. It can also contain graphics, documentation and source code files.
+The Functional Mock-up Interface is an free standard for exchanging simulation models between simulation tools. It is maintained by the Modelica Association and is currently supported by more than 220 simulation tools. The concept is to exchange Functional Mock-up Units (FMUs) between different programs. An FMU is a zip-file with the file ending ".fmu", containing an XML description file and a binary file (DLL in Windows or SO in Linux) with a plain C interface which the host program can link against. It can also contain graphics, documentation and source code files.
 
 \section export-fmu Exporting a Functional Mock-up Unit
 Hopsan models can be exported to FMUs by clicking on the Export to FMU button. Then choose an empty folder. All required files will be exported, compiled and compressed. Model inputs and outputs can be specified by using interface components.
@@ -62,14 +62,60 @@ Hopsan models can be exported to FMUs by clicking on the Export to FMU button. T
 \htmlimagerightcaption{export_fmu_icon.png, Export to FMU}
 \image latex "export_fmu_icon.png" "Export to FMU"
 
+\subsection export-fmu-compatibility Compatibility
+
+Example FMUs exported from Hopsan are available at https://github.com/Hopsan/example-fmus/. All example FMUs have been verified with the FMU Check tool available at https://fmu-check.herokuapp.com/.
+
+FMUs exported from Hopsan have been successfully imported and simulated in the following importing tools:
+
+<table>
+<caption id="multi_row">Compatibility with importing tools</caption>
+<tr><th>tool        <th>FMI 1.0                    <th> FMI 2.0                  <th> FMI 3.0
+<tr><td>Hopsan      <td> \emoji :heavy_check_mark: <td>\emoji :heavy_check_mark: <td> \emoji :heavy_check_mark:
+<tr><td>OMSimulator <td> \emoji :heavy_check_mark: <td>\emoji :heavy_check_mark: <td> \emoji :heavy_check_mark:
+<tr><td>Adams       <td>                           <td>\emoji :heavy_check_mark: <td>
+<tr><td>AMESim      <td>                           <td>\emoji :heavy_check_mark: <td>
+<tr><td>Simulink    <td>                           <td>\emoji :heavy_check_mark: <td>
+<tr><td>PyFMI       <td>                           <td>\emoji :heavy_check_mark: <td>
+</table>
+
 \subsection export-fmu-prerequisites Prerequisites
 - MinGW compiler (available in system path)
 
 \section import-fmu Importing a Functional Mock-up Unit
 FMUs from other programs (or from Hopsan itself) can be imported by clicking on the import from FMU icon. If all goes well they will appear as components in the component library. 
 
-\htmlimagerightcaption{import_fmu_icon.png, Import from FMU}
+\htmlimagerightcaption{import_fmu_icon.png, Impohrt from FMU}
 \image latex "import_fmu_icon.png" "Import from FMU"
+
+\subsection import-fmu-compatibility Compatibility
+
+Hopsan FMU import is validated against the Reference FMUs, available att https://github.com/modelica/Reference-FMUs. Below is the current compatibility:
+
+<table>
+<caption id="multi_row">Compatibility with reference FMUs</caption>
+<tr><th>file             <th>FMI 1.0                    <th> FMI 2.0                  <th> FMI 3.0
+<tr><td>BouncingBall.fmu <td> \emoji :heavy_check_mark: <td> \emoji :heavy_check_mark: <td> \emoji :heavy_check_mark:
+<tr><td>Clocks.fmu       <td> N/A                       <td> N/A                       <td> \emoji :heavy_multiplication_x:
+<tr><td>Dahlquist.fmu    <td> \emoji :heavy_check_mark: <td> \emoji :heavy_check_mark: <td> \emoji :heavy_check_mark:
+<tr><td>Feedthrough.fmu  <td> \emoji :heavy_check_mark: <td> \emoji :heavy_check_mark: <td> \emoji :heavy_check_mark:
+<tr><td>Resource.fmu     <td> \emoji :heavy_check_mark: <td> \emoji :heavy_check_mark: <td> \emoji :heavy_check_mark:
+<tr><td>Stair.fmu        <td> \emoji :heavy_check_mark: <td> \emoji :heavy_check_mark: <td> \emoji :heavy_check_mark:
+<tr><td>StateSpace.fmu   <td> N/A                       <td> N/A                       <td> \emoji :heavy_multiplication_x:
+<tr><td>VanDerPol.fmu    <td> \emoji :heavy_check_mark: <td> \emoji :heavy_check_mark: <td> \emoji :heavy_check_mark:
+</table>
+
+FMUs from the following tools have successfully been imported and simulated in Hopsan:
+
+<table>
+<caption id="multi_row">Compatibility with FMUs exported from other tools</caption>
+<tr><th>tool         <th>FMI 1.0                    <th> FMI 2.0                  <th> FMI 3.0
+<tr><td>Hopsan       <td> \emoji :heavy_check_mark: <td>\emoji :heavy_check_mark: <td> \emoji :heavy_check_mark:
+<tr><td>OpenModelica <td>                           <td>\emoji :heavy_check_mark: <td>
+<tr><td>Dymola       <td>                           <td>\emoji :heavy_check_mark: <td>
+<tr><td>Simulink     <td>                           <td>\emoji :heavy_check_mark: <td>
+<tr><td>LS-DYNA      <td>                           <td>\emoji :heavy_check_mark: <td>
+</table>
 
 \subsection export-fmu-prerequisites Prerequisites
 - MinGW compiler (available in system path)
