@@ -613,15 +613,42 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
         mdWriter.writeAttribute("canHandleVariableCommunicationStepSize", "true");
         mdWriter.writeEndElement(); //CoSimulation
 
+
+        QList<ModelVariableSpecification> vars;
+        QStringList systemHierarchy = QStringList();
+        getModelVariables(pSystem, vars, systemHierarchy);
+
+        QList<ParameterSpecification> parameterSpecs;
+        getParameters(parameterSpecs, pSystem);
+
+        mdWriter.writeStartElement("UnitDefinitions");
+        mdWriter.writeStartElement("Unit");
+        mdWriter.writeAttribute("name", "s");
+        QStringList usedUnits = QStringList() << "s";
+        mdWriter.writeEndElement(); //Unit
+        for(const auto &var : qAsConst(vars)) {
+            if(var.unit != "" && !usedUnits.contains(var.unit)) {
+                usedUnits << var.unit;
+                mdWriter.writeStartElement("Unit");
+                mdWriter.writeAttribute("name", var.unit);
+                mdWriter.writeEndElement(); //Unit
+            }
+        }
+        for(const auto &par : qAsConst(parameterSpecs)) {
+            if(par.unit != "" && !usedUnits.contains(par.unit)) {
+                usedUnits << par.unit;
+                mdWriter.writeStartElement("Unit");
+                mdWriter.writeAttribute("name", par.unit);
+                mdWriter.writeEndElement(); //Unit
+            }
+        }
+        mdWriter.writeEndElement(); //UnitDefinitions
+
         mdWriter.writeStartElement("DefaultExperiment");
         mdWriter.writeAttribute("startTime", QString::number(pSystem->getTime()));
         mdWriter.writeEndElement(); //DefaultExperiment
 
         mdWriter.writeStartElement("ModelVariables");
-
-        QList<ModelVariableSpecification> vars;
-        QStringList systemHierarchy = QStringList();
-        getModelVariables(pSystem, vars, systemHierarchy);
 
         mdWriter.writeStartElement("ScalarVariable");
         mdWriter.writeAttribute("name", "timestep");
@@ -643,6 +670,9 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
             mdWriter.writeAttribute("causality", var.getCausalityStr());
             mdWriter.writeAttribute("variability", "continuous");
             mdWriter.writeStartElement("Real");
+            if(!var.unit.isEmpty()) {
+                mdWriter.writeAttribute("unit", var.unit);
+            }
             if(var.causality != Output) {
                 mdWriter.writeAttribute("start", QString::number(var.startValue));
             }
@@ -650,9 +680,6 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
             mdWriter.writeEndElement(); //ScalarVariable
             ++vr;
         }
-
-        QList<ParameterSpecification> parameterSpecs;
-        getParameters(parameterSpecs, pSystem);
 
         for(auto &parSpec : parameterSpecs) {
             mdWriter.writeStartElement("ScalarVariable");
@@ -676,16 +703,41 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
             }
 
             mdWriter.writeAttribute("start", parSpec.init);
-
-            mdWriter.writeAttribute("unit", parSpec.unit);
+            if(!parSpec.unit.isEmpty()) {
+                mdWriter.writeAttribute("unit", parSpec.unit);
+            }
             mdWriter.writeEndElement(); //Float64/Int32/Boolean/String
             mdWriter.writeEndElement(); //ScalarVariable
             ++vr;
         }
         mdWriter.writeEndElement(); //ModelVariables
 
-        mdWriter.writeStartElement("ModelStructure");       // This element must exist, even if it is empty
-        mdWriter.writeEndElement(); //ModelSctructure
+        mdWriter.writeStartElement("ModelStructure");
+        mdWriter.writeStartElement("Outputs");
+        vr = 1;    //vr = 0 reserved for timestep
+        for(const auto &var : qAsConst(vars)) {
+            if(var.causality == Output) {
+                mdWriter.writeStartElement("Unknown");
+                mdWriter.writeAttribute("index", QString::number(vr+1));    //Index counting starts at 1, not 0
+                mdWriter.writeAttribute("dependencies", "");
+                mdWriter.writeEndElement();
+            }
+            ++vr;
+        }
+        mdWriter.writeEndElement(); //Outputs
+        mdWriter.writeStartElement("InitialUnknowns");
+        vr = 1;    //vr = 0 reserved for timestep
+        for(const auto &var : qAsConst(vars)) {
+            if(var.causality == Output) {
+                mdWriter.writeStartElement("Unknown");
+                mdWriter.writeAttribute("index", QString::number(vr+1));    //Index counting starts at 1, not 0
+                mdWriter.writeAttribute("dependencies", "");
+                mdWriter.writeEndElement();
+            }
+            ++vr;
+        }
+        mdWriter.writeEndElement(); //InitialUnknowns
+        mdWriter.writeEndElement(); //ModelStructure
 
         mdWriter.writeEndElement(); //fmiModelDescription
     }
@@ -705,6 +757,36 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
         mdWriter.writeAttribute("hasEventMode", "false");
         mdWriter.writeEndElement(); //CoSimulation
 
+        QList<ModelVariableSpecification> vars;
+        QStringList systemHierarchy = QStringList();
+        getModelVariables(pSystem, vars, systemHierarchy);
+
+        QList<ParameterSpecification> parameterSpecs;
+        getParameters(parameterSpecs, pSystem);
+
+        mdWriter.writeStartElement("UnitDefinitions");
+        mdWriter.writeStartElement("Unit");
+        mdWriter.writeAttribute("name", "s");
+        QStringList usedUnits = QStringList() << "s";
+        mdWriter.writeEndElement(); //Unit
+        for(const auto &var : qAsConst(vars)) {
+            if(var.unit != "" && !usedUnits.contains(var.unit)) {
+                usedUnits << var.unit;
+                mdWriter.writeStartElement("Unit");
+                mdWriter.writeAttribute("name", var.unit);
+                mdWriter.writeEndElement(); //Unit
+            }
+        }
+        for(const auto &par : qAsConst(parameterSpecs)) {
+            if(par.unit != "" && !usedUnits.contains(par.unit)) {
+                usedUnits << par.unit;
+                mdWriter.writeStartElement("Unit");
+                mdWriter.writeAttribute("name", par.unit);
+                mdWriter.writeEndElement(); //Unit
+            }
+        }
+        mdWriter.writeEndElement(); //UnitDefinitions
+
         mdWriter.writeStartElement("DefaultExperiment");
         mdWriter.writeAttribute("startTime", QString::number(pSystem->getTime()));
         mdWriter.writeAttribute("stepSize", QString::number(pSystem->getDesiredTimeStep()));
@@ -712,13 +794,18 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
 
         mdWriter.writeStartElement("ModelVariables");
 
-        QList<ModelVariableSpecification> vars;
-        QStringList systemHierarchy = QStringList();
-        getModelVariables(pSystem, vars, systemHierarchy);
+        mdWriter.writeStartElement("Float64");
+        mdWriter.writeAttribute("name", "time");
+        mdWriter.writeAttribute("valueReference", "0");
+        mdWriter.writeAttribute("causality", "independent");
+        mdWriter.writeAttribute("variability", "continuous");
+        mdWriter.writeAttribute("description", "Simulation time");
+        mdWriter.writeAttribute("unit", "s");
+        mdWriter.writeEndElement(); //Float64
 
         mdWriter.writeStartElement("Float64");
         mdWriter.writeAttribute("name", "timestep");
-        mdWriter.writeAttribute("valueReference", "0");
+        mdWriter.writeAttribute("valueReference", "1");
         mdWriter.writeAttribute("causality", "parameter");
         mdWriter.writeAttribute("variability", "fixed");
         mdWriter.writeAttribute("description", "Hopsan time step");
@@ -729,8 +816,8 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
         nReals=0;
         nInputs=0;
         nOutputs=0;
-        long vr = 1;    //! vr = 0 is reserved for timestep
-        for(const auto &var : vars) {
+        long vr = 2;    //! vr = 0 and vr = 1 are reserved for time and timestep
+        for(const auto &var : qAsConst(vars)) {
             mdWriter.writeStartElement("Float64");
             if(var.systemHierarchy.isEmpty()) {
                 mdWriter.writeAttribute("name", var.componentName+"."+var.portName+"."+var.dataName);
@@ -742,17 +829,17 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
             mdWriter.writeAttribute("variability", "continuous");
             if(var.causality == ModelVariableCausality::Input) {
                 mdWriter.writeAttribute("causality", "input");
+                mdWriter.writeAttribute("start", QString::number(var.startValue));
             }
             else {
                 mdWriter.writeAttribute("causality", "output");
             }
-            mdWriter.writeAttribute("start", QString::number(var.startValue));
+            if(!var.unit.isEmpty()) {
+                mdWriter.writeAttribute("unit", var.unit);
+            }
             ++vr;
             mdWriter.writeEndElement(); //Float64
         }
-
-        QList<ParameterSpecification> parameterSpecs;
-        getParameters(parameterSpecs, pSystem);
 
         for(auto &parSpec : parameterSpecs) {
             if(parSpec.type == "Real") {
@@ -777,11 +864,37 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
             mdWriter.writeAttribute("variability", "fixed");
             mdWriter.writeAttribute("start", parSpec.init);
             mdWriter.writeAttribute("description", parSpec.description);
-            mdWriter.writeAttribute("unit", parSpec.unit);
+            if(!parSpec.unit.isEmpty()) {
+                mdWriter.writeAttribute("unit", parSpec.unit);
+            }
             mdWriter.writeEndElement(); //Float64/Int32/Boolean/String
             ++vr;
         }
         mdWriter.writeEndElement(); //ModelVariables
+
+        mdWriter.writeStartElement("ModelStructure");
+        vr = 2;    //vr = 0 and vr = 1 are reserved for time and timestep
+        for(const auto &var : qAsConst(vars)) {
+            if(var.causality == Output) {
+                mdWriter.writeStartElement("Output");
+                mdWriter.writeAttribute("valueReference", QString::number(vr));
+                mdWriter.writeAttribute("dependencies", "");
+                mdWriter.writeEndElement(); //Output
+            }
+            ++vr;
+        }
+        vr = 2;   //vr = 0 and vr = 1 are reserved for time and timestep
+        for(const auto &var : qAsConst(vars)) {
+            if(var.causality == Output) {
+                mdWriter.writeStartElement("InitialUnknown");
+                mdWriter.writeAttribute("valueReference", QString::number(vr));
+                mdWriter.writeAttribute("dependencies", "");
+                mdWriter.writeEndElement();
+            }
+            ++vr;
+        }
+        mdWriter.writeEndElement(); //ModelStructure
+
         mdWriter.writeEndElement(); //fmiModelDescription
     }
     mdWriter.writeEndDocument();
