@@ -29,40 +29,29 @@ DEFINES *= HOPSANCORE_DLLIMPORT
 #--------------------------------------------------
 
 #--------------------------------------------------
-# Add the include and lib path to xerces
-INCLUDEPATH *= $${PWD}/../dependencies/xerces/include/
-LIBS *= -L$${PWD}/../dependencies/xerces/lib/
-LIBS *= -lxerces-c
-#--------------------------------------------------
-
-#--------------------------------------------------
 # Add the include path to xerces
-INCLUDEPATH *= $${PWD}/../dependencies/asio/include/
+INCLUDEPATH *= $${PWD}/../dependencies/asio-code/include/
 #--------------------------------------------------
 
 #--------------------------------------------------
 # Add the include and lib path to libzip
-INCLUDEPATH *= $${PWD}/../dependencies/libzip/include/
-LIBS *= -L$${PWD}/../dependencies/libzip/lib/
-LIBS *= -lzip
+include($${PWD}/../dependencies/libzip.pri)
 #--------------------------------------------------
 
 #--------------------------------------------------
 # Add the include and lib path to xerces
-INCLUDEPATH *= $${PWD}/../dependencies/xerces/include/
-LIBS *= -L$${PWD}/../dependencies/xerces/lib/
-LIBS *= -lxerces-c
+include($${PWD}/../dependencies/xerces.pri)
 #--------------------------------------------------
 
 #--------------------------------------------------
 # Add the include path to DCPLib
-INCLUDEPATH *= $${PWD}/dependencies/DCPLib/include/bluetooth
-INCLUDEPATH *= $${PWD}/dependencies/DCPLib/include/core
-INCLUDEPATH *= $${PWD}/dependencies/DCPLib/include/ethernet
-INCLUDEPATH *= $${PWD}/dependencies/DCPLib/include/master
-INCLUDEPATH *= $${PWD}/dependencies/DCPLib/include/slave
-INCLUDEPATH *= $${PWD}/dependencies/DCPLib/include/xml
-INCLUDEPATH *= $${PWD}/dependencies/DCPLib/include/zip
+INCLUDEPATH *= $${PWD}/../dependencies/dcplib-code/include/bluetooth
+INCLUDEPATH *= $${PWD}/../dependencies/dcplib-code/include/core
+INCLUDEPATH *= $${PWD}/../dependencies/dcplib-code/include/ethernet
+INCLUDEPATH *= $${PWD}/../dependencies/dcplib-code/include/master
+INCLUDEPATH *= $${PWD}/../dependencies/dcplib-code/include/slave
+INCLUDEPATH *= $${PWD}/../dependencies/dcplib-code/include/xml
+INCLUDEPATH *= $${PWD}/../dependencies/dcplib-code/include/zip
 #--------------------------------------------------
 
 #--------------------------------------------------------
@@ -92,6 +81,8 @@ SOURCES = \
         src/utilities.cpp
 
 HEADERS += \
+    ../dependencies/dcplib-code/include/master/dcp/logic/DcpManagerMaster.hpp \
+    ../dependencies/dcplib-code/include/slave/dcp/logic/DcpManagerSlave.hpp \
     include/dcpmaster.h \
     include/dcpserver.h \
     include/hopsandcp_win32dll.h \

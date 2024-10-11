@@ -80,6 +80,8 @@ have_hdf5(){
 }
 #--------------------------------------------------------
 
+include($${PWD}/../dependencies/libzip.pri)
+
 #--------------------------------------------------------
 # Set HopsanCore Paths
 INCLUDEPATH *= $${PWD}/../HopsanCore/include/

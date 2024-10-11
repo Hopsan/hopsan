@@ -89,7 +89,7 @@
 
   <dependency name="asio">
     <releasefile sha1="bac61183b633a6d91ef7ae31836434bdf4f2b0d0">
-      <url>https://sourceforge.net/projects/asio/files/asio/1.12.1 (Stable)/asio-1.12.1.zip</url>
+      <url>https://master.dl.sourceforge.net/project/asio/asio/1.12.1%20%28Stable%29/asio-1.12.1.zip</url>
     </releasefile>
   </dependency>
 
@@ -99,9 +99,21 @@
     </releasefile>
   </dependency>
 
+  <dependency name="zlib">
+    <releasefile sha256="72af66d44fcc14c22013b46b814d5d2514673dda3d115e64b690c1ad636e7b17">
+      <url>https://github.com/madler/zlib/releases/download/v1.3.1/zlib131.zip</url>
+    </releasefile>
+  </dependency>
+
   <dependency name="libzip">
     <releasefile sha256="242083351e0a568e6ae69ca05f8eb76ed028807bf39cd8fcb4ea58d409ae0f3f">
       <url>https://github.com/nih-at/libzip/archive/v1.7.3.zip</url>
+    </releasefile>
+  </dependency>
+  
+  <dependency name="dcplib">
+    <releasefile sha256="4acf1115359bb6e8ed351993f27f5ccb7e8f70c208bc33221fb67ab4845f0210">
+      <url>https://github.com/modelica/DCPLib/archive/refs/tags/v0.2.zip</url>
     </releasefile>
   </dependency>
 
