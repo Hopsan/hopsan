@@ -14,6 +14,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/../helpers.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/qwt.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/discount.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/katex.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/xerces.cmake)
 
 set(target_name hopsangui)
 
@@ -22,7 +23,9 @@ add_executable(${target_name} ${srcfiles})
 
 target_include_directories(${target_name} PRIVATE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../Utilities>)
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../Utilities>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../hopsandcp/include>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/libzip/include>)
 
 target_compile_definitions(${target_name} PRIVATE _USE_MATH_DEFINES)
 if(NOT CMAKE_BUILD_TYPE MATCHES Debug)
@@ -31,7 +34,8 @@ if(NOT CMAKE_BUILD_TYPE MATCHES Debug)
 endif()
 
 target_link_libraries(${target_name} Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Xml Qt5::Svg Qt5::Network Qt5::Test Qt5::PrintSupport
-                      qwt hopsancore hopsangeneratorgui symhop ops)
+    qwt hopsancore hopsangeneratorgui symhop ops hopsandcp xercesc )
+
 target_link_optional_libraries(${target_name} libhopsanremoteclient hopsanhdf5exporter discount katex)
 
 set_target_properties(${target_name} PROPERTIES INSTALL_RPATH "\$ORIGIN/../lib")

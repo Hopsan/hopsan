@@ -143,24 +143,24 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
             QCursor cursor;
             QAction *selectedAction = menu.exec(cursor.pos());
 
-            if(selectedAction == addTextBoxAction)
-            {
+            if(selectedAction == addTextBoxAction) {
                 mpContainerObject->getUndoStackPtr()->newPost();
                 mpContainerObject->addTextBoxWidget(this->mapToScene(event->pos()).toPoint());
             }
             else if(selectedAction == addImageWidgetAction) {
                 mpContainerObject->getUndoStackPtr()->newPost();
                 mpContainerObject->addImageWidget(this->mapToScene(event->pos()).toPoint());
+            }
             else if(addDcpServerAction != nullptr && selectedAction == addDcpServerAction) {
                 QString dcpPath = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Select Distributed Co-Simulation Protocol File"),
-                                                                     gpConfig->getStringSetting(CFG_DCPDIR),
+                                                               gpConfig->getStringSetting(cfg::dir::dcp),
                                                                      tr("Distributed Co-Simulation Protocol Files (*.dcp)"));
                 if(dcpPath.isEmpty()) {
                     return;
                 }
                 QFileInfo dcpFileInfo(dcpPath);
-                gpConfig->setStringSetting(CFG_DCPDIR, dcpFileInfo.absolutePath());
-
+                gpConfig->setStringSetting(cfg::dir::dcp, dcpFileInfo.absolutePath());
+                
                 //Check that DCP server is not already added to model
                 for(const auto &comp : mpParentModelWidget->getTopLevelSystemContainer()->getModelObjects()) {
                     if(comp->getParameterValue("dcpFile") == dcpFileInfo.absoluteFilePath()) {
@@ -171,7 +171,7 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 
                 hopsan::HString name, variables, valueRefs;
                 getDataFromProtocolFile(dcpFileInfo.filePath().toStdString().c_str(), name, variables, valueRefs);
-
+                
                 ModelObject *pObj = mpContainerObject->addModelObject(HOPSANGUIDCPCOMPONENT, this->mapToScene(event->pos()).toPoint());
                 mpParentModelWidget->getTopLevelSystemContainer()->renameModelObject(pObj->getName(), (name.c_str()));
                 pObj->setParameterValue("dcpFile", dcpFileInfo.absoluteFilePath());

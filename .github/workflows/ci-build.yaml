@@ -33,7 +33,7 @@ jobs:
       - name: Download dependencies
         shell: cmd
         working-directory: dependencies
-        run: python download-dependencies.py fmilibrary tclap qwt fmi4c
+        run: python download-dependencies.py fmilibrary tclap qwt fmi4c xerces asio zlib libzip dcplib
 
       - name: Build dependencies
         shell: cmd
@@ -44,6 +44,10 @@ jobs:
             call setupFMILibrary.bat
             call setupQwt.bat
             call setupFmi4c.bat
+            call setupXerces.bat
+            call setupZlib.bat
+            call setupLibzip.bat
+            call setupDCPLib.bat
 
       - name: Configure
         working-directory: hopsan-build
@@ -67,7 +71,7 @@ jobs:
       - name: Install Packages
         run: |
           sudo apt-get update
-          sudo apt-get install qt5-default qtbase5-dev qtbase5-private-dev libqt5webkit5-dev libqt5svg5-dev libqt5opengl5-dev libhdf5-dev libmarkdown2-dev libmsgpack-dev libqwt-qt5-dev libzmq3-dev
+          sudo apt-get install qt5-default qtbase5-dev qtbase5-private-dev libqt5webkit5-dev libqt5svg5-dev libqt5opengl5-dev libhdf5-dev libmarkdown2-dev libmsgpack-dev libqwt-qt5-dev libzmq3-dev zlib1g zipcmp ziptool zipmerge
 
       - name: Checkout
         uses: actions/checkout@v3
@@ -85,7 +89,7 @@ jobs:
       - name: Download dependencies
         shell: bash
         working-directory: dependencies
-        run: ./download-dependencies.py fmilibrary tclap fmi4c
+        run: ./download-dependencies.py fmilibrary tclap fmi4c xerces asio dcplib libzip
 
       - name: Build dependencies
         shell: bash
@@ -94,6 +98,9 @@ jobs:
           ./setupFMILibrary.sh
           ./setupTclap.sh
           ./setupFmi4c.sh
+          ./setupXerces.sh
+          ./setupDCPLib.sh
+          ./setupLibzip.sh
 
       - name: Configure
         working-directory: hopsan-build

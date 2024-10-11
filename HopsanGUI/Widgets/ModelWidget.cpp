@@ -732,7 +732,7 @@ void ModelWidget::stopRealtimeSimulation()
 bool ModelWidget::simulateDcpServer()
 {
     // Save backup copy
-    if (!isSaved() && gpConfig->getBoolSetting(CFG_AUTOBACKUP))
+    if (!isSaved() && gpConfig->getBoolSetting(cfg::autobackup))
     {
         //! @todo this should be a help function, also we may not want to call it every time when we run optimization (not sure if that is done now but probably)
         QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
@@ -783,7 +783,7 @@ bool ModelWidget::simulateDcpServer()
 bool ModelWidget::simulateDcpMaster()
 {
     // Save backup copy
-    if (!isSaved() && gpConfig->getBoolSetting(CFG_AUTOBACKUP))
+    if (!isSaved() && gpConfig->getBoolSetting(cfg::autobackup))
     {
         //! @todo this should be a help function, also we may not want to call it every time when we run optimization (not sure if that is done now but probably)
         QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
