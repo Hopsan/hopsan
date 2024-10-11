@@ -298,7 +298,7 @@ enum ModelVariableCausality {Input, Output};
 class ModelVariableSpecification
 {
 public:
-    ModelVariableSpecification(QStringList systemHierarchy, QString componentName, QString portName, QString dataName, int dataId, double startValue, ModelVariableCausality causality);
+    ModelVariableSpecification(QStringList systemHierarchy, QString componentName, QString portName, QString dataName, int dataId, double startValue, ModelVariableCausality causality, QString unit);
     QString getName() const;
     QString getCausalityStr() const;
     QStringList systemHierarchy;
@@ -308,6 +308,7 @@ public:
     int dataId;
     double startValue;
     ModelVariableCausality causality;
+    QString unit;
 };
 
 void getInterfaces(QList<InterfacePortSpec> &interfaces, hopsan::ComponentSystem *pSystem, QStringList &path);

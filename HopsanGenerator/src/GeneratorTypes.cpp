@@ -785,7 +785,7 @@ void getModelVariables(hopsan::ComponentSystem *pSystem, QList<ModelVariableSpec
                     causality = ModelVariableCausality::Input;
                 }
             }
-            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), portName, node.shortname.c_str(), node.id, pPort->getStartValue(node.id), causality));
+            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), portName, node.shortname.c_str(), node.id, pPort->getStartValue(node.id), causality, QString(node.unit.c_str())));
         }
     }
 }
@@ -890,7 +890,7 @@ void getParameters(QList<ParameterSpecification> &parameters, hopsan::ComponentS
     }
 }
 
-ModelVariableSpecification::ModelVariableSpecification(QStringList systemHierarchy, QString componentName, QString portName, QString dataName, int dataId, double startValue, ModelVariableCausality causality)
+ModelVariableSpecification::ModelVariableSpecification(QStringList systemHierarchy, QString componentName, QString portName, QString dataName, int dataId, double startValue, ModelVariableCausality causality, QString unit)
 {
     this->systemHierarchy = systemHierarchy;
     this->componentName = componentName;
@@ -899,6 +899,7 @@ ModelVariableSpecification::ModelVariableSpecification(QStringList systemHierarc
     this->dataId = dataId;
     this->startValue = startValue;
     this->causality = causality;
+    this->unit = unit;
 }
 
 QString ModelVariableSpecification::getName() const
