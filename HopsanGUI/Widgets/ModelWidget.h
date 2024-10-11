@@ -190,9 +190,9 @@ private:
     SharedRemoteCoreSimulationHandlerT mpLocalRemoteCoreSimulationHandler;
     SharedRemoteCoreSimulationHandlerT mpExternalRemoteCoreSimulationHandler;
     SharedRemoteCoreSimulationHandlerT chooseRemoteCoreSimulationHandler() const;
-    double mSimulationProgress;
 #endif
     // Remote collected data
+    double mSimulationProgress;
     QVector<RemoteResultVariable> mRemoteResultVariables;
     QMutex mSimulateMutex;
 };

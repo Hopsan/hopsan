@@ -2,7 +2,7 @@
 
 #include "dcp/log/OstreamLog.hpp"
 #include "dcp/helper/LogHelper.hpp"
-#include "dcp/model/pdu/DcpPduFactory.hpp"
+//#include "dcp/model/pdu/DcpPduFactory.hpp"
 #include "dcp/zip/DcpSlaveReader.hpp"
 #include "dcp/driver/ethernet/udp/UdpDriver.hpp"
 #include "dcp/logic/DcpManagerMaster.hpp"
@@ -10,9 +10,11 @@
 #include <cmath>
 #include <iostream>
 #include <cstdint>
-#include <fstream>
+//#include <fstream>
 #include <memory>
 #include <chrono>
+
+#include "ComponentUtilities/num2string.hpp"
 
 DcpMaster::DcpMaster(hopsan::ComponentSystem *pSystem, const std::string host, int port, double comStep, double startTime, double stopTime, bool realTime)
     : mpSystem(pSystem), mRealTime(realTime), mComStep(comStep), mStartTime(startTime), mStopTime(stopTime)
