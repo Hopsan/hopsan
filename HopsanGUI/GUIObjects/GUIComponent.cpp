@@ -197,7 +197,13 @@ bool Component::setParameterValue(QString name, QString value, bool force)
                 app->x = double(1+i)/double(1+portSpecs.size());
                 app->rot = 270;
                 app->mEnabled = true;
-                QString portName = "P"+QString::number(i+1);
+                QString portName;
+                if(portSpecs[i].contains(':')) {
+                    portName = portSpecs[i].split(',').at(0).split(':').at(1);
+                }
+                else {
+                    portName = "P"+QString::number(i+1);
+                }
                 this->getAppearanceData()->addPortAppearance(portName, app);
                 this->createRefreshExternalPort(portName);
             }

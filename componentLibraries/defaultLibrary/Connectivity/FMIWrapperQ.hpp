@@ -13,6 +13,8 @@
 #include "HopsanEssentials.h"
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
+#include "CoreUtilities/StringUtilities.h"
+#include <algorithm>
 
 #ifdef USEFMI4C
 #include "fmi4c.h"
@@ -325,8 +327,17 @@ public:
         HVector<HString> ports = mPortSpecs.split(';');
         int portNumber = 1;
         for(size_t i=0; i<ports.size(); ++i) {
+            ports[i] = ports[i].replace(" ", "");
             HVector<HString> specs = ports[i].split(',');
-            HString nodeType = specs[0];
+            HString nodeType, portName;
+            if(specs[0].containes(':')) {
+                nodeType = specs[0].split(':')[0];
+                portName = specs[0].split(':')[1];
+            }
+            else {
+                nodeType = specs[0];
+                portName = "P"+to_hstring(portNumber);
+            }
 
             //Check that node is not empty (parameter not given)
             if(nodeType.empty()) {
@@ -338,10 +349,12 @@ public:
             std::vector<HString> v = hopsanCore.getRegisteredNodeTypes();
             if(std::find(v.begin(), v.end(), nodeType) == v.end()) {
                 addErrorMessage("Unsupported node type: "+nodeType);
-                for(size_t i=0; i<mPorts.size(); ++i) {
-                    removePort(mPorts[i]->getName());
-                }
-                mPorts.clear();
+                return;
+            }
+
+            //Check port name
+            if(!hopsan::isNameValid(portName)) {
+                addErrorMessage("Illegal port name: "+portName);
                 return;
             }
 
@@ -354,17 +367,35 @@ public:
             if(numberOfVariables != expectedNumberOfVariables)
             {
                 addErrorMessage("Error in port type specification: \""+nodeType+"\" requires "+to_hstring(expectedNumberOfVariables)+" variables.");
-                for(size_t i=0; i<mPorts.size(); ++i) {
-                    removePort(mPorts[i]->getName());
-                }
-                mPorts.clear();
                 return;
             }
-            Port *pPort = addPowerPort("P"+to_hstring(portNumber), nodeType, "");
-            mPorts.push_back(pPort);
+
+            //Check that all variables exist and are unique
             for(size_t i=0; i<numberOfVariables; ++i) {
+                if(usedVariables.contains(specs[i+1])) {
+                    addErrorMessage("Variable \""+specs[i+1]+"\" can only be used once in the \"portspecs\" parameter.");
+                    return;
+                }
+                std::vector<HString> portNames = getPortNames();
+                if(mFmiVersion == fmiVersion1 && fmi1_getVariableByName(fmu, specs[i+1].c_str()) == nullptr) {
+                    addErrorMessage("Variable \""+specs[i+1]+"\" does not exist in FMU.");
+                    return;
+                }
+                else if(mFmiVersion == fmiVersion2 && fmi2_getVariableByName(fmu, specs[i+1].c_str()) == nullptr) {
+                    addErrorMessage("Variable \""+specs[i+1]+"\" does not exist in FMU.");
+                    return;
+                }
+                else if(mFmiVersion == fmiVersion3 && fmi3_getVariableByName(fmu, specs[i+1].c_str()) == nullptr) {
+                    addErrorMessage("Variable \""+specs[i+1]+"\" does not exist in FMU.");
+                    return;
+                }
+
                 usedVariables.append(specs[i+1]);
             }
+
+            Port *pPort = addPowerPort(portName, nodeType, "");
+            mPorts.push_back(pPort);
+
             ++portNumber;
         }
 
