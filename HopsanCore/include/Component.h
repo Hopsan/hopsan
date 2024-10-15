@@ -276,7 +276,7 @@ protected:
     ComponentSystem* mpSystemParent;
     bool mInheritTimestep;
     double mTimestep, mDesiredTimestep;
-    double mTime;
+    double mTime = 0;
     size_t mModelHierarchyDepth; //!< This variable contains the depth of the system in the model hierarchy, (used by connect to figure out where to store nodes)
     std::vector<HString> mSearchPaths;
 
