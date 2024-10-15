@@ -19,6 +19,12 @@ Example:
 
 `NodeHydraulic,q1,p1,T1,c1,Zc1,Q1;NodeMechanic,v2,f2,x2,c2,Zc2,me2;NodeElectric,u3,i3,c3,Zc3;NodePneumatic,Qdot4,p4,c4,Zc4,mdot4,rho4,crho4,Zcrho4,T4`
 
+You can also specify port names by adding a colon after the node type.
+
+Example:
+
+`NodeHydraulic:PA,q1,p1,T1,c1,Zc1,Q1;NodeMechanic:PB,v2,f2,x2,c2,Zc2,me2;NodeElectric:PC,u3,i3,c3,Zc3;NodePneumatic:PD,Qdot4,p4,c4,Zc4,mdot4,rho4,crho4,Zcrho4,T4`
+
 **NodeHydraulic**
 
 | Variable    | Description          | Unit      | Causality |
