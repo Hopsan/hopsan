@@ -1331,6 +1331,11 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     bool allowLimitedEditing = (!isLocallyLocked() && (getModelLockLevel() <= LimitedLock));
     rMenu.addSeparator();
 
+    QAction *pReloadAction=0;
+    if(getTypeName() == "FMIWrapper" || getTypeName() == "FMIWrapperQ") {
+        pReloadAction = rMenu.addAction(tr("Reload FMU"));
+        pReloadAction->setEnabled(!getParameterValue("path").isEmpty());
+    }
     QAction *pRotateRightAction=0, *pRotateLeftAction=0, *pFlipVerticalAction=0, *pFlipHorizontalAction=0;
     QAction *pLockedAction=0;
     QAction *pDisabledAction=0;
@@ -1445,6 +1450,23 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
       for(ModelObject *pObj : mpParentSystemObject->getSelectedModelObjectPtrs()) {
           pObj->setDisabled(pDisabledAction->isChecked());
       }
+    }
+    else if(selectedAction == pReloadAction) {
+        QMap<QString, QString> parametersBeforeReconfigure;
+        QStringList parameterNames = getParameterNames();
+        for(const auto &par : qAsConst(parameterNames)) {
+            if(par == "path") {
+                continue;
+            }
+            parametersBeforeReconfigure.insert(par, getParameterValue(par));
+        }
+        setParameterValue("path", getParameterValue("path")); //Reload FMU by "changing" the path variable to the existing value
+        QMapIterator<QString,QString> it(parametersBeforeReconfigure);
+        while(it.hasNext())
+        {
+            it.next();
+            setParameterValue(it.key(), it.value());
+        }
     }
     else
     {

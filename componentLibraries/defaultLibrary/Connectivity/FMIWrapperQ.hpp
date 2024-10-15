@@ -245,9 +245,6 @@ public:
 
     void reconfigure()
     {
-        if((mFmuPath == mLastFmuPath) && (mPortSpecs == mLastPortSpecs)) {
-            return; //Path did not change, do nothing
-        }
         mLastFmuPath = mFmuPath;
         mLastPortSpecs = mPortSpecs;
 

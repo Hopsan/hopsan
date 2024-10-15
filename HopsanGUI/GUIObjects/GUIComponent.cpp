@@ -44,11 +44,11 @@
 #include "GUIObjects/GUIComponent.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIPort.h"
+#include "GUIConnector.h"
 #include "PlotHandler.h"
 #include "PlotTab.h"
 #include "PlotWindow.h"
 #include "Widgets/ModelWidget.h"
-#include "MessageHandler.h"
 #include "LibraryHandler.h"
 
 
@@ -139,10 +139,12 @@ QString Component::getTypeCQS() const
 //! @brief Set a parameter value to be mapped to a System parameter
 bool Component::setParameterValue(QString name, QString value, bool force)
 {
+    QMap<QString, QVector<Connector*> > connectionsBeforeReconfigure;
     if((this->getTypeName() == "FMIWrapper" || this->getTypeName() == "FMIWrapperQ") && (name == "path" || name == "portspecs")) {
         //Remove old ports
         QList<Port*> ports = this->getPortListPtrs();
         for(const auto port : ports) {
+            connectionsBeforeReconfigure.insert(port->getName(), port->getAttachedConnectorPtrs());
             this->removeExternalPort(port->getName(), true);
         }
         this->getAppearanceData()->getPortAppearanceMap().clear();
@@ -200,6 +202,23 @@ bool Component::setParameterValue(QString name, QString value, bool force)
                 this->createRefreshExternalPort(portName);
             }
         }
+
+        //Reconnect dangling connectors after reconfiguration
+        QMapIterator<QString,QVector<Connector*> > it(connectionsBeforeReconfigure);
+        while(it.hasNext()) {
+            it.next();
+            for(const auto &con : it.value()) {
+                if(con->getStartPort() == nullptr && con->getEndPort() != nullptr) {
+                    con->setStartPort(this->getPort(it.key())); //The start port was disconnected
+                }
+                if(con->getEndPort() == nullptr && con->getStartPort() != nullptr) {
+                    con->setEndPort(this->getPort(it.key()));   //The end port was disconneted
+                }
+
+                con->finishCreation(false);  //Re-establish connection
+            }
+        }
+
 
         //Adjust icon scale
         this->getAppearanceData()->setIconScale(qMax(qMax(inputs.size(),outputs.size())/3.0,1.0), UserGraphics);

@@ -297,39 +297,41 @@ void Connector::setEndPort(Port *pPort)
 
 
 //! @brief Executes the final tasks before creation of the connector is complete. Then flags that the connection if finished.
-void Connector::finishCreation()
+void Connector::finishCreation(bool doCorrectGeometries)
 {
     if (mpStartPort && mpEndPort)
     {
         // Figure out whether or not the last line had the right direction, and make necessary corrections
-        if( ( ((mpEndPort->getPortDirection() == LeftRightDirectionType) && (mGeometries.back() == Horizontal)) ||
-              ((mpEndPort->getPortDirection() == TopBottomDirectionType) && (mGeometries.back() == Vertical)) ) ||
-                (mGeometries[mGeometries.size()-2] == Diagonal) ||
-                mpEndPort->getPortType() == "ReadMultiportType" || mpEndPort->getPortType() == "PowerMultiportType")
-        {
-            // Wrong direction of last line, so remove last point. This is because an extra line was added with the last click, that shall not be there. It is also possible that we end up here because the end port is a multi port, which mean that we shall not add any offset to it.
-            this->removePoint();
-            this->scene()->removeItem(mpLines.back());
-            delete(mpLines.back());
-            this->mpLines.pop_back();
-        }
-        else
-        {
-            // Correct direction of last line, which was added due to the final mouse click. This means that the last "real" line has the wrong direction.
-            // We therefore keep the extra line, and move second last line a bit outwards from the component.
-            QPointF offsetPoint = getOffsetPointfromPort(mpStartPort, mpEndPort);
-            mPoints[mPoints.size()-2] = mpEndPort->mapToScene(mpEndPort->boundingRect().center()) + offsetPoint;
-            if(offsetPoint.x() != 0.0)
+        if(doCorrectGeometries) {
+            if( ( ((mpEndPort->getPortDirection() == LeftRightDirectionType) && (mGeometries.back() == Horizontal)) ||
+                  ((mpEndPort->getPortDirection() == TopBottomDirectionType) && (mGeometries.back() == Vertical)) ) ||
+                   (mGeometries[mGeometries.size()-2] == Diagonal) ||
+                    mpEndPort->getPortType() == "ReadMultiportType" || mpEndPort->getPortType() == "PowerMultiportType")
             {
-                mPoints[mPoints.size()-3].setX(mPoints[mPoints.size()-2].x());
+                // Wrong direction of last line, so remove last point. This is because an extra line was added with the last click, that shall not be there. It is also possible that we end up here because the end port is a multi port, which mean that we shall not add any offset to it.
+                this->removePoint();
+                this->scene()->removeItem(mpLines.back());
+                delete(mpLines.back());
+                this->mpLines.pop_back();
             }
             else
             {
-                mPoints[mPoints.size()-3].setY(mPoints[mPoints.size()-2].y());
+                // Correct direction of last line, which was added due to the final mouse click. This means that the last "real" line has the wrong direction.
+                // We therefore keep the extra line, and move second last line a bit outwards from the component.
+                QPointF offsetPoint = getOffsetPointfromPort(mpStartPort, mpEndPort);
+                mPoints[mPoints.size()-2] = mpEndPort->mapToScene(mpEndPort->boundingRect().center()) + offsetPoint;
+                if(offsetPoint.x() != 0.0)
+                {
+                    mPoints[mPoints.size()-3].setX(mPoints[mPoints.size()-2].x());
+                }
+                else
+                {
+                    mPoints[mPoints.size()-3].setY(mPoints[mPoints.size()-2].y());
+                }
+                this->determineAppearance();    //Figure out which connector appearance to use
+                this->drawConnector();
+                mpParentSystemObject->mpModelWidget->getGraphicsView()->updateViewPort();
             }
-            this->determineAppearance();    //Figure out which connector appearance to use
-            this->drawConnector();
-            mpParentSystemObject->mpModelWidget->getGraphicsView()->updateViewPort();
         }
 
         // Make sure the end point of the connector is the center position of the end port

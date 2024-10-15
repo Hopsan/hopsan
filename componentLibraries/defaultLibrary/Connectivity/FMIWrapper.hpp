@@ -242,9 +242,6 @@ public:
 
     void reconfigure()
     {
-        if(mFmuPath == mLastFmuPath) {
-            return; //Path did not change, do nothing
-        }
         mLastFmuPath = mFmuPath;
 
         deconfigure(); //Make sure to unload FMU and free memory before loading a new one
