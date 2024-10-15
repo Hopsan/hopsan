@@ -74,7 +74,7 @@ public:
     void setStartPort(Port *pPort);
     void setEndPort(Port *pPort);
 
-    void finishCreation();
+    void finishCreation(bool doCorrectGeometries=true);
 
     void addPoint(QPointF point);
     void removePoint(bool deleteIfEmpty = false);
