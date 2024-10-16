@@ -9,7 +9,7 @@ configuration: Release
 install:
   - git submodule update --init
   - cd dependencies
-  - download-dependencies.py discount fmilibrary qwt zeromq cppzmq msgpack-c katex tclap fmi4c
+  - download-dependencies.py discount fmilibrary qwt zeromq cppzmq msgpack-c katex tclap fmi4c xerces asio zlib libzip dcplib
   - cd ..
 build_script:
 # Remove sh.exe from PATH so that CMake works
