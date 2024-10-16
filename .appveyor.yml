@@ -19,6 +19,10 @@ build_script:
   - setupDiscount.bat
   - setupFMILibrary.bat
   - setupFmi4c.bat
+  - setupXerces.bat
+  - setupZlib.bat
+  - setupLibzip.bat
+  - setupDCPLib.bat
 #  - setupHDF5.bat (takes to long to build)
   - setupKatex.bat
   - setupTclap.bat
