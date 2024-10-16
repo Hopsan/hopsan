@@ -26,4 +26,5 @@ target_include_directories(hopsandcp PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/dcplib-code/include/slave>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/dcplib-code/include/xml>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/dcplib-code/include/zip>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/libzip/include>
   $<INSTALL_INTERFACE:include>)
