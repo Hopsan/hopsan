@@ -20,11 +20,11 @@ mkdir -p $builddir
 cd $builddir
 
 # Generate makefiles
-cmake -Wno-dev -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX=$installdir ${codedir}
+cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=${installdir} ${codedir}
 
 # Build and install
-mingw32-make -j16
-mingw32-make install
+cmake --build . --parallel 8
+cmake --build . --target install
 
 # Return to basedir
 cd $basedir
