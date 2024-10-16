@@ -23,7 +23,8 @@ add_executable(${target_name} ${srcfiles})
 target_include_directories(${target_name} PRIVATE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../Utilities>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../hopsandcp/include>)
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../hopsandcp/include>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/libzip/include>)
 
 target_compile_definitions(${target_name} PRIVATE _USE_MATH_DEFINES)
 if(NOT CMAKE_BUILD_TYPE MATCHES Debug)
