@@ -14,7 +14,7 @@ call setHopsanBuildPaths.bat
 
 mkdir %builddir%
 cd %builddir%
-cmake -Wno-dev -G %HOPSAN_BUILD_CMAKE_GENERATOR% -DASIO_ROOT="%basedir%\asio-code" -DXercesC_LIBRARY="%xercesdir%/bin/libxerces-c.dll" -DXercesC_INCLUDE_DIR="%xercesdir%/include" -DXercesC_VERSION="3.2.2" -DZIP_LIBRARY="%basedir%\libzip\bin\libzip.dll" -DZIP_INCLUDE_DIR="%basedir%\libzip\include" -DCMAKE_INSTALL_PREFIX="%installdir%" %codedir%
+cmake -Wno-dev -G %HOPSAN_BUILD_CMAKE_GENERATOR% -DLOGGING -DASIO_ROOT="%basedir%\asio-code" -DXercesC_LIBRARY="%xercesdir%/bin/libxerces-c.dll" -DXercesC_INCLUDE_DIR="%xercesdir%/include" -DXercesC_VERSION="3.2.2" -DZIP_LIBRARY="%basedir%\libzip\bin\libzip.dll" -DZIP_INCLUDE_DIR="%basedir%\libzip\include" -DCMAKE_INSTALL_PREFIX="%installdir%" %codedir%
 cmake --build . --parallel 8
 cmake --build . --target install
 

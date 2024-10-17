@@ -24,7 +24,7 @@ mkdir -p $builddir
 cd $builddir
 
 # Generate makefiles
-cmake -Wno-dev -DASIO_ROOT=${basedir}/asio-code -DXercesC_LIBRARY=${xercesdir}/bin/libxerces-c -DXercesC_INCLUDE_DIR=${xercesdir}/include -DXercesC_VERSION="3.2.2" -DZIP_LIBRARY=${basedir}/libzip/bin/libzip -DZIP_INCLUDE_DIR=${basedir}\libzip\include -DCMAKE_INSTALL_PREFIX=${installdir} ${codedir}
+cmake -Wno-dev -DLOGGING -DASIO_ROOT=${basedir}/asio-code -DXercesC_LIBRARY=${xercesdir}/bin/libxerces-c -DXercesC_INCLUDE_DIR=${xercesdir}/include -DXercesC_VERSION="3.2.2" -DZIP_LIBRARY=${basedir}/libzip/bin/libzip -DZIP_INCLUDE_DIR=${basedir}\libzip\include -DCMAKE_INSTALL_PREFIX=${installdir} ${codedir}
 
 # Build and install
 cmake --build . --parallel 8
