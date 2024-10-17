@@ -11,8 +11,6 @@ set installdir=%basedir%\%name%
 set zlibdir=%basedir:\=/%/zlib
 echo %zlibdir%
 
-pause
-
 call setHopsanBuildPaths.bat
 
 mkdir %builddir%
