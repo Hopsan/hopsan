@@ -10,3 +10,6 @@
 [submodule "HopsanCore/dependencies/sundials"]
 	path = HopsanCore/dependencies/sundials
 	url = https://github.com/LLNL/sundials
+[submodule "hopsandcp/dependencies/DCPLib"]
+	path = hopsandcp/dependencies/DCPLib
+	url = https://github.com/modelica/DCPLib

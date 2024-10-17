@@ -34,8 +34,6 @@
 #ifndef CONFIGURATION_H
 #define CONFIGURATION_H
 
-
-
 namespace cfg {
     namespace paths {
         constexpr auto corelogfile = "corelogfile";
@@ -109,6 +107,7 @@ namespace cfg {
         constexpr auto labviewexport = "labviewexportdir";
         constexpr auto gcc32 = "gcc32dir";
         constexpr auto gcc64 = "gcc64dir";
+        constexpr auto dcp = "dcpdir";
         constexpr auto customtemppath = "customtemppath";
     }
     constexpr auto preferincludedcompiler = "preferincludedcompiler";
