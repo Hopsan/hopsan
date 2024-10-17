@@ -14,6 +14,8 @@
 #include <memory>
 #include <chrono>
 
+#include "ComponentUtilities/num2string.hpp"
+
 DcpMaster::DcpMaster(hopsan::ComponentSystem *pSystem, const std::string host, int port, double comStep, double startTime, double stopTime, bool realTime)
     : mpSystem(pSystem), mRealTime(realTime), mComStep(comStep), mStartTime(startTime), mStopTime(stopTime)
 {
