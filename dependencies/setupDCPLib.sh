@@ -13,6 +13,9 @@ xercesdir=${basedir}/xerces
 # Download and verify
 ./download-dependencies.py ${name}
 
+#Patch code to fix bug
+patch dcplib-code/include/core/dcp/model/pdu/IpToStr.hpp dcplib-patch.txt
+
 # Include general settings
 source setHopsanBuildPaths.sh
 
