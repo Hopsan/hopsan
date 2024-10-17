@@ -13,6 +13,9 @@ xercesdir=${basedir}/xerces
 # Download and verify
 ./download-dependencies.py ${name}
 
+#Patch code (remove when bug is fixed)
+sed -i '22i#include <dcp/model/constant/DcpPduType.hpp>' ${codedir}/include/core/dcp/model/LogEntry.hpp
+
 # Include general settings
 source setHopsanBuildPaths.sh
 
