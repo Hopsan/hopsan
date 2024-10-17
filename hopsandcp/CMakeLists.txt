@@ -31,4 +31,4 @@ target_include_directories(hopsandcp PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/xerces/include>
   $<INSTALL_INTERFACE:include>)
 
-target_compile_definitions(hopsandcp PRIVATE LOGGING)
+target_compile_definitions(hopsandcp PUBLIC LOGGING=ON)
