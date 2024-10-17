@@ -12,7 +12,7 @@ call setHopsanBuildPaths.bat
 
 mkdir %builddir%
 cd %builddir%
-cmake -Wno-dev -G %HOPSAN_BUILD_CMAKE_GENERATOR% -DCMAKE_INSTALL_PREFIX="%installdir%" %codedir%
+cmake -Wno-dev -DCMAKE_BUILD_TYPE=Release -G %HOPSAN_BUILD_CMAKE_GENERATOR% -DCMAKE_INSTALL_PREFIX="%installdir%" %codedir%
 cmake --build . --parallel 8
 cmake --build . --target install
 
