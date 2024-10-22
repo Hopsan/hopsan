@@ -91,10 +91,10 @@ namespace hopsan {
             mOutputs.clear();
             mParameters.clear();
 
-            HVector<HString> splitVariables = mVariables.split(';');
-            HVector<HString> splitInputs = splitVariables[0].split(',');
-            HVector<HString> splitOutputs = splitVariables[1].split(',');
-            HVector<HString> splitParameters = splitVariables[2].split(',');
+            HVector<HString> splitVariables = mVariables.split(';', HString::SkipEmptyParts);
+            HVector<HString> splitInputs = splitVariables[0].split(',', HString::SkipEmptyParts);
+            HVector<HString> splitOutputs = splitVariables[1].split(',', HString::SkipEmptyParts);
+            HVector<HString> splitParameters = splitVariables[2].split(',', HString::SkipEmptyParts);
 
             //The split function will return a single-element vector with an
             //empty string if delimiter was not found, clear vector in this case
@@ -107,7 +107,7 @@ namespace hopsan {
             if(splitParameters.size() == 1 && splitParameters[0] == "") {
                 splitParameters.clear();
             }
-            HVector<HString> splitValueRefs = mValueRefs.split(',');
+            HVector<HString> splitValueRefs = mValueRefs.split(',', HString::SkipEmptyParts);
 
             if(splitValueRefs.size() != splitInputs.size()+splitOutputs.size()+splitParameters.size()) {
                 addErrorMessage("Number of value references does not equal number of variables");

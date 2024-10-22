@@ -329,9 +329,9 @@ void getDataFromProtocolFile(const hopsan::HString &rFilePath, hopsan::HString &
     rVariables = inputs+";"+outputs+";"+pars;
 
     //Value references is a plain comma-separated string
-    hopsan::HVector<hopsan::HString> valueRefVec = inputVrs.split(',');
-    valueRefVec.append(outputVrs.split(','));
-    valueRefVec.append(parVrs.split(','));
+    hopsan::HVector<hopsan::HString> valueRefVec = inputVrs.split(',', hopsan::HString::SkipEmptyParts);
+    valueRefVec.append(outputVrs.split(',', hopsan::HString::SkipEmptyParts));
+    valueRefVec.append(parVrs.split(',', hopsan::HString::SkipEmptyParts));
     rValueReferences = join(valueRefVec, ',');
 
     //Value references string could end with a comma if one
