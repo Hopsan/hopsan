@@ -523,19 +523,21 @@ HString HString::substr(const size_t pos, const size_t len) const
     return sub;
 }
 
-HVector<HString> HString::split(const char delim) const
+HVector<HString> HString::split(const char delim, SplitBehaviorEnumT behaviour) const
 {
-  HVector<HString> parts;
-  size_t b = 0;
-  while (true && mSize > 0)
-  {
-    size_t e = find(delim, b);
-    parts.append(substr(b,e-b));
-    if (e == npos)
+    HVector<HString> parts;
+    size_t b = 0;
+    while (true)
     {
-      break;
+        size_t e = find(delim, b);
+        if(behaviour == KeepEmptyParts || !substr(b,e-b).empty()) {
+            parts.append(substr(b,e-b));
+        }
+        if (e == npos)
+        {
+            break;
+        }
+        b=e+1;
     }
-    b=e+1;
-  }
-  return parts;
+    return parts;
 }

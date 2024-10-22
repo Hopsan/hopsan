@@ -39,6 +39,8 @@ private:
     size_t mSize;
 
 public:
+    enum SplitBehaviorEnumT { KeepEmptyParts, SkipEmptyParts };
+
     static const size_t npos;
 
     HString();
@@ -74,7 +76,7 @@ public:
     bool toBool(bool *isOK) const;
 
     HString substr(const size_t pos, const size_t len=npos) const;
-    HVector<HString> split(const char delim) const;
+    HVector<HString> split(const char delim, SplitBehaviorEnumT behaviour = KeepEmptyParts) const;
 
     size_t find_first_of(const char c, size_t pos = 0) const;
     size_t rfind(const char c, size_t pos = npos) const;
