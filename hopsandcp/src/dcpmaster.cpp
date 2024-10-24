@@ -46,7 +46,7 @@ DcpMaster::~DcpMaster() {
     delete mpManager;
 }
 
-void DcpMaster::addServer(string filepath)
+void DcpMaster::addServer(const string filepath)
 {
     serverDescriptions.push_back(new SlaveDescription_t(*getSlaveDescriptionFromDcpFile(1,0,filepath.c_str())));
     u_char id = u_char(serverDescriptions.size());
