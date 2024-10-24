@@ -102,13 +102,16 @@ void appendRootXMLProcessingInstruction(QDomDocument &rDomDocument)
 //! @param[in] hopsanGuiVersion The version string of the Hopsan GUI Application
 //! @param[in] hopsanCoreVersion The version string of the Hopsan Core Library
 //! @returns The created root DOM element
-QDomElement appendHMFRootElement(QDomDocument &rDomDocument, QString hmfVersion, QString hopsanGuiVersion, QString hopsanCoreVersion)
+QDomElement appendHMFRootElement(QDomDocument &rDomDocument, QString hmfVersion, QString hopsanGuiVersion, QString hopsanCoreVersion, QString customType)
 {
     QDomElement hmfRoot = rDomDocument.createElement(hmf::root);
     rDomDocument.appendChild(hmfRoot);
     hmfRoot.setAttribute(hmf::version::hmf, hmfVersion);
     hmfRoot.setAttribute(hmf::version::hopsangui, hopsanGuiVersion);
     hmfRoot.setAttribute(hmf::version::hopsancore, hopsanCoreVersion);
+    if(!customType.isEmpty()) {
+        hmfRoot.setAttribute(hmf::customtype, customType);
+    }
     return hmfRoot;
 }
 

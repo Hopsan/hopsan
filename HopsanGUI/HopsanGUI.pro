@@ -80,6 +80,8 @@ have_hdf5(){
 }
 #--------------------------------------------------------
 
+include($${PWD}/../dependencies/libzip.pri)
+
 #--------------------------------------------------------
 # Set HopsanCore Paths
 INCLUDEPATH *= $${PWD}/../HopsanCore/include/
@@ -105,6 +107,13 @@ DEFINES *= SYMHOP_DLLIMPORT
 INCLUDEPATH *= $${PWD}/../Ops/include/
 LIBS *= -L$${PWD}/../bin -lops$${DEBUG_EXT}
 DEFINES *= OPS_DLLIMPORT
+#--------------------------------------------------------
+
+#--------------------------------------------------------
+# Set hopsandcp Paths
+INCLUDEPATH *= $${PWD}/../hopsandcp/include/
+LIBS *= -L$${PWD}/../bin -lhopsandcp$${DEBUG_EXT}
+DEFINES *= HOPSANDCP_DLLIMPORT
 #--------------------------------------------------------
 
 #--------------------------------------------------------

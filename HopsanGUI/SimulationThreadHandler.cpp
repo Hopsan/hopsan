@@ -38,6 +38,10 @@
 #include "common.h"
 #include "global.h"
 #include "GUIObjects/GUIContainerObject.h"
+#include "dcpmaster.h"
+#include "dcpserver.h"
+#include "GUIConnector.h"
+#include "GUIPort.h"
 
 namespace {
 
@@ -244,6 +248,15 @@ void ProgressBarWorkerObject::setProgressBarState(SimulationState state)
         emit setProgressBarText(tr("Simulating..."));
         emit setProgressBarRange(0, 0);
         break;
+    case SimulationState::DcpServerSimulate:
+        emit setProgressBarText(tr("Running DCP simulation (server)..."));
+        emit setProgressBarRange(0, 0);
+        break;
+    case SimulationState::DcpMasterSimulate:
+        emit setProgressBarText(tr("Running DCP simulation (master)..."));
+        emit setProgressBarRange(0, 100);
+        startRefreshTimer(gpConfig->getProgressBarStep());
+        break;
     case SimulationState::Finalize:
         stopRefreshTimer();
         emit setProgressBarText(tr("Finalizing..."));
@@ -286,6 +299,7 @@ void ProgressBarWorkerObject::refreshProgressBar()
             mpProgressDialogRefreshTimer->setInterval( currentTimeStep + 10);
         }
     }
+    qApp->processEvents();
 }
 
 void ProgressBarWorkerObject::abort()
@@ -328,6 +342,25 @@ void SimulationThreadHandler::initSimulateFinalizeRemote(SharedRemoteCoreSimulat
     initSimulateFinalizePrivate();
 }
 #endif
+
+void SimulationThreadHandler::initSimulateFinalizeDcpMaster(SystemObject *pSystem, const QString &host, int port, bool realTime)
+{
+    mvpSystems.clear();
+    mvpSystems.push_back(pSystem);
+    mpSimulationWorkerObject = new DcpMasterSimulationWorkerObject(pSystem, host, port, mStartT, mStopT, realTime);
+    mpSimulationWorkerObject->setMessageHandler(mpMessageHandler);
+    initSimulateFinalizePrivate();
+}
+
+
+void SimulationThreadHandler::initSimulateFinalizeDcpServer(SystemObject* pSystem, const QString &host, int port, const QString &targetFile)
+{
+    mvpSystems.clear();
+    mvpSystems.push_back(pSystem);
+    mpSimulationWorkerObject = new DcpServerSimulationWorkerObject(pSystem, host, port, targetFile);
+    mpSimulationWorkerObject->setMessageHandler(mpMessageHandler);
+    initSimulateFinalizePrivate();
+}
 
 void SimulationThreadHandler::initSimulateFinalize(QVector<SystemObject*> vpSystems, const bool noChanges)
 {
@@ -550,4 +583,109 @@ int SimulationThreadHandler::getLastSimulationTime()
 void SimulationThreadHandler::setMessageHandler(GUIMessageHandler *pMessageHandler)
 {
     mpMessageHandler = pMessageHandler;
+}
+
+DcpServerSimulationWorkerObject::DcpServerSimulationWorkerObject(SystemObject *pSystem, const QString &host, int port, const QString &targetFile)
+{
+    mpSystem = pSystem;
+    mHost = host;
+    mPort = port;
+    mTargetFile = targetFile;
+}
+
+void DcpServerSimulationWorkerObject::initSimulateFinalize()
+{
+    QTime timer;
+    DcpServer *pDcpServer = new DcpServer(mpSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), mHost.toStdString(), mPort, mpSystem->getNumberOfLogSamples());
+
+    // Initializing
+    emit setProgressState(SimulationState::Initialize);
+    timer.start();
+    pDcpServer->generateDcpFile(mTargetFile.toStdString());
+    emit initDone(true, timer.elapsed());
+
+    // Simulating
+    emit setProgressState(SimulationState::DcpServerSimulate);
+    gpMessageHandler->addInfoMessage("Starting a DCP simulation...");
+    bool success = pDcpServer->start();
+    gpMessageHandler->addInfoMessage("DCP simulation finished!");
+    emit simulateDone(success, timer.elapsed());
+
+    // Finalizing
+    delete pDcpServer;
+    // Finalizing
+    emit setProgressState(SimulationState::Finalize);
+    emit finalizeDone(true, timer.elapsed());
+}
+
+DcpMasterSimulationWorkerObject::DcpMasterSimulationWorkerObject(SystemObject *pSystem, const QString &host, int port, double startTime, double stopTime, bool realTime)
+    : mpSystem(pSystem), mHost(host), mPort(port), mRealTime(realTime)
+{
+    mStartTime = startTime;
+    mStopTime = stopTime;
+}
+
+void DcpMasterSimulationWorkerObject::initSimulateFinalize()
+{
+    // Initializing
+    QTime timer;
+    emit setProgressState(SimulationState::Initialize);
+    timer.start();
+
+    DcpMaster *pDcpMaster = new DcpMaster(mpSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), mHost.toStdString(), mPort, mpSystem->getTimeStep(), mStartTime, mStopTime, mRealTime);
+    const QList<ModelObject *> modelObjects = mpSystem->getModelObjects();
+    for(const auto comp : modelObjects) {
+        if(comp->getTypeName() == HOPSANGUIDCPCOMPONENT) {   //Just in case, model shall only contain DCP components anyway
+            pDcpMaster->addServer(comp->getParameterValue("dcpFile").toStdString());
+        }
+    }
+    std::map<std::pair<size_t,size_t>,std::pair<std::vector<size_t>,std::vector<size_t> > > connections;
+    const QList<Connector *> subConnectors = mpSystem->getSubConnectorPtrs();
+    for(const auto &connection : subConnectors) {
+        Port *pStartPort = connection->getStartPort();
+        Port *pEndPort = connection->getEndPort();
+        ModelObject *pStartComponent = pStartPort->getParentModelObject();
+        ModelObject *pEndComponent = pEndPort->getParentModelObject();
+        size_t fromServer = size_t(mpSystem->getModelObjects().indexOf(pStartComponent))+1;  //DCPLib uses one-based indexing
+        size_t toServer = size_t(mpSystem->getModelObjects().indexOf(pEndComponent))+1;      //DCPLib uses one-based indexing
+        QVector<CoreVariameterDescription> variameters;
+        size_t fromVr, toVr;
+        pStartComponent->getVariameterDescriptions(variameters);
+        for(const auto &variameter : qAsConst(variameters)) {
+            if(variameter.mPortName == pStartPort->getName()) {
+                fromVr = variameter.mDescription.toUInt();
+            }
+        }
+        pEndComponent->getVariameterDescriptions(variameters);
+        for(const auto &variameter : qAsConst(variameters)) {
+            if(variameter.mPortName == pEndPort->getName()) {
+                toVr = variameter.mDescription.toUInt();
+            }
+        }
+
+        if(connections.count(std::make_pair(fromServer,fromVr)) == 0) {
+            connections[std::make_pair(fromServer,fromVr)] = std::make_pair(std::vector<size_t>(),std::vector<size_t>());
+        }
+        connections[std::make_pair(fromServer,fromVr)].first.push_back(toServer);
+        connections[std::make_pair(fromServer,fromVr)].second.push_back(toVr);
+    }
+
+    for(const auto &con : connections) {
+        pDcpMaster->addConnection(con.first.first, con.first.second, con.second.first, con.second.second);
+    }
+
+    emit initDone(true, timer.elapsed());
+
+    // Simulating
+    emit setProgressState(SimulationState::DcpMasterSimulate);
+    gpMessageHandler->addInfoMessage("Starting a DCP simulation as master...");
+    pDcpMaster->start();
+    gpMessageHandler->addInfoMessage("DCP simulation finished!");
+    emit simulateDone(true, timer.elapsed());
+
+    // Finalizing
+    delete pDcpMaster;
+    // Finalizing
+    emit setProgressState(SimulationState::Finalize);
+    emit finalizeDone(true, timer.elapsed());
 }

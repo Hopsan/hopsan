@@ -8,3 +8,6 @@
 ./setupKatex.sh
 ./setupTclap.sh
 ./setupHDF5.sh
+./setupXerces.sh
+./setupLibzip.sh
+./setupDCPLib.sh

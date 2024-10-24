@@ -1,0 +1,4 @@
+5c5
+< std::string ipToString(const uint32_t ip) {
+---
+> inline std::string ipToString(const uint32_t ip) {
