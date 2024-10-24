@@ -2,12 +2,10 @@
 #include "ComponentSystem.h"
 #include "utilities.h"
 
-#include <dcp/helper/Helper.hpp>
-#include <dcp/log/OstreamLog.hpp>
-#include <dcp/logic/DcpManagerSlave.hpp>
-#include <dcp/zip/DcpSlaveWriter.hpp>
-#include <dcp/model/pdu/DcpPduFactory.hpp>
-#include <dcp/driver/ethernet/udp/UdpDriver.hpp>
+#include "dcp/log/OstreamLog.hpp"
+#include "dcp/logic/DcpManagerSlave.hpp"
+#include "dcp/zip/DcpSlaveWriter.hpp"
+#include "dcp/driver/ethernet/udp/UdpDriver.hpp"
 
 //#include "HopsanEssentials.h"
 #include "HopsanCoreMacros.h"
