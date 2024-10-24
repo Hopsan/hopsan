@@ -100,7 +100,7 @@
   </dependency>
 
   <dependency name="zlib">
-    <releasefile sha256="72af66d44fcc14c22013b46b814d5d2514673dda3d115e64b690c1ad636e7b17">
+    <releasefile sha256="72af66d44fcc14c22013b46b814d5d2514673dda3d115e64b690c1ad636e7b17" platform="windows">
       <url>https://github.com/madler/zlib/releases/download/v1.3.1/zlib131.zip</url>
     </releasefile>
   </dependency>
