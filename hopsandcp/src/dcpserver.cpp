@@ -55,11 +55,11 @@ DcpServer::DcpServer(ComponentSystem *pSystem, const std::string host, int port,
     std::cout << "\n";
 
     //Create UDP driver
-    udpDriver = new UdpDriver(host, uint16_t(port));
+    mpDriver = new UdpDriver(host, uint16_t(port));
 
     //Create server DCP manager
     mpServerDescription = createServerDescription();
-    mManager = new DcpManagerSlave(*mpServerDescription, udpDriver->getDcpDriver());
+    mManager = new DcpManagerSlave(*mpServerDescription, mpDriver->getDcpDriver());
     mManager->setInitializeCallback<SYNC>(
             std::bind(&DcpServer::initialize, this));
     mManager->setConfigureCallback<SYNC>(
@@ -79,9 +79,9 @@ DcpServer::DcpServer(ComponentSystem *pSystem, const std::string host, int port,
                 std::bind(&DcpServer::stop, this));
 
     //Display log messages on console
-    stdLog = new OstreamLog(std::cout);
+    mpStdLog = new OstreamLog(std::cout);
     mManager->addLogListener(
-            std::bind(&OstreamLog::logOstream, *stdLog, std::placeholders::_1));
+            std::bind(&OstreamLog::logOstream, *mpStdLog, std::placeholders::_1));
     mManager->setGenerateLogString(true);
 }
 
@@ -209,6 +209,6 @@ void DcpServer::setTimeRes(const uint32_t numerator, const uint32_t denominator)
 void DcpServer::stop()
 {
     //dynamic_cast<AbstractDcpManager*>(mManager)->stop();
-    udpDriver->getDcpDriver().stopReceiving();
-    udpDriver->getDcpDriver().disconnect();
+    mpDriver->getDcpDriver().stopReceiving();
+    mpDriver->getDcpDriver().disconnect();
 }
