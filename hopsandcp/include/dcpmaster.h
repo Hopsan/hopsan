@@ -30,7 +30,7 @@ public:
     DcpMaster(hopsan::ComponentSystem *pSystem, const string host, int port, double comStep=0.001, double startTime=0, double stopTime=10, bool realTime=false);
     ~DcpMaster();
 
-    void addServer(string filepath);
+    void addServer(const string filepath);
     void addConnection(size_t fromId, size_t fromVr, std::vector<size_t> toIds, std::vector<size_t> toVrs);
 
     void start();
