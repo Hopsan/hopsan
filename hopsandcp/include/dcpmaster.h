@@ -63,11 +63,11 @@ private:
     double mStartTime;
     double mStopTime;
 
-    UdpDriver *driver;
+    UdpDriver *mpDriver;
 
     OstreamLog *mpStdLog;
 
-    DcpManagerMaster *manager;
+    DcpManagerMaster *mpManager;
 
     std::map<uint8_t, uint8_t> numOfCmd;
     std::map<uint8_t, uint64_t> receivedAcks;

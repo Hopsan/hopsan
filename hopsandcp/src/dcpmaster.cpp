@@ -23,27 +23,27 @@ DcpMaster::DcpMaster(hopsan::ComponentSystem *pSystem, const std::string host, i
 
     OstreamLog stdLog(std::cout);
 
-    driver = new UdpDriver(host, port_t(port));
+    mpDriver = new UdpDriver(host, port_t(port));
 
-    manager = new DcpManagerMaster(driver->getDcpDriver());
+    mpManager = new DcpManagerMaster(mpDriver->getDcpDriver());
 
-    manager->setAckReceivedListener<SYNC>(
+    mpManager->setAckReceivedListener<SYNC>(
                 std::bind(&DcpMaster::receiveAck, this, std::placeholders::_1, std::placeholders::_2));
-    manager->setNAckReceivedListener<SYNC>(
+    mpManager->setNAckReceivedListener<SYNC>(
                 std::bind(&DcpMaster::receiveNAck, this, std::placeholders::_1, std::placeholders::_2,
                           std::placeholders::_3));
-    manager->setStateChangedNotificationReceivedListener<SYNC>(
+    mpManager->setStateChangedNotificationReceivedListener<SYNC>(
                 std::bind(&DcpMaster::receiveStateChangedNotification, this, std::placeholders::_1,
                           std::placeholders::_2));
-    manager->setDataReceivedListener<SYNC>(
+    mpManager->setDataReceivedListener<SYNC>(
                 std::bind(&DcpMaster::dataReceived, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-    manager->addLogListener(std::bind(&OstreamLog::logOstream, stdLog, std::placeholders::_1));
-    manager->setGenerateLogString(true);
+    mpManager->addLogListener(std::bind(&OstreamLog::logOstream, stdLog, std::placeholders::_1));
+    mpManager->setGenerateLogString(true);
 }
 
 DcpMaster::~DcpMaster() {
-    delete driver;
-    delete manager;
+    delete mpDriver;
+    delete mpManager;
 }
 
 void DcpMaster::addServer(string filepath)
@@ -53,7 +53,7 @@ void DcpMaster::addServer(string filepath)
     uint8_t *netInfo = new uint8_t[6];
     *((uint16_t *) netInfo) = *serverDescriptions.back()->TransportProtocols.UDP_IPv4->Control->port;
     *((uint32_t *) (netInfo + 2)) = asio::ip::address_v4::from_string(*serverDescriptions.back()->TransportProtocols.UDP_IPv4->Control->host).to_ulong();
-    driver->getDcpDriver().setSlaveNetworkInformation(id, netInfo);
+    mpDriver->getDcpDriver().setSlaveNetworkInformation(id, netInfo);
     delete[] netInfo;
 }
 
@@ -69,7 +69,7 @@ void DcpMaster::addConnection(size_t fromServer, size_t fromVr, std::vector<size
 
 
 void DcpMaster::start() {
-    std::thread b(&DcpManagerMaster::start, manager);
+    std::thread b(&DcpManagerMaster::start, mpManager);
     std::chrono::seconds dura(1);
     std::this_thread::sleep_for(dura);
     DcpOpMode mode = DcpOpMode::NRT;
@@ -78,7 +78,7 @@ void DcpMaster::start() {
     }
 
     for(size_t i=0; i<serverDescriptions.size(); ++i) {
-        manager->STC_register(u_char(i+1), DcpState::ALIVE, convertToUUID(serverDescriptions[i]->uuid), mode, 1, 0);
+        mpManager->STC_register(u_char(i+1), DcpState::ALIVE, convertToUUID(serverDescriptions[i]->uuid), mode, 1, 0);
     }
     b.join();
 }
@@ -89,7 +89,7 @@ void DcpMaster::initialize() {
         return;
     }
     for(size_t i=0; i<serverDescriptions.size(); ++i) {
-        manager->STC_initialize(u_char(i), DcpState::CONFIGURED);
+        mpManager->STC_initialize(u_char(i), DcpState::CONFIGURED);
     }
     intializationRuns++;
 }
@@ -105,25 +105,25 @@ void DcpMaster::configuration() {
         receivedAcks[dcpId_t(i)] = 0;
         numOfCmd[dcpId_t(i)] = 0;
 
-        manager->CFG_time_res(uint8_t(i), 1, uint32_t(std::floor(1.0/mComStep)));
+        mpManager->CFG_time_res(uint8_t(i), 1, uint32_t(std::floor(1.0/mComStep)));
         numOfCmd[dcpId_t(i)]++;
     }
 
     for(size_t i=0; i<connections.size(); ++i) {
         uint16_t dataId = uint16_t(i+1);
         uint8_t fromServerId = uint8_t(connections[i].fromServer);
-        manager->CFG_scope(fromServerId, dataId, DcpScope::Initialization_Run_NonRealTime);
-        manager->CFG_output(fromServerId, dataId, 0, connections[i].fromVr);
-        manager->CFG_steps(fromServerId, dataId, 1);
+        mpManager->CFG_scope(fromServerId, dataId, DcpScope::Initialization_Run_NonRealTime);
+        mpManager->CFG_output(fromServerId, dataId, 0, connections[i].fromVr);
+        mpManager->CFG_steps(fromServerId, dataId, 1);
         numOfCmd[fromServerId] += 4;
 
         for(size_t j=0; j<connections[i].toServers.size(); ++j) {
             uint8_t toServerId = uint8_t(connections[i].toServers[j]);
-            manager->CFG_scope(toServerId, dataId, DcpScope::Initialization_Run_NonRealTime);
-            manager->CFG_input(toServerId, dataId, 0, connections[i].toVrs[j], DcpDataType::float64);
-            manager->CFG_steps(toServerId, dataId, 1);
-            manager->CFG_source_network_information_UDP(toServerId, dataId, asio::ip::address_v4::from_string(*serverDescriptions[toServerId-1]->TransportProtocols.UDP_IPv4->Control->host).to_uint(), *serverDescriptions[toServerId-1]->TransportProtocols.UDP_IPv4->Control->port+1);
-            manager->CFG_target_network_information_UDP(fromServerId, dataId,  asio::ip::address_v4::from_string(*serverDescriptions[toServerId-1]->TransportProtocols.UDP_IPv4->Control->host).to_uint(), *serverDescriptions[toServerId-1]->TransportProtocols.UDP_IPv4->Control->port);
+            mpManager->CFG_scope(toServerId, dataId, DcpScope::Initialization_Run_NonRealTime);
+            mpManager->CFG_input(toServerId, dataId, 0, connections[i].toVrs[j], DcpDataType::float64);
+            mpManager->CFG_steps(toServerId, dataId, 1);
+            mpManager->CFG_source_network_information_UDP(toServerId, dataId, asio::ip::address_v4::from_string(*serverDescriptions[toServerId-1]->TransportProtocols.UDP_IPv4->Control->host).to_uint(), *serverDescriptions[toServerId-1]->TransportProtocols.UDP_IPv4->Control->port+1);
+            mpManager->CFG_target_network_information_UDP(fromServerId, dataId,  asio::ip::address_v4::from_string(*serverDescriptions[toServerId-1]->TransportProtocols.UDP_IPv4->Control->host).to_uint(), *serverDescriptions[toServerId-1]->TransportProtocols.UDP_IPv4->Control->port);
             numOfCmd[toServerId] += 4;
         }
     }
@@ -135,13 +135,13 @@ void DcpMaster::configure() {
         return;
     }
     for(size_t i=0; i<serverDescriptions.size(); ++i) {
-        manager->STC_configure(u_char(i+1), DcpState::PREPARED);
+        mpManager->STC_configure(u_char(i+1), DcpState::PREPARED);
     }
 }
 
 void DcpMaster::run(DcpState currentState, uint8_t sender) {
     std::time_t now = std::time(nullptr);
-    manager->STC_run(sender, currentState, now + 2);
+    mpManager->STC_run(sender, currentState, now + 2);
 }
 
 void DcpMaster::doStep() {
@@ -151,7 +151,7 @@ void DcpMaster::doStep() {
     }
     serversWaitingForStep = 0;
     for(size_t i=0; i<serverDescriptions.size(); ++i) {
-        manager->STC_do_step(u_char(i+1),DcpState::RUNNING,1);
+        mpManager->STC_do_step(u_char(i+1),DcpState::RUNNING,1);
     }
 
     (*mpSystem->getTimePtr()) += mComStep;
@@ -161,7 +161,7 @@ void DcpMaster::stop() {
     std::chrono::seconds dura(1);
     std::this_thread::sleep_for(dura);
     for(size_t i=0; i<serverDescriptions.size(); ++i) {
-        manager->STC_stop(u_char(i+1), DcpState::RUNNING);
+        mpManager->STC_stop(u_char(i+1), DcpState::RUNNING);
     }
 }
 
@@ -171,19 +171,19 @@ void DcpMaster::deregister() {
         return;
     }
     for(size_t i=0; i<serverDescriptions.size(); ++i) {
-        manager->STC_deregister(u_char(i+1), DcpState::STOPPED);
+        mpManager->STC_deregister(u_char(i+1), DcpState::STOPPED);
     }
 }
 
 void DcpMaster::sendOutputs(DcpState currentState, uint8_t sender) {
-    manager->STC_send_outputs(sender, currentState);
+    mpManager->STC_send_outputs(sender, currentState);
 }
 
 void DcpMaster::receiveAck(uint8_t sender, uint16_t pduSeqId) {
     (void)pduSeqId;
     receivedAcks[sender]++;
     if (receivedAcks[sender] == numOfCmd[sender]) {
-        manager->STC_prepare(sender, DcpState::CONFIGURATION);
+        mpManager->STC_prepare(sender, DcpState::CONFIGURATION);
     }
 }
 
@@ -261,7 +261,7 @@ void DcpMaster::receiveStateChangedNotification(uint8_t sender,
                 return;
             }
             std::cout << "Stopping master manager\n";
-            manager->stop();
+            mpManager->stop();
             break;
 
         case DcpState::ALIVE:

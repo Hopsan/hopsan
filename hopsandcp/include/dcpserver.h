@@ -38,8 +38,8 @@ private:
     int mPort = 8080;
     size_t mNumLogSamples = 0;
     DcpManagerSlave *mManager;
-    OstreamLog *stdLog;
-    UdpDriver* udpDriver;
+    OstreamLog *mpStdLog;
+    UdpDriver* mpDriver;
     double mSimulationTime=0;
 
     void configure();
