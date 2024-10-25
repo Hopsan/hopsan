@@ -1665,6 +1665,26 @@ void SystemObject::paste(CopyStack *xmlStack)
         }
     };
 
+    // Paste system parameters
+    QDomElement parElement = copyRoot->firstChildElement(hmf::parameter::root);
+    while(!parElement.isNull())
+    {
+        QString name = parElement.attribute(hmf::name);
+        if(!getParameterNames().contains(name))
+        {
+            QString value = parElement.attribute(hmf::value);
+            QString type = parElement.attribute(hmf::type);
+            QString quantityORunit = parElement.attribute(hmf::quantity, parElement.attribute(hmf::unit));
+            QString description = parElement.attribute(hmf::modelinfo::description);
+            bool internal = parseAttributeBool(parElement, hmf::internal, false);
+
+            CoreParameterData parData = CoreParameterData(name, value, type, quantityORunit, "", description, internal);
+            setOrAddParameter(parData);
+            didPaste = true;
+        }
+        parElement = parElement.nextSiblingElement(hmf::parameter::root);
+    }
+
     // Paste Components and Systems
     pasteComponentOrSystem(hmf::component);
     pasteComponentOrSystem(hmf::system);
@@ -1746,26 +1766,6 @@ void SystemObject::paste(CopyStack *xmlStack)
             mpUndoStack->registerMovedWidget(pWidget, prevPos, pWidget->pos());
         }
         imageElement = imageElement.nextSiblingElement(hmf::widget::imagewidget);
-    }
-
-    // Paste system parameters
-    QDomElement parElement = copyRoot->firstChildElement(hmf::parameter::root);
-    while(!parElement.isNull())
-    {
-        QString name = parElement.attribute(hmf::name);
-        if(!getParameterNames().contains(name))
-        {
-            QString value = parElement.attribute(hmf::value);
-            QString type = parElement.attribute(hmf::type);
-            QString quantityORunit = parElement.attribute(hmf::quantity, parElement.attribute(hmf::unit));
-            QString description = parElement.attribute(hmf::modelinfo::description);
-            bool internal = parseAttributeBool(parElement, hmf::internal, false);
-
-            CoreParameterData parData = CoreParameterData(name, value, type, quantityORunit, "", description, internal);
-            setOrAddParameter(parData);
-            didPaste = true;
-        }
-        parElement = parElement.nextSiblingElement(hmf::parameter::root);
     }
 
     if (didPaste) {
