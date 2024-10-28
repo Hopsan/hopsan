@@ -745,7 +745,7 @@ bool ParameterEvaluatorHandler::setParameter(const HString &rName, const HString
 //! @return true if success, otherwise false
 bool ParameterEvaluatorHandler::setParameterValue(const HString &rName, const HString &rValue, bool force)
 {
-    return setParameter(rName, rValue, "", "", "", "", force);
+    return setParameter(rName, rValue, "", "", "", "", false, force);
 }
 
 
