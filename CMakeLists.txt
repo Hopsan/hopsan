@@ -8,7 +8,6 @@ if (POLICY CMP0079)
 endif()
 
 set(HOPSANCORE_INSTALL_DST "HopsanCore")
-message(WARNING "Hopsan CMake support is still experimental, but should be  working for for GCC / MinGW and limited MSVC build")
 
 include(CheckCXXCompilerFlag)
 if (MINGW)
