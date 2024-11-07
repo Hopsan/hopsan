@@ -1,8 +1,6 @@
 #!/bin/bash
-# $Id$
 
 # Shell script for building DEB packages of hopsan for multiple distributions using pbuilder
-# Author: Peter Nordin peter.nordin@liu.se
 
 set -u
 #set -e
@@ -139,10 +137,6 @@ if [[ ${hopsancode_url} == file://${hopsancode_root} ]]; then
 fi
 
 echo
-boolAskYNQuestion "Do you want the defaultComponentLibrary to be build in?" n
-readonly doBuildInComponents=${boolYNQuestionAnswer}
-
-echo
 distArchArrayDo=()
 for i in "${debianDistArchArray[@]}"; do
   boolAskYNQuestion "Do you want to build, $i?" n
@@ -157,7 +151,6 @@ echo
 echo -------------------------------------------------
 echo This is a DEVELOPMENT release: ${doDevRelease}
 echo Release baseversion number: ${baseversion}
-echo Built in components: ${doBuildInComponents}
 echo URL to clone: ${hopsancode_url}
 echo Branch to clone: ${branch_or_tag_to_clone}
 echo
@@ -245,7 +238,7 @@ cp -r ${tmp_stage_directory} ${stage_directory}
 readonly hopsancode_gitwc=${stage_directory}
 ${stage_directory}/packaging/prepareSourceCode.sh ${hopsancode_gitwc} ${stage_directory} \
                                                   ${baseversion} ${releaserevision} ${fullversionname} \
-                                                  ${doDevRelease} ${doBuildInComponents}
+                                                  ${doDevRelease}
 # Download dependencies, since that can not be done inside a pbuilder environment
 # Unfortunately all dependencies must be downloaded since we can not know at this point which of them will be used
 pushd ${stage_directory}/dependencies > /dev/null
