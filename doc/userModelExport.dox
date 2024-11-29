@@ -64,6 +64,8 @@ Hopsan models can be exported to FMUs by clicking on the Export to FMU button. T
 
 \subsection export-fmu-compatibility Compatibility
 
+Note: Hopsan uses the fmi4c library for FMI import. Compatibility for importing FMUs is thus also applicable on the fmi4c library itself.
+
 Example FMUs exported from Hopsan are available at https://github.com/Hopsan/example-fmus/. All example FMUs have been verified with the FMU Check tool available at https://fmu-check.herokuapp.com/.
 
 FMUs exported from Hopsan have been successfully imported and simulated in the following importing tools:
@@ -71,7 +73,7 @@ FMUs exported from Hopsan have been successfully imported and simulated in the f
 <table>
 <caption id="multi_row">Compatibility with importing tools</caption>
 <tr><th>tool        <th>FMI 1.0                    <th> FMI 2.0                  <th> FMI 3.0
-<tr><td>Hopsan      <td> \emoji :heavy_check_mark: <td>\emoji :heavy_check_mark: <td> \emoji :heavy_check_mark:
+<tr><td>Hopsan/fmi4c<td> \emoji :heavy_check_mark: <td>\emoji :heavy_check_mark: <td> \emoji :heavy_check_mark:
 <tr><td>OMSimulator <td> \emoji :heavy_check_mark: <td>\emoji :heavy_check_mark: <td> \emoji :heavy_check_mark:
 <tr><td>Adams       <td>                           <td>\emoji :heavy_check_mark: <td>
 <tr><td>AMESim      <td>                           <td>\emoji :heavy_check_mark: <td>
@@ -110,7 +112,7 @@ FMUs from the following tools have successfully been imported and simulated in H
 <table>
 <caption id="multi_row">Compatibility with FMUs exported from other tools</caption>
 <tr><th>tool         <th>FMI 1.0                    <th> FMI 2.0                  <th> FMI 3.0
-<tr><td>Hopsan       <td> \emoji :heavy_check_mark: <td>\emoji :heavy_check_mark: <td> \emoji :heavy_check_mark:
+<tr><td>Hopsan/fmi4c <td> \emoji :heavy_check_mark: <td>\emoji :heavy_check_mark: <td> \emoji :heavy_check_mark:
 <tr><td>OpenModelica <td>                           <td>\emoji :heavy_check_mark: <td>
 <tr><td>Dymola       <td>                           <td>\emoji :heavy_check_mark: <td>
 <tr><td>Simulink     <td>                           <td>\emoji :heavy_check_mark: <td>
