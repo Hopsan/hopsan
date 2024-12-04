@@ -5,13 +5,14 @@ if(WIN32)
   set(CMAKE_SHARED_LIBRARY_PREFIX "")
 endif()
 
-set(CMAKE_AUTOMOC ON)
+include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/dcplib.cmake)
+#include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/xerces.cmake)
 
-# include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/xerces.cmake)
 # include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/libzip.cmake)
 # include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/zlib.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/libzip.cmake)
 #include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/zlib.cmake)
+
+#include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/libzip.cmake)
 
 # Find source code
 file(GLOB_RECURSE srcfiles src/*.cpp)
@@ -24,22 +25,23 @@ add_library(hopsandcp STATIC ${srcfiles} ${headerfiles})
 target_include_directories(hopsandcp PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../HopsanCore/include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/dcplib-code/include/bluetooth>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/dcplib-code/include/core>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/dcplib-code/include/ethernet>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/dcplib-code/include/master>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/dcplib-code/include/slave>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/dcplib-code/include/xml>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/dcplib-code/include/zip>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/libzip/include>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/asio-code/include>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/xerces/include>
+  # $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/dcplib-code/include/bluetooth>
+  # $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/dcplib-code/include/core>
+  # $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/dcplib-code/include/ethernet>
+  # $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/dcplib-code/include/master>
+  # $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/dcplib-code/include/slave>
+  # $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/dcplib-code/include/xml>
+  # $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/dcplib-code/include/zip>
+  #$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/libzip/include>
+  #$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/asio-code/include>
+  #$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/xerces/include>
   $<INSTALL_INTERFACE:include>)
 
-if(WIN32)
-    target_link_libraries(hopsandcp hopsancore libzip -lws2_32)
-else()
-    target_link_libraries(hopsandcp hopsancore libzip)
+target_link_libraries(hopsandcp hopsancore DCPLib::Master DCPLib::Slave DCPLib::Zip DCPLib::Ethernet)
+if(WIN32 AND MINGW)
+    target_link_libraries(hopsandcp -lws2_32)
+elseif(WIN32 AND MSVC)
+    target_link_libraries(hopsandcp ws2_32)
 endif()
 
 target_compile_definitions(hopsandcp PUBLIC LOGGING=ON)
