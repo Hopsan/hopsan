@@ -12,14 +12,17 @@ endif()
 
 if (ZeroMQ_FOUND)
   message(STATUS "Building with ZeroMQ support")
-  target_compile_definitions(libzmq INTERFACE USEZMQ)
+  #target_compile_definitions(libzmq INTERFACE USEZMQ)
+  set_target_properties(libzmq PROPERTIES INTERFACE_COMPILE_DEFINITIONS USEZMQ) # Set as target property for compatibility with old CMake
 elseif(zmq_FOUND)
   message(STATUS "Building with ZeroMQ support (found by PkgConfig)")
   if (NOT TARGET libzmq)
     add_library(libzmq INTERFACE)
   endif()
-  target_link_libraries(libzmq INTERFACE PkgConfig::zmq)
-  target_compile_definitions(libzmq INTERFACE USEZMQ)
+  #target_link_libraries(libzmq INTERFACE PkgConfig::zmq)
+  #target_compile_definitions(libzmq INTERFACE USEZMQ)
+  set_target_properties(libzmq PROPERTIES INTERFACE_LINK_LIBRARIES PkgConfig::zmq
+                                          INTERFACE_COMPILE_DEFINITIONS USEZMQ) # Set as target property for compatibility with old CMake
 else()
   message(WARNING "Building without ZeroMQ support")
 endif()
