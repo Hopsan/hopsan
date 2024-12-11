@@ -33,9 +33,9 @@ build_script:
   - cd ..
   - mkdir build
   - cd build
-  - qmake.exe ..\HopsanNG.pro -r -spec win32-g++ CONFIG+=release
+  - cmake -G"MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release ..\
+  - cmake --build . --config Release --parallel 6
   - cd ..
-  - mingw32-make.exe -j6 -C build
   - dir bin
 test_script:
   - runUnitTests.bat
