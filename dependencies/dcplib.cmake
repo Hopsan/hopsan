@@ -9,7 +9,12 @@ find_package(Threads)
 find_package(ICU MODULE COMPONENTS uc data)
 find_package(XercesC CONFIG PATHS ${local_xerces_dir} NO_DEFAULT_PATH)
 find_package(libzip CONFIG PATHS ${local_libzip_dir} NO_DEFAULT_PATH)
-add_library(ZIP::ZIP ALIAS libzip::zip)
+
+#add_library(ZIP::ZIP ALIAS libzip::zip)
+# add alias compatible with older cmake versions
+add_library(ZIP::ZIP INTERFACE IMPORTED)
+set_target_properties(ZIP::ZIP PROPERTIES INTERFACE_LINK_LIBRARIES libzip::zip)
+
 # TODO Use proper ASIO lookup and installation
 add_library(ASIO::ASIO INTERFACE IMPORTED)
 set_target_properties(ASIO::ASIO PROPERTIES
