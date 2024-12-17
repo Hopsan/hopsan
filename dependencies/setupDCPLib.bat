@@ -8,6 +8,8 @@ set codedir=%basedir%\%name%-code
 set builddir=%basedir%\%name%-build
 set installdir=%basedir%\%name%
 
+call setHopsanBuildPaths.bat
+
 if "%HOPSAN_BUILD_COMPILER%" == "mingw" (
   echo Setting up MinGW expected paths
   set xerces_lib=%basedir:\=/%xerces/bin/libxerces-c.dll
@@ -20,9 +22,9 @@ if "%HOPSAN_BUILD_COMPILER%" == "mingw" (
   set zip_lib=%basedir%\libzip\lib\zip.lib
 )
 
-call setHopsanBuildPaths.bat
-
+set PATH=%PATH_WITH_MSYS%
 patch.exe --forward dcplib-code/include/core/dcp/model/pdu/IpToStr.hpp dcplib-patch.txt
+set PATH=%PATH_WITHOUT_MSYS%
 
 mkdir %builddir%
 cd %builddir%
