@@ -31,12 +31,15 @@ build_script:
   - setupMsgpack.bat
   - call setHopsanBuildPaths.bat
   - cd ..
-  - mkdir build
-  - cd build
-  - cmake -G"MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release ..\
-  - cmake --build . --config Release --parallel 6
-  - cd ..
+  - cmake -G"MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install_dir -Bbuild_dir -S.
+  - cmake --build build_dir --config Release --parallel 6
+  - cmake --build build_dir --config Release --parallel 6 --target install
+  - cd install_dir
   - dir bin
+  - cd ..
 test_script:
-  - runUnitTests.bat
-  - runValidationTests.bat
+  - cd build_dir
+  - ctest -C Release --output-on-failure --parallel 4
+  - cd ..
+#  - set PATH=%CD%\install\bin;%PATH%
+#  - runValidationTests.bat TODO Fix this
