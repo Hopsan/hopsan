@@ -12,7 +12,8 @@ endif()
 
 if (Hdf5_FOUND)
   message(STATUS "Building with HDF5 support")
-  target_compile_definitions(hdf5::hdf5-shared INTERFACE USEHDF5)
+  #target_compile_definitions(hdf5::hdf5-shared INTERFACE USEHDF5)
+  set_target_properties(hdf5::hdf5-shared PROPERTIES INTERFACE_COMPILE_DEFINITIONS USEHDF5) # Set as target property for compatibility with old CMake
 elseif(HDF5_FOUND)
   # Repackage results from FindHDF5 Module as target
   message(STATUS "Building with HDF5 support")
@@ -22,13 +23,14 @@ elseif(HDF5_FOUND)
     set_target_properties(module_hdf5-shared PROPERTIES
       INTERFACE_LINK_LIBRARIES "${HDF5_C_LIBRARIES}"
       INTERFACE_INCLUDE_DIRECTORIES "${HDF5_C_INCLUDE_DIRS}"
-      INTERFACE_COMPILE_DEFINITIONS "${HDF5_c_DEFINITIONS}")
+      INTERFACE_COMPILE_DEFINITIONS "${HDF5_C_DEFINITIONS}")
     add_library(hdf5::hdf5-shared ALIAS module_hdf5-shared)
     set_target_properties(module_hdf5_cpp-shared PROPERTIES
       INTERFACE_LINK_LIBRARIES "${HDF5_CXX_LIBRARIES}"
       INTERFACE_INCLUDE_DIRECTORIES "${HDF5_CXX_INCLUDE_DIRS}"
       INTERFACE_COMPILE_DEFINITIONS "${HDF5_CXX_DEFINITIONS}")
-    target_compile_definitions(module_hdf5_cpp-shared INTERFACE USEHDF5)
+    #target_compile_definitions(module_hdf5_cpp-shared INTERFACE USEHDF5)
+    set_target_properties(module_hdf5_cpp-shared PROPERTIES INTERFACE_COMPILE_DEFINITIONS USEHDF5) # Set as target property for compatibility with old CMake
     add_library(hdf5::hdf5_cpp-shared ALIAS module_hdf5_cpp-shared)
   endif()
 else()

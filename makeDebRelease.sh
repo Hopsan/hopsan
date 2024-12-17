@@ -1,8 +1,6 @@
 #!/bin/bash
-# $Id$
 
 # Shell script for building DEB packages of hopsan for multiple distributions using pbuilder
-# Author: Peter Nordin peter.nordin@liu.se
 
 set -u
 #set -e
@@ -139,10 +137,6 @@ if [[ ${hopsancode_url} == file://${hopsancode_root} ]]; then
 fi
 
 echo
-boolAskYNQuestion "Do you want the defaultComponentLibrary to be build in?" n
-readonly doBuildInComponents=${boolYNQuestionAnswer}
-
-echo
 distArchArrayDo=()
 for i in "${debianDistArchArray[@]}"; do
   boolAskYNQuestion "Do you want to build, $i?" n
@@ -157,7 +151,6 @@ echo
 echo -------------------------------------------------
 echo This is a DEVELOPMENT release: ${doDevRelease}
 echo Release baseversion number: ${baseversion}
-echo Built in components: ${doBuildInComponents}
 echo URL to clone: ${hopsancode_url}
 echo Branch to clone: ${branch_or_tag_to_clone}
 echo
@@ -176,23 +169,42 @@ echo
 #
 outputDir=${hopsancode_root}/output_deb
 outputDebDir=${outputDir}/debs
+# If a persistent cache dir for hopsan dependencies dowloads exists in the "workspace" then prefer it over loca cache that will be removed by git clean
+if [[ -d ${hopsancode_root}/../hopsan-dependencies-cache ]]; then
+    readonly dependencies_cache=${hopsancode_root}/../hopsan-dependencies-cache
+else
+    readonly dependencies_cache=${outputDir}/dependencies-cache
+fi
 readonly tmp_stage_directory=${outputDir}/hopsan-stage
 
 mkdir -p ${outputDebDir}
 mkdir -p ${pbuilderWorkDir}
+mkdir -p ${dependencies_cache}
 pushd ${outputDir} > /dev/null
 
 # -----------------------------------------------------------------------------
 # Clone source code to ensure a clean build
 #
-echo Cloning from ${hopsancode_url} into ${tmp_stage_directory}
-rm -rf ${tmp_stage_directory}
-git clone -b ${branch_or_tag_to_clone} --depth 1 ${hopsancode_url} ${tmp_stage_directory}
-if [[ $? -ne 0 ]]; then
-    echo Error: Failed to clone from ${hopsancode_url}
-    exit 1
+echo "Cloning from ${hopsancode_url} into ${tmp_stage_directory}"
+if [[ -d ${tmp_stage_directory} ]]; then
+    echo "Reusing: ${tmp_stage_directory} as in exists, resetting --hard and clean -ffdx"
+    pushd ${tmp_stage_directory} > /dev/null
+    git remote set-url origin ${hopsancode_url}
+    git fetch --all --prune
+    git reset --hard origin/${branch_or_tag_to_clone}
+    git clean -ffdx
+    popd > /dev/null
+else
+    #rm -rf ${tmp_stage_directory}
+    git clone -b ${branch_or_tag_to_clone} --depth 1 ${hopsancode_url} ${tmp_stage_directory}
+    if [[ $? -ne 0 ]]; then
+        echo Error: Failed to clone from ${hopsancode_url}
+        exit 1
+    fi
 fi
 pushd ${tmp_stage_directory} > /dev/null
+echo "Updaing git submodules"
+git submodule sync
 git submodule update --init --recommend-shallow
 if [[ $? -ne 0 ]]; then
     echo Error: Failed to clone submodules from git
@@ -217,7 +229,8 @@ readonly packageorigsrcfile=${outputfile_basename}.orig.tar.gz
 readonly package_dirname=${name}-${fullversionname}
 
 stage_directory=${tmp_stage_directory}-${fullversionname}
-mv ${tmp_stage_directory} ${stage_directory}
+rm -rf ${stage_directory} # Cleanup unlikely leftovers
+cp -r ${tmp_stage_directory} ${stage_directory}
 
 # -----------------------------------------------------------------------------
 # Prepare source code inside stage directory and package it into original source package
@@ -225,11 +238,11 @@ mv ${tmp_stage_directory} ${stage_directory}
 readonly hopsancode_gitwc=${stage_directory}
 ${stage_directory}/packaging/prepareSourceCode.sh ${hopsancode_gitwc} ${stage_directory} \
                                                   ${baseversion} ${releaserevision} ${fullversionname} \
-                                                  ${doDevRelease} ${doBuildInComponents}
+                                                  ${doDevRelease}
 # Download dependencies, since that can not be done inside a pbuilder environment
 # Unfortunately all dependencies must be downloaded since we can not know at this point which of them will be used
 pushd ${stage_directory}/dependencies > /dev/null
-./download-dependencies.py --all
+./download-dependencies.py --all --cache ${dependencies_cache}
 popd > /dev/null
 set +e
 # Remove .git directory and submodule files (if present) before packaging source code
