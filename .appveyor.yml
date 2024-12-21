@@ -1,9 +1,9 @@
 image:
-- Visual Studio 2017
+- Visual Studio 2019
 environment:
   HOPSAN_BUILD_SCRIPT_NOPAUSE: 1
-  HOPSAN_BUILD_QT_HOME: C:\Qt\5.12.6\mingw73_64
-  HOPSAN_BUILD_MINGW_HOME: C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64
+  HOPSAN_BUILD_QT_HOME: C:\Qt\5.15.2\mingw81_64
+  HOPSAN_BUILD_MINGW_HOME: C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64
 platform: x64
 configuration: Release
 install:
