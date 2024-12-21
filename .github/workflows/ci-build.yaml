@@ -99,8 +99,8 @@ jobs:
           ./setupTclap.sh
           ./setupFmi4c.sh
           ./setupXerces.sh
-          ./setupDCPLib.sh
           ./setupLibzip.sh
+          ./setupDCPLib.sh
 
       - name: Configure
         working-directory: hopsan-build
