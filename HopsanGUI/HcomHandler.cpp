@@ -1274,6 +1274,13 @@ void HcomHandler::createCommands()
     echoCmd.fnc = &HcomHandler::executeEchoCommand;
     mCmdList << echoCmd;
 
+    HcomCommand clearCmd;
+    clearCmd.cmd = "clear";
+    clearCmd.description.append("Clears terminal output");
+    clearCmd.help.append(" Usage: echo");
+    clearCmd.fnc = &HcomHandler::executeClearCommand;
+    mCmdList << clearCmd;
+
     HcomCommand editCmd;
     editCmd.cmd = "edit";
     editCmd.description.append("Open file in external editor");
@@ -5739,6 +5746,13 @@ void HcomHandler::executeEchoCommand(const QString cmd)
     {
         HCOMERR("Unknown argument, use \"on\" or \"off\"");
     }
+}
+
+void HcomHandler::executeClearCommand(const QString cmd)
+{
+    Q_UNUSED(cmd);
+    //mpConsole->clear();
+    qobject_cast<QTextEdit*>(mpConsole)->clear();
 }
 
 
