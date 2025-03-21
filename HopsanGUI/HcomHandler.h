@@ -466,4 +466,11 @@ public:
     HcomFunctionoidExists(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
     double operator()(QString &str, bool &ok);
 };
+
+class HcomFunctionoidCount : public HcomFunctionoid
+{
+public:
+    HcomFunctionoidCount(HcomHandler *pHandler) : HcomFunctionoid(pHandler) {}
+    double operator()(QString &str, bool &ok);
+};
 #endif // HCOMHANDLER_H
