@@ -423,6 +423,7 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     registerFunctionoid("minpar", new HcomFunctionoidMinPar(this), "Returns the minimum value of specified parameter for specified component type", "Usage: minpar(type,par)");
     registerFunctionoid("hg", new HcomFunctionoidHg(this), "Returns highest generation number", "Usage: hg()");
     registerFunctionoid("ans", new HcomFunctionoidAns(this), "Returns the answer from the previous computation", "Usage: ans()");
+    registerFunctionoid("count", new HcomFunctionoidCount(this), "Counts number of components in model with specified type name.", "Usage: count(typename)");
     createCommands();
 
     mLocalVars.insert("true",1);
@@ -9902,6 +9903,26 @@ double HcomFunctionoidExists::operator()(QString &str, bool &ok)
         return 1;
     }
     return 0;
+}
+
+
+//! @brief Function operator for the "count" functionoid
+double HcomFunctionoidCount::operator()(QString &str, bool &ok)
+{
+    ok = true;
+    int count = 0;
+    auto modelPtr = mpHandler->getModelPtr();
+    if(modelPtr) {
+        auto system = modelPtr->getTopLevelSystemContainer();
+        if(system) {
+            for(const auto &comp : system->getModelObjects()) {
+                if(comp->getTypeName() == str) {
+                    ++count;
+                }
+            }
+        }
+    }
+    return count;
 }
 
 
