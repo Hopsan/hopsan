@@ -6394,6 +6394,7 @@ void HcomHandler::evaluateExpression(QString expr, VariableType desiredType)
     funcMap.insert("atan", static_cast<ScalarMathFunction_t>(atan));
     funcMap.insert("log", static_cast<ScalarMathFunction_t>(log));
     funcMap.insert("log2", static_cast<ScalarMathFunction_t>(log2));
+    funcMap.insert("log10", static_cast<ScalarMathFunction_t>(log10));
     funcMap.insert("exp", static_cast<ScalarMathFunction_t>(exp));
     funcMap.insert("sqrt", static_cast<ScalarMathFunction_t>(sqrt));
     funcMap.insert("round", static_cast<ScalarMathFunction_t>(round));
