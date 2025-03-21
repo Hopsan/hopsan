@@ -599,10 +599,6 @@ void NumericalIntegrationSolver::solvevariableTimeStep()
         *mpStateVars = yorg;
         solveTrapezoidRule();
     }
-
-    //DEBUG
-    std::cout << "maxErr = " << maxErr << ", timestep = " << mpParentComponent->getTimestep() << "\n";
-    //END DEBUG
 }
 
 
