@@ -700,7 +700,6 @@ bool ParameterEvaluatorHandler::setParameter(const HString &rName, const HString
                                              const HString &rQuantity, const HString &rUnit, const HString &rType, const bool internal, const bool force)
 {
     bool success = false;
-    std::cout << "Setting hidden to " << internal << "\n";
 
     // Try to find the parameter among the existing parameters
     for(size_t i=0; i<mParameters.size(); ++i)
