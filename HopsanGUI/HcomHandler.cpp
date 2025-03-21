@@ -9898,10 +9898,15 @@ double HcomFunctionoidTime::operator()(QString &str, bool &ok)
 double HcomFunctionoidExists::operator()(QString &str, bool &ok)
 {
     ok = true;
-    if(mpHandler->getModelPtr()->getTopLevelSystemContainer()->hasModelObject(str))
-    {
-        return 1;
+    auto modelPtr = mpHandler->getModelPtr();
+    if(modelPtr) {
+        auto system = modelPtr->getTopLevelSystemContainer();
+        if(system && system->hasModelObject(str))
+        {
+            return 1;
+        }
     }
+
     return 0;
 }
 
