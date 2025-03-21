@@ -217,6 +217,7 @@ private:
     void executeOptimizationCommand(const QString cmd);
     void executeCallFunctionCommand(const QString cmd);
     void executeEchoCommand(const QString cmd);
+    void executeClearCommand(const QString cmd);
     void executeEditCommand(const QString cmd);
     void executeSetMultiThreadingCommand(const QString cmd);
     void executeLockAllAxesCommand(const QString cmd);
