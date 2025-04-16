@@ -41,6 +41,7 @@ private:
     OstreamLog *mpStdLog;
     UdpDriver* mpDriver;
     double mSimulationTime=0;
+    double mStepTime = 0.01; //! @todo Make adjustable!
 
     void configure();
     void initialize();

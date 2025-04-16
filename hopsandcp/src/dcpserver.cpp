@@ -124,7 +124,7 @@ std::shared_ptr<SlaveDescription_t> DcpServer::createServerDescription() {
     serverDescription.OpMode.NonRealTime = make_NonRealTime_ptr();
     Resolution_t resolution = make_Resolution();
     resolution.numerator = 1;
-    resolution.denominator = denominator_t(1.0/mpRootSystem->getTimestep());
+    resolution.denominator = denominator_t(1.0/mStepTime);
     resolution.fixed = false;
     serverDescription.TimeRes.resolutions.push_back(resolution);
     serverDescription.TransportProtocols.UDP_IPv4 = make_UDP_ptr();
@@ -262,7 +262,7 @@ void DcpServer::doStep(uint64_t steps) {
     }
 
     //Simulate
-    mSimulationTime += steps*mpRootSystem->getTimestep();
+    mSimulationTime += steps*mStepTime;
     mpRootSystem->simulate(mSimulationTime);
 
      // Write outputs
@@ -272,8 +272,9 @@ void DcpServer::doStep(uint64_t steps) {
     }
 }
 
-void DcpServer::setTimeRes(const uint32_t numerator, const uint32_t denominator) {
-    mpRootSystem->setDesiredTimestep(double(numerator)/double(denominator));
+void DcpServer::setTimeRes(const uint32_t numerator, const uint32_t denominator)
+{
+    //! @todo Maybe implement if needed?
 }
 
 void DcpServer::stop()
