@@ -2,19 +2,24 @@
 
 
 HEADERS +=  \
- $${PWD}/Connectivity/Connectivity.h \ 
+ $${PWD}/Connectivity/Connectivity.h \
  $${PWD}/Connectivity/ElectricInterfaceC.hpp \ 
  $${PWD}/Connectivity/ElectricInterfaceQ.hpp \ 
+ $${PWD}/Connectivity/ElectricInterfaceTLM.hpp \
  $${PWD}/Connectivity/HydraulicInterfaceC.hpp \ 
  $${PWD}/Connectivity/HydraulicInterfaceQ.hpp \ 
+ $${PWD}/Connectivity/HydraulicInterfaceTLM.hpp \
  $${PWD}/Connectivity/MechanicInterfaceC.hpp \ 
  $${PWD}/Connectivity/MechanicInterfaceQ.hpp \ 
+ $${PWD}/Connectivity/MechanicInterfaceTLM.hpp \
  $${PWD}/Connectivity/MechanicRotationalInterfaceC.hpp \ 
  $${PWD}/Connectivity/MechanicRotationalInterfaceQ.hpp \ 
+ $${PWD}/Connectivity/MechanicRotationalInterfaceTLM.hpp \
  $${PWD}/Connectivity/PetriNetInterfaceC.hpp \ 
  $${PWD}/Connectivity/PetriNetInterfaceQ.hpp \ 
  $${PWD}/Connectivity/PneumaticInterfaceC.hpp \ 
  $${PWD}/Connectivity/PneumaticInterfaceQ.hpp \ 
+ $${PWD}/Connectivity/PneumaticInterfaceTLM.hpp \
  $${PWD}/Connectivity/SignalInputInterface.hpp \ 
  $${PWD}/Connectivity/SignalOutputInterface.hpp \ 
  $${PWD}/Connectivity/FMIWrapper.hpp \
