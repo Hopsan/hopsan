@@ -260,7 +260,6 @@ void DcpMaster::receiveStateChangedNotification(uint8_t sender,
             if(serversWaitingToStop < serverDescriptions.size()) {
                 return;
             }
-            std::cout << "Stopping master manager\n";
             mpManager->stop();
             break;
 
