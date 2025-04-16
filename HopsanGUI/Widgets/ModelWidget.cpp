@@ -743,10 +743,14 @@ bool ModelWidget::simulateDcpServer()
     QDialog */*pDcpServerDialog*/pDialog = new QDialog(gpMainWindowWidget);
     QGridLayout */*pDcpServerDialogLayout*/pLayout = new QGridLayout(pDialog);
     QLineEdit *pHostLineEdit = new QLineEdit("127.0.0.1",pDialog);
+
     QSpinBox *pPortSpinBox = new QSpinBox(pDialog);
     pPortSpinBox->setMaximum(1000000);
     pPortSpinBox->setValue(8080);
     pPortSpinBox->setSingleStep(1);
+
+    QLineEdit *pCommunicationStepLineEdit = new QLineEdit(getTimeStep(), pDialog);
+    pCommunicationStepLineEdit->setValidator(new QDoubleValidator());
     QLineEdit *pTargetFileLineEdit = new QLineEdit(gpDesktopHandler->getDocumentsPath()+"/"+getTopLevelSystemContainer()->getModelFileInfo().baseName()+".dcp");
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(pDialog);
     QPushButton *pOkButton = pButtonBox->addButton(QDialogButtonBox::Ok);
@@ -757,9 +761,11 @@ bool ModelWidget::simulateDcpServer()
     pLayout->addWidget(pHostLineEdit,0,1,1,2);
     pLayout->addWidget(new QLabel("Port:",pDialog),1,0);
     pLayout->addWidget(pPortSpinBox,1,1,1,2);
-    pLayout->addWidget(new QLabel("XML output file:",pDialog),2,0);
-    pLayout->addWidget(pTargetFileLineEdit,2,1,1,2);
-    pLayout->addWidget(pButtonBox, 3,1,1,3);
+    pLayout->addWidget(new QLabel("Communication step:", pDialog),2,0);
+    pLayout->addWidget(pCommunicationStepLineEdit,2,1,1,2);
+    pLayout->addWidget(new QLabel("XML output file:",pDialog),3,0);
+    pLayout->addWidget(pTargetFileLineEdit,3,1,1,2);
+    pLayout->addWidget(pButtonBox, 4,1,1,3);
 
     if(pDialog->exec() == QDialog::Rejected) {
         return false;
@@ -774,7 +780,7 @@ bool ModelWidget::simulateDcpServer()
     mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getLogStartTime(), mpToplevelSystem->getNumberOfLogSamples());
     mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
     mSimulationProgress=0;
-    mpSimulationThreadHandler->initSimulateFinalizeDcpServer(mpToplevelSystem, pHostLineEdit->text(), pPortSpinBox->value(), pTargetFileLineEdit->text());
+    mpSimulationThreadHandler->initSimulateFinalizeDcpServer(mpToplevelSystem, pHostLineEdit->text(), pPortSpinBox->value(), pCommunicationStepLineEdit->text().toDouble(), pTargetFileLineEdit->text());
 
     return true;
     //! @todo fix return code

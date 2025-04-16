@@ -353,11 +353,11 @@ void SimulationThreadHandler::initSimulateFinalizeDcpMaster(SystemObject *pSyste
 }
 
 
-void SimulationThreadHandler::initSimulateFinalizeDcpServer(SystemObject* pSystem, const QString &host, int port, const QString &targetFile)
+void SimulationThreadHandler::initSimulateFinalizeDcpServer(SystemObject* pSystem, const QString &host, int port, double communicationStep, const QString &targetFile)
 {
     mvpSystems.clear();
     mvpSystems.push_back(pSystem);
-    mpSimulationWorkerObject = new DcpServerSimulationWorkerObject(pSystem, host, port, targetFile);
+    mpSimulationWorkerObject = new DcpServerSimulationWorkerObject(pSystem, host, port, communicationStep, targetFile);
     mpSimulationWorkerObject->setMessageHandler(mpMessageHandler);
     initSimulateFinalizePrivate();
 }
@@ -585,18 +585,19 @@ void SimulationThreadHandler::setMessageHandler(GUIMessageHandler *pMessageHandl
     mpMessageHandler = pMessageHandler;
 }
 
-DcpServerSimulationWorkerObject::DcpServerSimulationWorkerObject(SystemObject *pSystem, const QString &host, int port, const QString &targetFile)
+DcpServerSimulationWorkerObject::DcpServerSimulationWorkerObject(SystemObject *pSystem, const QString &host, int port, double communicationStep, const QString &targetFile)
 {
     mpSystem = pSystem;
     mHost = host;
     mPort = port;
+    mCommunicationStep = communicationStep;
     mTargetFile = targetFile;
 }
 
 void DcpServerSimulationWorkerObject::initSimulateFinalize()
 {
     QTime timer;
-    DcpServer *pDcpServer = new DcpServer(mpSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), mHost.toStdString(), mPort, mpSystem->getNumberOfLogSamples());
+    DcpServer *pDcpServer = new DcpServer(mpSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), mHost.toStdString(), mPort, mCommunicationStep, mpSystem->getNumberOfLogSamples());
 
     // Initializing
     emit setProgressState(SimulationState::Initialize);

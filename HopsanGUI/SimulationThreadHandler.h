@@ -134,9 +134,10 @@ private:
     SystemObject *mpSystem;
     QString mHost;
     int mPort;
+    double mCommunicationStep;
     QString mTargetFile;
 public:
-    DcpServerSimulationWorkerObject(SystemObject *pSystem, const QString &host, int port, const QString &targetFile);
+    DcpServerSimulationWorkerObject(SystemObject *pSystem, const QString &host, int port, double communicationStep, const QString &targetFile);
     int swoType() const {return DcpServerSWO;}
 
 public slots:
@@ -231,7 +232,7 @@ public:
     void initSimulateFinalizeRemote(SharedRemoteCoreSimulationHandlerT pRCSH, QVector<RemoteResultVariable> *pRemoteResultVariables, double *pProgress);
 #endif
     void initSimulateFinalizeDcpMaster(SystemObject *pSystem, const QString &host, int port, bool realTime);
-    void initSimulateFinalizeDcpServer(SystemObject *pSystem, const QString &host, int port, const QString &targetFile);
+    void initSimulateFinalizeDcpServer(SystemObject *pSystem, const QString &host, int port, double communicationStep, const QString &targetFile);
     void initSimulateFinalize(QVector<SystemObject*> vpSystems, const bool noChanges=false);
     void initSimulateFinalize_blocking(QVector<SystemObject*> vpSystems, const bool noChanges=false);
     bool wasSuccessful();
