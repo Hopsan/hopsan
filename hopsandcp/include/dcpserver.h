@@ -20,7 +20,7 @@ class OstreamLog;
 HOPSANDCP_DLLAPI class DcpServer
 {
 public:
-    DcpServer(hopsan::ComponentSystem *pSystem, const std::string host, int port, size_t numLogSamples);
+    DcpServer(hopsan::ComponentSystem *pSystem, const std::string host, int port, double communicationStep, size_t numLogSamples);
     ~DcpServer();
 
     void generateDcpFile(std::string targetFile);
@@ -36,12 +36,12 @@ private:
     std::vector<double*> mInputDataPtrs, mOutputDataPtrs;
     std::string mHost = "127.0.0.1";
     int mPort = 8080;
+    double mCommunicationStep;
     size_t mNumLogSamples = 0;
     DcpManagerSlave *mManager;
     OstreamLog *mpStdLog;
     UdpDriver* mpDriver;
     double mSimulationTime=0;
-    double mStepTime = 0.01; //! @todo Make adjustable!
 
     void configure();
     void initialize();

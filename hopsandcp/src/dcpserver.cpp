@@ -30,8 +30,8 @@ const LogTemplate SIM_LOG = LogTemplate(
 
 using namespace hopsan;
 
-DcpServer::DcpServer(ComponentSystem *pSystem, const std::string host, int port, size_t numLogSamples)
-    : mpRootSystem(pSystem), mHost(host), mPort(port), mNumLogSamples(numLogSamples)
+DcpServer::DcpServer(ComponentSystem *pSystem, const std::string host, int port, double communicationStep, size_t numLogSamples)
+    : mpRootSystem(pSystem), mHost(host), mPort(port), mCommunicationStep(communicationStep), mNumLogSamples(numLogSamples)
 {
     //Generate list of inputs and outputs based on interface components
     for(const auto &component : pSystem->getSubComponents()) {
@@ -124,7 +124,7 @@ std::shared_ptr<SlaveDescription_t> DcpServer::createServerDescription() {
     serverDescription.OpMode.NonRealTime = make_NonRealTime_ptr();
     Resolution_t resolution = make_Resolution();
     resolution.numerator = 1;
-    resolution.denominator = denominator_t(1.0/mStepTime);
+    resolution.denominator = denominator_t(1.0/mCommunicationStep);
     resolution.fixed = false;
     serverDescription.TimeRes.resolutions.push_back(resolution);
     serverDescription.TransportProtocols.UDP_IPv4 = make_UDP_ptr();
@@ -261,7 +261,7 @@ void DcpServer::doStep(uint64_t steps)
     }
 
     //Simulate
-    mSimulationTime += steps*mStepTime;
+    mSimulationTime += steps*mCommunicationStep;
     mpRootSystem->simulate(mSimulationTime);
 
      // Write outputs
