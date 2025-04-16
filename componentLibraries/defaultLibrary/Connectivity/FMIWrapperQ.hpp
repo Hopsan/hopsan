@@ -230,6 +230,9 @@ private:
     HString mVisibleOutputs;
     double mTolerance = 1e-4;
     bool mLoggingOn = false;
+    bool mReinstantiate = false;
+    bool mIsInstantiated = false;
+
 
 public:
     static Component *Creator()
@@ -241,6 +244,7 @@ public:
     {
         addConstant("path", "Path to functional mockup unit (FMU)", mFmuPath);
         addConstant("portspecs", "Port specifications", "", mPortSpecs);
+        addConstant("reinstantiate", "Create a new FMU instance for every simulation", "", mReinstantiate, mReinstantiate);
         setReconfigurationParameter("path");
         setReconfigurationParameter("portspecs");
     }
@@ -258,7 +262,7 @@ public:
         std::vector<HString> parameters;
         this->getParameterNames(parameters);
         for(size_t i=0; i<parameters.size(); ++i) {
-            if(parameters[i] != "path" && parameters[i] != "portspecs") {
+            if(parameters[i] != "path" && parameters[i] != "portspecs" && parameters[i] != "reinstantiate") {
                 this->unRegisterParameter(parameters[i]);
             }
         }
@@ -499,15 +503,15 @@ public:
 
 
             //Instantiate FMU
-            printf("Hopsan: calling fmi1InstantiateSlave()...");
-            if(!fmi1_instantiateSlave(fmu, "application/x-fmu-sharedlibrary", 1000, fmi1False, fmi1False, FMIWrapperQ_fmi1Logger, calloc, free, NULL, mLoggingOn)) {
-                addErrorMessage("Hopsan: fmi1InstantiateSlave() failed!");
-                fmu = NULL;
-                return;
+            if(!mReinstantiate) {
+                addDebugMessage("Calling: fmi1InstantiateSlave");
+                if(!fmi1_instantiateSlave(fmu, "application/x-fmu-sharedlibrary", 1000, fmi1False, fmi1False, FMIWrapperQ_fmi1Logger, calloc, free, NULL, mLoggingOn)) {
+                    addErrorMessage("Hopsan: fmi1InstantiateSlave() failed!");
+                    fmu = NULL;
+                    return;
+                }
+                mIsInstantiated = true;
             }
-            printf("Hopsan: fmi1InstantiateSlave() was successful!\n");
-
-            printf("Variables: %i\n",fmi1_getNumberOfVariables(fmu));
 
             if(NULL == fmu) {
                 stopSimulation("Failed to instantiate FMU");
@@ -607,15 +611,15 @@ public:
 
 
             //Instantiate FMU
-            fmi2_instantiate(fmu, fmi2CoSimulation, FMIWrapperQ_fmi2Logger, calloc, free, NULL, (fmi2ComponentEnvironment*)this, fmi2False, mLoggingOn);
-
-            if(NULL == fmu) {
-                stopSimulation("Failed to instantiate FMU");
-                return;
+            if(!mReinstantiate) {
+                addDebugMessage("Calling: fmi2Instantiate");
+                if(!fmi2_instantiate(fmu, fmi2CoSimulation, FMIWrapperQ_fmi2Logger, calloc, free, NULL, (fmi2ComponentEnvironment*)this, fmi2False, mLoggingOn)) {
+                    stopSimulation("Failed to instantiate FMU");
+                    fmu = NULL;
+                    return;
+                }
+                mIsInstantiated = true;
             }
-
-            addInfoMessage("Successfully instantiated FMU");
-
         }
         else {//FMI 3
             if(fmi3_defaultToleranceDefined(fmu)) {
@@ -859,18 +863,17 @@ public:
             addConstant("visibleOutputs", "Visible output variables (hidden)", "", mVisibleOutputs, mVisibleOutputs);
 
             //Instantiate FMU
-            size_t nRequiredIntermediateVariables = 0;
-            fmi3_instantiateCoSimulation(fmu, fmi3False, mLoggingOn, fmi3False, fmi3False, NULL, nRequiredIntermediateVariables, this, FMIWrapperQ_fmi3Logger, FMIWrapperQ_fmi3IntermediateUpdate);
-
-            if (NULL == fmu) {
-                stopSimulation("Failed to instantiate FMU");
-                return;
+            if(!mReinstantiate) {
+                addDebugMessage("Calling: fmi3InstantiateCoSimulation");
+                size_t nRequiredIntermediateVariables = 0;
+                if(!fmi3_instantiateCoSimulation(fmu, fmi3False, mLoggingOn, fmi3False, fmi3False, NULL, nRequiredIntermediateVariables, this, FMIWrapperQ_fmi3Logger, FMIWrapperQ_fmi3IntermediateUpdate)) {
+                    stopSimulation("Failed to instantiate FMU");
+                    fmu = NULL;
+                    return;
+                }
+                mIsInstantiated = true;
             }
-
-            addInfoMessage("Successfully instantiated FMU");
-
         }
-
     }
 
     void initialize()
@@ -880,7 +883,16 @@ public:
                 stopSimulation("No FMU file loaded.");
                 return;
             }
-            addInfoMessage("Initializing FMU 1.0 import");
+
+            if(!mIsInstantiated) {
+                addDebugMessage("Calling: fmi1InstantiateSlave");
+                if(!fmi1_instantiateSlave(fmu, "application/x-fmu-sharedlibrary", 1000, fmi1False, fmi1False, FMIWrapperQ_fmi1Logger, calloc, free, NULL, mLoggingOn)) {
+                    addErrorMessage("Hopsan: fmi1InstantiateSlave() failed!");
+                    fmu = NULL;
+                    return;
+                }
+                mIsInstantiated = true;
+            }
 
             //Assign node data pointers
             HVector<HString> ports = mPortSpecs.split(';');
@@ -945,12 +957,12 @@ public:
             }
 
             //Enter initialization mode
+            addDebugMessage("Calling: fmi1InitializeSlave");
             status = fmi1_initializeSlave(fmu,mTime,fmi1False,0);
             if(status != fmi1OK) {
                 stopSimulation("fmi1InitializeSlave() failed");
                 return;
             }
-            addDebugMessage("Model initialized!");
         }
         else if(mFmiVersion == fmiVersion2) {
             if(fmu == NULL) {
@@ -958,7 +970,15 @@ public:
                 return;
             }
 
-            addInfoMessage("Initializing FMU 2.0 import");
+            if(!mIsInstantiated) {
+                addDebugMessage("Calling: fmi2Instantiate");
+                if(!fmi2_instantiate(fmu, fmi2CoSimulation, FMIWrapperQ_fmi2Logger, calloc, free, NULL, (fmi2ComponentEnvironment*)this, fmi2False, mLoggingOn)) {
+                    stopSimulation("Failed to instantiate FMU");
+                    fmu = NULL;
+                    return;
+                }
+                mIsInstantiated = true;
+            }
 
             //Assign node data pointers
             HVector<HString> ports = mPortSpecs.split(';');
@@ -1023,6 +1043,7 @@ public:
             }
 
             //Setup experiment
+            addDebugMessage("Calling: fmi2SetupExperiment");
             status = fmi2_setupExperiment(fmu, fmi2True, mTolerance, mTime, fmi2False, 0.0);
             if(status != fmi2OK) {
                 stopSimulation("fmi2_setupExperiment() failed");
@@ -1030,6 +1051,7 @@ public:
             }
 
             //Enter initialization mode
+            addDebugMessage("Calling: fmi2_enterInitializationMode");
             status = fmi2_enterInitializationMode(fmu);
             if(status != fmi2OK) {
                 stopSimulation("fmi2EnterInitializationMode() failed");
@@ -1037,6 +1059,7 @@ public:
             }
 
             //Exit initialization mode
+            addDebugMessage("Calling: fmi2_exitInitializationMode");
             status = fmi2_exitInitializationMode(fmu);
             if(status != fmi2OK) {
                 stopSimulation("fmi3ExitInitializationMode() failed");
@@ -1049,7 +1072,16 @@ public:
                 return;
             }
 
-            addInfoMessage("Initializing FMU 3.0 import");
+            if(!mIsInstantiated) {
+                addDebugMessage("Calling: fmi3InstantiateCoSimulation");
+                size_t nRequiredIntermediateVariables = 0;
+                if(!fmi3_instantiateCoSimulation(fmu, fmi3False, mLoggingOn, fmi3False, fmi3False, NULL, nRequiredIntermediateVariables, this, FMIWrapperQ_fmi3Logger, FMIWrapperQ_fmi3IntermediateUpdate)) {
+                    stopSimulation("Failed to instantiate FMU");
+                    fmu = NULL;
+                    return;
+                }
+                mIsInstantiated = true;
+            }
 
             HVector<HString> ports = mPortSpecs.split(';');
             for(size_t i=0; i<ports.size(); ++i) {
@@ -1170,13 +1202,15 @@ public:
 
             //Enter initialization mode
             double tstop = 10;
+            addDebugMessage("Calling: fmi3EnterInitializationMode");
             status = fmi3_enterInitializationMode(fmu, fmi3False, 0, mTime+mTimestep, fmi3True, tstop);
             if(status != fmi3OK) {
                 stopSimulation("fmi3EnterInitializationMode() failed");
                 return;
             }
 
-            //Exit initialization mode
+            //Exit initialization mode'
+            addDebugMessage("Calling: fmi3ExitInitializationMode");
             status = fmi3_exitInitializationMode(fmu);
             if(status != fmi3OK) {
                 stopSimulation("fmi3ExitInitializationMode() failed");
@@ -1404,19 +1438,52 @@ public:
             if(fmu == NULL) {
                 return;
             }
-            fmi1_resetSlave(fmu);
+            if(mReinstantiate)
+            {
+                addDebugMessage("Calling: fmi1Terminate");
+                fmi1_terminate(fmu);
+                addDebugMessage("Calling: fmi1FreeSlaveInstance");
+                mIsInstantiated = false;
+                fmi1_freeSlaveInstance(fmu);
+            }
+            else {
+                addDebugMessage("Calling: fmi1Reset");
+                fmi1_resetSlave(fmu);
+            }
         }
         else if(mFmiVersion == fmiVersion2) {
             if(fmu == NULL) {
                 return;
             }
-            fmi2_reset(fmu);
+            if(mReinstantiate) {
+                addDebugMessage("Calling: fmi2Terminate");
+                fmi2_terminate(fmu);
+                addDebugMessage("Calling: fmi2FreeInstance");
+                mIsInstantiated = false;
+                fmi2_freeInstance(fmu);
+            }
+            else {
+                addDebugMessage("Calling: fmi2Reset");
+                fmi2_reset(fmu);
+            }
+
         }
         else {
             if(fmu == NULL) {
                 return;
             }
-            fmi3_reset(fmu);
+            if(mReinstantiate) {
+                addDebugMessage("Calling: fmi3Terminate");
+                fmi3_terminate(fmu);
+                addDebugMessage("Calling: fmi3FreeInstance");
+                mIsInstantiated = false;
+                fmi3_freeInstance(fmu);
+            }
+            else {
+                addDebugMessage("Calling: fmi3Reset");
+                fmi3_reset(fmu);
+            }
+
         }
     }
 
@@ -1426,6 +1493,8 @@ public:
             if(NULL == fmu) {
                 return;
             }
+            addDebugMessage("Calling: fmi3FreeSlaveInstance");
+            mIsInstantiated = false;
             fmi1_freeSlaveInstance(fmu);
             fmi4c_freeFmu(fmu);
             fmu = NULL;
@@ -1434,6 +1503,8 @@ public:
             if(NULL == fmu) {
                 return;
             }
+            addDebugMessage("Calling: fmi2FreeInstance");
+            mIsInstantiated = false;
             fmi2_freeInstance(fmu);
             fmi4c_freeFmu(fmu);
             fmu = NULL;
@@ -1442,6 +1513,8 @@ public:
             if(NULL == fmu) {
                 return;
             }
+            addDebugMessage("Calling: fmi3FreeInstance");
+            mIsInstantiated = false;
             fmi3_freeInstance(fmu);
             fmi4c_freeFmu(fmu);
             fmu = NULL;
