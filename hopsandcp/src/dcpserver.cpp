@@ -249,13 +249,12 @@ void DcpServer::configure() {
     }
 }
 
-void DcpServer::initialize() {
-
-
+void DcpServer::initialize()
+{
 }
 
-void DcpServer::doStep(uint64_t steps) {
-
+void DcpServer::doStep(uint64_t steps)
+{
     // Read inputs
     for(size_t i=0; i<mInputs.size(); ++i) {
         *(mInputNodePtrs[i]) = *(mInputDataPtrs[i]);
@@ -268,7 +267,6 @@ void DcpServer::doStep(uint64_t steps) {
      // Write outputs
     for(size_t o=0; o<mOutputs.size(); ++o) {
         *(mOutputDataPtrs[o]) = *(mOutputNodePtrs[o]);
-        mManager->Log(SIM_LOG, mSimulationTime, *mOutputDataPtrs[o]);
     }
 }
 
