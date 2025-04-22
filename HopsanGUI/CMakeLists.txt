@@ -44,6 +44,7 @@ target_link_libraries(${target_name} Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Xml Qt
 if(UNIX)
 target_link_libraries(${target_name} Qt5::WebEngineWidgets)
 endif()
+
 target_link_optional_libraries(${target_name} libhopsanremoteclient hopsanhdf5exporter discount katex)
 
 set_target_properties(${target_name} PROPERTIES INSTALL_RPATH "\$ORIGIN/../lib")
