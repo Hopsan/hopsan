@@ -1015,21 +1015,26 @@ void PlotArea::dragMoveEvent(QDragMoveEvent *event)
 
 void PlotArea::dropEvent(QDropEvent *event)
 {
+    qDebug() << "DropEvent";
     // Don't accept drag events to FFT and Bode plots
     if( mpParentPlotTab->getPlotTabType() == XYPlotType )
     {
+        qDebug() << "Correct plot type";
         QWidget::dropEvent(event);
         mpPainterWidget->clearRect();
 
         if (event->mimeData()->hasText())
         {
+            qDebug() << "Has text";
             QString mimeText = event->mimeData()->text();
             if(mimeText.startsWith("HOPSANPLOTDATA:"))
             {
+                qDebug() << "Correct text";
                 qDebug() << mimeText;
                 QStringList fields = mimeText.split(":");
                 if (fields.size() > 3)
                 {
+                    qDebug() << "Correct size";
                     QString &name = fields[1];
                     QString &model = fields[3];
                     bool parseOk = false;
@@ -1048,10 +1053,12 @@ void PlotArea::dropEvent(QDropEvent *event)
                     }
                     if (pContainer)
                     {
+                        qDebug() << "Found container";
                         SharedVectorVariableT data = pContainer->getLogDataHandler()->getVectorVariable(name, gen);
                         // If we have found data then add it to the plot
                         if (data)
                         {
+                            qDebug() << "Found data";
                             QCursor cursor;
                             if(this->mapFromGlobal(cursor.pos()).y() > getQwtPlot()->canvas()->height()*2.0/3.0+getQwtPlot()->canvas()->y()+10 && getNumberOfCurves() >= 1)
                             {
