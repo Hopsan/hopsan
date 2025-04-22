@@ -981,7 +981,7 @@ void ModelWidget::importModelParametersFromSsv()
         if(componentName.isEmpty()) {                               //Set system parameter
             CoreParameterData parameter;
             pSystem->getParameter(parameterName, parameter);
-            if(ssv::dataTypeTranslator[parameter.mType] != ssvParameter.dataType) {
+            if(!parameter.mName.isEmpty() && ssv::dataTypeTranslator[parameter.mType] != ssvParameter.dataType) {
                 gpMessageHandler->addWarningMessage("Wrong data type for unit: \""+ssvParameter.name+"\", ignoring value. ("+ssv::dataTypeTranslator[parameter.mType]+" != "+ssvParameter.dataType+")");
             }
             else if(parameter.mType == ssv::datatype::real) {    //Handle units for "Real" type parameters only
@@ -1012,7 +1012,7 @@ void ModelWidget::importModelParametersFromSsv()
                 }
             }
             else {
-                pSystem->setParameterValue(parameterName, ssvParameter.value);   //Ignore units for non-Real parameters
+                pSystem->setOrAddParameter(parameter, true);   //Ignore units for non-Real parameters
             }
         }
         else {                               //Set component parameter

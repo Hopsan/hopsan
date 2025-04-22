@@ -98,6 +98,8 @@ public:
     TextEditorWidget *loadTextFile(QString scriptFileName);
     SimulationThreadHandler *mpSimulationThreadHandler;
 
+    void loadSsp(QString fileName);
+
 public slots:
     ModelWidget *addNewModel(QString modelName="Untitled", ModelHandler::LoadOptions options=NoLoadOptions);
     ModelWidget *addNewDcpModel();

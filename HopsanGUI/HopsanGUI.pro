@@ -39,6 +39,11 @@ isEqual(QT_MAJOR_VERSION, 5){
 TARGET = $${TARGET}$${DEBUG_EXT}
 
 #--------------------------------------------------------
+# Set the ssp4c paths
+include($${PWD}/../dependencies/ssp4c.pri)
+#--------------------------------------------------------
+
+#--------------------------------------------------------
 # Set the QWT paths
 include($${PWD}/../dependencies/qwt.pri)
 !have_qwt(){

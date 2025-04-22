@@ -58,6 +58,8 @@
 #include "Widgets/PlotWidget2.h"
 #include "Widgets/TextEditorWidget.h"
 #include "Utilities/GUIUtilities.h"
+#include "ssp4c.h"
+#include "ssp4c_ssd.h"
 
 #ifdef USEZMQ
 #include "RemoteSimulationUtils.h"
@@ -251,9 +253,14 @@ void ModelHandler::loadModel()
     QDir fileDialogOpenDir;
     QStringList modelFileNames = QFileDialog::getOpenFileNames(gpMainWindowWidget, tr("Choose Model File"),
                                                                gpConfig->getStringSetting(cfg::dir::loadmodel),
-                                                         tr("Hopsan Model Files (*.hmf *.xml)"));
+                                                         tr("Hopsan Model Files (*.hmf *.xml *.ssp)"));
     for(const QString &modelFileName : modelFileNames) {
-        loadModel(modelFileName);
+        if(QFileInfo(modelFileName).suffix() == "ssp") {
+            loadSsp(modelFileName);
+        }
+        else {
+            loadModel(modelFileName);
+        }
         QFileInfo fileInfo = QFileInfo(modelFileName);
         gpConfig->setStringSetting(cfg::dir::loadmodel, fileInfo.absolutePath());
     }
@@ -410,6 +417,26 @@ TextEditorWidget *ModelHandler::loadTextFile(QString fileName)
     connect(mpFileWatcher, SIGNAL(fileChanged(QString)), pNewEditor, SLOT(fileChanged(QString)));
 
     return pNewEditor;
+}
+
+void ModelHandler::loadSsp(QString fileName)
+{
+    sspHandle *ssp = ssp4c_loadSsp(fileName.toStdString().c_str());
+    int ssdCount = ssp4c_getNumberOfSsds(ssp);
+    for(int i=0; i<ssdCount; ++i) {
+        ssdHandle *ssd = ssp4c_getSsdByIndex(ssp,i);
+        qDebug() << "SSD filename: " << ssp4c_ssd_getFileName(ssd);
+        qDebug() << "SSD name: " << ssp4c_ssd_getName(ssd);
+        qDebug() << "SSD version: " << ssp4c_ssd_getVersion(ssd);
+        qDebug() << "SSD id: " << ssp4c_ssd_getId(ssd);
+        qDebug() << "SSD description: " << ssp4c_ssd_getDescription(ssd);
+        qDebug() << "SSD author: " << ssp4c_ssd_getAuthor(ssd);
+        qDebug() << "SSD fileversion: " << ssp4c_ssd_getFileversion(ssd);
+        qDebug() << "SSD copyright: " << ssp4c_ssd_getCopyright(ssd);
+        qDebug() << "SSD license: " << ssp4c_ssd_getLicense(ssd);
+        qDebug() << "SSD generationTool :" << ssp4c_ssd_getGenerationTool(ssd);
+        qDebug() << "SSD generationDateAndTime: " << ssp4c_ssd_getGenerationDateAndTime(ssd);
+    }
 }
 
 
