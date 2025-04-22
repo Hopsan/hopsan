@@ -61,9 +61,12 @@
 #include "Utilities/GUIUtilities.h"
 #include "ssp4c.h"
 #include "ssp4c_ssd.h"
+<<<<<<< HEAD
 #include "ssp4c_ssd_component.h"
 #include "ssp4c_ssd_connector.h"
 #include "ssp4c_ssd_connection.h"
+=======
+>>>>>>> 226b534b5 (SSP support (wip))
 
 #ifdef USEZMQ
 #include "RemoteSimulationUtils.h"
@@ -426,8 +429,11 @@ TextEditorWidget *ModelHandler::loadTextFile(QString fileName)
 void ModelHandler::loadSsp(QString fileName)
 {
     sspHandle *ssp = ssp4c_loadSsp(fileName.toStdString().c_str());
+<<<<<<< HEAD
 
     qDebug() << "SSP unzipped path: " << ssp4c_getUnzippedLocation(ssp);
+=======
+>>>>>>> 226b534b5 (SSP support (wip))
     int ssdCount = ssp4c_getNumberOfSsds(ssp);
     for(int i=0; i<ssdCount; ++i) {
         ssdHandle *ssd = ssp4c_getSsdByIndex(ssp,i);
@@ -442,6 +448,7 @@ void ModelHandler::loadSsp(QString fileName)
         qDebug() << "SSD license: " << ssp4c_ssd_getLicense(ssd);
         qDebug() << "SSD generationTool :" << ssp4c_ssd_getGenerationTool(ssd);
         qDebug() << "SSD generationDateAndTime: " << ssp4c_ssd_getGenerationDateAndTime(ssd);
+<<<<<<< HEAD
 
         addNewModel(ssp4c_ssd_getName(ssd));
 
@@ -508,6 +515,8 @@ void ModelHandler::loadSsp(QString fileName)
                 }
             }
         }
+=======
+>>>>>>> 226b534b5 (SSP support (wip))
     }
 }
 
