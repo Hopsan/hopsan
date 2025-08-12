@@ -2,7 +2,7 @@ name: ghactions-ci-build
 on: [pull_request]
 
 jobs:
-  cmake-msvc2019:
+  cmake-msvc2022:
     timeout-minutes: 30
     runs-on: windows-2025
     env:
