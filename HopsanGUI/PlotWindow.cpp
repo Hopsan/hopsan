@@ -42,6 +42,7 @@
 #include <QtGlobal>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QFileDialog>
 
 #include "global.h"
 #include "GUIObjects/GUIContainerObject.h"
@@ -58,6 +59,7 @@
 #include "version_gui.h"
 #include "ModelHandler.h"
 #include "Utilities/HelpPopUpWidget.h"
+#include "Utilities/XMLUtilities.h"
 
 #include "qwt_plot.h"
 
@@ -200,7 +202,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpSaveButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Save.svg"));
     mpSaveButton->setShortcut(QKeySequence("Ctrl+s"));
     connect(mpSaveButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
-    mpSaveButton->setDisabled(true);
+ //   mpSaveButton->setDisabled(true);
 
     mpImportPloAction = new QAction(this);
     mpImportPloAction->setText("Import from Old Hopsan File (.plo)");
@@ -254,7 +256,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpLoadFromXmlButton->setToolTip("Import Plot");
     mpLoadFromXmlButton->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-Open.svg"));
     connect(mpLoadFromXmlButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
-    mpLoadFromXmlButton->setDisabled(true);
+  //  mpLoadFromXmlButton->setDisabled(true);
 
     mpGridButton = new QAction(this);
     mpGridButton->setToolTip("Show Grid (G)");
@@ -567,100 +569,193 @@ void PlotWindow::importCsv()
 void PlotWindow::saveToXml()
 {
     //! @todo fixa
-//    //Open file dialog and initialize the file stream
-//    QDir fileDialogSaveDir;
-//    QString filePath = QFileDialog::getSaveFileName(this, tr("Save Plot Window Description to XML"),
-//                                                    gpConfig->getPlotWindowDir(),
-//                                                    tr("Plot Window Description File (*.xml)"));
-//    if(filePath.isEmpty())
-//    {
-//        return;    //Don't save anything if user presses cancel
-//    }
-//    else
-//    {
-//        QFileInfo fileInfo = QFileInfo(filePath);
-//        gpConfig->setPlotWindowDir(fileInfo.absolutePath());
-//    }
+   //Open file dialog and initialize the file stream
+   QDir fileDialogSaveDir;
+   QString filePath = QFileDialog::getSaveFileName(this, tr("Save Plot Window Specification"),
+                                                   gpConfig->getStringSetting(cfg::dir::plotwindow),
+                                                   tr("Plot Window Description File (*.xml)"));
+   if(filePath.isEmpty())
+   {
+       return;    //Don't save anything if user presses cancel
+   }
+   else
+   {
+       QFileInfo fileInfo = QFileInfo(filePath);
+       gpConfig->setStringSetting(cfg::dir::plotwindow, fileInfo.absolutePath());
+   }
 
-//    //Write to xml file
-//    QDomDocument domDocument;
-//    QDomElement xmlRootElement = domDocument.createElement("hopsanplot");
-//    domDocument.appendChild(xmlRootElement);
+   //Write to xml file
+   QDomDocument domDocument;
+   QDomElement xmlRootElement = domDocument.createElement(plotwindow::hopsanplot);
+   domDocument.appendChild(xmlRootElement);
 
-//    QDomElement dateElement = appendDomElement(xmlRootElement,"date");      //Append date tag
-//    QDate date = QDate::currentDate();
-//    dateElement.setAttribute("year", date.year());
-//    dateElement.setAttribute("month", date.month());
-//    dateElement.setAttribute("day", date.day());
+   //Add tab elements
+   for(int i=0; i<mpPlotTabWidget->count(); ++i)
+   {
+       QDomElement tabElement = appendDomElement(xmlRootElement,plotwindow::plottab);
+       if(mpPlotTabWidget->getTab(i)->isGridVisible())
+       {
+           tabElement.setAttribute(plotwindow::grid, "true");
+       }
+       else
+       {
+           tabElement.setAttribute(plotwindow::grid, "false");
+       }
+       tabElement.setAttribute(plotwindow::color, makeRgbString(mpPlotTabWidget->getTab(i)->getQwtPlot()->canvasBackground().color()));
 
-//    QDomElement timeElement = appendDomElement(xmlRootElement,"time");      //Append time tag
-//    QTime time = QTime::currentTime();
-//    timeElement.setAttribute("hour", time.hour());
-//    timeElement.setAttribute("minute", time.minute());
-//    timeElement.setAttribute("second", time.second());
+       //Add curve elements
+       for(int j=0; j<mpPlotTabWidget->getTab(i)->getCurves().size(); ++j)
+       {
+           auto curve = mpPlotTabWidget->getTab(i)->getCurves().at(j);
+           QDomElement curveElement = appendDomElement(tabElement,plotwindow::curve);
+           curveElement.setAttribute(plotwindow::component,  curve->getComponentName());
+           curveElement.setAttribute(plotwindow::port,       curve->getPortName());
+           curveElement.setAttribute(plotwindow::data,       curve->getDataName());
+           curveElement.setAttribute(plotwindow::axis,       curve->getAxisY());
+           curveElement.setAttribute(plotwindow::width,      curve->pen().width());
+           curveElement.setAttribute(plotwindow::color,      makeRgbString(curve->pen().color()));
+           if(curve->hasCustomXData()) {
+               QDomElement xcurveElement = appendDomElement(curveElement, plotwindow::xcurve);
+               auto xcurve = curve->getSharedCustomXVariable();
+               xcurveElement.setAttribute(plotwindow::component, xcurve->getComponentName());
+               xcurveElement.setAttribute(plotwindow::port, xcurve->getPortName());
+               xcurveElement.setAttribute(plotwindow::data, xcurve->getDataName());
+           }
+       }
+   }
 
-//    //Add tab elements
-//    for(int i=0; i<mpPlotTabWidget->count(); ++i)
-//    {
-//        QDomElement tabElement = appendDomElement(xmlRootElement,"plottab");
-//        if(mpPlotTabWidget->getTab(i)->isGridVisible())
-//        {
-//            tabElement.setAttribute("grid", "true");
-//        }
-//        else
-//        {
-//            tabElement.setAttribute("grid", "false");
-//        }
-//        tabElement.setAttribute("color", makeRgbString(mpPlotTabWidget->getTab(i)->getQwtPlot()->canvasBackground().color()));
+   appendRootXMLProcessingInstruction(domDocument);
 
-//        if(mpPlotTabWidget->getTab(i)->mHasCustomXData)
-//        {
-//            QDomElement specialXElement = appendDomElement(tabElement,"specialx");
-//            //! @todo FIXA /Peter
-//            //specialXElement.setAttribute("generation",  mpPlotTabs->getTab(i)->mVectorXGeneration);
-////            specialXElement.setAttribute("component",   mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mComponentName);
-////            specialXElement.setAttribute("port",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mPortName);
-////            specialXElement.setAttribute("data",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mDataName);
-////            specialXElement.setAttribute("unit",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mDataUnit);
-////            specialXElement.setAttribute("model",       mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mModelPath);
-//        }
-
-//        //Add curve elements
-//        for(int j=0; j<mpPlotTabWidget->getTab(i)->getCurves().size(); ++j)
-//        {
-//            QDomElement curveElement = appendDomElement(tabElement,"curve");
-//            //! @todo FIXA /Peter
-//            //curveElement.setAttribute("generation", mpPlotTabs->getTab(i)->getCurves().at(j)->getGeneration());
-//            curveElement.setAttribute("component",  mpPlotTabWidget->getTab(i)->getCurves().at(j)->getComponentName());
-//            curveElement.setAttribute("port",       mpPlotTabWidget->getTab(i)->getCurves().at(j)->getPortName());
-//            curveElement.setAttribute("data",       mpPlotTabWidget->getTab(i)->getCurves().at(j)->getDataName());
-//            //curveElement.setAttribute("unit",       mpPlotTabWidget->getTab(i)->getCurves().at(j)->getDataUnit());
-//            curveElement.setAttribute("axis",       mpPlotTabWidget->getTab(i)->getCurves().at(j)->getAxisY());
-//            curveElement.setAttribute("width",      mpPlotTabWidget->getTab(i)->getCurves().at(j)->pen().width());
-//            curveElement.setAttribute("color",      makeRgbString(mpPlotTabWidget->getTab(i)->getCurves().at(j)->pen().color()));
-//            //curveElement.setAttribute("model",      mpPlotTabWidget->getTab(i)->getCurves().at(j)->getContainerObjectPtr()->getModelFileInfo().filePath());
-//            //! @todo FIXA /Peter
-//        }
-//    }
-
-//    appendRootXMLProcessingInstruction(domDocument);
-
-//    //Save to file
-//    QFile xmlsettings(filePath);
-//    if (!xmlsettings.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-//    {
-//        qDebug() << "Failed to open file for writing: " << filePath;
-//        return;
-//    }
-//    QTextStream out(&xmlsettings);
-//    domDocument.save(out, XMLINDENTATION);
+   //Save to file
+   QFile xmlsettings(filePath);
+   if (!xmlsettings.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+   {
+       qDebug() << "Failed to open file for writing: " << filePath;
+       return;
+   }
+   QTextStream out(&xmlsettings);
+   domDocument.save(out, XMLINDENTATION);
 }
 
 
 //! @brief Loads a plot window from XML
 void PlotWindow::loadFromXml()
 {
-    //gpPlotWidget->loadFromXml();
+    QString filePath = QFileDialog::getOpenFileName(gpMainWindowWidget, tr("Load Plot Window Specification)"),
+                                            gpConfig->getStringSetting(cfg::dir::plotwindow),
+                                            tr("Plot Window Description File (*.xml)"));
+
+    if(filePath.isEmpty())
+    {
+        return;    //Don't save anything if user presses cancel
+    }
+    else
+    {
+        QFileInfo fileInfo = QFileInfo(filePath);
+        gpConfig->setStringSetting(cfg::dir::plotwindow, fileInfo.absolutePath());
+    }
+    QFile file(filePath);
+
+    if(!file.open(QFile::ReadOnly | QFile::Text))
+    {
+        gpMessageHandler->addErrorMessage("Cannot open file for reading: "+filePath);
+        return;
+    }
+
+    qDebug() << "Kattunge";
+
+    QXmlStreamReader reader(file.readAll());
+
+    // Read root element
+    while (reader.readNextStartElement()) {
+        if(reader.name() == plotwindow::hopsanplot)
+        {
+            qDebug() << "Kattunge: Parsing \"hopsanplot\"";
+            while(reader.readNextStartElement()) {
+                qDebug() << "Element: " << reader.name();
+                if(reader.name() == plotwindow::plottab) {
+                    qDebug() << "Kattunge: Parsing \"plottab\"";
+                    PlotTab* tab = PlotWindow::addPlotTab();
+                    auto attributes = reader.attributes();
+                    if(attributes.hasAttribute(plotwindow::grid)) {
+                        tab->enableGrid(attributes.value(plotwindow::grid).toString() == "true");
+                    }
+                    if(attributes.hasAttribute(plotwindow::color)) {
+                        double r,g,b;
+                        parseRgbString(attributes.value(plotwindow::color).toString(), r, g, b);
+                        tab->getPlotArea()->setBackgroundColor(QColor(r, g, b));
+                    }
+
+                    while(reader.readNextStartElement()) {
+                        if(reader.name() == plotwindow::curve) {
+                            qDebug() << "Kattunge: Parsing \"curve\"";
+                            QString comp, port, data;
+                            int axis=0, width=1;
+                            double r=0, g=0, b=0;
+                            auto attributes = reader.attributes();
+                            if(attributes.hasAttribute(plotwindow::component)) {
+                                comp = attributes.value(plotwindow::component).toString();
+                            }
+                            if(attributes.hasAttribute(plotwindow::port)) {
+                                port = attributes.value(plotwindow::port).toString();
+                            }
+                            if(attributes.hasAttribute(plotwindow::data)) {
+                                data = attributes.value(plotwindow::data).toString();
+                            }
+                            if(attributes.hasAttribute(plotwindow::axis)) {
+                                axis = attributes.value(plotwindow::axis).toInt();
+                            }
+                            if(attributes.hasAttribute(plotwindow::width)) {
+                                width = attributes.value(plotwindow::width).toInt();
+                            }
+                            if(attributes.hasAttribute(plotwindow::color)) {
+                                parseRgbString(attributes.value(plotwindow::color).toString(), r, g, b);
+                            }
+                            QString fullName = makeFullVariableName(QStringList(), comp,port,data);
+                            qDebug() << "Looking for variable: " << fullName;
+                            auto pLogData = gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
+                            if(pLogData != nullptr) {
+                                qDebug() << "Kattunge 1";
+                                auto varData = pLogData->getVectorVariable(fullName);
+                                if(varData != nullptr) {
+                                    qDebug() << "Kattunge 2";
+                                    auto pCurve = new PlotCurve(varData);
+                                    if(pCurve != nullptr) {
+                                        qDebug() << "Kattunge 3";
+                                        pCurve->setYAxis(axis);
+                                        pCurve->setLineWidth(width);
+                                        pCurve->setLineColor(QColor(r,g,b));
+                                        tab->addCurve(pCurve);
+                                        while(reader.readNextStartElement()) {
+                                            if(reader.name() == plotwindow::xcurve) {
+                                                qDebug() << "Found xcurve";
+                                                QString comp, port, data;
+                                                auto attributes = reader.attributes();
+                                                if(attributes.hasAttribute(plotwindow::component)) {
+                                                    comp = attributes.value(plotwindow::component).toString();
+                                                }
+                                                if(attributes.hasAttribute(plotwindow::port)) {
+                                                    port = attributes.value(plotwindow::port).toString();
+                                                }
+                                                if(attributes.hasAttribute(plotwindow::data)) {
+                                                    data = attributes.value(plotwindow::data).toString();
+                                                }
+                                                QString fullName = makeFullVariableName(QStringList(), comp,port,data);
+                                                pCurve->setCustomXData(fullName);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                        reader.skipCurrentElement();
+                    }   // "curve" element
+                } // "plottab" element
+                reader.skipCurrentElement();
+            } // "hopsanplot" element
+        }
+    }
 }
 
 

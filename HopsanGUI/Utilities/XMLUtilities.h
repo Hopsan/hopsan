@@ -344,4 +344,19 @@ namespace ssv {
                                                      {"conditional", ssv::datatype::integer}};
 }
 
+namespace plotwindow {
+    constexpr auto hopsanplot = "hopsanplot";
+    constexpr auto plottab = "plottab";
+    constexpr auto curve = "curve";
+    constexpr auto xcurve = "xcurve";
+    constexpr auto grid = "grid";
+    constexpr auto color = "color";
+    constexpr auto generation = "component";
+    constexpr auto component = "component";
+    constexpr auto port = "port";
+    constexpr auto data = "data";
+    constexpr auto axis = "axis";
+    constexpr auto width = "width";
+}
+
 #endif // XMLUTILITIES_H
