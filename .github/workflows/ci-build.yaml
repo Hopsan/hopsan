@@ -4,7 +4,7 @@ on: [pull_request]
 jobs:
   cmake-msvc2019:
     timeout-minutes: 30
-    runs-on: windows-2019
+    runs-on: windows-2025
     env:
       HOPSAN_BUILD_SCRIPT_NOPAUSE: 1
       HOPSAN_BUILD_CMAKE_GENERATOR: '"Visual Studio 16 2019"'
