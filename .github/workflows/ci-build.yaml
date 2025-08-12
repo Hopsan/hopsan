@@ -7,7 +7,7 @@ jobs:
     runs-on: windows-2025
     env:
       HOPSAN_BUILD_SCRIPT_NOPAUSE: 1
-      HOPSAN_BUILD_CMAKE_GENERATOR: '"Visual Studio 16 2019"'
+      HOPSAN_BUILD_CMAKE_GENERATOR: '"Visual Studio 17 2022"'
       HOPSAN_BUILD_QT_HOME: 'D:\a\hopsan\Qt\5.15.2\win64_msvc2019_64'
       HOPSAN_BUILD_MINGW_HOME: 'WeDoNotWantMingwInPATH'
     steps:
