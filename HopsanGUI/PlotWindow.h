@@ -89,6 +89,9 @@ public:
     PlotCurve* addPlotCurve(SharedVectorVariableT xdata, SharedVectorVariableT ydata, const QwtPlot::Axis axisY=QwtPlot::yLeft, PlotCurveStyle style=PlotCurveStyle());
     void setXData(SharedVectorVariableT xdata, bool force=false);
 
+    void toggleVariablesWidget(bool visible);
+    void toggleCurveControls(bool visible);
+
 signals:
     void windowClosed(PlotWindow *pWindow);
 
@@ -126,6 +129,7 @@ private:
     QPointF dragStartPosition;
 
     PlotTabWidget *mpPlotTabWidget;
+    QDockWidget *mpLocalVariablesWidgetDock;
     QDockWidget *mpPlotCurveControlsDock;
     QStackedWidget *mpPlotCurveControlsStack;
     HelpPopUpWidget *mpHelpPopup;

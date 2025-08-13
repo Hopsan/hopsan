@@ -316,19 +316,19 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     // Setup PlotVariable List stuff
     PlotWidget2 *pLocalPlotWidget = new PlotWidget2(this);
     pLocalPlotWidget->setPreferedPlotWindow(this);
-    QDockWidget *pLocalPlotWidgetDock = new QDockWidget(tr("Plot Variables"), this);
-    pLocalPlotWidgetDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    addDockWidget(Qt::RightDockWidgetArea, pLocalPlotWidgetDock);
-    pLocalPlotWidgetDock->setWidget(pLocalPlotWidget);
+    mpLocalVariablesWidgetDock = new QDockWidget(tr("Plot Variables"), this);
+    mpLocalVariablesWidgetDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    addDockWidget(Qt::RightDockWidgetArea, mpLocalVariablesWidgetDock);
+    mpLocalVariablesWidgetDock->setWidget(pLocalPlotWidget);
     if(gpModelHandler->count() != 0)
     {
         //pLocalPlotWidget->setLogDataHandler(gpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()); //!< @todo not necessarily the same as where the plot data will come from if plot by script
         pLocalPlotWidget->setLogDataHandler(gpModelHandler->getCurrentLogDataHandler().data()); //!< @todo not necessarily the same as where the plot data will come from if plot by script
     }
 
-    pLocalPlotWidgetDock->toggleViewAction()->setToolTip("Toggle Variable List");
-    pLocalPlotWidgetDock->toggleViewAction()->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-ShowPlotWindowVariableList.svg"));
-    connect(pLocalPlotWidgetDock->toggleViewAction(), SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mpLocalVariablesWidgetDock->toggleViewAction()->setToolTip("Toggle Variable List");
+    mpLocalVariablesWidgetDock->toggleViewAction()->setIcon(QIcon(QString(ICONPATH) + "svg/Hopsan-ShowPlotWindowVariableList.svg"));
+    connect(mpLocalVariablesWidgetDock->toggleViewAction(), SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     // Setup CurveInfoBox stuff
     mpPlotCurveControlsStack = new QStackedWidget(this);
@@ -372,7 +372,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpToolBar->addAction(mpLocktheAxis);
     mpToolBar->addAction(mpToggleAxisLockButton);
     mpToolBar->addAction(mpPlotCurveControlsDock->toggleViewAction());
-    mpToolBar->addAction(pLocalPlotWidgetDock->toggleViewAction());
+    mpToolBar->addAction(mpLocalVariablesWidgetDock->toggleViewAction());
     mpToolBar->addSeparator();
     mpToolBar->addAction(mpNewWindowFromTabButton);
     mpToolBar->setMouseTracking(true);
@@ -547,6 +547,16 @@ void PlotWindow::setXData(SharedVectorVariableT xdata, bool force)
     }
 
     pTab->setCustomXVectorForAll(xdata, 0, force);
+}
+
+void PlotWindow::toggleVariablesWidget(bool visible)
+{
+    mpLocalVariablesWidgetDock->setVisible(visible);
+}
+
+void PlotWindow::toggleCurveControls(bool visible)
+{
+    mpPlotCurveControlsDock->setVisible(visible);
 }
 
 
