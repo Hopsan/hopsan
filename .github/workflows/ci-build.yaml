@@ -20,7 +20,7 @@ jobs:
         uses: jurplel/install-qt-action@v3
         with:
           version: '5.15.2'
-          arch: 'win64_msvc2022_64'
+          arch: 'win64_msvc2019_64'
 
       - name: Checkout
         uses: actions/checkout@v3
