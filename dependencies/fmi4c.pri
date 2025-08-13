@@ -11,7 +11,7 @@ exists($${fmi4c_dir}) {
     CONFIG(debug, debug|release) {
       fmi4c_dbg_ext = d
     }
-    LIBS *= -L$${fmi4c_dir}/lib -lfmi4c$${fmi4c_dbg_ext} -lz
+    LIBS *= -L$${fmi4c_dir}/lib -lfmi4c$${fmi4c_dbg_ext} -lzlibstatic$${fmi4c_dbg_ext}
   } else {
     LIBS *= -L$${fmi4c_dir}/lib -lfmi4c -lz
   }
