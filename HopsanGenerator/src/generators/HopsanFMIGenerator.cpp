@@ -514,7 +514,7 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
         mdWriter.writeAttribute("fmiVersion", "1.0");
         mdWriter.writeAttribute("generationTool", hopsanStr);
         mdWriter.writeAttribute("generationDateAndTime", dateAndTime);
-        mdWriter.writeAttribute("variableNamingConvention", "structured");
+        mdWriter.writeAttribute("variableNamingConvention", "flat");
         mdWriter.writeAttribute("guid", guid);
         mdWriter.writeAttribute("numberOfEventIndicators", "0");
         mdWriter.writeAttribute("numberOfContinuousStates", "0");
@@ -604,7 +604,7 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
         mdWriter.writeAttribute("fmiVersion", "2.0");
         mdWriter.writeAttribute("generationTool", hopsanStr);
         mdWriter.writeAttribute("generationDateAndTime", dateAndTime);
-        mdWriter.writeAttribute("variableNamingConvention", "structured");
+        mdWriter.writeAttribute("variableNamingConvention", "flat");
         mdWriter.writeAttribute("guid", guid);
         mdWriter.writeAttribute("numberOfEventIndicators", "0");
 
@@ -747,7 +747,7 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
         mdWriter.writeAttribute("fmiVersion", "3.0-rc.1");
         mdWriter.writeAttribute("generationTool", hopsanStr);
         mdWriter.writeAttribute("generationDateAndTime", dateAndTime);
-        mdWriter.writeAttribute("variableNamingConvention", "structured");
+        mdWriter.writeAttribute("variableNamingConvention", "flat");
         mdWriter.writeAttribute("instantiationToken", guid);
 
         mdWriter.writeStartElement("CoSimulation");
