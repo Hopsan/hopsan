@@ -149,6 +149,8 @@ void OptimizationHandler::startOptimization(ModelWidget *pModel, QString &modelP
         }
 #endif
 
+        mStartTime = QDateTime::currentDateTime();
+
         mpWorker->initialize();
         mpWorker->run();
 
@@ -1177,8 +1179,11 @@ void OptimizationHandler::printResultFile()
     //Begin general information
     htmlCode.append("<h3>General Information:</h3>\n<table>\n");
 
-    //Date & time
-    htmlCode.append("<tr>\n<td><b>Date & time:</b></td>\n<td>"+QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss")+"</td>\n</tr>\n");
+    //Start time
+    htmlCode.append("<tr>\n<td><b>Start time:</b></td>\n<td>"+mStartTime.toString("yyyy-MM-dd hh:mm:ss")+"</td>\n</tr>\n");
+
+    //Duration
+    htmlCode.append("<tr>\n<td><b>Duration:</b></td>\n<td>"+QString::number(mStartTime.secsTo(QDateTime::currentDateTime()))+" seconds</td>\n</tr>\n");
 
     //Model name
     htmlCode.append("<tr>\n<td><b>Model:</b></td>\n<td>"+mModelPtrs.first()->getViewContainerObject()->getName()+"</td>\n</tr>\n");
