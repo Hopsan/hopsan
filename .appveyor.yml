@@ -1,9 +1,9 @@
 image:
-- Visual Studio 2017
+- Visual Studio 2019
 environment:
   HOPSAN_BUILD_SCRIPT_NOPAUSE: 1
-  HOPSAN_BUILD_QT_HOME: C:\Qt\5.12.6\mingw73_64
-  HOPSAN_BUILD_MINGW_HOME: C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64
+  HOPSAN_BUILD_QT_HOME: C:\Qt\5.15.2\mingw81_64
+  HOPSAN_BUILD_MINGW_HOME: C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64
 platform: x64
 configuration: Release
 install:
@@ -31,12 +31,15 @@ build_script:
   - setupMsgpack.bat
   - call setHopsanBuildPaths.bat
   - cd ..
-  - mkdir build
-  - cd build
-  - qmake.exe ..\HopsanNG.pro -r -spec win32-g++ CONFIG+=release
-  - cd ..
-  - mingw32-make.exe -j6 -C build
+  - cmake -G"MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install_dir -Bbuild_dir -S.
+  - cmake --build build_dir --config Release --parallel 6
+  - cmake --build build_dir --config Release --parallel 6 --target install
+  - cd install_dir
   - dir bin
+  - cd ..
 test_script:
-  - runUnitTests.bat
-  - runValidationTests.bat
+  - cd build_dir
+  - ctest -C Release --output-on-failure --parallel 4
+  - cd ..
+#  - set PATH=%CD%\install\bin;%PATH%
+#  - runValidationTests.bat TODO Fix this

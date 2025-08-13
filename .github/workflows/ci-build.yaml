@@ -2,7 +2,7 @@ name: ghactions-ci-build
 on: [pull_request]
 
 jobs:
-  cmake-msvc2019:
+  cmake-msvc2022:
     timeout-minutes: 30
     runs-on: windows-2025
     env:
@@ -104,8 +104,8 @@ jobs:
           ./setupTclap.sh
           ./setupFmi4c.sh
           ./setupXerces.sh
-          ./setupDCPLib.sh
           ./setupLibzip.sh
+          ./setupDCPLib.sh
 
       - name: Configure
         working-directory: hopsan-build
