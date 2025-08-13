@@ -194,7 +194,7 @@ bool Component::setParameterValue(QString name, QString value, bool force)
             this->createRefreshExternalPort(outputs[i]);
         }
 
-        QStringList portSpecs = getParameterValue("portspecs").split(";");
+        QStringList portSpecs = getParameterValue("portspecs").remove(' ').split(";");
         for(int i=0; i<portSpecs.size(); ++i) {
             if(!portSpecs[i].isEmpty()) {
                 SharedPortAppearanceT app(new PortAppearance());
