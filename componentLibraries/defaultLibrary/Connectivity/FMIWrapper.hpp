@@ -346,6 +346,10 @@ public:
                 fmi1DataType type = fmi1_getVariableDataType(var);
                 fmi1Causality causality = fmi1_getVariableCausality(var);
                 fmi1Variability variability = fmi1_getVariableVariability(var);
+                const char* unit = fmi1_getVariableUnit(var);
+                if(unit == NULL) {
+                    unit = "";
+                }
                 addDebugMessage("Causality = "+to_hstring(causality));
                 addDebugMessage("Data type = "+to_hstring(type));
                 unsigned int vr = (unsigned int)fmi1_getVariableValueReference(var);
@@ -353,75 +357,75 @@ public:
                 if(variability == fmi1VariabilityParameter && type == fmi1DataTypeString) {
                     addDebugMessage("String parameter: "+HString(name));
                     const char* startValue = fmi1_getVariableStartString(var);
-                    addConstant(toValidHopsanVarName(name), description, "", startValue, mStringParameters[vr]);
+                    addConstant(toValidHopsanVarName(name), description, unit, startValue, mStringParameters[vr]);
                 }
                 else if(variability == fmi1VariabilityParameter && type == fmi1DataTypeBoolean) {
                     addDebugMessage("Boolean parameter: "+HString(name));
                     bool startValue = fmi1_getVariableStartBoolean(var);
-                    addConstant(toValidHopsanVarName(name), description, "", startValue, mBoolParameters[vr]);
+                    addConstant(toValidHopsanVarName(name), description, unit, startValue, mBoolParameters[vr]);
                 }
                 else if(variability == fmi1VariabilityParameter && type == fmi1DataTypeInteger) {
                     addDebugMessage("Integer parameter: "+HString(name));
                     int startValue = fmi1_getVariableStartInteger(var);
-                    addConstant(toValidHopsanVarName(name), description, "", startValue, mIntParameters[vr]);
+                    addConstant(toValidHopsanVarName(name), description, unit, startValue, mIntParameters[vr]);
                 }
                 else if(variability == fmi1VariabilityParameter && type == fmi1DataTypeReal) {
                     addDebugMessage("Real parameter: "+HString(name));
                     double startValue = fmi1_getVariableStartReal(var);
                     addDebugMessage("START VALUE: "+to_hstring(startValue));
-                    addConstant(toValidHopsanVarName(name), description, "", startValue, mRealParameters[vr]);
+                    addConstant(toValidHopsanVarName(name), description, unit, startValue, mRealParameters[vr]);
                 }
                 else if(causality == fmi1CausalityInput && type == fmi1DataTypeReal) {
                     addDebugMessage("Real input: "+HString(name));
                     double startValue = fmi1_getVariableStartReal(var);
                     addDebugMessage("START VALUE: "+to_hstring(startValue));
                     auto it = mRealInputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, "", startValue, &it->second));
+                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, unit, startValue, &it->second));
                 }
                 else if(causality == fmi1CausalityInput && type == fmi1DataTypeInteger) {
                     addDebugMessage("Integer input: "+HString(name));
                     double startValue = (double)fmi1_getVariableStartInteger(var);
                     auto it = mIntInputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, "", startValue, &it->second));
+                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, unit, startValue, &it->second));
                 }
                 else if(causality == fmi1CausalityInput && type == fmi1DataTypeBoolean) {
                     addDebugMessage("Boolean input: "+HString(name));
                     double startValue = fmi1_getVariableStartBoolean(var) ? 1.0 : 0.0;
                     auto it = mBoolInputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, "", startValue, &it->second));
+                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, unit, startValue, &it->second));
                 }
                 else if(causality == fmi1CausalityOutput && type == fmi1DataTypeReal) {
                     addDebugMessage("Real output: "+HString(name));
                     auto it = mRealOutputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                     mVisibleOutputs.append(toValidHopsanVarName(name)+",");
                 }
                 else if(causality == fmi1CausalityOutput && (type == fmi1DataTypeInteger)) {
                     addDebugMessage("Integer output: "+HString(name));
                     auto it = mIntOutputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                     mVisibleOutputs.append(toValidHopsanVarName(name)+",");
                 }
                 else if(causality == fmi1CausalityOutput && (type == fmi1DataTypeBoolean)) {
                     addDebugMessage("Boolean output: "+HString(name));
                     auto it = mBoolOutputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                     mVisibleOutputs.append(toValidHopsanVarName(name)+",");
                 }
                 else if(causality == fmi1CausalityInternal && type == fmi1DataTypeReal) {
                     addDebugMessage("Local: "+HString(name));
                     auto it = mRealOutputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                 }
                 else if(causality == fmi1CausalityInternal && type == fmi1DataTypeInteger) {
                     addDebugMessage("Local: "+HString(name));
                     auto it = mIntOutputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                 }
                 else if(causality == fmi1CausalityInternal && type == fmi1DataTypeBoolean) {
                     addDebugMessage("Local: "+HString(name));
                     auto it = mBoolOutputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                 }
             }
             if(!mVisibleOutputs.empty() && mVisibleOutputs.back() == ',') {
@@ -431,22 +435,14 @@ public:
 
     
             //Instantiate FMU
-<<<<<<< HEAD
             if(!mReinstantiate) {
                 addDebugMessage("Calling: fmi1InstantiateSlave");
-                if(!fmi1_instantiateSlave(fmu, "application/x-fmu-sharedlibrary", 1000, fmi1False, fmi1False, FMIWrapper_fmi1Logger, calloc, free, NULL, mLoggingOn)) {
+                fmi1_instance = fmi1_instantiateSlave(fmu, "application/x-fmu-sharedlibrary", 1000, fmi1False, fmi1False, FMIWrapper_fmi1Logger, calloc, free, NULL, mLoggingOn);
+                if(fmi1_instance == NULL) {
                     addErrorMessage("Hopsan: fmi1InstantiateSlave() failed!");
-                    fmu = NULL;
                     return;
                 }
                 mIsInstantiated = true;
-=======
-            printf("Hopsan: calling fmi1InstantiateSlave()...");
-            fmi1_instance = fmi1_instantiateSlave(fmu, "application/x-fmu-sharedlibrary", 1000, fmi1False, fmi1False, FMIWrapper_fmi1Logger, calloc, free, NULL, mLoggingOn);
-            if(fmi1_instance == NULL) {
-                addErrorMessage("Hopsan: fmi1InstantiateSlave() failed!");
-                return;
->>>>>>> 9529d1b70 (Upgrade fmi4c to v1.1)
             }
         }
         else if(mFmiVersion == fmiVersion2) {
@@ -475,42 +471,42 @@ public:
                 if(causality == fmi2CausalityParameter && type == fmi2DataTypeString) {
                     addDebugMessage("String parameter: "+HString(name));
                     const char* startValue = fmi2_getVariableStartString(var);
-                    addConstant(toValidHopsanVarName(name), description, "", startValue, mStringParameters[vr]);
+                    addConstant(toValidHopsanVarName(name), description, unit, startValue, mStringParameters[vr]);
                 }
                 else if(causality == fmi2CausalityParameter && type == fmi2DataTypeBoolean) {
                     addDebugMessage("Boolean parameter: "+HString(name));
                     bool startValue = fmi2_getVariableStartBoolean(var);
-                    addConstant(toValidHopsanVarName(name), description, "", startValue, mBoolParameters[vr]);
+                    addConstant(toValidHopsanVarName(name), description, unit, startValue, mBoolParameters[vr]);
                 }
                 else if(causality == fmi2CausalityParameter && type == fmi2DataTypeInteger) {
                     addDebugMessage("Integer parameter: "+HString(name));
                     int startValue = fmi2_getVariableStartInteger(var);
-                    addConstant(toValidHopsanVarName(name), description, "", startValue, mIntParameters[vr]);
+                    addConstant(toValidHopsanVarName(name), description, unit, startValue, mIntParameters[vr]);
                 }
                 else if(causality == fmi2CausalityParameter && type == fmi2DataTypeReal) {
                     addDebugMessage("Real parameter: "+HString(name));
                     double startValue = fmi2_getVariableStartReal(var);
                     addDebugMessage("START VALUE: "+to_hstring(startValue));
-                    addConstant(toValidHopsanVarName(name), description, "", startValue, mRealParameters[vr]);
+                    addConstant(toValidHopsanVarName(name), description, unit, startValue, mRealParameters[vr]);
                 }
                 else if(causality == fmi2CausalityInput && type == fmi2DataTypeReal) {
                     addDebugMessage("Real input: "+HString(name));
                     double startValue = fmi2_getVariableStartReal(var);
                     addDebugMessage("START VALUE: "+to_hstring(startValue));
                     auto it = mRealInputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, "", startValue, &it->second));
+                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, unit, startValue, &it->second));
                 }
                 else if(causality == fmi2CausalityInput && type == fmi2DataTypeInteger) {
                     addDebugMessage("Integer input: "+HString(name));
                     double startValue = (double)fmi2_getVariableStartInteger(var);
                     auto it = mIntInputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, "", startValue, &it->second));
+                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, unit, startValue, &it->second));
                 }
                 else if(causality == fmi2CausalityInput && type == fmi2DataTypeBoolean) {
                     addDebugMessage("Boolean input: "+HString(name));
                     double startValue = fmi2_getVariableStartBoolean(var) ? 1.0 : 0.0;
                     auto it = mBoolInputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, "", startValue, &it->second));
+                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, unit, startValue, &it->second));
                 }
                 else if(causality == fmi2CausalityOutput && type == fmi2DataTypeReal) {
                     addDebugMessage("Real output: "+HString(name));
@@ -521,30 +517,30 @@ public:
                 else if(causality == fmi2CausalityOutput && (type == fmi2DataTypeInteger)) {
                     addDebugMessage("Integer output: "+HString(name));
                     auto it = mIntOutputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                     mVisibleOutputs.append(toValidHopsanVarName(name)+",");
                 }
                 else if(causality == fmi2CausalityOutput && (type == fmi2DataTypeBoolean)) {
                     addDebugMessage("Boolean output: "+HString(name));
                     auto it = mBoolOutputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                     mVisibleOutputs.append(toValidHopsanVarName(name)+",");
                 }
                 else if(causality == fmi2CausalityLocal && type == fmi2DataTypeReal) {
                     addDebugMessage("Local variable: "+HString(name));
                     auto it = mRealOutputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
 
                 }
                 else if(causality == fmi2CausalityLocal && type == fmi2DataTypeInteger) {
                     addDebugMessage("Local: "+HString(name));
                     auto it = mIntOutputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                 }
                 else if(causality == fmi2CausalityLocal && type == fmi2DataTypeBoolean) {
                     addDebugMessage("Local: "+HString(name));
                     auto it = mBoolOutputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                 }
             }
             if(!mVisibleOutputs.empty() && mVisibleOutputs.back() == ',') {
@@ -554,22 +550,15 @@ public:
 
     
             //Instantiate FMU
-<<<<<<< HEAD
             if(!mReinstantiate) {
                 addDebugMessage("Calling: fmi2Instantiate");
-                if(!fmi2_instantiate(fmu, fmi2CoSimulation, FMIWrapper_fmi2Logger, calloc, free, NULL, (fmi2ComponentEnvironment*)this, fmi2False, mLoggingOn)) {
+                fmi2_instance = fmi2_instantiate(fmu, fmi2CoSimulation, FMIWrapper_fmi2Logger, calloc, free, NULL, (fmi2ComponentEnvironment*)this, fmi2False, mLoggingOn);
+                if(!fmi2_instance) {
                     stopSimulation("Failed to instantiate FMU");
-                    fmu = NULL;
+                    fmi2_instance = NULL;
                     return;
                 }
                 mIsInstantiated = true;
-=======
-            fmi2_instance = fmi2_instantiate(fmu, fmi2CoSimulation, FMIWrapper_fmi2Logger, calloc, free, NULL, (fmi2ComponentEnvironment*)this, fmi2False, mLoggingOn);
-            if(!fmi2_instance) {
-                stopSimulation("Failed to instantiate FMU");
-                fmi2_instance = NULL;
-                return;
->>>>>>> 9529d1b70 (Upgrade fmi4c to v1.1)
             }
         }
         else {//FMI 3
@@ -590,253 +579,257 @@ public:
                 fmi3DataType type = fmi3_getVariableDataType(var);
                 fmi3Causality causality = fmi3_getVariableCausality(var);
                 fmi3ValueReference vr = fmi3_getVariableValueReference(var);
+                const char* unit = fmi3_getVariableUnit(var);
+                if(unit == NULL) {
+                    unit = "";
+                }
 
                 if(causality == fmi3CausalityParameter && type == fmi3DataTypeString) {
                     addDebugMessage("String parameter: "+HString(name));
                     const char* startValue = fmi3_getVariableStartString(var);
-                    addConstant(toValidHopsanVarName(name), description, "", startValue, mStringParameters[vr]);
+                    addConstant(toValidHopsanVarName(name), description, unit, startValue, mStringParameters[vr]);
                 }
                 else if(causality == fmi3CausalityParameter && type == fmi3DataTypeBoolean) {
                     addDebugMessage("Boolean parameter: "+HString(name));
                     bool startValue = fmi3_getVariableStartBoolean(var);
-                    addConstant(toValidHopsanVarName(name), description, "", startValue, mBoolParameters[vr]);
+                    addConstant(toValidHopsanVarName(name), description, unit, startValue, mBoolParameters[vr]);
                 }
                 else if(causality == fmi3CausalityParameter && type == fmi3DataTypeInt64) {
                     addDebugMessage("64-bit integer parameter: "+HString(name));
                     int startValue = (int)fmi3_getVariableStartInt64(var);
-                    addConstant(toValidHopsanVarName(name), description, "", startValue, mIntParameters[vr]);
+                    addConstant(toValidHopsanVarName(name), description, unit, startValue, mIntParameters[vr]);
                 }
                 else if(causality == fmi3CausalityParameter && type == fmi3DataTypeFloat64) {
                     addDebugMessage("64-bit float parameter: "+HString(name));
                     double startValue = (double)fmi3_getVariableStartFloat64(var);
-                    addConstant(toValidHopsanVarName(name), description, "", startValue, mFloat64Parameters[vr]);
+                    addConstant(toValidHopsanVarName(name), description, unit, startValue, mFloat64Parameters[vr]);
                 }
                 else if(causality == fmi3CausalityParameter && type == fmi3DataTypeFloat32) {
                     addDebugMessage("32-bit float parameter: "+HString(name));
                     double startValue = (double)fmi3_getVariableStartFloat32(var);
-                    addConstant(toValidHopsanVarName(name), description, "", startValue, mFloat32Parameters[vr]);
+                    addConstant(toValidHopsanVarName(name), description, unit, startValue, mFloat32Parameters[vr]);
                 }
                 else if(causality == fmi3CausalityParameter && type == fmi3DataTypeInt64) {
                     addDebugMessage("64-bit float parameter: "+HString(name));
                     int startValue = (int)fmi3_getVariableStartInt64(var);
-                    addConstant(toValidHopsanVarName(name), description, "", startValue, mInt64Parameters[vr]);
+                    addConstant(toValidHopsanVarName(name), description, unit, startValue, mInt64Parameters[vr]);
                 }
                 else if(causality == fmi3CausalityParameter && type == fmi3DataTypeInt32) {
                     addDebugMessage("32-bit float parameter: "+HString(name));
                     int startValue = (int)fmi3_getVariableStartInt32(var);
-                    addConstant(toValidHopsanVarName(name), description, "", startValue, mInt32Parameters[vr]);
+                    addConstant(toValidHopsanVarName(name), description, unit, startValue, mInt32Parameters[vr]);
                 }
                 else if(causality == fmi3CausalityParameter && type == fmi3DataTypeInt16) {
                     addDebugMessage("16-bit float parameter: "+HString(name));
                     int startValue = (int)fmi3_getVariableStartInt16(var);
-                    addConstant(toValidHopsanVarName(name), description, "", startValue, mInt16Parameters[vr]);
+                    addConstant(toValidHopsanVarName(name), description, unit, startValue, mInt16Parameters[vr]);
                 }
                 else if(causality == fmi3CausalityParameter && type == fmi3DataTypeInt8) {
                     addDebugMessage("8-bit float parameter: "+HString(name));
                     int startValue = (int)fmi3_getVariableStartInt8(var);
-                    addConstant(toValidHopsanVarName(name), description, "", startValue, mInt8Parameters[vr]);
+                    addConstant(toValidHopsanVarName(name), description, unit, startValue, mInt8Parameters[vr]);
                 }
                 else if(causality == fmi3CausalityParameter && type == fmi3DataTypeUInt64) {
                     addDebugMessage("64-bit float parameter: "+HString(name));
                     int startValue = (int)fmi3_getVariableStartUInt64(var);
-                    addConstant(toValidHopsanVarName(name), description, "", startValue, mUInt64Parameters[vr]);
+                    addConstant(toValidHopsanVarName(name), description, unit, startValue, mUInt64Parameters[vr]);
                 }
                 else if(causality == fmi3CausalityParameter && type == fmi3DataTypeUInt32) {
                     addDebugMessage("32-bit float parameter: "+HString(name));
                     int startValue = (int)fmi3_getVariableStartUInt32(var);
-                    addConstant(toValidHopsanVarName(name), description, "", startValue, mUInt32Parameters[vr]);
+                    addConstant(toValidHopsanVarName(name), description, unit, startValue, mUInt32Parameters[vr]);
                 }
                 else if(causality == fmi3CausalityParameter && type == fmi3DataTypeUInt16) {
                     addDebugMessage("16-bit float parameter: "+HString(name));
                     int startValue = (int)fmi3_getVariableStartUInt16(var);
-                    addConstant(toValidHopsanVarName(name), description, "", startValue, mUInt16Parameters[vr]);
+                    addConstant(toValidHopsanVarName(name), description, unit, startValue, mUInt16Parameters[vr]);
                 }
                 else if(causality == fmi3CausalityParameter && type == fmi3DataTypeUInt8) {
                     addDebugMessage("8-bit float parameter: "+HString(name));
                     int startValue = (int)fmi3_getVariableStartUInt8(var);
-                    addConstant(toValidHopsanVarName(name), description, "", startValue, mUInt8Parameters[vr]);
+                    addConstant(toValidHopsanVarName(name), description, unit, startValue, mUInt8Parameters[vr]);
                 }
                 else if(causality == fmi3CausalityInput && type == fmi3DataTypeFloat64) {
                     addDebugMessage("64-bit float input: "+HString(name));
                     double startValue = fmi3_getVariableStartFloat64(var);
                     auto it = mFloat64Inputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, "", startValue, &it->second));
+                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, unit, startValue, &it->second));
                 }
                 else if(causality == fmi3CausalityInput && type == fmi3DataTypeFloat32) {
                     addDebugMessage("32-bit float input: "+HString(name));
                     double startValue = fmi3_getVariableStartFloat32(var);
                     auto it = mFloat32Inputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, "", startValue, &it->second));
+                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, unit, startValue, &it->second));
                 }
                 else if(causality == fmi3CausalityInput && type == fmi3DataTypeInt64) {
                     addDebugMessage("64-bit integer input: "+HString(name));
                     double startValue = (double)fmi3_getVariableStartInt64(var);
                     auto it = mInt64Inputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, "", startValue, &it->second));
+                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, unit, startValue, &it->second));
                 }
                 else if(causality == fmi3CausalityInput && type == fmi3DataTypeInt32) {
                     addDebugMessage("32-bit integer input: "+HString(name));
                     double startValue = (double)fmi3_getVariableStartInt32(var);
                     auto it = mInt32Inputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, "", startValue, &it->second));
+                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, unit, startValue, &it->second));
                 }
                 else if(causality == fmi3CausalityInput && type == fmi3DataTypeInt16) {
                     addDebugMessage("16-bit integer input: "+HString(name));
                     double startValue = (double)fmi3_getVariableStartInt16(var);
                     auto it = mInt16Inputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, "", startValue, &it->second));
+                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, unit, startValue, &it->second));
                 }
                 else if(causality == fmi3CausalityInput && type == fmi3DataTypeInt8) {
                     addDebugMessage("8-bit integer input: "+HString(name));
                     double startValue = (double)fmi3_getVariableStartInt8(var);
                     auto it = mInt8Inputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, "", startValue, &it->second));
+                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, unit, startValue, &it->second));
                 }
                 else if(causality == fmi3CausalityInput && type == fmi3DataTypeUInt64) {
                     addDebugMessage("64-bit unsigned integer input: "+HString(name));
                     double startValue = (double)fmi3_getVariableStartUInt64(var);
                     auto it = mUInt64Inputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, "", startValue, &it->second));
+                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, unit, startValue, &it->second));
                 }
                 else if(causality == fmi3CausalityInput && type == fmi3DataTypeUInt32) {
                     addDebugMessage("32-bit unsigned integer input: "+HString(name));
                     double startValue = (double)fmi3_getVariableStartUInt32(var);
                     auto it = mUInt32Inputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, "", startValue, &it->second));
+                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, unit, startValue, &it->second));
                 }
                 else if(causality == fmi3CausalityInput && type == fmi3DataTypeUInt16) {
                     addDebugMessage("16-bit unsigned integer input: "+HString(name));
                     double startValue = (double)fmi3_getVariableStartUInt16(var);
                     auto it = mUInt16Inputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, "", startValue, &it->second));
+                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, unit, startValue, &it->second));
                 }
                 else if(causality == fmi3CausalityInput && type == fmi3DataTypeUInt8) {
                     addDebugMessage("8-bit unsigned integer input: "+HString(name));
                     double startValue = (double)fmi3_getVariableStartUInt8(var);
                     auto it = mUInt8Inputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, "", startValue, &it->second));
+                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, unit, startValue, &it->second));
                 }
                 else if(causality == fmi3CausalityInput && type == fmi3DataTypeBoolean) {
                     addDebugMessage("Boolean input: "+HString(name));
                     double startValue = fmi3_getVariableStartBoolean(var) ? 1.0 : 0.0;
                     auto it = mBoolInputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, "", startValue, &it->second));
+                    mPorts.push_back(addInputVariable(toValidHopsanVarName(name), description, unit, startValue, &it->second));
                 }
                 else if(causality == fmi3CausalityOutput && type == fmi3DataTypeFloat64) {
                     addDebugMessage("64-bit float output: "+HString(name));
                     auto it = mFloat64Outputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                     mVisibleOutputs.append(toValidHopsanVarName(name)+",");
                 }
                 else if(causality == fmi3CausalityOutput && type == fmi3DataTypeFloat32) {
                     addDebugMessage("32-bit float output: "+HString(name));
                     auto it = mFloat32Outputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                     mVisibleOutputs.append(toValidHopsanVarName(name)+",");
                 }
                 else if(causality == fmi3CausalityOutput && (type == fmi3DataTypeInt64)) {
                     addDebugMessage("64-bit integer output: "+HString(name));
                     auto it = mInt64Outputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                     mVisibleOutputs.append(toValidHopsanVarName(name)+",");
                 }
                 else if(causality == fmi3CausalityOutput && (type == fmi3DataTypeInt32)) {
                     addDebugMessage("32-bit integer output: "+HString(name));
                     auto it = mInt32Outputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                     mVisibleOutputs.append(toValidHopsanVarName(name)+",");
                 }
                 else if(causality == fmi3CausalityOutput && (type == fmi3DataTypeInt16)) {
                     addDebugMessage("16-bit integer output: "+HString(name));
                     auto it = mInt16Outputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                     mVisibleOutputs.append(toValidHopsanVarName(name)+",");
                 }
                 else if(causality == fmi3CausalityOutput && (type == fmi3DataTypeInt8)) {
                     addDebugMessage("8-bit integer output: "+HString(name));
                     auto it = mInt8Outputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                     mVisibleOutputs.append(toValidHopsanVarName(name)+",");
                 }
                 else if(causality == fmi3CausalityOutput && (type == fmi3DataTypeUInt64)) {
                     addDebugMessage("64-bit unsigned integer output: "+HString(name));
                     auto it = mUInt64Outputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                     mVisibleOutputs.append(toValidHopsanVarName(name)+",");
                 }
                 else if(causality == fmi3CausalityOutput && (type == fmi3DataTypeUInt32)) {
                     addDebugMessage("32-bit unsigned integer output: "+HString(name));
                     auto it = mUInt32Outputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                     mVisibleOutputs.append(toValidHopsanVarName(name)+",");
                 }
                 else if(causality == fmi3CausalityOutput && (type == fmi3DataTypeUInt16)) {
                     addDebugMessage("16-bit unsigned integer output: "+HString(name));
                     auto it = mUInt16Outputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                     mVisibleOutputs.append(toValidHopsanVarName(name)+",");
                 }
                 else if(causality == fmi3CausalityOutput && (type == fmi3DataTypeUInt8)) {
                     addDebugMessage("8-bit unsigned integer output: "+HString(name));
                     auto it = mUInt8Outputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                     mVisibleOutputs.append(toValidHopsanVarName(name)+",");
                 }
                 else if(causality == fmi3CausalityOutput && (type == fmi3DataTypeBoolean)) {
                     addDebugMessage("Boolean output: "+HString(name));
                     auto it = mBoolOutputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                     mVisibleOutputs.append(toValidHopsanVarName(name)+",");
                 }
                 else if(causality == fmi3CausalityLocal && type == fmi3DataTypeFloat64) {
                     addDebugMessage("64-bit float local: "+HString(name));
                     auto it = mFloat64Outputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                 }
                 else if(causality == fmi3CausalityLocal && type == fmi3DataTypeFloat32) {
                     addDebugMessage("32-bit float local: "+HString(name));
                     auto it = mFloat32Outputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                 }
                 else if(causality == fmi3CausalityLocal && (type == fmi3DataTypeInt64)) {
                     addDebugMessage("64-bit integer local: "+HString(name));
                     auto it = mInt16Outputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                 }
                 else if(causality == fmi3CausalityLocal && (type == fmi3DataTypeInt32)) {
                     addDebugMessage("32-bit integer local: "+HString(name));
                     auto it = mInt32Outputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                 }
                 else if(causality == fmi3CausalityLocal && (type == fmi3DataTypeInt16)) {
                     addDebugMessage("16-bit integer local: "+HString(name));
                     auto it = mInt16Outputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                 }
                 else if(causality == fmi3CausalityLocal && (type == fmi3DataTypeInt8)) {
                     addDebugMessage("8-bit integer local: "+HString(name));
                     auto it = mInt8Outputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                 }
                 else if(causality == fmi3CausalityLocal && (type == fmi3DataTypeUInt64)) {
                     addDebugMessage("64-bit unsigned integer local: "+HString(name));
                     auto it = mUInt64Outputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                 }
                 else if(causality == fmi3CausalityLocal && (type == fmi3DataTypeUInt32)) {
                     addDebugMessage("32-bit unsigned integer local: "+HString(name));
                     auto it = mUInt32Outputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                 }
                 else if(causality == fmi3CausalityLocal && (type == fmi3DataTypeUInt16)) {
                     addDebugMessage("16-bit unsigned integer local: "+HString(name));
                     auto it = mUInt16Outputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                 }
                 else if(causality == fmi3CausalityLocal && (type == fmi3DataTypeUInt8)) {
                     addDebugMessage("8-bit unsigned integer local: "+HString(name));
                     auto it = mUInt8Outputs.insert(std::pair<fmi3ValueReference, double*>(vr, new double(0.0)));
-                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, "", &it->second));
+                    mPorts.push_back(addOutputVariable(toValidHopsanVarName(name), description, unit, &it->second));
                 }
 
             }
@@ -846,24 +839,16 @@ public:
             addConstant("visibleOutputs", "Visible output variables (hidden)", "", mVisibleOutputs, mVisibleOutputs);
 
             //Instantiate FMU
-<<<<<<< HEAD
             if(!mReinstantiate) {
                 addDebugMessage("Calling: fmi3InstantiateCoSimulation");
                 size_t nRequiredIntermediateVariables = 0;
-                if(!fmi3_instantiateCoSimulation(fmu, fmi3False, mLoggingOn, fmi3False, fmi3False, NULL, nRequiredIntermediateVariables, this, FMIWrapper_fmi3Logger, FMIWrapper_fmi3IntermediateUpdate)) {
+                fmi3_instance = fmi3_instantiateCoSimulation(fmu, fmi3False, mLoggingOn, fmi3False, fmi3False, NULL, nRequiredIntermediateVariables, this, FMIWrapper_fmi3Logger, FMIWrapper_fmi3IntermediateUpdate);
+                if(!fmi3_instance) {
                     stopSimulation("Failed to instantiate FMU");
-                    fmu = NULL;
+                    fmi3_instance = NULL;
                     return;
                 }
                 mIsInstantiated = true;
-=======
-            size_t nRequiredIntermediateVariables = 0;
-            fmi3_instance = fmi3_instantiateCoSimulation(fmu, fmi3False, mLoggingOn, fmi3False, fmi3False, NULL, nRequiredIntermediateVariables, this, FMIWrapper_fmi3Logger, FMIWrapper_fmi3IntermediateUpdate);
-            if(!fmi3_instance) {
-                stopSimulation("Failed to instantiate FMU");
-                fmi3_instance = NULL;
-                return;
->>>>>>> 9529d1b70 (Upgrade fmi4c to v1.1)
             }
         }
     }
@@ -1014,36 +999,24 @@ public:
 
 
             //Setup experiment
-<<<<<<< HEAD
             addDebugMessage("Calling: fmi2SetupExperiment");
-            status = fmi2_setupExperiment(fmu, fmi2True, mTolerance, mTime, fmi2False, 0.0);
-=======
             status = fmi2_setupExperiment(fmi2_instance, fmi2True, mTolerance, mTime, fmi2False, 0.0);
->>>>>>> 9529d1b70 (Upgrade fmi4c to v1.1)
             if(status != fmi2OK) {
                 stopSimulation("fmi2_setupExperiment() failed");
                 return;
             }
     
             //Enter initialization mode
-<<<<<<< HEAD
             addDebugMessage("Calling: fmi2EnterInitializationMode");
-            status = fmi2_enterInitializationMode(fmu);
-=======
             status = fmi2_enterInitializationMode(fmi2_instance);
->>>>>>> 9529d1b70 (Upgrade fmi4c to v1.1)
             if(status != fmi2OK) {
                 stopSimulation("fmi2EnterInitializationMode() failed");
                 return;
             }
     
             //Exit initialization mode
-<<<<<<< HEAD
             addDebugMessage("Calling: fmi2ExitInitializationMode");
-            status = fmi2_exitInitializationMode(fmu);
-=======
             status = fmi2_exitInitializationMode(fmi2_instance);
->>>>>>> 9529d1b70 (Upgrade fmi4c to v1.1)
             if(status != fmi2OK) {
                 stopSimulation("fmi3ExitInitializationMode() failed");
                 return;
@@ -1215,12 +1188,8 @@ public:
             }
 
             //Exit initialization mode
-<<<<<<< HEAD
             addDebugMessage("Calling: fmi3ExitrInitializationMode");
-            status = fmi3_exitInitializationMode(fmu);
-=======
             status = fmi3_exitInitializationMode(fmi3_instance);
->>>>>>> 9529d1b70 (Upgrade fmi4c to v1.1)
             if(status != fmi3OK) {
                 stopSimulation("fmi3ExitInitializationMode() failed");
                 return;
@@ -1447,62 +1416,50 @@ public:
             if(fmi1_instance == NULL) {
                 return;
             }
-<<<<<<< HEAD
             if(mReinstantiate)
             {
                 addDebugMessage("Calling: fmi1Terminate");
-                fmi1_terminate(fmu);
+                fmi1_terminate(fmi1_instance);
                 addDebugMessage("Calling: fmi1FreeSlaveInstance");
                 mIsInstantiated = false;
-                fmi1_freeSlaveInstance(fmu);
+                fmi1_freeSlaveInstance(fmi1_instance);
             }
             else {
                 addDebugMessage("Calling: fmi1Reset");
-                fmi1_resetSlave(fmu);
+                fmi1_resetSlave(fmi1_instance);
             }
-=======
-            fmi1_resetSlave(fmi1_instance);
->>>>>>> 9529d1b70 (Upgrade fmi4c to v1.1)
         }
         else if(mFmiVersion == fmiVersion2) {
             if(fmi2_instance == NULL) {
                 return;
             }
-<<<<<<< HEAD
             if(mReinstantiate) {
                 addDebugMessage("Calling: fmi2Terminate");
-                fmi2_terminate(fmu);
+                fmi2_terminate(fmi2_instance);
                 addDebugMessage("Calling: fmi2FreeInstance");
                 mIsInstantiated = false;
-                fmi2_freeInstance(fmu);
+                fmi2_freeInstance(fmi2_instance);
             }
             else {
                 addDebugMessage("Calling: fmi2Reset");
-                fmi2_reset(fmu);
+                fmi2_reset(fmi2_instance);
             }
-=======
-            fmi2_reset(fmi2_instance);
->>>>>>> 9529d1b70 (Upgrade fmi4c to v1.1)
         }
         else {
             if(fmi3_instance == NULL) {
                 return;
             }
-<<<<<<< HEAD
             if(mReinstantiate) {
                 addDebugMessage("Calling: fmi3Terminate");
-                fmi3_terminate(fmu);
+                fmi3_terminate(fmi3_instance);
                 addDebugMessage("Calling: fmi3FreeInstance");
                 mIsInstantiated = false;
-                fmi3_freeInstance(fmu);
+                fmi3_freeInstance(fmi3_instance);
             }
             else {
                 addDebugMessage("Calling: fmi3Reset");
-                fmi3_reset(fmu);
+                fmi3_reset(fmi3_instance);
             }
-=======
-            fmi3_reset(fmi3_instance);
->>>>>>> 9529d1b70 (Upgrade fmi4c to v1.1)
         }
     }
 
@@ -1512,13 +1469,9 @@ public:
             if(NULL == fmu) {
                 return;
             }
-<<<<<<< HEAD
             addDebugMessage("Calling: fmi3FreeSlaveInstance");
-            fmi1_freeSlaveInstance(fmu);
             mIsInstantiated = false;
-=======
             fmi1_freeSlaveInstance(fmi1_instance);
->>>>>>> 9529d1b70 (Upgrade fmi4c to v1.1)
             fmi4c_freeFmu(fmu);
             fmi1_instance = NULL;
             fmu = NULL;
@@ -1527,13 +1480,9 @@ public:
             if(NULL == fmu) {
                 return;
             }
-<<<<<<< HEAD
             addDebugMessage("Calling: fmi2FreeInstance");
             mIsInstantiated = false;
-            fmi2_freeInstance(fmu);
-=======
             fmi2_freeInstance(fmi2_instance);
->>>>>>> 9529d1b70 (Upgrade fmi4c to v1.1)
             fmi4c_freeFmu(fmu);
             fmi2_instance = NULL;
             fmu = NULL;
@@ -1542,13 +1491,9 @@ public:
             if(NULL == fmu) {
                 return;
             }
-<<<<<<< HEAD
             addDebugMessage("Calling: fmi3FreeInstance");
             mIsInstantiated = false;
-            fmi3_freeInstance(fmu);
-=======
             fmi3_freeInstance(fmi3_instance);
->>>>>>> 9529d1b70 (Upgrade fmi4c to v1.1)
             fmi4c_freeFmu(fmu);
             fmi3_instance = NULL;
             fmu = NULL;
