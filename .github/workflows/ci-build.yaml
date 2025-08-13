@@ -11,6 +11,11 @@ jobs:
       HOPSAN_BUILD_QT_HOME: 'D:\a\hopsan\Qt\5.15.2\win64_msvc2022_64'
       HOPSAN_BUILD_MINGW_HOME: 'WeDoNotWantMingwInPATH'
     steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
