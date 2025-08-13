@@ -28,7 +28,7 @@
 #include <QColor>
 #include <QString>
 #include <array>
-#include <qwt_symbol.h>
+#include "qwt_symbol.h"
 
 class PlotCurveStyle
 {

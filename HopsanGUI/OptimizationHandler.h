@@ -42,6 +42,7 @@
 #include "OpsWorker.h"
 #include "OpsEvaluator.h"
 #include "OpsMessageHandler.h"
+#include "qdatetime.h"
 
 //Forward declarations
 class ModelWidget;
@@ -170,6 +171,7 @@ private:
     Ops::Worker *mpWorker;
     AlgorithmT mAlgorithm;
     bool mIsRunning;
+    QDateTime mStartTime;
 
     QVector<ModelWidget *> mModelPtrs;
 
