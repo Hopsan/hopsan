@@ -1580,6 +1580,30 @@ void PlotMarker::setColor(QColor color)
     highlight(mIsHighlighted);
 }
 
+void PlotMarker::updatePosition()
+{
+    const QPointF plotPos = this->value();
+
+    const QwtPlot *plot = mpCurve->plot();
+    const QwtScaleMap &xMap = plot->canvasMap(mpCurve->xAxis());
+    const QwtScaleMap &yMap = plot->canvasMap(mpCurve->yAxis());
+
+    const int px = qRound(xMap.transform(plotPos.x()));
+    const int py = qRound(yMap.transform(plotPos.y()));
+    const QPoint canvasPos(px, py);
+
+
+    double dist = 0.0;
+    const int index = mpCurve->closestPoint(canvasPos, &dist);
+
+    if (index >= 0)
+    {
+        const QPointF closestPoint = mpCurve->sample(index);
+        this->setXValue(closestPoint.x());
+        this->setYValue(closestPoint.y());
+    }
+}
+
 void PlotMarker::highlight(bool tf)
 {
     QColor color = mpMarkerSymbol->pen().color();
@@ -1698,6 +1722,7 @@ MultiPlotMarker::MultiPlotMarker(QPoint pos, PlotArea *pPlotArea)
     //Create one marker per curve
     for(int i=0; i<curves.size(); ++i)
     {
+        connect(curves[i], SIGNAL(curveDataUpdated()), this, SLOT(updatePosition()));
         double x = curves[i]->sample(idx).x();
         double y = curves[i]->sample(idx).y();
 
@@ -1791,6 +1816,28 @@ void MultiPlotMarker::highlight(bool tf)
         mpDummyMarker->setLinePen(QColor("black"), 4, Qt::DotLine);
     else
         mpDummyMarker->setLinePen(QColor("black"), 2, Qt::DotLine);
+}
+
+
+void MultiPlotMarker::updatePosition()
+{
+    const QPointF plotPos = mPlotMarkerPtrs[0]->value();
+
+    const auto curve = mPlotMarkerPtrs[0]->getCurve();
+    const QwtPlot *plot = curve->plot();
+    const QwtScaleMap &xMap = plot->canvasMap(curve->xAxis());
+    const QwtScaleMap &yMap = plot->canvasMap(curve->yAxis());
+
+    const int px = qRound(xMap.transform(plotPos.x()));
+    const int py = qRound(yMap.transform(plotPos.y()));
+    const QPoint canvasPos(px, py);
+
+    double dist = 0.0;
+    const int index = curve->closestPoint(canvasPos, &dist);
+
+    if(index > 0) {
+        moveAll(index);
+    }
 }
 
 

@@ -2053,6 +2053,8 @@ void PlotArea::insertMarker(PlotCurve *pCurve, double x, double y, QString altLa
     mpQwtPlot->canvas()->installEventFilter(pMarker);
     mpQwtPlot->canvas()->setMouseTracking(true);
     pMarker->setMovable(movable);
+
+    connect(pCurve, SIGNAL(curveDataUpdated()), pMarker, SLOT(updatePosition()));
 }
 
 //! @brief Inserts a curve marker at the specified curve
