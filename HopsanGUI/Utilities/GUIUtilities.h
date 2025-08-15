@@ -83,7 +83,8 @@ bool verifyParameterValue(QString &rValue, const QString type, const QStringList
 QStringList getAllAccessibleSystemParameterNames(SystemObject* pSystem);
 
 double findSmallestValueGreaterThanZero(QVector<double> data);
-void splitWithRespectToQuotations(const QString str, const QChar c, QStringList &split);
+void splitWithRespectToQuotations(const QString &str, const QChar c, QStringList &split);
+bool containsOutsideQuotes(const QString &str, const QChar c);
 void splitRespectingQuotationsAndParanthesis(const QString str, const QChar c, QStringList &rSplit);
 void extractSectionsRespectingQuotationsAndParanthesis(const QString str, const QChar c, QStringList &rSplit, QList<int> &rSectionIndexes);
 void extractSections(const QString str, const QChar c, QStringList &rSplit, QList<int> &rSectionIndexes);
