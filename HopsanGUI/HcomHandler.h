@@ -136,6 +136,7 @@ private:
     void executeDisplayPlotWindowCommand(const QString cmd);
     void executeTogglePlotWindowVariableList(const QString cmd);
     void executeTogglePlotWindowCurveControls(const QString cmd);
+    void executeTogglePlotWindowLegends(const QString cmd);
     void executePlotCommand(const QString cmd);
     void executePlotLeftAxisCommand(const QString cmd);
     void executePlotRightAxisCommand(const QString cmd);
