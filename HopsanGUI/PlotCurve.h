@@ -257,6 +257,7 @@ public slots:
     void refreshLabel(const double x, const double y);
     void refreshLabel(const QString &label);
     void setColor(QColor color);
+    void updatePosition();
 
 private:
     void highlight(bool tf);
@@ -282,6 +283,7 @@ public:
     QwtPlotMarker *mpDummyMarker;       //Used to display the vertical line
 public slots:
     void highlight(bool tf);
+    void updatePosition();
 private slots:
     void moveAll(int idx);
 
