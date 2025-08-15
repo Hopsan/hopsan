@@ -83,8 +83,6 @@ public:
     void displayTimeStep(const QString timeStep);
     void dispalyStopTime(const QString stopTime);
 
-    void clearFocus();
-
 public slots:
     void displaySimulationTime(const QString startTime, const QString timeStep, const QString stopTime);
 

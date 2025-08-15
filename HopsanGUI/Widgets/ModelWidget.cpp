@@ -603,6 +603,7 @@ void ModelWidget::setSaved(bool value)
 
 bool ModelWidget::simulate_nonblocking()
 {
+    this->setFocus();
     this->lockModelEditingFull(true);
 
     // Save backup copy (if needed)

@@ -1608,7 +1608,6 @@ double MainWindow::getFinishTimeFromToolBar()
 
 void MainWindow::simulateKeyWasPressed()
 {
-    mpSimulationTimeEdit->clearFocus();
     emit simulateKeyPressed();
 }
 
@@ -1733,24 +1732,6 @@ void SimulationTimeEdit::dispalyStopTime(const QString stopTime)
 {
     mpStopTimeLineEdit->setText(stopTime);
 }
-
-void SimulationTimeEdit::clearFocus()
-{
-    if (mpStartTimeLineEdit->hasFocus())
-    {
-        mpStartTimeLineEdit->clearFocus();
-    }
-    if (mpStopTimeLineEdit->hasFocus())
-    {
-        mpStopTimeLineEdit->clearFocus();
-    }
-    if (mpTimeStepLineEdit->hasFocus())
-    {
-        mpTimeStepLineEdit->clearFocus();
-    }
-}
-
-
 
 void SimulationTimeEdit::emitSimTime()
 {
