@@ -792,6 +792,15 @@ void HcomHandler::createCommands()
     pwccCmd.group = "Plot Commands";
     mCmdList << pwccCmd;
 
+
+    HcomCommand pwleCmd;
+    pwleCmd.cmd = "pwle";
+    pwleCmd.description.append("Toggles plot window legends visibility");
+    pwleCmd.help.append(" Usage: pwle on/off");
+    pwleCmd.fnc = &HcomHandler::executeTogglePlotWindowLegends;
+    pwleCmd.group = "Plot Commands";
+    mCmdList << pwleCmd;
+
     HcomCommand chpvlCmd;
     chpvlCmd.cmd = "chpvl";
     chpvlCmd.description.append("Changes plot variables on left axis in current plot");
@@ -3054,6 +3063,23 @@ void HcomHandler::executeTogglePlotWindowCurveControls(const QString cmd)
     }
     else if(cmd == "off") {
         mpCurrentPlotWindow->toggleCurveControls(false);
+    }
+    else {
+        HCOMERR("Unknown argument: "+cmd);
+    }
+}
+
+void HcomHandler::executeTogglePlotWindowLegends(const QString cmd)
+{
+    if(getNumberOfCommandArguments(cmd) != 1) {
+        HCOMERR("Wrong number of arguments.");
+        return;
+    }
+    if(cmd == "on") {
+        mpCurrentPlotWindow->setLegendsVisible(true);
+    }
+    else if(cmd == "off") {
+        mpCurrentPlotWindow->setLegendsVisible(false);
     }
     else {
         HCOMERR("Unknown argument: "+cmd);
