@@ -1435,10 +1435,11 @@ void HcomHandler::executeCommand(QString cmd)
     if(cmd.isEmpty()) return;
 
     //Allow several commands on one line, separated by semicolon
-    if(cmd.contains(";"))
+    if(containsOutsideQuotes(cmd, ';'))
     {
-        QStringList cmdList = cmd.split(";");
-        for(const QString &tempCmd : cmdList) {
+        QStringList cmdList;
+        splitWithRespectToQuotations(cmd, ';', cmdList);
+        for(const QString &tempCmd : qAsConst(cmdList)) {
             executeCommand(tempCmd);
         }
         return;

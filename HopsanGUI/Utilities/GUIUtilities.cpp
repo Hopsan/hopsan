@@ -823,7 +823,7 @@ double findSmallestValueGreaterThanZero(QVector<double> data)
 //! @param str String to split
 //! @param c Character to split at
 //! @param split Reference to list with split strings
-void splitWithRespectToQuotations(const QString str, const QChar c, QStringList &split)
+void splitWithRespectToQuotations(const QString &str, const QChar c, QStringList &split)
 {
     bool withinQuotations=false;
     int start=0;
@@ -843,6 +843,23 @@ void splitWithRespectToQuotations(const QString str, const QChar c, QStringList 
         ++len;
     }
     split.append(str.mid(start,len));
+}
+
+
+//! @brief Checks if a string contains a character, but ignores all characters within quotations
+//! @param str String to search
+//! @param c Character to search for
+bool containsOutsideQuotes(const QString &str, const QChar c) {
+    bool withinQuotations = false;
+    for(int i=0; i<str.size(); ++i) {
+        if (str[i] == '"') {
+            withinQuotations = !withinQuotations;
+        }
+        else if(str[i] == c && !withinQuotations) {
+            return true;
+        }
+    }
+    return false;
 }
 
 //! @brief Splits a string at specified character, but does not split inside quotations and parenthesis
