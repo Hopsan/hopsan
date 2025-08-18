@@ -207,6 +207,18 @@ Changes current terminal plot window<br>
 Displays current terminal plot window<br>
  Usage: dipw [no arguments]
 
+\subsection pwvl pwvl
+Toggles plot window varible list visibility<br>
+ Usage: pwvl on/off
+
+\subsection pwcc pwcc
+Toggles plot window curve control visibility<br>
+ Usage: pwcc on/off
+
+\subsection pwle pwle
+Toggles plot window legends visibility<br>
+ Usage: pwle on/off
+
 \subsection chpvl chpvl
 Changes plot variables on left axis in current plot<br>
  Usage: chpvl [var1{s,c,t} var2{s,c,t} ... ]<br>
@@ -325,6 +337,68 @@ Load model or component parameters values from XML file (.hpf)<br>
  Usage: repa [filepath] [-c] <br>
   Flag -c for current visible system
 
+\section modelcommands Model Commands
+
+\subsection dico dico
+Display components<br>
+ Usage: dico<br>
+ Usage: dico [component]<br>
+ Example: Display all components starting with "x": \>\> dico x*
+
+\subsection load load
+Loads a model file<br>
+ Usage: load [filepath]
+
+\subsection revert revert
+Revert the current model<br>
+ Usage: revert
+
+\subsection loadr loadr
+Loads most recent model file<br>
+ Usage: loadr [no arguments]
+
+\subsection save save
+Saves current model<br>
+ Usage: save<br>
+ Usage: save [filepath]<br>
+  If no file path is specified, current model file is overwritten.
+
+\subsection reco reco
+Renames a component<br>
+ Usage: reco [oldname] [newname]
+
+\subsection rmco rmco
+Removes specified component(s)<br>
+ Usage: rmco [component]
+
+\subsection chtab chtab
+Changes current model tab<br>
+ Usage: chtab [index]
+
+\subsection adco adco
+Adds a new component to current model<br>
+ Usage: adco [typename] [name] -a [x-coord] [y-coord] [rot-angel]<br>
+ Usage: adco [typename] [name] -e [other] [east-offset] [rot-angel]<br>
+ Usage: adco [typename] [name] -w [other] [west-offset] [rot-angel]<br>
+ Usage: adco [typename] [name] -n [other] [north-offset] [rot-angel]<br>
+ Usage: adco [typename] [name] -s [other] [south-offset] [rot-angel]
+
+\subsection rpco rpco
+Replaces a component with a different type<br>
+ Usage: rpco [name] [typename]
+
+\subsection coco coco
+Connect components in current model<br>
+ Usage: coco [comp1] [port1] [comp2] [port2]
+
+\subsection unco unco
+List unconnected ports in current model<br>
+ Usage: unco [wildcard]
+
+\subsection crmo crmo
+Creates a new model<br>
+ Usage: crmo [no arguments]
+
 \section filecommands File Commands
 
 \subsection exec exec
@@ -425,70 +499,6 @@ Disables logging in specified ports<br>
 Enables logging in specified ports<br>
  Usage: elog [ports]
 
-\section modelcommands Model Commands
-
-\subsection dico dico
-Display components
- Usage: dico<br>
- Usage: dico [component]<br>
- <br>
- Example: Display all components starting with "x":<br>
- \>\> dico x*
- 
-\subsection load load
-Loads a model file<br>
- Usage: load [filepath]
-
-\subsection revert revert
-Revert the current model<br>
- Usage: revert
-
-\subsection loadr loadr
-Loads most recent model file<br>
- Usage: loadr [no arguments]
-
-\subsection save save
-Saves current model<br>
- Usage: save<br>
- Usage: save [filepath]<br>
-  If no file path is specified, current model file is overwritten.
-
-\subsection reco reco
-Renames a component<br>
- Usage: reco [oldname] [newname]
-
-\subsection rmco rmco
-Removes specified component(s)<br>
- Usage: rmco [component]
-
-\subsection chtab chtab
-Changes current model tab<br>
- Usage: chtab [index]
-
-\subsection adco adco
-Adds a new component to current model<br>
- Usage: adco [typename] [name] -a [x-coord] [y-coord] [rot-angel]<br>
- Usage: adco [typename] [name] -e [other] [east-offset] [rot-angel]<br>
- Usage: adco [typename] [name] -w [other] [west-offset] [rot-angel]<br>
- Usage: adco [typename] [name] -n [other] [north-offset] [rot-angel]<br>
- Usage: adco [typename] [name] -s [other] [south-offset] [rot-angel]
-
-\subsection rpco rpco
-Replaces a component with a different type<br>
- Usage: rpco [name] [typename]
-
-\subsection coco coco
-Connect components in current model<br>
- Usage: coco [comp1] [port1] [comp2] [port2]
-
-\subsection unco unco
-List unconnected ports in current model<br>
- Usage: unco [wildcard]
-
-\subsection crmo crmo
-Creates a new model<br>
- Usage: crmo [no arguments]
-
 \section othercommands Other Commands
 
 \subsection help help
@@ -575,6 +585,10 @@ Calls a pre-defined function<br>
 Sets terminal output on or off<br>
  Usage: echo [on/off]
 
+\subsection clear clear
+Clears terminal output<br>
+ Usage: clear
+
 \subsection semt semt
 Change mutli-trheading settings<br>
  Usage: semt [on/off] [numThreads] [algorithm]<br>
@@ -610,6 +624,10 @@ Usage: e = bdf2(f)
 \subsection ceil ceil()
 Rounds the value of each vector element to the smallest integer larger than the value<br>
 Usage: ceil(vector)
+
+\subsection count count()
+Counts number of components in model with specified type name.<br>
+Usage: count(typename)
 
 \subsection cut cut()
 Removes all samples x[i] for which y[i]<0.5<br>
