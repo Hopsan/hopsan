@@ -1302,7 +1302,7 @@ void HcomHandler::createCommands()
     HcomCommand clearCmd;
     clearCmd.cmd = "clear";
     clearCmd.description.append("Clears terminal output");
-    clearCmd.help.append(" Usage: echo");
+    clearCmd.help.append(" Usage: clear");
     clearCmd.fnc = &HcomHandler::executeClearCommand;
     mCmdList << clearCmd;
 
