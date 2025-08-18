@@ -30,15 +30,58 @@
 ******************************
     Version History
 ******************************
-2.22.1 (2024-09-26)
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+2.23.0 (2025-08-18)
+
+----- New Features -----
+- Support for DCP (Distributed Co-simulation Protocol) standard, both in slave and master mode
+- Re-enabled support for saving and loading plot window specifications to XML
+
+----- Enhancements -----
+- Graphical Interface
+    - Optimization log files now store start time and duration
+    - System parameters are now applied before simulation even if they are still being edited
+    - Improved scaling on high DPI monitors
+    - Plot markers are now automatically updated when changing plot data
+
+- FMI import/export:
+    - Added unit definitions, model structure and time variable to exported FMUs
+    - Added FMI compatibility information
+    - Option to reload FMU using right-click menu
+    - Option to reinstantiate an FMU before each simulation
+    - Imported FMUs now read variable units from specifications
+    - Support for port names for power ports in FMIWrapperQ component
+    - FMIWrapepr components now supports (and ignores) whitespaces in the "portspec" parameter
+    - Exported FMUs now use flat variable naming convention
+    - Dangling connectors are now remembered and reconnected when changing FMIWrapper path or portspecs
+- HCOM scripting:
+  - New function: count(typename): count number of components with specified type name that exists in the model
+  - New function: log10(x) - 10-base logarithm function
+  - New command: clear: Clears the terminal output
+  - New command: pwvl: Toggle plot window variable list visibility
+  - New command: pwcc: Toggle plot window curve controls visibility
+  - New command: pwle: Toggle plot window legends visibility
+
+
+----- Bugs -----
+- Fix lost mapping when pasting components with system parameters
+- Fix crash when calling HCOM exists() with no model open
+- Remove annoying debug outputs to the terminal
+- HCOM commands with string arguments can now handle semicolons
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+2.22.1 (2024-09-27)
+
 ----- Bug Fixes -----
-- HopsanGUI
-  - Fixed problem with workspace size
-  - Animation mode now keeps worksapce size
-  - FMIWrapper components now appear at the center of the model
-  - "adco" command in terminal will now add components on correct place
-  - Fixed minor problems with splash screen
-  - Model can no longer be edited during simulation
+- HCOM: Fix crash if trying to change non-existing parameter with same name as variable
+- Fix several problems with workspace canvas size
+- Use same canvas size for animation as for modelling
+
+----- Enhancements -----
+- To prevent crashes, models are now locked from editing during simulations
+- Clean up splash screen picture
+- Do not overwrite custon names for FMUs when reloading a model
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 2.22.0 (2024-05-27)
