@@ -139,13 +139,12 @@ QString Component::getTypeCQS() const
 //! @brief Set a parameter value to be mapped to a System parameter
 bool Component::setParameterValue(QString name, QString value, bool force)
 {
-    QMap<QString, QVector<Connector*> > connectionsBeforeReconfigure;
     if(((this->getTypeName() == "FMIWrapper" || this->getTypeName() == "FMIWrapperQ") && (name == "path" || name == "portspecs")) ||
        (this->getTypeName() == "DcpComponent" && name == "variables")) {
         //Remove old ports
         QList<Port*> ports = this->getPortListPtrs();
         for(const auto port : ports) {
-            connectionsBeforeReconfigure.insert(port->getName(), port->getAttachedConnectorPtrs());
+            mConnectionsBeforeReconfigure.insert(port->getName(), port->getAttachedConnectorPtrs());
             this->removeExternalPort(port->getName(), true);
         }
         this->getAppearanceData()->getPortAppearanceMap().clear();
@@ -215,15 +214,21 @@ bool Component::setParameterValue(QString name, QString value, bool force)
         }
 
         //Reconnect dangling connectors after reconfiguration
-        QMapIterator<QString,QVector<Connector*> > it(connectionsBeforeReconfigure);
+        QMapIterator<QString,QVector<Connector*> > it(mConnectionsBeforeReconfigure);
         while(it.hasNext()) {
             it.next();
             for(const auto &con : it.value()) {
-                if(con->getStartPort() == nullptr && con->getEndPort() != nullptr) {
-                    con->setStartPort(this->getPort(it.key())); //The start port was disconnected
+                if(con != nullptr && con->getStartPort() == nullptr && con->getEndPort() != nullptr) {
+                    auto port = this->getPort(it.key());
+                    if(port != nullptr) {
+                        con->setStartPort(this->getPort(it.key())); //The start port was disconnected
+                    }
                 }
-                if(con->getEndPort() == nullptr && con->getStartPort() != nullptr) {
-                    con->setEndPort(this->getPort(it.key()));   //The end port was disconneted
+                if(con != nullptr && con->getEndPort() == nullptr && con->getStartPort() != nullptr) {
+                    auto port = this->getPort(it.key());
+                    if(port != nullptr) {
+                        con->setEndPort(this->getPort(it.key()));   //The end port was disconneted
+                    }
                 }
 
                 con->finishCreation(false);  //Re-establish connection

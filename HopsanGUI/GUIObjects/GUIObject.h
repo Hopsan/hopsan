@@ -37,6 +37,7 @@
 #include <QGraphicsWidget>
 #include <QObject>
 #include <QPen>
+#include <GUIConnector.h>
 
 #include "common.h"
 
@@ -116,6 +117,7 @@ protected:
     bool mIsLocked = false;
     WorkspaceObjectSelectionBox *mpSelectionBox = nullptr;
     QPointF mPreviousPos;
+    QMap<QString, QVector<Connector*> > mConnectionsBeforeReconfigure;
 };
 
 
