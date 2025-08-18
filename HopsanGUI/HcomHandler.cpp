@@ -776,6 +776,31 @@ void HcomHandler::createCommands()
     dipwCmd.group = "Plot Commands";
     mCmdList << dipwCmd;
 
+    HcomCommand pwvlCmd;
+    pwvlCmd.cmd = "pwvl";
+    pwvlCmd.description.append("Toggles plot window varible list visibility");
+    pwvlCmd.help.append(" Usage: pwvl on/off");
+    pwvlCmd.fnc = &HcomHandler::executeTogglePlotWindowVariableList;
+    pwvlCmd.group = "Plot Commands";
+    mCmdList << pwvlCmd;
+
+    HcomCommand pwccCmd;
+    pwccCmd.cmd = "pwcc";
+    pwccCmd.description.append("Toggles plot window curve control visibility");
+    pwccCmd.help.append(" Usage: pwcc on/off");
+    pwccCmd.fnc = &HcomHandler::executeTogglePlotWindowCurveControls;
+    pwccCmd.group = "Plot Commands";
+    mCmdList << pwccCmd;
+
+
+    HcomCommand pwleCmd;
+    pwleCmd.cmd = "pwle";
+    pwleCmd.description.append("Toggles plot window legends visibility");
+    pwleCmd.help.append(" Usage: pwle on/off");
+    pwleCmd.fnc = &HcomHandler::executeTogglePlotWindowLegends;
+    pwleCmd.group = "Plot Commands";
+    mCmdList << pwleCmd;
+
     HcomCommand chpvlCmd;
     chpvlCmd.cmd = "chpvl";
     chpvlCmd.description.append("Changes plot variables on left axis in current plot");
@@ -1435,10 +1460,11 @@ void HcomHandler::executeCommand(QString cmd)
     if(cmd.isEmpty()) return;
 
     //Allow several commands on one line, separated by semicolon
-    if(cmd.contains(";"))
+    if(containsOutsideQuotes(cmd, ';'))
     {
-        QStringList cmdList = cmd.split(";");
-        for(const QString &tempCmd : cmdList) {
+        QStringList cmdList;
+        splitWithRespectToQuotations(cmd, ';', cmdList);
+        for(const QString &tempCmd : qAsConst(cmdList)) {
             executeCommand(tempCmd);
         }
         return;
@@ -3003,6 +3029,61 @@ void HcomHandler::executeDisplayPlotWindowCommand(const QString /*cmd*/)
     else
     {
         HCOMPRINT("Current plotwindow not set");
+    }
+}
+
+
+//! @brief Execute function for "pwvl" command
+void HcomHandler::executeTogglePlotWindowVariableList(const QString cmd)
+{
+    if(getNumberOfCommandArguments(cmd) != 1) {
+        HCOMERR("Wrong number of arguments.");
+        return;
+    }
+    if(cmd == "on") {
+        mpCurrentPlotWindow->toggleVariablesWidget(true);
+    }
+    else if(cmd == "off") {
+        mpCurrentPlotWindow->toggleVariablesWidget(false);
+    }
+    else {
+        HCOMERR("Unknown argument: "+cmd);
+    }
+}
+
+
+//! @brief Execute function for "pwcc" command
+void HcomHandler::executeTogglePlotWindowCurveControls(const QString cmd)
+{
+    if(getNumberOfCommandArguments(cmd) != 1) {
+        HCOMERR("Wrong number of arguments.");
+        return;
+    }
+    if(cmd == "on") {
+        mpCurrentPlotWindow->toggleCurveControls(true);
+    }
+    else if(cmd == "off") {
+        mpCurrentPlotWindow->toggleCurveControls(false);
+    }
+    else {
+        HCOMERR("Unknown argument: "+cmd);
+    }
+}
+
+void HcomHandler::executeTogglePlotWindowLegends(const QString cmd)
+{
+    if(getNumberOfCommandArguments(cmd) != 1) {
+        HCOMERR("Wrong number of arguments.");
+        return;
+    }
+    if(cmd == "on") {
+        mpCurrentPlotWindow->setLegendsVisible(true);
+    }
+    else if(cmd == "off") {
+        mpCurrentPlotWindow->setLegendsVisible(false);
+    }
+    else {
+        HCOMERR("Unknown argument: "+cmd);
     }
 }
 
