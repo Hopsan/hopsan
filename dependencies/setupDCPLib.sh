@@ -14,7 +14,7 @@ xercesdir=${basedir}/xerces
 ./download-dependencies.py ${name}
 
 #Patch code to fix bug
-patch dcplib-code/include/core/dcp/model/pdu/IpToStr.hpp dcplib-patch.txt
+patch --forward dcplib-code/include/core/dcp/model/pdu/IpToStr.hpp dcplib-patch.txt
 
 # Include general settings
 source setHopsanBuildPaths.sh
@@ -24,7 +24,16 @@ mkdir -p $builddir
 cd $builddir
 
 # Generate makefiles
-cmake -Wno-dev -DLOGGING=ON -DASIO_ROOT="${basedir}/asio-code" -DXercesC_LIBRARY="${xercesdir}/bin/libxerces-c" -DXercesC_INCLUDE_DIR="${xercesdir}/include" -DXercesC_VERSION="3.2.2" -DZIP_LIBRARY="${basedir}/libzip/bin/libzip" -DZIP_INCLUDE_DIR="${basedir}/libzip/include" -DCMAKE_INSTALL_PREFIX="${installdir}" "${codedir}"
+set -x
+cmake -Wno-dev -DLOGGING=ON \
+      -DASIO_ROOT="${basedir}/asio-code" \
+      -DXercesC_LIBRARY="${xercesdir}/lib/libxerces-c.so" \
+      -DXercesC_INCLUDE_DIR="${xercesdir}/include" \
+      -DXercesC_VERSION="3.2.2" \
+      -DZIP_LIBRARY="${basedir}/libzip/lib/libzip.so" \
+      -DZIP_INCLUDE_DIR="${basedir}/libzip/include" \
+      -DCMAKE_INSTALL_PREFIX="${installdir}" "${codedir}"
+set +x
 
 # Build and install
 cmake --build . --parallel 8
