@@ -23,6 +23,7 @@ override_dh_auto_build:
 	cd dependencies; ./setupXerces.sh
 	cd dependencies; ./setupDCPLib.sh
 	cd dependencies; ./setupLibzip.sh
+	cd dependencies; ./setupAsio.sh
 
 #       Now build Hopsan using qmake
 	mkdir -p hopsanShadowBuild
