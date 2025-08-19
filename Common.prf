@@ -13,10 +13,12 @@ CONFIG(debug, debug|release) {
 # O3 = highest optimization level for speed
 CONFIG(debug, debug|release) {
   #QMAKE_CXXFLAGS += -Og
-  QMAKE_CXXFLAGS += -v -Wa,-mbig-obj
+  QMAKE_CXXFLAGS += -v
+  win32:QMAKE_CXXFLAGS += -Wa,-mbig-obj
 }
 CONFIG(release, debug|release) {
-  QMAKE_CXXFLAGS += -O3 -v -Wa,-mbig-obj
+  QMAKE_CXXFLAGS += -O3 -v
+  win32:QMAKE_CXXFLAGS += -Wa,-mbig-obj
 }
 message("QMAKE_CXXFLAGS: $${QMAKE_CXXFLAGS}")
 
