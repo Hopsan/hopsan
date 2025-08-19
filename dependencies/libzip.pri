@@ -3,7 +3,7 @@ zlib_dir = $${PWD}/zlib
 message(libzip_dir)
 exists($${libzip_dir}) {
   INCLUDEPATH *= $${libzip_dir}/include
-  LIBS *= -L$${libzip_dir}/bin -lzip
+  LIBS *= -L$${libzip_dir}/bin -L$${libzip_dir}/lib -lzip
 
   macx {
   # Not supported

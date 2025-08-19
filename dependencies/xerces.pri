@@ -2,7 +2,7 @@ xerces_dir = $${PWD}/xerces
 
 exists($${xerces_dir}) {
   INCLUDEPATH *= $${xerces_dir}/include
-  LIBS *= -L$${xerces_dir}/bin -lxerces-c
+  LIBS *= -L$${xerces_dir}/bin -L$${xerces_dir}/lib -lxerces-c
 
   macx {
   # Not supported
