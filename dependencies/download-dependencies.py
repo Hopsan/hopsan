@@ -318,6 +318,10 @@ class DependenciesXML:
             if len(files_matching_platform) == 0:
                 files_matching_platform = files_without_platform
 
+            if not files_matching_platform:
+                print('No files matches this platform. Skipping.')
+                continue;
+
             # Trigger the actual download and unpacking
             this_verified = False
             for releasefile in files_matching_platform:
@@ -327,6 +331,8 @@ class DependenciesXML:
                         clear_and_unpack(file_name, dep_name)
                 this_verified |= verified_ok
             all_verified &= this_verified
+            if not this_verified:
+              print('Failed!')
         return all_verified
 
 
