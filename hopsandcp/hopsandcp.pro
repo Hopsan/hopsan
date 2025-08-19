@@ -14,7 +14,7 @@ QMAKE_CXXFLAGS += -Wno-comment -Wno-switch -Wno-ignored-qualifiers -Wno-sign-com
 
 QT -= core gui
 
-LIBS *= -lws2_32
+win32:LIBS *= -lws2_32
 
 #--------------------------------------------------
 # Add the include path to our self, (hopsandcp)
