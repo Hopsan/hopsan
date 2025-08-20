@@ -80,6 +80,8 @@ srcDeps=${srcDir}/dependencies
 install_dir  ${srcDeps}/katex                                  $dstDir/dependencies
 install_dir  ${srcDeps}/fmilibrary                             $dstDir/dependencies
 install_dir  ${srcDeps}/fmi4c                                  $dstDir/dependencies
+install_dir  ${srcDeps}/xerces                                 $dstDir/dependencies
+install_dir  ${srcDeps}/libzip                                 $dstDir/dependencies
 
 install_dynamic_libs_if_exist  ${srcDeps}/qwt/lib         libqwt            $dstDir/bin
 install_dynamic_libs_if_exist  ${srcDeps}/zeromq/lib      libzmq            $dstDir/bin
@@ -87,6 +89,9 @@ install_dynamic_libs_if_exist  ${srcDeps}/fmilibrary/lib  libfmilib_shared  $dst
 install_dynamic_libs_if_exist  ${srcDeps}/discount/lib    libmarkdown       $dstDir/bin
 install_dynamic_libs_if_exist  ${srcDeps}/hdf5/lib        libhdf5           $dstDir/bin
 install_dynamic_libs_if_exist  ${srcDeps}/hdf5/lib        libhdf5_cpp       $dstDir/bin
+install_dynamic_libs_if_exist  ${srcDeps}/xerces/lib      libxerces-c       $dstDir/bin
+install_dynamic_libs_if_exist  ${srcDeps}/xerces/lib      libxerces-c-3.2   $dstDir/bin
+install_dynamic_libs_if_exist  ${srcDeps}/libzip/lib      libzip            $dstDir/bin
 
 # Install additional files
 # =====================

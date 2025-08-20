@@ -20,6 +20,7 @@ exists($${xerces_dir}) {
   } else {
     # Note! The RPATH is absolute and only meant for dev builds in the IDE, on release runtime paths should be stripped
     unix:QMAKE_RPATHDIR *= $${xerces_dir/bin}
+    unix:QMAKE_RPATHDIR *= $${xerces_dir/lib}
   }
 }
 

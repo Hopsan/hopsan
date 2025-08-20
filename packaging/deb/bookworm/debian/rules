@@ -16,14 +16,14 @@ override_dh_auto_configure:
 override_dh_auto_build:
 #       First build dependencies
 	packaging/fixPythonShebang.sh ./ 3
+	cd dependencies; ./setupAsio.sh
 	cd dependencies; ./setupFMILibrary.sh
 	cd dependencies; ./setupFmi4c.sh
 	cd dependencies; ./setupKatex.sh
 	cd dependencies; ./setupTclap.sh
 	cd dependencies; ./setupXerces.sh
-	cd dependencies; ./setupDCPLib.sh
 	cd dependencies; ./setupLibzip.sh
-	cd dependencies; ./setupAsio.sh
+	cd dependencies; ./setupDCPLib.sh
 
 #       Now build Hopsan using qmake
 	mkdir -p hopsanShadowBuild

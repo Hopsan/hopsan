@@ -81,6 +81,7 @@ have_hdf5(){
 #--------------------------------------------------------
 
 include($${PWD}/../dependencies/libzip.pri)
+include($${PWD}/../dependencies/xerces.pri)
 
 #--------------------------------------------------------
 # Set HopsanCore Paths
