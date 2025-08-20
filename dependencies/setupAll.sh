@@ -1,4 +1,5 @@
 #!/bin/bash
+./setupAsio.sh
 ./setupDiscount.sh
 ./setupFmi4c.sh
 ./setupFMILibrary.sh
