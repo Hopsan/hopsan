@@ -261,9 +261,17 @@ bool HopsanFMIGenerator::generateToFmu(QString savePath, ComponentSystem *pSyste
     QList<ParameterSpecification> pars;
     getParameters(pars, pSystem);
 
-    dataStr.append("\n#define NUMDATAPTRS "+QString::number(vars.size()+pars.size()));
+    if(version == 3) {
+        dataStr.append("\n#define NUMDATAPTRS "+QString::number(vars.size()+pars.size()+1));
+    }
+    else {
+        dataStr.append("\n#define NUMDATAPTRS "+QString::number(vars.size()+pars.size()));
+    }
     dataStr.append("\n#define INITDATAPTRS ");
     int vr = 1; //Value reference 0 reserved for timestep
+    if(version == 3) {
+        vr = 2; //In FMI 3, 0 = time and 1 = timestep
+    }
     for(const auto &var : vars) {
         dataStr.append("\\\nfmu->dataPtrs["+QString::number(vr)+"] = fmu->pSystem");
         for(const auto &system : var.systemHierarchy) {

@@ -280,10 +280,13 @@ fmi3Status fmi3GetFloat64(fmi3Instance instance,
     fmuContext *fmu =(fmuContext*)instance;
     fmi3Status status = fmi3OK;
     for(size_t i=0; i<nValueReferences; ++i) {
-        if(valueReferences[i] >= NUMDATAPTRS+1) {
+        if(valueReferences[i] >= NUMDATAPTRS+2) {
             status = fmi3Error;   //Illegal value reference
         }
-        else if(valueReferences[i]==0) {
+        else if(valueReferences[i] == 0) {
+            values[i] = fmu->pSystem->getTime();
+        }
+        else if(valueReferences[i] == 1) {
             values[i] = fmu->pSystem->getDesiredTimeStep();
         }
         else {
@@ -307,7 +310,7 @@ fmi3Status fmi3SetFloat64(fmi3Instance instance,
             status = fmi3Error;
         }
         else {
-            if(valueReferences[i] == 0) {
+            if(valueReferences[i] == 1) {
                 if(state == Instantiated || state == Initializing) {
                     fmu->pSystem->setDesiredTimestep(values[i]);
                 }
