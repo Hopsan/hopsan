@@ -1243,7 +1243,7 @@ QString Expression::toString() const
 
     //Simplify output
     ret.replace("+-", "-");
-    ret.replace("--", "");
+    ret.replace("--", "+");
 
     return ret;
 }
@@ -2981,6 +2981,9 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
             if(nNeg % 2 != 0)
             {
                 mFactors << Expression("-1");
+            }
+            else if(mFactors.isEmpty()) {
+                mFactors << Expression("1");
             }
         }
     }
