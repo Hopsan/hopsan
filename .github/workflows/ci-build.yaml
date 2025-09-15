@@ -76,7 +76,7 @@ jobs:
       - name: Install Packages
         run: |
           sudo apt-get update
-          sudo apt-get install qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools qtbase5-private-dev libqt5webkit5-dev libqt5svg5-dev libqt5opengl5-dev libhdf5-dev libmarkdown2-dev libmsgpack-dev libqwt-qt5-dev libzmq3-dev zlib1g zipcmp ziptool zipmerge
+          sudo apt-get install qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools qtbase5-private-dev libqt5webkit5-dev libqt5svg5-dev libqt5opengl5-dev libhdf5-dev libmarkdown2-dev libmsgpack-dev libqwt-qt5-dev libzmq3-dev zlib1g zipcmp ziptool zipmerge qtwebengine5-dev
 
       - name: Checkout
         uses: actions/checkout@v3
