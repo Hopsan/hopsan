@@ -15,12 +15,17 @@ CONFIG -= app_bundle
 
 isEqual(QT_MAJOR_VERSION, 5){
     QT += widgets printsupport
-    qtHaveModule(webkitwidgets) {
-        QT += webkitwidgets
-        DEFINES *= USEWEBKIT
-        message(Using WebKit)
-    } else {
-        message(WebKit is not available)
+    unix {
+        QT += webenginewidgets
+    }
+    win32 {
+        qtHaveModule(webkitwidgets) {
+            QT += webkitwidgets
+            #DEFINES *= USEWEBKIT
+            message(Using WebKit)
+        } else {
+            message(WebKit is not available)
+        }
     }
 } else {
     QT += webkit
