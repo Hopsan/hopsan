@@ -21,7 +21,7 @@ isEqual(QT_MAJOR_VERSION, 5){
     win32 {
         qtHaveModule(webkitwidgets) {
             QT += webkitwidgets
-            #DEFINES *= USEWEBKIT
+            DEFINES *= USEWEBKIT
             message(Using WebKit)
         } else {
             message(WebKit is not available)
