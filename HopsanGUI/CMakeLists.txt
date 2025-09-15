@@ -6,7 +6,11 @@ if(WIN32)
   set(CMAKE_SHARED_LIBRARY_PREFIX "")
 endif()
 
+if(WIN32)
 find_package(Qt5 COMPONENTS Core Gui Widgets Xml Svg Network Test PrintSupport REQUIRED)
+else()
+find_package(Qt5 COMPONENTS Core Gui Widgets Xml Svg Network Test PrintSupport WebEngineWidgets REQUIRED)
+endif()
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
@@ -35,6 +39,9 @@ endif()
 
 target_link_libraries(${target_name} Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Xml Qt5::Svg Qt5::Network Qt5::Test Qt5::PrintSupport
     qwt hopsancore hopsangeneratorgui symhop ops hopsandcp xercesc )
+if(UNIX)
+target_link_libraries(${target_name} Qt5::WebEngineWidgets)
+endif()
 
 target_link_optional_libraries(${target_name} libhopsanremoteclient hopsanhdf5exporter discount katex)
 
