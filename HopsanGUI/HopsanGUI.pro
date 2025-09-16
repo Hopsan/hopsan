@@ -17,6 +17,7 @@ isEqual(QT_MAJOR_VERSION, 5){
     QT += widgets printsupport
     unix {
         QT += webenginewidgets
+        DEFINES *= USEWEBENGINE
     }
     win32 {
         qtHaveModule(webkitwidgets) {
