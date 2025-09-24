@@ -827,12 +827,7 @@ bool HopsanFMIGenerator::generateModelDescriptionXmlFile(ComponentSystem *pSyste
         long vr = 2;    //! vr = 0 and vr = 1 are reserved for time and timestep
         for(const auto &var : qAsConst(vars)) {
             mdWriter.writeStartElement("Float64");
-            if(var.systemHierarchy.isEmpty()) {
-                mdWriter.writeAttribute("name", var.componentName+"."+var.portName+"."+var.dataName);
-            }
-            else {
-                mdWriter.writeAttribute("name", var.systemHierarchy.join(".")+"."+var.componentName+"."+var.portName+"."+var.dataName);
-            }
+            mdWriter.writeAttribute("name", var.getName());
             mdWriter.writeAttribute("valueReference", QString::number(vr));
             mdWriter.writeAttribute("variability", "continuous");
             if(var.causality == ModelVariableCausality::Input) {

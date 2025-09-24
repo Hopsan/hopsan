@@ -905,6 +905,9 @@ ModelVariableSpecification::ModelVariableSpecification(QStringList systemHierarc
 QString ModelVariableSpecification::getName() const
 {
     if(systemHierarchy.isEmpty()) {
+        if(dataName == "y") {
+            return componentName;   //Only use component name for signal interfaces (does not affect DLL, only XML)
+        }
         return componentName+"."+portName+"."+dataName;
     }
     else {
