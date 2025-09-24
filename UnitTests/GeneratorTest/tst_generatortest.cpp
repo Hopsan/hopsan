@@ -430,9 +430,9 @@ private slots:
         Component *pSourceComponent = mHopsanCore.createComponent("SignalSineWave");
         pSystem->addComponent(pSourceComponent);
         Port *pPort1 = pSourceComponent->getPort("out");
-        Port *pPort2 = pFmuComponent->getPort("in1_out_y");
+        Port *pPort2 = pFmuComponent->getPort("in1");
         QVERIFY2(pPort2 != nullptr, "Input port is missing from imported FMU");
-        Port *pPort3 = pFmuComponent->getPort("out1_in_y");
+        Port *pPort3 = pFmuComponent->getPort("out1");
         QVERIFY2(pPort3 != nullptr, "Output port is missing from imported FMU");
         pSystem->connect(pPort1, pPort2);
         pSystem->initialize(0, 100);
