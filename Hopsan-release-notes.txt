@@ -32,6 +32,20 @@
 ******************************
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
+2.23.1 (2025-08-18)
+
+----- Enhancements -----
+- When exporting log data to Matlab, the generation is now only appended to the variable names when there are multiple generations of the same variable in the export data
+- Time measurement tool now scales the measured time consistently when changing from component-wise and type-wise view
+
+----- Bug -----
+- Fix offset in value references of exported FMUs with FMI 3
+- The SymHop expression "1*1" is now correctly simplified to "1" (used to be "")
+
+----- General -----
+- Change from QtWebKit to QtWebEngine for displaying HTML on Linux (Windows still uses QtWebKit)
+
+---------------------------------------------------------------------------------------------------------------------------------------------
 2.23.0 (2025-08-18)
 
 ----- New Features -----
