@@ -2978,12 +2978,12 @@ void SystemObject::measureSimulationTime()
         {
             int i=typeNames.indexOf(typeName);
             typeCounter[i] = typeCounter[i]+1;
-            typeTimes[i] = (typeTimes[i] + times[n]/(double(nSteps)*(typeCounter[i]-1)))*(typeCounter[i]-1)/(typeCounter[i]);
+            typeTimes[i] = (typeTimes[i] + times[n]/((typeCounter[i]-1)))*(typeCounter[i]-1)/(typeCounter[i]);
         }
         else
         {
             typeNames.append(typeName);
-            typeTimes.append(times[n]/double(nSteps));
+            typeTimes.append(times[n]);
             typeCounter.append(1);
         }
     }
@@ -3057,8 +3057,8 @@ void SystemObject::measureSimulationTime()
     mpTypeTable->setSelectionBehavior(QAbstractItemView::SelectRows);
 
     QGroupBox *pHowToShowResultsGroupBox = new QGroupBox(pDialog);
-    QRadioButton *pTypeRadioButton = new QRadioButton(tr("Show results for component types"));
-    QRadioButton *pComponentRadioButton = new QRadioButton(tr("Show results for individual components"));
+    QRadioButton *pTypeRadioButton = new QRadioButton(tr("Show average execution time for each component type"));
+    QRadioButton *pComponentRadioButton = new QRadioButton(tr("Show execution time for each individual component"));
     pTypeRadioButton->setChecked(true);
     QVBoxLayout *pHowToShowResultsLayout = new QVBoxLayout;
     pHowToShowResultsLayout->addWidget(pTypeRadioButton);
