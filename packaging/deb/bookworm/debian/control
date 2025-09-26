@@ -3,7 +3,6 @@ Maintainer: Peter Nordin <jpn.peter@gmail.com>
 Section: contrib/science
 Priority: optional
 Build-Depends: cmake,
-               cppzmq-dev,
                debhelper (>= 12~),
                fakeroot,
                libhdf5-dev,
@@ -11,7 +10,7 @@ Build-Depends: cmake,
                libmsgpack-dev,
                libqt5opengl5-dev,
                libqt5svg5-dev,
-               libqt5webkit5-dev,
+               qtwebengine5-dev,
                libqwt-qt5-dev,
                libtool-bin,
                libzmq3-dev,

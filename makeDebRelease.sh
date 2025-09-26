@@ -16,12 +16,13 @@ name=hopsan
 devversion=2.23.1
 
 # Pbuilder dists and archs
-debianDistArchArray=( bookworm:amd64:bookworm
-                      bullseye:amd64:bullseye
-                      buster:amd64:qt5py3_buster )
-ubuntuDistArchArray=( lunar:amd64:bookworm
-                      jammy:amd64:bullseye
-                      focal:amd64:focal )
+debianDistArchArray=( trixie:amd64:trixie
+                      bookworm:amd64:bookworm
+                      bullseye:amd64:bullseye )
+ubuntuDistArchArray=( plucky:amd64:trixie
+                      noble:amd64:trixie
+                      jammy:amd64:bookworm
+                      focal:amd64:bullseye )
 
 # Pbuilder mirrors
 ubuntuMirror=http://se.archive.ubuntu.com/ubuntu/

@@ -1,0 +1,23 @@
+#!/bin/sh
+set -e
+
+# This POSTRM script removes the placeholder file from /opt
+# after remove or purge of hopsan
+
+
+case "$1" in
+  remove)
+    rm -f /opt/.hopsan_placeholder
+    ;;
+  purge)
+    rm -f /opt/.hopsan_placeholder
+    ;;
+
+  *)
+    #Do nothing
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0
