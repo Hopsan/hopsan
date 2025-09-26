@@ -13,7 +13,7 @@ set -u
 hopsancode_root=$(pwd)
 pbuilderWorkDir=/var/tmp/deb_hopsan/pbuilder
 name=hopsan
-devversion=2.23.0
+devversion=2.23.1
 
 # Pbuilder dists and archs
 debianDistArchArray=( bookworm:amd64:bookworm

@@ -33,7 +33,7 @@
 // not the latest revision that you get when compiling the external component.
 #include "HopsanCoreGitVersion.h"
 
-#define HOPSANBASEVERSION "2.23.0"
+#define HOPSANBASEVERSION "2.23.1"
 #define HOPSANCOREVERSION HOPSANBASEVERSION "." TO_STR(HOPSANCORE_COMMIT_TIMESTAMP)
 #define HOPSANCOREMODELFILEVERSION "0.4"
 
