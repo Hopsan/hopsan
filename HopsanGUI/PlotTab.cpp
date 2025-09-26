@@ -543,7 +543,7 @@ void PlotTab::exportToMatlab()
             if(pArea->hasCustomXData())
             {
                 //! @todo need smart function to auto select copy or direct access depending on cached or not (also in other places)
-                QString varName = pArea->getCustomXData()->getSmartName("_")+"_"+QString::number(pCurve->getCurveGeneration());
+                QString varName = pArea->getCustomXData()->getSmartName("_");
                 if(!addedVariablesX.contains(varName)) {
                     fileStream << varName << "=[";
                     QVector<double> xvec = pArea->getCustomXData()->getDataVectorCopy();
@@ -558,7 +558,7 @@ void PlotTab::exportToMatlab()
             else
             {
                 //! @todo what if not timevector then this will crash
-                QString varName = pCurve->getSharedTimeOrFrequencyVariable()->getSmartName("_")+"_"+QString::number(pCurve->getCurveGeneration());
+                QString varName = pCurve->getSharedTimeOrFrequencyVariable()->getSmartName("_");
                 if(!addedVariablesX.contains(varName)) {
                     fileStream << varName << "=[";
                     QVector<double> time = pCurve->getSharedTimeOrFrequencyVariable()->getDataVectorCopy();
@@ -571,8 +571,24 @@ void PlotTab::exportToMatlab()
                 addedVariablesX.append(varName);
             }
 
+            //Check if this variable is plotted multiple times with different generations
+            bool includeGenerationInVariableName = false;
+            for(const auto &pCurve2 : qAsConst(pArea->getCurves())) {
+                QString name1 = pCurve->getSharedVectorVariable()->getFullVariableName();
+                QString name2 = pCurve2->getSharedVectorVariable()->getFullVariableName();
+                if(name1 == name2) {
+                    if(pCurve->getCurveGeneration() != pCurve2->getCurveGeneration()) {
+                        includeGenerationInVariableName = true;
+                        break;
+                    }
+                }
+            }
 
-            QString varName = pCurve->getSharedVectorVariable()->getSmartName("_")+"_"+QString::number(pCurve->getCurveGeneration());
+            QString varName = pCurve->getSharedVectorVariable()->getSmartName("_");
+            if(includeGenerationInVariableName) {
+                varName.append("_"+QString::number(pCurve->getCurveGeneration()));
+            }
+
             addedVariablesY.append(varName);
             fileStream << varName << "=[";                                          //Write data vector
             QVector<double> data=pCurve->getVariableDataCopy();
