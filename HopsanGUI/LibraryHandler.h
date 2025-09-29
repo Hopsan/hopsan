@@ -166,7 +166,6 @@ public:
 
     void loadLibrary(QString loadPath, LibraryTypeEnumT type=ExternalLib, HiddenVisibleEnumT visibility=Visible, RecompileEnumT recompile=Recompile);
     bool unloadLibraryByComponentType(QString typeName);
-    bool unloadLibraryFMU(QString fmuName);
     bool unloadLibrary(SharedComponentLibraryPtrT pLibrary);
     bool isTypeNamesOkToUnload(const QStringList &typeNames);
     bool isLibraryLoaded(const QString &rLibraryXmlPath, const QString &rLibraryFilePath="") const;
@@ -186,7 +185,6 @@ public:
 
     QStringList getLoadedTypeNames() const;
     ComponentLibraryEntry getEntry(const QString &typeName, const QString &subTypeName="") const;
-    ComponentLibraryEntry getFMUEntry(const QString &rFmuName) const;
     const SharedModelObjectAppearanceT getModelObjectAppearancePtr(const QString &typeName, const QString &subTypeName="") const;
 
     void addReplacement(QString type1, QString type2);

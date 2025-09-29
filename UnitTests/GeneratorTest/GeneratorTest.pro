@@ -22,7 +22,6 @@ LIBS += -L$${PWD}/../../bin -lhopsancore$${DEBUG_EXT}
 DEFINES *= HOPSANCORE_DLLIMPORT
 LIBS *= -lhopsangenerator$${DEBUG_EXT}
 LIBS *= -lsymhop$${DEBUG_EXT}
-include($${PWD}/../../dependencies/fmilibrary.pri)
 DEFINES *= HOPSANGENERATOR_DLLIMPORT
 
 

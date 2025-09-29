@@ -12,10 +12,6 @@ TARGET = $${TARGET}$${DEBUG_EXT}
 QT -= gui
 QT += core xml
 
-#--------------------------------------------------------
-# Set the FMILibrary include and library paths
-include($${PWD}/../dependencies/fmilibrary.pri)
-
 #--------------------------------------------------
 # Add the include path to our self, (HopsanGenerator)
 INCLUDEPATH *= $${PWD}/include/
