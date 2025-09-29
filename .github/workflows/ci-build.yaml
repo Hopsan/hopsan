@@ -38,7 +38,7 @@ jobs:
       - name: Download dependencies
         shell: cmd
         working-directory: dependencies
-        run: python download-dependencies.py fmilibrary tclap qwt fmi4c xerces asio zlib libzip dcplib
+        run: python download-dependencies.py tclap qwt fmi4c xerces asio zlib libzip dcplib
 
       - name: Build dependencies
         shell: cmd
@@ -46,7 +46,6 @@ jobs:
         run: |
             call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
             call setupTclap.bat
-            call setupFMILibrary.bat
             call setupQwt.bat
             call setupFmi4c.bat
             call setupXerces.bat
@@ -94,13 +93,12 @@ jobs:
       - name: Download dependencies
         shell: bash
         working-directory: dependencies
-        run: ./download-dependencies.py fmilibrary tclap fmi4c xerces asio dcplib libzip
+        run: ./download-dependencies.py tclap fmi4c xerces asio dcplib libzip
 
       - name: Build dependencies
         shell: bash
         working-directory: dependencies
         run: |
-          ./setupFMILibrary.sh
           ./setupTclap.sh
           ./setupFmi4c.sh
           ./setupXerces.sh
