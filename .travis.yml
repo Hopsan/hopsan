@@ -21,7 +21,7 @@ jobs:
         - HOPSAN_BUILD_QMAKE_SPEC=linux-g++
       install:
         - cd dependencies
-        - ./download-dependencies.py discount fmilibrary qwt zeromq cppzmq msgpack-c katex tclap
+        - ./download-dependencies.py discount qwt zeromq cppzmq msgpack-c katex tclap
         - cd ..
     - os: osx
       compiler: clang
@@ -33,7 +33,7 @@ jobs:
         - brew link --force qt
         - which qmake
         - cd dependencies
-        - ./download-dependencies.py discount fmilibrary qwt zeromq cppzmq msgpack-c katex tclap
+        - ./download-dependencies.py discount qwt zeromq cppzmq msgpack-c katex tclap
         - cd ..
 
 # Build steps
@@ -43,7 +43,6 @@ script:
   - cd dependencies
   - source ./setHopsanBuildPaths.sh
   - ./setupDiscount.sh
-  - ./setupFMILibrary.sh
   - ./setupQwt.sh
   - ./setupZeroMQ.sh
   - ./setupMsgpack.sh
