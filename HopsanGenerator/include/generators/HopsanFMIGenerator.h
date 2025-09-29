@@ -28,10 +28,6 @@
 // Hopsan includes
 #include "HopsanGeneratorBase.h"
 
-// FMILibrary includes and forward declaration
-#include "FMI/fmi_import_context.h"
-struct jm_callbacks;
-
 class HopsanFMIGenerator : public HopsanGeneratorBase
 {
 public:

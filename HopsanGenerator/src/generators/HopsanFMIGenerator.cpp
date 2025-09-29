@@ -38,11 +38,6 @@
 
 #include <stddef.h>
 
-#include "FMI/fmi_import_context.h"
-#include <FMI1/fmi1_import.h>
-#include <FMI2/fmi2_import.h>
-#include <JM/jm_portability.h>
-
 #ifdef _WIN32
 #include <windows.h>
 #else
@@ -68,112 +63,9 @@ void writeTextToFile(QFile& file, const QString& text)
     ts << text;
 }
 
-bool fromFmiBoolean(fmi2_boolean_t b)
-{
-    if (b) {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
-
-void jmLogger(jm_callbacks *c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
-{
-    (void)module;
-    auto pGenerator = static_cast<HopsanFMIGenerator*>(c->context);
-    if (pGenerator) {
-        switch (log_level) {
-        case jm_log_level_fatal:
-        case jm_log_level_error:
-            pGenerator->printErrorMessage(message);
-            break;
-        case jm_log_level_warning:
-            pGenerator->printWarningMessage(message);
-            break;
-        // Typically the jm logger info messages are not something we want to see in Hopsan, so show them as debug type
-        case jm_log_level_verbose:
-        case jm_log_level_info:
-            pGenerator->printMessage(message);
-            break;
-        case jm_log_level_debug:
-        default:
-            break;
-        }
-    }
-}
-
 }
 
 using namespace hopsan;
-
-typedef struct
-{
-    QString name;
-    QString variableName;
-    QString fmuVr;
-    QString description;
-    QString unit;
-    fmi1_base_type_enu_t dataType;
-    fmi1_import_variable_t *pFmiVariable;
-} hopsan_fmi1_import_variable_t;
-
-typedef struct
-{
-    QString name;
-    QString variableName;
-    QString fmuVr;
-    QString description;
-    QString unit;
-    fmi2_base_type_enu_t dataType;
-    fmi2_import_variable_t *pFmiVariable;
-} hopsan_fmi_import_variable_t;
-
-typedef struct
-{
-    QString type;
-    QString name;
-    QString description;
-    QString codeVarName;
-    QStringList portVariableNames;
-    QStringList portVariableCodeVarNames;
-    QStringList portVariableFmuVrs;
-    QList<size_t> portVariableDataIds;
-    int portVariableIOBreakN;
-} hopsan_fmi_import_tlm_port_t;
-
-
-
-bool replaceFMIVariablesWithTLMPort(QStringList &rPortVarNames, QStringList &rPortVarVars, QStringList &rPortVarRefs, QList<size_t> &rPortVarDataIds,
-                                    QVector<hopsan_fmi_import_variable_t> &rActualVariables,
-                                    const QStringList &rTags, const QList<int> &rDataIds, const QString &rPortName, const QDomElement portElement)
-{
-    for(int i=0; i<rTags.size(); ++i) {
-        QString name = toValidHopsanVarName(portElement.firstChildElement(rTags[i]).text());
-        int idx=-1, j=-1;
-        for(const hopsan_fmi_import_variable_t &rVar : rActualVariables) {
-            ++j;
-            if(rVar.name == name) {
-                idx = j;
-                break;
-            }
-        }
-
-        if (idx >= 0) {
-            rPortVarNames.append(name);
-            rPortVarVars.append(rPortName+"_"+name);
-            rPortVarRefs.append(rActualVariables[idx].fmuVr);
-            rPortVarDataIds.append(size_t(rDataIds[i]));
-
-            rActualVariables.removeAt(idx);
-        }
-        else {
-            //printErrorMessage("Incorrect variable name given: "+name+". Aborting!");
-            return false;
-        }
-    }
-    return true;
-}
 
 
 HopsanFMIGenerator::HopsanFMIGenerator(const QString &hopsanInstallPath, const QString &compilerPath, const QString &tempPath)
@@ -943,7 +835,6 @@ void HopsanFMIGenerator::replaceNameSpace(const QString &savePath, int version) 
 bool HopsanFMIGenerator::compileAndLinkFMU(const QString &fmuBuildPath, const QString &fmuStagePath, const QString &modelName, const int version, bool x64) const
 {
     const QString vStr = QString::number(version);
-    const QString fmiLibDir="\""+mHopsanRootPath+"/dependencies/fmilibrary\"";
     const QString fmi4cIncludeDir="\""+mHopsanRootPath+"/dependencies/fmi4c/include\"";
 
     printMessage("------------------------------------------------------------------------");

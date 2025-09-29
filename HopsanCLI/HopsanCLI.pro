@@ -72,7 +72,6 @@ contains(DEFINES, HOPSANCLI_USEGENERATOR) {
   INCLUDEPATH *= $${PWD}/../HopsanGenerator/include
   LIBS *= -L$${PWD}/../bin -lhopsangenerator$${DEBUG_EXT}
   LIBS *= -lsymhop$${DEBUG_EXT}
-  include($${PWD}/../dependencies/fmilibrary.pri)
   DEFINES *= HOPSANGENERATOR_DLLIMPORT
 } else {
   message(Compiling HopsanCLI without HopsanGenerator)

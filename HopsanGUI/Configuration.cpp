@@ -211,10 +211,6 @@ void Configuration::saveToXml()
             {
                 typeStr = cfg::libtype::external;
             }
-            else if(mUserLibTypes.at(i) == FmuLib)
-            {
-                typeStr = cfg::libtype::fmu;
-            }
             xmlUserLib.setAttribute(cfg::libtype::root, typeStr);
         }
 
@@ -764,10 +760,6 @@ void Configuration::loadLibrarySettings(QDomElement &rDomElement)
         if(typeStr == cfg::libtype::external)
         {
             mUserLibTypes.append(ExternalLib);
-        }
-        else if(typeStr == cfg::libtype::fmu)
-        {
-            mUserLibTypes.append(FmuLib);
         }
         else
         {

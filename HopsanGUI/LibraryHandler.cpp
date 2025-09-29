@@ -1027,20 +1027,6 @@ bool LibraryHandler::unloadLibraryByComponentType(QString typeName)
     return unloadLibrary(selectedEntry.pLibrary);
 }
 
-//! @brief Unloads fmu library by fmu name
-//! @param fmuName Name of the fmu to unload
-bool LibraryHandler::unloadLibraryFMU(QString fmuName)
-{
-    // Find the library entery that has fmuName (and is an fmu)
-    ComponentLibraryEntry fmuEntry = getFMUEntry(fmuName);
-    if(!fmuEntry.isValid())
-    {
-        qDebug() << "fmuEntry: " << fmuName << " not found.";
-        return false;
-    }
-    return unloadLibrary(fmuEntry.pLibrary);
-}
-
 bool LibraryHandler::unloadLibrary(SharedComponentLibraryPtrT pLibrary)
 {
     if(pLibrary)
@@ -1472,10 +1458,6 @@ bool LibraryHandler::loadLibrary(SharedComponentLibraryPtrT pLibrary, LibraryTyp
                         newEntry.displayPath.prepend(libName);
                         newEntry.displayPath.prepend(componentlibrary::roots::externalLibraries);
                     }
-                    else if(type == FmuLib) {
-                        newEntry.displayPath.prepend(libName);
-                        newEntry.displayPath.prepend(componentlibrary::roots::fmus);
-                    }
 
                     // Store visibility
                     newEntry.visibility = visibility;
@@ -1581,28 +1563,6 @@ ComponentLibraryEntry LibraryHandler::getEntry(const QString &typeName, const QS
     QString fullTypeString = makeFullTypeString(typeName, subTypeName);
     return mLibraryEntries.value(fullTypeString, ComponentLibraryEntry() );
 }
-
-//! @brief Returns an FMU component entry in the library
-//! @param rFmuName The FMU name
-//! @returns The library entery for given fmu name or an invalid library entery if fmu name not found
-ComponentLibraryEntry LibraryHandler::getFMUEntry(const QString &rFmuName) const
-{
-    //! @todo I dont think we can have multiple component in the same FMU so this should be safe (for now)
-    //QString fullTypeString = makeFullTypeString(typeName, subTypeName);
-    for (const ComponentLibraryEntry &le : mLibraryEntries.values())
-    {
-        if (le.pLibrary && le.pLibrary->type == FmuLib)
-        {
-            // Here it is assumed that the load code prepends FMULIBSTR before the actual path
-            if (le.displayPath.last() == rFmuName)
-            {
-                return le;
-            }
-        }
-    }
-    return ComponentLibraryEntry();
-}
-
 
 const SharedModelObjectAppearanceT LibraryHandler::getModelObjectAppearancePtr(const QString &typeName, const QString &subTypeName) const
 {
@@ -1733,25 +1693,10 @@ void LibraryHandler::recompileLibrary(SharedComponentLibraryPtrT pLib, bool dont
         }
     }
 
-    // Add extra compiler flags for FMU libraries (to make sure we compile with the correct fmi library version shiped with Hopsan)
-    // Note we only add the paths here, in case the paths in the FMU wrapper library xml are incorrect (old export)
-    QString extraCFlags, extraLFlags;
-    if(pLib->type == FmuLib)
-    {
-        const QString fmiLibDir="/dependencies/fmilibrary";
-        extraCFlags = QString("-I\"%1\"").arg(gpDesktopHandler->getMainPath()+fmiLibDir+"/include");
-        extraLFlags = QString("-L\"%1\" -l").arg(gpDesktopHandler->getMainPath()+fmiLibDir+"/lib");
-#ifdef _WIN32
-    extraLFlags += "libfmilib_shared";
-#else
-    extraLFlags += "fmilib_shared";  //Remove extra "lib" prefix in Linux
-#endif
-    }
-
     //Call compile utility
     QString libfile = QFileInfo(pLib->xmlFilePath).absoluteFilePath();
     if(!modelicaFailed) {
-        if (!spGenerator->compileComponentLibrary(libfile, extraCFlags, extraLFlags))
+        if (!spGenerator->compileComponentLibrary(libfile))
         {
             gpMessageHandler->addErrorMessage(QString("Failed to compile component library: %1").arg(libfile));
         }
