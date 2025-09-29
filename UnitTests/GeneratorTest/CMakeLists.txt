@@ -20,10 +20,8 @@ endif()
 
 # Copy runtime requirement dll's to run directory
 if (WIN32)
-    include(${CMAKE_CURRENT_LIST_DIR}/../../dependencies/fmilibrary.cmake)
     copy_file_after_build(${test_name} $<TARGET_FILE:hopsancore> $<TARGET_FILE_DIR:${test_name}>)
     copy_file_after_build(${test_name} $<TARGET_FILE:hopsangenerator> $<TARGET_FILE_DIR:${test_name}>)
-    copy_file_after_build(${test_name} $<TARGET_FILE:fmilibrary> $<TARGET_FILE_DIR:${test_name}>)
 endif()
 
 # Copy compiled hopsancore and source code to mimic installation
@@ -36,9 +34,6 @@ if (MSVC)
   # Copy default library dll to mimic installation
   copy_file_after_build(${test_name} $<TARGET_FILE:defaultcomponentlibrary> ${CMAKE_CURRENT_BINARY_DIR}/../../componentLibraries/defaultLibrary)
 endif()
-
-# Copy FMILibrary to mimic installation
-copy_dir_after_build(${test_name} ${CMAKE_CURRENT_LIST_DIR}/../../dependencies/fmilibrary ${CMAKE_CURRENT_BINARY_DIR}/../../dependencies)
 
 # Copy Fmi4c library to mimic installation (optional, but fmu export will not work without it)
 set(fmi4c_dir ${CMAKE_CURRENT_LIST_DIR}/../../dependencies/fmi4c)
