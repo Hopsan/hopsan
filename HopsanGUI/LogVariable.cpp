@@ -102,6 +102,9 @@ SharedVectorVariableT createFreeVariable(VariableTypeT type, SharedVariableDescr
 //! @todo this should not be here should be together with plot variable stuff in some other file later
 QString makeFullVariableName(const QStringList &rSystemHierarchy, const QString &rComponentName, const QString &rPortName, const QString &rDataName)
 {
+    if(rDataName.isEmpty()) {
+        return "";
+    }
     QString sysName;
     if(!rSystemHierarchy.isEmpty())
     {
