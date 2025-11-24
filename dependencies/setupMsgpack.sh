@@ -21,7 +21,7 @@ mkdir -p $builddir
 cd $builddir
 
 # Generate makefiles
-cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=${installdir} ${codedir}
+cmake -Wno-dev -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_POLICY_VERSION=3.5 -DCMAKE_INSTALL_PREFIX=${installdir} ${codedir}
 
 # Build and install
 cmake --build .
