@@ -46,6 +46,7 @@
 #include "MessageHandler.h"
 #include "MainWindow.h"
 #include "ModelHandler.h"
+#include "GUIPort.h"
 #include "SimulationThreadHandler.h"
 #include "version_gui.h"
 #include "Widgets/DebuggerWidget.h"
@@ -60,6 +61,9 @@
 #include "Utilities/GUIUtilities.h"
 #include "ssp4c.h"
 #include "ssp4c_ssd.h"
+#include "ssp4c_ssd_component.h"
+#include "ssp4c_ssd_connector.h"
+#include "ssp4c_ssd_connection.h"
 
 #ifdef USEZMQ
 #include "RemoteSimulationUtils.h"
@@ -422,6 +426,8 @@ TextEditorWidget *ModelHandler::loadTextFile(QString fileName)
 void ModelHandler::loadSsp(QString fileName)
 {
     sspHandle *ssp = ssp4c_loadSsp(fileName.toStdString().c_str());
+
+    qDebug() << "SSP unzipped path: " << ssp4c_getUnzippedLocation(ssp);
     int ssdCount = ssp4c_getNumberOfSsds(ssp);
     for(int i=0; i<ssdCount; ++i) {
         ssdHandle *ssd = ssp4c_getSsdByIndex(ssp,i);
@@ -436,6 +442,72 @@ void ModelHandler::loadSsp(QString fileName)
         qDebug() << "SSD license: " << ssp4c_ssd_getLicense(ssd);
         qDebug() << "SSD generationTool :" << ssp4c_ssd_getGenerationTool(ssd);
         qDebug() << "SSD generationDateAndTime: " << ssp4c_ssd_getGenerationDateAndTime(ssd);
+
+        addNewModel(ssp4c_ssd_getName(ssd));
+
+        int componentCount = ssp4c_ssd_getNumberOfComponents(ssd);
+        for(int i=0; i<componentCount; ++i) {
+            ssdComponentHandle *comp = ssp4c_ssd_getComponentByIndex(ssd,i);
+            qDebug() << "  component name: " << ssp4c_ssd_component_getName(comp);
+            qDebug() << "  component source: " << ssp4c_ssd_component_getSource(comp);
+
+            int connectorsCount = ssp4c_ssd_component_getNumberOfConnectors(comp);
+            for(int i=0; i<connectorsCount; ++i) {
+                ssdConnectorHandle *con = ssp4c_ssd_component_getConnectorByIndex(comp, i);
+                qDebug() << "    connector: " << ssp4c_ssd_connector_getName(con);
+            }
+
+            SystemObject *pSystem = gpModelHandler->getCurrentTopLevelSystem();
+            if(pSystem) {
+                QPointF pos = pSystem->getGraphicsViewport().mCenter;
+                ModelObject *pFmuComponent = pSystem->addModelObject("FMIWrapper", pos);
+                if(pFmuComponent) {
+                    QString unzippedLocation = ssp4c_getUnzippedLocation(ssp);
+                    QString source = ssp4c_ssd_component_getSource(comp);
+                    pFmuComponent->setParameterValue("path", unzippedLocation+"/"+source);
+                    pSystem->renameModelObject(pFmuComponent->getName(), ssp4c_ssd_component_getName(comp));
+                }
+            }
+        }
+
+        int connetionCount = ssp4c_ssd_getNumberOfConnections(ssd);
+        for(int i=0; i<connetionCount; ++i) {
+            ssdConnectionHandle *con = ssp4c_ssd_getConnectionByIndex(ssd,i);
+            qDebug() << "  start element: " << ssp4c_ssd_connection_getStartElement(con);
+            qDebug() << "  start connector: " << ssp4c_ssd_connection_getStartConnector(con);
+            qDebug() << "  end element: " << ssp4c_ssd_connection_getEndElement(con);
+            qDebug() << "  end connector: " << ssp4c_ssd_connection_getEndConnector(con);
+
+            SystemObject *pSystem = gpModelHandler->getCurrentTopLevelSystem();
+            if(pSystem) {
+                ModelObject *pStartComponent = pSystem->getModelObject(ssp4c_ssd_connection_getStartElement(con));
+                ModelObject *pEndComponent = pSystem->getModelObject(ssp4c_ssd_connection_getEndElement(con));
+                if(pStartComponent != nullptr && pEndComponent != nullptr) {
+                    qDebug() << "Found components!";
+                    QString startPortName = ssp4c_ssd_connection_getStartConnector(con);
+                    startPortName.replace(".", "_");
+                    QString endPortName = ssp4c_ssd_connection_getEndConnector(con);
+                    endPortName.replace(".", "_");
+                    Port *pStartPort = pStartComponent->getPort(startPortName);
+                    Port *pEndPort = pEndComponent->getPort(endPortName);
+                    if(pStartPort != nullptr && pEndComponent != nullptr) {
+                        qDebug() << "Found ports!";
+                        SystemObject *sysObj = this->getCurrentViewContainerObject();
+                        Connector *pCon = sysObj->createConnector(pStartPort, pEndPort, NoUndo);
+                        if(pCon != nullptr) {
+                            qDebug() << "Creatd connetor!";
+                            QVector<QPointF> pointVector;
+                            QStringList geometryList;
+                            pointVector.push_back(pCon->getStartPort()->boundingRect().center());
+                            pointVector.push_back(pCon->getEndPort()->boundingRect().center());
+                            geometryList.clear();
+                            geometryList.append(hmf::connector::diagonal);
+                            pCon->setPointsAndGeometries(pointVector, geometryList);
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
