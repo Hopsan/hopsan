@@ -224,6 +224,7 @@ SOURCES += main.cpp \
     ProgressBarThread.cpp \
     GUIPortAppearance.cpp \
     GUIConnectorAppearance.cpp \
+    Widgets/SSPWidget.cpp \
     Widgets/SystemParametersWidget.cpp \
     PlotWindow.cpp \
     GUIObjects/GUIWidgets.cpp \
@@ -302,6 +303,7 @@ HEADERS += MainWindow.h \
     GUIPort.h \
     Widgets/MessageWidget.h \
     InitializationThread.h \
+    Widgets/SSPWidget.h \
     version_gui.h \
     Dialogs/OptionsDialog.h \
     UndoStack.h \

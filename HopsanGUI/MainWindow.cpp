@@ -80,6 +80,7 @@
 #include "Widgets/DataExplorer.h"
 #include "Widgets/FindWidget.h"
 #include "Widgets/TextEditorWidget.h"
+#include "Widgets/SSPWidget.h"
 
 #include "Dialogs/OptionsDialog.h"
 #include "Dialogs/AboutDialog.h"
@@ -104,6 +105,7 @@ ModelHandler *gpModelHandler = 0;
 PlotWidget2 *gpPlotWidget = 0;
 CentralTabWidget *gpCentralTabWidget = 0;
 SystemParametersWidget *gpSystemParametersWidget = 0;
+SSPWidget *gpSSPWidget = 0;
 UndoWidget *gpUndoWidget = 0;
 LibraryHandler *gpLibraryHandler = 0;
 HelpPopUpWidget *gpHelpPopupWidget = 0;
@@ -275,6 +277,11 @@ void MainWindow::createContents()
     gpSystemParametersWidget = mpSystemParametersWidget;
     mpSystemParametersWidget->setVisible(false);
 
+    //Create the SSP widget and hide it
+    mpSSPWidget = new SSPWidget(this);
+    gpSSPWidget = mpSSPWidget;
+    //mpSSPWidget->setVisible(false);
+
     // Create the HVC Widget
     mpHVCWidget = new HVCWidget(this);
     mpHVCWidget->setVisible(false);
@@ -295,6 +302,13 @@ void MainWindow::createContents()
     mpSystemParametersDock->setAllowedAreas((Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea));
     addDockWidget(Qt::RightDockWidgetArea, mpSystemParametersDock);
     mpSystemParametersDock->hide();
+
+    //Create the SSP dock widget and hide it
+    mpSSPWidgetDock = new QDockWidget(tr("SSP Explorer"), this);
+    mpSSPWidgetDock->setAllowedAreas((Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea));
+    mpSSPWidgetDock->setWidget(mpSSPWidget);
+    addDockWidget(Qt::RightDockWidgetArea, mpSSPWidgetDock);
+    //mpSSPWidgetDock->hide();
 
     //Create the undo dock widget and hide it
     mpUndoWidgetDock = new QDockWidget(tr("Undo History"), this);

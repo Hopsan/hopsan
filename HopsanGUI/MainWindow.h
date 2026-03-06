@@ -66,6 +66,7 @@ class MainWindowLineEdit;
 class DataExplorer;
 class FindWidget;
 class HelpPopUpWidget;
+class SSPWidget;
 
 
 class SimulationTimeEdit : public QWidget
@@ -132,6 +133,7 @@ public:
     WelcomeWidget *mpWelcomeWidget;
     LibraryWidget *mpLibraryWidget;
     SystemParametersWidget *mpSystemParametersWidget;
+    SSPWidget *mpSSPWidget;
     QStatusBar *mpStatusBar;  //Not used, but gives some nice extra space at bottom :)
     QGridLayout *mpCentralGridLayout;
 
@@ -291,6 +293,7 @@ private:
     QDockWidget *mpPlotWidgetDock;
     QDockWidget *mpUndoWidgetDock;
     QDockWidget *mpSystemParametersDock;
+    QDockWidget *mpSSPWidgetDock;
 
     QWidget *mpCentralWidget;
     QGridLayout *mpTabgrid;
