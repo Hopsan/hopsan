@@ -61,6 +61,7 @@ class OptionsDialog;
 class QGridLayout;
 class FindWidget;
 class PlotWidget2;
+class SSPWidget;
 
 // Global pointer to the main window and QWidget cast version
 extern MainWindow* gpMainWindow;
@@ -80,6 +81,7 @@ extern ModelHandler *gpModelHandler;
 extern PlotWidget2 *gpPlotWidget;
 extern CentralTabWidget *gpCentralTabWidget;
 extern SystemParametersWidget *gpSystemParametersWidget;
+extern SSPWidget *gpSSPWidget;
 extern UndoWidget *gpUndoWidget;
 extern LibraryHandler *gpLibraryHandler;
 extern HelpPopUpWidget *gpHelpPopupWidget;
