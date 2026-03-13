@@ -1,6 +1,6 @@
 libzip_dir = $${PWD}/libzip
 zlib_dir = $${PWD}/zlib
-message(libzip_dir)
+
 exists($${libzip_dir}) {
   INCLUDEPATH *= $${libzip_dir}/include
   LIBS *= -L$${libzip_dir}/bin -L$${libzip_dir}/lib -lzip
@@ -20,7 +20,7 @@ exists($${libzip_dir}) {
     QMAKE_POST_LINK += $$QMAKE_COPY $${src_file_zlib} $${dst_dir} $$escape_expand(\\n\\t)
   } else {
     # Note! The RPATH is absolute and only meant for dev builds in the IDE, on release runtime paths should be stripped
-    unix:QMAKE_RPATHDIR *= $${libzip_dir/bin}
+    QMAKE_RPATHDIR *= $${libzip_dir}/lib
   }
 }
 
