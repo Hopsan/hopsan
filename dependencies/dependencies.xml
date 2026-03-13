@@ -22,17 +22,17 @@
 -->
 
   <dependency name="discount">
-    <releasefile sha256="0beb98a66a6e38ed125e2d0a161ff6b461f6a38538bb72498766f376c94a0ad3">
-      <url>https://github.com/Orc/discount/archive/v2.2.6.tar.gz</url>
+    <releasefile sha256="eb9f6629dadddb44c3111267b82e51d5fb8364e228cc3533fe937d8a99e0155b">
+      <url>https://github.com/Orc/discount/archive/refs/tags/v2.2.7d.tar.gz</url>
     </releasefile>
   </dependency>
 
   <dependency name="hdf5">
-    <releasefile md5="0e935ad66b47ca81be58ba7cbd002184" platform="windows">
-      <url>https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.21/src/CMake-hdf5-1.8.21.zip</url>
+    <releasefile sha256="51d4d633c314d996f7c00762a2d33cad62bab3500b85d955e84c9b3ce8f7830a" platform="windows">
+      <url>https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.23/src/CMake-hdf5-1.8.23.zip</url>
     </releasefile>
-    <releasefile md5="46f0bb9366a63f5e9342ab46c436b7fd">
-      <url>https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.21/src/CMake-hdf5-1.8.21.tar.gz</url>
+    <releasefile sha256="1c2d95a18dc079a7281dbf9c9ba4c2b7ca63135a309bc175434e61b61947ecd8">
+      <url>https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.23/src/CMake-hdf5-1.8.23.tar.gz</url>
     </releasefile>
   </dependency>
 
@@ -67,14 +67,14 @@
   </dependency>
 
   <dependency name="zeromq">
-    <releasefile sha256="bd4ebed45ce4fadfa341f7730237de9cdada04aa1af0a72c0dcf7138ca2f20d6">
-      <url>https://github.com/zeromq/libzmq/archive/907ec2247556e11661eacf7aa494154576055eb2.zip</url>
+    <releasefile sha256="6653ef5910f17954861fe72332e68b03ca6e4d9c7160eb3a8de5a5a913bfab43">
+      <url>https://github.com/zeromq/libzmq/releases/download/v4.3.5/zeromq-4.3.5.tar.gz</url>
     </releasefile>
   </dependency>
 
   <dependency name="cppzmq">
-    <releasefile sha256="e9203391a0b913576153a2ad22a2dc1479b1ec325beb6c46a3237c669aef5a52">
-      <url>https://github.com/zeromq/cppzmq/archive/v4.6.0.tar.gz</url>
+    <releasefile sha256="0fff4ff311a7c88fdb76fceefba0e180232d56984f577db371d505e4d4c91afd">
+      <url>https://github.com/zeromq/cppzmq/archive/refs/tags/v4.11.0.tar.gz</url>
     </releasefile>
   </dependency>
 
@@ -85,8 +85,8 @@
   </dependency>
 
   <dependency name="xerces">
-    <releasefile sha256="3943c18b45f72ab44dd12e6c0310db092573af3001d66e27357d25970855b0e9">
-      <url>https://github.com/apache/xerces-c/archive/v3.2.2.zip</url>
+    <releasefile sha256="0f28ea2d7a0a3824d326c8bc4be26a3bb01dde289663beb6f15b241f80cbd3ae">
+      <url>https://github.com/apache/xerces-c/archive/refs/tags/v3.3.0.tar.gz</url>
     </releasefile>
   </dependency>
 
@@ -97,11 +97,11 @@
   </dependency>
 
   <dependency name="libzip">
-    <releasefile sha256="242083351e0a568e6ae69ca05f8eb76ed028807bf39cd8fcb4ea58d409ae0f3f">
-      <url>https://github.com/nih-at/libzip/archive/v1.7.3.zip</url>
+    <releasefile sha256="8a247f57d1e3e6f6d11413b12a6f28a9d388de110adc0ec608d893180ed7097b">
+      <url>https://github.com/nih-at/libzip/releases/download/v1.11.4/libzip-1.11.4.tar.xz</url>
     </releasefile>
   </dependency>
-  
+
   <dependency name="dcplib">
     <releasefile sha256="4acf1115359bb6e8ed351993f27f5ccb7e8f70c208bc33221fb67ab4845f0210">
       <url>https://github.com/modelica/DCPLib/archive/refs/tags/v0.2.zip</url>

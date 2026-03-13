@@ -45,7 +45,7 @@ installdir=${installdir}/include/
 
 ./download-dependencies.py ${name}
 
-cp -a ${codedir}/*.hpp ${installdir}
+cp -av "${codedir}"/*.hpp "${installdir}"
 
 cd ${basedir}
 echo "setupZeroMQ.sh done!"
