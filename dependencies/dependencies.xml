@@ -6,7 +6,7 @@
   Optional: version            For different versions of the same name
   Optional: type [toolchain]   Toolchain dependencies will not be unpacked into name-code automatically
 
-  Required: md5, sha1 or sha256
+  Required: sha256
   Optional: platform [windows] Specify file meant for Windows only
 
   Template:
@@ -52,16 +52,13 @@
   </dependency>
 
   <dependency name="qwt">
-    <releasefile sha1="98ab9cd566df9fc8f049dc0aa780d2d8ebe08cde" platform="windows">
-      <url>https://sourceforge.net/projects/qwt/files/qwt/6.1.5/qwt-6.1.5.zip</url>
-    </releasefile>
-    <releasefile sha1="07c71427f1f4bbd0354b3a98965943ce2f220766">
-      <url>https://sourceforge.net/projects/qwt/files/qwt/6.1.5/qwt-6.1.5.tar.bz2</url>
+    <releasefile sha256="dcb085896c28aaec5518cbc08c0ee2b4e60ada7ac929d82639f6189851a6129a">
+      <url>https://sourceforge.net/projects/qwt/files/qwt/6.3.0/qwt-6.3.0.tar.bz2</url>
     </releasefile>
   </dependency>
 
   <dependency name="tclap">
-    <releasefile sha1="4f124216dd6e6936f5af6372d921a6c51563f8fd">
+    <releasefile sha256="9f9f0fe3719e8a89d79b6ca30cf2d16620fba3db5b9610f9b51dd2cd033deebb">
       <url>https://downloads.sourceforge.net/project/tclap/tclap-1.2.1.tar.gz</url>
     </releasefile>
   </dependency>
@@ -79,7 +76,7 @@
   </dependency>
 
   <dependency name="asio">
-    <releasefile sha1="bac61183b633a6d91ef7ae31836434bdf4f2b0d0">
+    <releasefile sha256="fef563b29470c1a2341c81278a514218297c760f862469f9bf83cbffcdb354da">
       <url>https://master.dl.sourceforge.net/project/asio/asio/1.12.1%20%28Stable%29/asio-1.12.1.zip</url>
     </releasefile>
   </dependency>
