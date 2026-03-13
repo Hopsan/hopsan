@@ -4,8 +4,7 @@ REM Bat script building libHDF5 dependency automatically
 setlocal
 set basedir=%~dp0
 set name=hdf5
-set version=1.8.23
-set codedir=%basedir%\%name%-code\%name%-%version%
+set codedir=%basedir%\%name%-code
 set builddir=%basedir%\%name%-build
 set installdir=%basedir%\%name%
 

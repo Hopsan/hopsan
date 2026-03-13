@@ -22,17 +22,14 @@
 -->
 
   <dependency name="discount">
-    <releasefile sha256="eb9f6629dadddb44c3111267b82e51d5fb8364e228cc3533fe937d8a99e0155b">
-      <url>https://github.com/Orc/discount/archive/refs/tags/v2.2.7d.tar.gz</url>
+    <releasefile sha256="4ea6cc8782c6508b3051c469ed7a1b6ca20b023c2a0c26ccd9c83bc7e61dfc16">
+      <url>https://github.com/Orc/discount/archive/refs/tags/v3.0.1.2.tar.gz</url>
     </releasefile>
   </dependency>
 
   <dependency name="hdf5">
-    <releasefile sha256="51d4d633c314d996f7c00762a2d33cad62bab3500b85d955e84c9b3ce8f7830a" platform="windows">
-      <url>https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.23/src/CMake-hdf5-1.8.23.zip</url>
-    </releasefile>
-    <releasefile sha256="1c2d95a18dc079a7281dbf9c9ba4c2b7ca63135a309bc175434e61b61947ecd8">
-      <url>https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.23/src/CMake-hdf5-1.8.23.tar.gz</url>
+    <releasefile sha256="e4defbac30f50d64e1556374aa49e574417c9e72c6b1de7a4ff88c4b1bea6e9b">
+      <url>https://support.hdfgroup.org/releases/hdf5/v1_14/v1_14_6/downloads/hdf5-1.14.6.tar.gz</url>
     </releasefile>
   </dependency>
 
