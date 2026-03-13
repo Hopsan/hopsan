@@ -53,7 +53,7 @@
 
   <dependency name="qwt">
     <releasefile sha256="dcb085896c28aaec5518cbc08c0ee2b4e60ada7ac929d82639f6189851a6129a">
-      <url>https://sourceforge.net/projects/qwt/files/qwt/6.3.0/qwt-6.3.0.tar.bz2</url>
+      <url>https://downloads.sourceforge.net/project/qwt/qwt/6.3.0/qwt-6.3.0.tar.bz2</url>
     </releasefile>
   </dependency>
 
