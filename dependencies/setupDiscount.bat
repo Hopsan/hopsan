@@ -15,7 +15,6 @@ call setHopsanBuildPaths.bat
 REM Apply build patch
 set PATH=%PATH_WITH_MSYS%
 cd %codedir%
-patch.exe --forward -p0 < ..\discount-attribute.patch
 
 REM Configure with CMake and then build and install
 if exist %builddir% (
@@ -25,7 +24,7 @@ if exist %builddir% (
 mkdir %builddir%
 cd %builddir%
 set PATH=%PATH_WITHOUT_MSYS%
-cmake -G %HOPSAN_BUILD_CMAKE_GENERATOR% -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%installdir% %codedir%\cmake
+cmake -G %HOPSAN_BUILD_CMAKE_GENERATOR% -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DDISCOUNT_ONLY_LIBRARY=ON -DCMAKE_INSTALL_PREFIX=%installdir% %codedir%\cmake
 cmake --build . --config Release --parallel 8
 cmake --build . --config Release --target install
 

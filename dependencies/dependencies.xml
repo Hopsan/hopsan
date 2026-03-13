@@ -6,7 +6,7 @@
   Optional: version            For different versions of the same name
   Optional: type [toolchain]   Toolchain dependencies will not be unpacked into name-code automatically
 
-  Required: md5, sha1 or sha256
+  Required: sha256
   Optional: platform [windows] Specify file meant for Windows only
 
   Template:
@@ -22,17 +22,14 @@
 -->
 
   <dependency name="discount">
-    <releasefile sha256="0beb98a66a6e38ed125e2d0a161ff6b461f6a38538bb72498766f376c94a0ad3">
-      <url>https://github.com/Orc/discount/archive/v2.2.6.tar.gz</url>
+    <releasefile sha256="4ea6cc8782c6508b3051c469ed7a1b6ca20b023c2a0c26ccd9c83bc7e61dfc16">
+      <url>https://github.com/Orc/discount/archive/refs/tags/v3.0.1.2.tar.gz</url>
     </releasefile>
   </dependency>
 
   <dependency name="hdf5">
-    <releasefile md5="0e935ad66b47ca81be58ba7cbd002184" platform="windows">
-      <url>https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.21/src/CMake-hdf5-1.8.21.zip</url>
-    </releasefile>
-    <releasefile md5="46f0bb9366a63f5e9342ab46c436b7fd">
-      <url>https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.21/src/CMake-hdf5-1.8.21.tar.gz</url>
+    <releasefile sha256="e4defbac30f50d64e1556374aa49e574417c9e72c6b1de7a4ff88c4b1bea6e9b">
+      <url>https://support.hdfgroup.org/releases/hdf5/v1_14/v1_14_6/downloads/hdf5-1.14.6.tar.gz</url>
     </releasefile>
   </dependency>
 
@@ -52,41 +49,39 @@
   </dependency>
 
   <dependency name="qwt">
-    <releasefile sha1="98ab9cd566df9fc8f049dc0aa780d2d8ebe08cde" platform="windows">
-      <url>https://sourceforge.net/projects/qwt/files/qwt/6.1.5/qwt-6.1.5.zip</url>
-    </releasefile>
-    <releasefile sha1="07c71427f1f4bbd0354b3a98965943ce2f220766">
-      <url>https://sourceforge.net/projects/qwt/files/qwt/6.1.5/qwt-6.1.5.tar.bz2</url>
+    <releasefile sha256="dcb085896c28aaec5518cbc08c0ee2b4e60ada7ac929d82639f6189851a6129a">
+      <url>https://downloads.sourceforge.net/project/qwt/qwt/6.3.0/qwt-6.3.0.tar.bz2</url>
     </releasefile>
   </dependency>
 
   <dependency name="tclap">
-    <releasefile sha1="4f124216dd6e6936f5af6372d921a6c51563f8fd">
+    <releasefile sha256="9f9f0fe3719e8a89d79b6ca30cf2d16620fba3db5b9610f9b51dd2cd033deebb">
       <url>https://downloads.sourceforge.net/project/tclap/tclap-1.2.1.tar.gz</url>
     </releasefile>
   </dependency>
 
   <dependency name="zeromq">
-    <releasefile sha256="bd4ebed45ce4fadfa341f7730237de9cdada04aa1af0a72c0dcf7138ca2f20d6">
-      <url>https://github.com/zeromq/libzmq/archive/907ec2247556e11661eacf7aa494154576055eb2.zip</url>
+    <releasefile sha256="6653ef5910f17954861fe72332e68b03ca6e4d9c7160eb3a8de5a5a913bfab43">
+      <url>https://github.com/zeromq/libzmq/releases/download/v4.3.5/zeromq-4.3.5.tar.gz</url>
     </releasefile>
   </dependency>
 
   <dependency name="cppzmq">
-    <releasefile sha256="e9203391a0b913576153a2ad22a2dc1479b1ec325beb6c46a3237c669aef5a52">
-      <url>https://github.com/zeromq/cppzmq/archive/v4.6.0.tar.gz</url>
+    <releasefile sha256="0fff4ff311a7c88fdb76fceefba0e180232d56984f577db371d505e4d4c91afd">
+      <url>https://github.com/zeromq/cppzmq/archive/refs/tags/v4.11.0.tar.gz</url>
     </releasefile>
   </dependency>
 
   <dependency name="asio">
-    <releasefile sha1="bac61183b633a6d91ef7ae31836434bdf4f2b0d0">
+    <releasefile sha256="fef563b29470c1a2341c81278a514218297c760f862469f9bf83cbffcdb354da">
       <url>https://master.dl.sourceforge.net/project/asio/asio/1.12.1%20%28Stable%29/asio-1.12.1.zip</url>
     </releasefile>
   </dependency>
 
   <dependency name="xerces">
-    <releasefile sha256="3943c18b45f72ab44dd12e6c0310db092573af3001d66e27357d25970855b0e9">
-      <url>https://github.com/apache/xerces-c/archive/v3.2.2.zip</url>
+    <releasefile sha256="47b90cc64241d1cf854aa488c9ba7f6a33b27449946246ac50b10e6ce7e366af">
+      <!-- This is the latest commit on master as of 20260314, (commit from oct 21 2024) -->
+      <url>https://github.com/apache/xerces-c/archive/53c0401812bfe5523594c1180f5ac7c758a2eaf7.zip</url>
     </releasefile>
   </dependency>
 
@@ -97,11 +92,11 @@
   </dependency>
 
   <dependency name="libzip">
-    <releasefile sha256="242083351e0a568e6ae69ca05f8eb76ed028807bf39cd8fcb4ea58d409ae0f3f">
-      <url>https://github.com/nih-at/libzip/archive/v1.7.3.zip</url>
+    <releasefile sha256="8a247f57d1e3e6f6d11413b12a6f28a9d388de110adc0ec608d893180ed7097b">
+      <url>https://github.com/nih-at/libzip/releases/download/v1.11.4/libzip-1.11.4.tar.xz</url>
     </releasefile>
   </dependency>
-  
+
   <dependency name="dcplib">
     <releasefile sha256="4acf1115359bb6e8ed351993f27f5ccb7e8f70c208bc33221fb67ab4845f0210">
       <url>https://github.com/modelica/DCPLib/archive/refs/tags/v0.2.zip</url>

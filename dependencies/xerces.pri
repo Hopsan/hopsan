@@ -19,8 +19,7 @@ exists($${xerces_dir}) {
     QMAKE_POST_LINK += $$QMAKE_COPY $${src_file} $${dst_dir} $$escape_expand(\\n\\t)
   } else {
     # Note! The RPATH is absolute and only meant for dev builds in the IDE, on release runtime paths should be stripped
-    unix:QMAKE_RPATHDIR *= $${xerces_dir/bin}
-    unix:QMAKE_RPATHDIR *= $${xerces_dir/lib}
+    unix:QMAKE_RPATHDIR *= $${xerces_dir}/lib
   }
 }
 
