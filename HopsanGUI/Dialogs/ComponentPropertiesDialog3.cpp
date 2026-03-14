@@ -424,11 +424,15 @@ QWidget *ComponentPropertiesDialog3::createHelpWidget()
                 {
                     // Generate html from markdown
                     MMIOT *doc = mkd_in(inFile, 0);
-                    int rc = markdown(doc, outFile, MKD_TABSTOP);
+                    mkd_flag_t *flags = mkd_flags();
+                    mkd_set_flag_num(flags, MKD_TABSTOP);
+
+                    int rc = markdown(doc, outFile, flags);
                     if (rc == -1) {
                         // If rc == 0 then mkd_cleanup has already ben run on doc
                         mkd_cleanup(doc);
                     }
+                    mkd_free_flags(flags);
                     fclose(inFile);
                     fclose(outFile);
 
