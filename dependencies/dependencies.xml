@@ -79,8 +79,9 @@
   </dependency>
 
   <dependency name="xerces">
-    <releasefile sha256="0f28ea2d7a0a3824d326c8bc4be26a3bb01dde289663beb6f15b241f80cbd3ae">
-      <url>https://github.com/apache/xerces-c/archive/refs/tags/v3.3.0.tar.gz</url>
+    <releasefile sha256="47b90cc64241d1cf854aa488c9ba7f6a33b27449946246ac50b10e6ce7e366af">
+      <!-- This is the latest commit on master as of 20260314, (commit from oct 21 2024) -->
+      <url>https://github.com/apache/xerces-c/archive/53c0401812bfe5523594c1180f5ac7c758a2eaf7.zip</url>
     </releasefile>
   </dependency>
 
