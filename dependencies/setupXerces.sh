@@ -20,7 +20,7 @@ mkdir -p $builddir
 cd $builddir
 
 # Generate makefiles
-cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=$installdir ${codedir}
+cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=$installdir -DCMAKE_INSTALL_LIBDIR=lib ${codedir}
 
 # Build and install
 cmake --build .
