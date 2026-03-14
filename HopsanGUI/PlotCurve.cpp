@@ -47,6 +47,8 @@
 //Other includes
 #include <limits>
 #include <qwt_plot_zoomer.h>
+#include <qwt_text.h>
+#include <qwt_scale_map.h>
 #include <QColorDialog>
 #include <QDialog>
 #include <QPushButton>

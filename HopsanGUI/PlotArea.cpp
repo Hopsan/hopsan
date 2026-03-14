@@ -38,6 +38,7 @@
 #include <QPushButton>
 #include <QDialogButtonBox>
 #include <QDialog>
+#include <QPainter>
 
 #include "PlotArea.h"
 #include "PlotCurve.h"
@@ -272,12 +273,12 @@ PlotArea::PlotArea(PlotTab *pParentPlotTab)
     // Legend Stuff
     mpRightPlotLegend = new PlotLegend(QwtPlot::yRight);
     mpRightPlotLegend->attach(mpQwtPlot);
-    mpRightPlotLegend->setAlignment(Qt::AlignRight | Qt::AlignTop);
+    mpRightPlotLegend->setAlignmentInCanvas(Qt::AlignRight | Qt::AlignTop);
     mpRightPlotLegend->setZ(LegendBelowCurveZOrderType);
 
     mpLeftPlotLegend = new PlotLegend(QwtPlot::yLeft);
     mpLeftPlotLegend->attach(mpQwtPlot);
-    mpLeftPlotLegend->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    mpLeftPlotLegend->setAlignmentInCanvas(Qt::AlignLeft | Qt::AlignTop);
     mpLeftPlotLegend->setZ(LegendBelowCurveZOrderType);
 
     constructLegendSettingsDialog();
@@ -1863,28 +1864,28 @@ void PlotArea::applyLegendSettings()
 
         if ( alignL == 0 )
         {
-            mpLeftPlotLegend->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+            mpLeftPlotLegend->setAlignmentInCanvas(Qt::AlignTop | Qt::AlignLeft);
         }
         else if ( alignL == 1 )
         {
-            mpLeftPlotLegend->setAlignment(Qt::AlignBottom | Qt::AlignLeft);
+            mpLeftPlotLegend->setAlignmentInCanvas(Qt::AlignBottom | Qt::AlignLeft);
         }
         else
         {
-            mpLeftPlotLegend->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
+            mpLeftPlotLegend->setAlignmentInCanvas(Qt::AlignVCenter | Qt::AlignLeft);
         }
 
         if ( alignR == 0 )
         {
-            mpRightPlotLegend->setAlignment(Qt::AlignTop | Qt::AlignRight);
+            mpRightPlotLegend->setAlignmentInCanvas(Qt::AlignTop | Qt::AlignRight);
         }
         else if ( alignR == 1 )
         {
-            mpRightPlotLegend->setAlignment(Qt::AlignBottom | Qt::AlignRight);
+            mpRightPlotLegend->setAlignmentInCanvas(Qt::AlignBottom | Qt::AlignRight);
         }
         else
         {
-            mpRightPlotLegend->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+            mpRightPlotLegend->setAlignmentInCanvas(Qt::AlignVCenter | Qt::AlignRight);
         }
 
         QColor bgColor(mpLegendBgColor->currentText());
@@ -2710,17 +2711,17 @@ void PlotArea::calculateLegendBufferOffsets(const QwtPlot::Axis axisId, double &
     double leftLegendHeight=0, rightLegendHeight=0;
     if (mpLeftPlotLegend->isVisible())
     {
-        leftLegendHeight = mpLeftPlotLegend->geometry(mpQwtPlot->geometry()).height() + mpLeftPlotLegend->borderDistance();
+        leftLegendHeight = mpLeftPlotLegend->geometry(mpQwtPlot->geometry()).height() + mpLeftPlotLegend->offsetInCanvas(Qt::Vertical);
     }
     if (mpRightPlotLegend->isVisible())
     {
-        rightLegendHeight = mpRightPlotLegend->geometry(mpQwtPlot->geometry()).height() + mpRightPlotLegend->borderDistance();
+        rightLegendHeight = mpRightPlotLegend->geometry(mpQwtPlot->geometry()).height() + mpRightPlotLegend->offsetInCanvas(Qt::Vertical);
     }
     //! @todo even if a legend is empty it seems to be visible and the borderDistance will be added, this causes unnecessary space when on top or bottom (and the other legend is not)
 
     // Figure out vertical alignment, by bitwise masking
-    Qt::Alignment lva = mpLeftPlotLegend->alignment() & Qt::AlignVertical_Mask;
-    Qt::Alignment rva = mpRightPlotLegend->alignment() & Qt::AlignVertical_Mask;
+    Qt::Alignment lva = mpLeftPlotLegend->alignmentInCanvas() & Qt::AlignVertical_Mask;
+    Qt::Alignment rva = mpRightPlotLegend->alignmentInCanvas() & Qt::AlignVertical_Mask;
 
     rBottomOffset = rTopOffset = 0;
     if(mpLegendsAutoOffsetCheckBox->isChecked())
