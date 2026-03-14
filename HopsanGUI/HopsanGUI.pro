@@ -16,8 +16,12 @@ CONFIG -= app_bundle
 isEqual(QT_MAJOR_VERSION, 5){
     QT += widgets printsupport
     unix {
-        QT += webenginewidgets
-        DEFINES *= USEWEBENGINE
+        qtHaveModule(webenginewidgets) {
+            QT += webenginewidgets
+            DEFINES *= USEWEBENGINE
+        } else {
+            message(Webenginewidgets is not available)
+        }
     }
     win32 {
         qtHaveModule(webkitwidgets) {
