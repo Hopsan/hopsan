@@ -6,7 +6,7 @@ if(WIN32)
   set(CMAKE_SHARED_LIBRARY_PREFIX "")
 endif()
 
-set(CMAKE_AUTOMOC ON)
+#set(CMAKE_AUTOMOC ON)
 
 # include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/xerces.cmake)
 # include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/libzip.cmake)

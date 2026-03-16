@@ -1,21 +1,22 @@
 set(local_hdf5_dir ${CMAKE_CURRENT_LIST_DIR}/hdf5)
-find_package(Hdf5 CONFIG COMPONENTS C CXX PATHS ${local_hdf5_dir}/cmake ${local_hdf5_dir}/share/cmake NO_DEFAULT_PATH)
-if (NOT Hdf5_FOUND)
+find_package(hdf5 CONFIG COMPONENTS C CXX PATHS ${local_hdf5_dir}/cmake ${local_hdf5_dir}/share/cmake NO_DEFAULT_PATH)
+if (NOT hdf5_FOUND)
   message(STATUS "Looking for CMake Hdf5 in system")
   find_package(Hdf5 CONFIG COMPONENTS C CXX)
-  if (NOT Hdf5_FOUND)
+  if (NOT hdf5_FOUND)
     # Fall back to FindHDF5 Module
     message(STATUS "Looking for HDF5 Module in system")
     find_package(HDF5 COMPONENTS C CXX)
   endif()
 endif()
 
-if (Hdf5_FOUND)
+if (hdf5_FOUND)
   message(STATUS "Building with HDF5 support")
-  target_compile_definitions(hdf5::hdf5-shared INTERFACE USEHDF5)
+  # TODO: Not sure why cant use hdf5:: namespace here
+  target_compile_definitions(hdf5-shared INTERFACE USEHDF5)
 elseif(HDF5_FOUND)
   # Repackage results from FindHDF5 Module as target
-  message(STATUS "Building with HDF5 support")
+  message(STATUS "Building with HDF5 module support")
   if (NOT TARGET module_hdf5-shared)
     add_library(module_hdf5-shared INTERFACE)
     add_library(module_hdf5_cpp-shared INTERFACE)
