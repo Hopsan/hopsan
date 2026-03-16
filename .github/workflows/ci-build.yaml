@@ -38,20 +38,21 @@ jobs:
       - name: Download dependencies
         shell: cmd
         working-directory: dependencies
-        run: python download-dependencies.py tclap qwt fmi4c xerces asio zlib libzip dcplib
+        run: python download-dependencies.py discount tclap qwt fmi4c xerces asio zlib libzip dcplib
 
       - name: Build dependencies
         shell: cmd
         working-directory: dependencies
         run: |
             call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
+            call setupDiscount.bat
             call setupTclap.bat
-            call setupQwt.bat
             call setupFmi4c.bat
-            call setupXerces.bat
             call setupZlib.bat
             call setupLibzip.bat
+            call setupXerces.bat
             call setupDCPLib.bat
+            call setupQwt.bat
 
       - name: Configure
         working-directory: hopsan-build
@@ -93,17 +94,19 @@ jobs:
       - name: Download dependencies
         shell: bash
         working-directory: dependencies
-        run: ./download-dependencies.py tclap fmi4c xerces asio dcplib libzip
+        run: ./download-dependencies.py discount tclap fmi4c xerces asio dcplib libzip qwt
 
       - name: Build dependencies
         shell: bash
         working-directory: dependencies
         run: |
+          ./setupDiscount.sh
           ./setupTclap.sh
           ./setupFmi4c.sh
+          ./setupLibzip.sh
           ./setupXerces.sh
           ./setupDCPLib.sh
-          ./setupLibzip.sh
+          ./setupQwt.sh
 
       - name: Configure
         working-directory: hopsan-build
