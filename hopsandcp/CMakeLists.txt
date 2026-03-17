@@ -37,7 +37,7 @@ target_include_directories(hopsandcp PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/xerces/include>
   $<INSTALL_INTERFACE:include>)
 
-if(WIN32)
+if(MINGW)
     target_link_libraries(hopsandcp hopsancore libzip -lws2_32)
 else()
     target_link_libraries(hopsandcp hopsancore libzip)
