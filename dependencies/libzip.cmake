@@ -2,7 +2,11 @@ set(local_libzip_dir ${CMAKE_CURRENT_LIST_DIR}/libzip)
 if(WIN32)
     set(CMAKE_FIND_LIBRARY_PREFIXES lib)
 endif(WIN32)
-find_library(libzip NAMES ${CMAKE_FIND_LIBRARY_PREFIXES}zip ${CMAKE_FIND_LIBRARY_PREFIXES}zip${CMAKE_SHARED_LIBRARY_SUFFIX} ${CMAKE_STATIC_LIBRARY_PREFIX}zip${CMAKE_STATIC_LIBRARY_SUFFIX} PATHS ${local_libzip_dir}/lib NO_DEFAULT_PATH)
+find_library(libzip NAMES ${CMAKE_FIND_LIBRARY_PREFIXES}zip
+                          ${CMAKE_FIND_LIBRARY_PREFIXES}zip${CMAKE_SHARED_LIBRARY_SUFFIX}
+                          ${CMAKE_STATIC_LIBRARY_PREFIX}zip${CMAKE_STATIC_LIBRARY_SUFFIX}
+                          ${CMAKE_STATIC_LIBRARY_PREFIX}zip${CMAKE_SHARED_LIBRARY_SUFFIX}${CMAKE_STATIC_LIBRARY_SUFFIX}
+                    PATHS ${local_libzip_dir}/lib NO_DEFAULT_PATH)
 
 if (libzip)
     message(STATUS "Found local libzip")

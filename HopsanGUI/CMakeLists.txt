@@ -18,6 +18,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/../helpers.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/qwt.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/discount.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/katex.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/libzip.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/xerces.cmake)
 
 set(target_name hopsangui)
