@@ -158,6 +158,7 @@
         <file>graphics/objecticons/dcpcomponent.svg</file>
         <file>graphics/uiicons/svg/Hopsan-SSP.svg</file>
         <file>graphics/uiicons/svg/Hopsan-SSD.svg</file>
+        <file>graphics/uiicons/svg/Hopsan-FMI.svg</file>
     </qresource>
     <qresource prefix="/license">
         <file alias="licenseNoticeGPLv3">../licenseNoticeGPLv3</file>

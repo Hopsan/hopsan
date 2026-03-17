@@ -10,6 +10,10 @@
 //Forward declarations
 class sspHandle;
 class ssdHandle;
+class ssvParameterSetHandle;
+class ssmParameterMappingHandle;
+class ssdSystemHandle;
+class SSPTreeWidget;
 
 class SSPWidget : public QWidget
 {
@@ -18,16 +22,42 @@ public:
     SSPWidget(QWidget *pParent=0);
 
     void addSSP(QFileInfo path);
-public slots:
+
+    public slots:
 
 protected slots:
     void openSSDModel(QTreeWidgetItem*item, int);
 
 private:
-    QTreeWidget *mpTree;
+    SSPTreeWidget *mpTree;
 
     QMap<QTreeWidgetItem *, sspHandle *> itemToSspMap;
     QMap<QTreeWidgetItem *, ssdHandle *> itemToSsdMap;
+    QMap<QTreeWidgetItem *, ssdSystemHandle *> itemToSystemMap;
+    QMap<QTreeWidgetItem *, ssvParameterSetHandle *> itemToSsvMap;
+    QMap<QTreeWidgetItem *, ssmParameterMappingHandle *> itemToSsmMap;
 };
+
+class SSPTreeWidget : public QTreeWidget
+{
+    Q_OBJECT
+
+public:
+    explicit SSPTreeWidget(QWidget *parent = nullptr);
+
+    enum ItemType {
+        SSDItem = QTreeWidgetItem::UserType + 1,
+        FMUItem,
+        SSVItem,
+        SSMItem
+    };
+
+protected:
+    void startDrag(Qt::DropActions supportedActions) override;
+    void dragMoveEvent(QDragMoveEvent *event) override;
+    void dropEvent(QDropEvent *event) override;
+};
+
+
 
 #endif // SSPWIDGET_H

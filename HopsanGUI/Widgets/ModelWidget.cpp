@@ -58,6 +58,7 @@
 #include "ModelHandler.h"
 #include "ProjectTabWidget.h"
 #include "SimulationThreadHandler.h"
+#include "ssp4c_ssd_component.h"
 #include "version_gui.h"
 #include "Widgets/AnimationWidget.h"
 #include "MessageHandler.h"
@@ -70,6 +71,9 @@
 #include "GeneratorUtils.h"
 #include "LibraryHandler.h"
 #include "UndoStack.h"
+
+#include "ssp4c_ssd.h"
+#include "ssp4c_ssd_system.h"
 
 //! @class ModelWidget
 //! @brief The ModelWidget class is a Widget to contain a simulation model
@@ -162,6 +166,8 @@ ModelWidget::ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *pParentT
     mpGraphicsView->centerView();
 
     mLastSimulationTime = 0;
+
+    mSsd = nullptr;
 }
 
 
@@ -196,6 +202,21 @@ void ModelWidget::setMessageHandler(GUIMessageHandler *pMessageHandler)
 void ModelWidget::setModelType(ModelWidget::ModelType type)
 {
     mModelType = type;
+
+    QString modelTypeString;
+    if(type == ModelWidget::DcpModel) {
+        modelTypeString = " DCP";
+    }
+    else if(type == ModelWidget::SsdModel) {
+        modelTypeString = " SSD";
+    }
+    QLabel *pLabel = new QLabel(modelTypeString, this);
+    pLabel->setStyleSheet("color: Red;");
+    QGridLayout *pLayout = qobject_cast<QGridLayout*>(this->layout());
+    pLayout->addWidget(pLabel, 1,0,1,1);
+    pLayout->setRowStretch(2,1);
+    pLayout->setColumnStretch(1,1);
+    pLabel->setVisible(type != ModelWidget::HopsanModel);
 }
 
 ModelWidget::ModelType ModelWidget::getModelType() const
@@ -318,6 +339,10 @@ void ModelWidget::setLogDataHandler(QSharedPointer<LogDataHandler2> pHandler)
     pHandler->setParentModel(this);
 }
 
+void ModelWidget::setSsdHandle(ssdHandle *ssd)
+{
+    mSsd = ssd;
+}
 
 //! @brief Sets last simulation time (only use this from project tab widget!)
 void ModelWidget::setLastSimulationTime(int time)
@@ -1329,6 +1354,32 @@ void ModelWidget::openCurrentContainerInNewTab()
 //! @see loadModel()
 void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT contents)
 {
+    if(mModelType == ModelWidget::SsdModel) {
+        auto rootSystem = ssp4c_ssd_getRootSystem(mSsd);
+        QMap<QString, ssdComponentHandle*> ssdMap;
+        for(int c=0; c<ssp4c_ssd_system_getNumberOfComponents(rootSystem); ++c) {
+            auto comp = ssp4c_ssd_system_getComponentByIndex(rootSystem, c);
+            ssdMap.insert(ssp4c_ssd_component_getName(comp), comp);
+        }
+        for(const auto &c : mpToplevelSystem->getModelObjects()) {
+            if(ssdMap.contains(c->getName())) {
+                //Update!
+                qDebug() << "Updating: " << c->getName();
+            }
+            else {
+                //Add!
+                qDebug() << "Adding: " << c->getName();
+            }
+        }
+        for(const auto &name : ssdMap.keys()) {
+            //Remove!
+            if(!mpToplevelSystem->hasModelObject(name)) {
+                qDebug() << "Removing: " << name;
+            }
+        }
+        return;
+    }
+
     // Backup old save file before saving (if old file exists)
     if(saveAsFlag == ExistingFile && gpConfig->getBoolSetting(cfg::autobackup))
     {
