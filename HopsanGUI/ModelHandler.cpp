@@ -61,9 +61,6 @@
 #include "Widgets/TextEditorWidget.h"
 #include "Utilities/GUIUtilities.h"
 
-#include "ssp4c.h"
-#include "ssp4c_ssd.h"
-
 #ifdef USEZMQ
 #include "RemoteSimulationUtils.h"
 #endif

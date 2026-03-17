@@ -56,6 +56,7 @@ class AnimationWidget;
 class SimulationThreadHandler;
 class GUIMessageHandler;
 class LogDataHandler2;
+class ssdHandle;
 
 #include "CoreAccess.h"
 #include "RemoteCoreAccess.h"
@@ -70,6 +71,7 @@ public:
     enum ModelType {
         HopsanModel = 0x0,
         DcpModel = 0x1,
+        SsdModel = 0x2,
     };
 
     ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *pParentTabWidget = nullptr);
@@ -122,6 +124,8 @@ public:
     ModelHandler *mpParentModelHandler;
     GraphicsView *mpGraphicsView;
     AnimationWidget *mpAnimationWidget;
+
+    void setSsdHandle(ssdHandle* ssd);
 
 public slots:
     void setTopLevelSimulationTime(const QString startTime, const QString timeStep, const QString stopTime, UndoStatusEnumT undoSettings=Undo);
@@ -195,6 +199,8 @@ private:
     double mSimulationProgress;
     QVector<RemoteResultVariable> mRemoteResultVariables;
     QMutex mSimulateMutex;
+
+    ssdHandle *mSsd;
 };
 
 
