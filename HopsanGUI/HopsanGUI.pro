@@ -226,6 +226,7 @@ SOURCES += main.cpp \
     GUIConnectorAppearance.cpp \
     Widgets/SSPWidget.cpp \
     Widgets/SSVEditorWidget.cpp \
+    Widgets/SSMEditorWidget.cpp \
     Widgets/SystemParametersWidget.cpp \
     PlotWindow.cpp \
     GUIObjects/GUIWidgets.cpp \
@@ -306,6 +307,7 @@ HEADERS += MainWindow.h \
     InitializationThread.h \
     Widgets/SSPWidget.h \
     Widgets/SSVEditorWidget.h \
+    Widgets/SSMEditorWidget.h \
     version_gui.h \
     Dialogs/OptionsDialog.h \
     UndoStack.h \
