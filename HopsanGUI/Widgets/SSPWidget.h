@@ -28,6 +28,7 @@ public:
 protected slots:
     void openSSDModel(QTreeWidgetItem*item, int);
     void openSSVEditor(QTreeWidgetItem*item, int);
+    void openSSMEditor(QTreeWidgetItem*item, int);
 
 private:
     SSPTreeWidget *mpTree;

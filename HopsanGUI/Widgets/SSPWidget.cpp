@@ -31,6 +31,7 @@
 
 #include "SSPWidget.h"
 #include "SSVEditorWidget.h"
+#include "SSMEditorWidget.h"
 #include "Widgets/ProjectTabWidget.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUIModelObject.h"
@@ -303,7 +304,7 @@ void SSPWidget::openSSDModel(QTreeWidgetItem *item, int)
     if (!item) return;
 
     // Check if this is an SSD item
-    if (item->type() == SSPTreeWidget::SSDItem) {
+    if (item->type() == SSPTreeWidget::SSDItem || item->type() == SSPTreeWidget::SystemItem) {
         sspHandle *ssp;
         ssdHandle *ssd;
         ssdSystemHandle *system;
@@ -388,6 +389,10 @@ void SSPWidget::openSSDModel(QTreeWidgetItem *item, int)
     else if (item->type() == SSPTreeWidget::SSVItem) {
         openSSVEditor(item, 0);
     }
+    // Check if this is an SSM item
+    else if (item->type() == SSPTreeWidget::SSMItem) {
+        openSSMEditor(item, 0);
+    }
 }
 
 void SSPWidget::openSSVEditor(QTreeWidgetItem *item, int)
@@ -401,6 +406,25 @@ void SSPWidget::openSSVEditor(QTreeWidgetItem *item, int)
 
     // Create the SSV editor widget
     SSVEditorWidget *pEditor = new SSVEditorWidget(ssv, fileName, gpCentralTabWidget);
+
+    // Add to the central tab widget
+    if (gpCentralTabWidget) {
+        gpCentralTabWidget->addTab(pEditor, fileName);
+        gpCentralTabWidget->setCurrentWidget(pEditor);
+    }
+}
+
+void SSPWidget::openSSMEditor(QTreeWidgetItem *item, int)
+{
+    if (!item || !itemToSsmMap.contains(item)) {
+        return;
+    }
+
+    ssmParameterMappingHandle *ssm = itemToSsmMap[item];
+    QString fileName = QString::fromUtf8(ssp4c_ssm_parameterMapping_getFilename(ssm));
+
+    // Create the SSM editor widget
+    SSMEditorWidget *pEditor = new SSMEditorWidget(ssm, fileName, gpCentralTabWidget);
 
     // Add to the central tab widget
     if (gpCentralTabWidget) {
