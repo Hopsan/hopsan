@@ -46,7 +46,9 @@ public:
     explicit SSPTreeWidget(QWidget *parent = nullptr);
 
     enum ItemType {
+        SSPItem,
         SSDItem = QTreeWidgetItem::UserType + 1,
+        SystemItem,
         FMUItem,
         SSVItem,
         SSMItem
@@ -56,6 +58,7 @@ protected:
     void startDrag(Qt::DropActions supportedActions) override;
     void dragMoveEvent(QDragMoveEvent *event) override;
     void dropEvent(QDropEvent *event) override;
+    void contextMenuEvent(QContextMenuEvent *event) override;
 };
 
 
