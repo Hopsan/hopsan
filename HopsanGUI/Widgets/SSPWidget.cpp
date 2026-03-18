@@ -38,6 +38,9 @@
 #include <QVBoxLayout>
 #include <QApplication>
 #include <QDebug>
+#include <QMenu>
+#include <QMessageBox>
+#include <QContextMenuEvent>
 
 #include "global.h"
 #include "ssp4c.h"
@@ -69,7 +72,7 @@ void SSPWidget::addSSP(QFileInfo path)
     QFont boldFont = qApp->font();
     boldFont.setBold(true);
 
-    QTreeWidgetItem *pSspItem = new QTreeWidgetItem();
+    QTreeWidgetItem *pSspItem = new QTreeWidgetItem(SSPTreeWidget::SSPItem);
     pSspItem->setFont(0,boldFont);
     pSspItem->setIcon(0, QIcon(QString(ICONPATH) + "svg/Hopsan-SSP.svg"));
     pSspItem->setText(0,path.fileName());
@@ -94,7 +97,7 @@ void SSPWidget::addSSP(QFileInfo path)
         qDebug() << "SSD generationDateAndTime: " << ssp4c_ssd_getGenerationDateAndTime(ssd);
 
         QTreeWidgetItem *pSsdItem = new QTreeWidgetItem(SSPTreeWidget::SSDItem);
-        //pSsdItem->setIcon(0, QIcon(QString(ICONPATH) + "svg/Hopsan-SSD.svg"));
+        pSsdItem->setIcon(0, QIcon(QString(ICONPATH) + "svg/Hopsan-SSD.svg"));
         QString itemName = ssp4c_ssd_getFileName(ssd);
         QString name = ssp4c_ssd_getName(ssd);
         if(!name.isEmpty()) {
@@ -110,7 +113,7 @@ void SSPWidget::addSSP(QFileInfo path)
 
         auto rootSystem = ssp4c_ssd_getRootSystem(ssd);
         if(rootSystem != nullptr) {
-            QTreeWidgetItem *pSystemItem = new QTreeWidgetItem();
+            QTreeWidgetItem *pSystemItem = new QTreeWidgetItem(SSPTreeWidget::SystemItem);
             pSystemItem->setText(0, QString(ssp4c_ssd_system_getName(rootSystem)));
             pSsdItem->addChild(pSystemItem);
             itemToSspMap.insert(pSystemItem, ssp);
@@ -142,19 +145,19 @@ void SSPWidget::addSSP(QFileInfo path)
         qDebug() << "Found" << parCount << "SSV parameters";
         for(int p=0; p<parCount; ++p) {
             ssvParameterHandle *par = ssp4c_ssv_parameterSet_getParameterByIndex(ssv, p);
-            qDebug() << "Parameter";
-            qDebug() << "  Name:  "+QString(ssp4c_ssv_parameter_getName(par));
+            //qDebug() << "Parameter";
+            //qDebug() << "  Name:  "+QString(ssp4c_ssv_parameter_getName(par));
             sspDataType type = ssp4c_ssv_parameter_getDatatype(par);
             if(type == sspDataTypeString) {
-                qDebug() << "  Value: "+QString(ssp4c_ssv_parameter_getStringValue(par));
+                //qDebug() << "  Value: "+QString(ssp4c_ssv_parameter_getStringValue(par));
             }
             else if(type == sspDataTypeReal) {
-                qDebug() << "  Value: "+QString::number(ssp4c_ssv_parameter_getRealValue(par));
+                //qDebug() << "  Value: "+QString::number(ssp4c_ssv_parameter_getRealValue(par));
             }
         }
 
         QTreeWidgetItem *pSsvItem = new QTreeWidgetItem(SSPTreeWidget::SSVItem);
-        //pSsdItem->setIcon(0, QIcon(QString(ICONPATH) + "svg/Hopsan-SSD.svg"));
+        pSsvItem->setIcon(0, QIcon(QString(ICONPATH) + "svg/Hopsan-SSV.svg"));
         QString itemName = ssp4c_ssv_parameterSet_getFileName(ssv);
         QString name = ssp4c_ssv_parameterSet_getName(ssv);
         if(!name.isEmpty()) {
@@ -163,7 +166,6 @@ void SSPWidget::addSSP(QFileInfo path)
             itemName.append("\")");
         }
         pSsvItem->setText(0,itemName);
-        pSsvItem->setTextColor(0,QColor("darkred"));
         pResourcesItem->addChild(pSsvItem);
 
         itemToSspMap.insert(pSsvItem, ssp);
@@ -179,14 +181,13 @@ void SSPWidget::addSSP(QFileInfo path)
         for(int e=0; e<entryCount; ++e) {
             ssp4c_ssm_parameterMapping_getMappingEntryByIndex(ssm,e);
             ssmParameterMappingEntryHandle *entry = ssp4c_ssm_parameterMapping_getMappingEntryByIndex(ssm, e);
-            qDebug() << "Source:" << QString(ssp4c_ssm_mappingEntry_getSource(entry));
-            qDebug() << "Target:" << QString(ssp4c_ssm_mappingEntry_getTarget(entry));
+            //qDebug() << "Source:" << QString(ssp4c_ssm_mappingEntry_getSource(entry));
+            //qDebug() << "Target:" << QString(ssp4c_ssm_mappingEntry_getTarget(entry));
         }
 
         QTreeWidgetItem *pSsmItem = new QTreeWidgetItem(SSPTreeWidget::SSMItem);
-        //pSsdItem->setIcon(0, QIcon(QString(ICONPATH) + "svg/Hopsan-SSD.svg"));
+        pSsmItem->setIcon(0, QIcon(QString(ICONPATH) + "svg/Hopsan-SSM.svg"));
         pSsmItem->setText(0,QString(ssp4c_ssm_parameterMapping_getFilename(ssm)));
-        pSsmItem->setTextColor(0,QColor("darkgreen"));
         pResourcesItem->addChild(pSsmItem);
 
         itemToSspMap.insert(pSsmItem, ssp);
@@ -214,8 +215,8 @@ void SSPTreeWidget::startDrag(Qt::DropActions supportedActions)
     if (!item)
         return;
 
-    // Tillåt bara drag av SourceItem
-    if (item->type() != SSVItem)
+    // Allow drag of SSV and SSM items
+    if (item->type() != SSVItem && item->type() != SSMItem)
         return;
 
     QTreeWidget::startDrag(Qt::CopyAction);
@@ -225,12 +226,20 @@ void SSPTreeWidget::dragMoveEvent(QDragMoveEvent *event)
 {
     QTreeWidgetItem *target = itemAt(event->pos());
 
-    if (!target || target->type() != FMUItem)
+    static QTreeWidgetItem *lastItem = nullptr;
+    if (lastItem) {
+        lastItem->setBackground(0, Qt::NoBrush);
+    }
+
+    if (!target || (target->type() != FMUItem && target->type() != SystemItem))
     {
+        lastItem = nullptr;
         event->ignore();
         return;
     }
 
+    target->setBackground(0, QBrush(Qt::lightGray));
+    lastItem = target;
     event->setDropAction(Qt::CopyAction);
     event->accept();
 }
@@ -239,7 +248,7 @@ void SSPTreeWidget::dropEvent(QDropEvent *event)
 {
     QTreeWidgetItem *target = itemAt(event->pos());
 
-    if (!target || target->type() != FMUItem)
+    if (!target || (target->type() != FMUItem && target->type() != SystemItem))
     {
         event->ignore();
         return;
@@ -247,21 +256,44 @@ void SSPTreeWidget::dropEvent(QDropEvent *event)
 
     QTreeWidgetItem *source = currentItem();
 
-    if (!source || source->type() != SSVItem)
+    if (!source || (source->type() != SSVItem && source->type() != SSMItem))
     {
         event->ignore();
         return;
     }
 
     // Create a copy of item and add it to the target
-    QTreeWidgetItem *copy = new QTreeWidgetItem(SSVItem);
+    QTreeWidgetItem *copy = new QTreeWidgetItem(source->type());
     copy->setText(0, source->text(0));
-    //! @todo We must also copy the mapping betweein SSV item and SSV file
+    copy->setTextColor(0, source->textColor(0));  // Preserve text color
+    //! @todo We must also copy the mapping between SSV/SSM item and SSV/SSM file
 
     target->addChild(copy);
     target->setExpanded(true);
 
     event->acceptProposedAction();
+}
+
+void SSPTreeWidget::contextMenuEvent(QContextMenuEvent *event)
+{
+    QTreeWidgetItem *item = itemAt(event->pos());
+    if (!item) {
+        return;
+    }
+
+    QMenu menu(this);
+    
+    if((item->type() == SSVItem || item->type() == SSMItem) && item->parent()->type() != SSPItem) {
+        menu.addAction("Remove from SSD", [this, item]() {
+            QTreeWidgetItem *parent = item->parent();
+            if(parent) {
+                parent->removeChild(item);
+                // @todo Also remove the mapping between SSV/SSM item and SSV/SSM file
+            }
+        });
+    }
+
+    menu.exec(event->globalPos());
 }
 
 void SSPWidget::openSSDModel(QTreeWidgetItem *item, int)
