@@ -18,6 +18,10 @@ if(WIN32)
                                                 IMPORT_PREFIX "")
 endif()
 
+if (MSVC)
+  target_compile_options(defaultcomponentlibrary PRIVATE "/bigobj")
+endif()
+
 install(TARGETS defaultcomponentlibrary
   RUNTIME DESTINATION componentLibraries/defaultLibrary
   LIBRARY DESTINATION componentLibraries/defaultLibrary
