@@ -39,7 +39,7 @@ if(NOT CMAKE_BUILD_TYPE MATCHES Debug)
 endif()
 
 target_link_libraries(${target_name} Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Xml Qt5::Svg Qt5::Network Qt5::Test Qt5::PrintSupport
-    qwt hopsancore hopsangeneratorgui symhop ops hopsandcp xercesc )
+    qwt hopsancore hopsangeneratorgui symhop ops hopsandcp XercesC::XercesC )
 if(UNIX)
 target_link_libraries(${target_name} Qt5::WebEngineWidgets)
 endif()
