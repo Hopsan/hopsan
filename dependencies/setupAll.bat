@@ -1,7 +1,6 @@
 set HOPSAN_BUILD_SCRIPT_NOPAUSE=true
 start /wait cmd /c setupDiscount.bat
 start /wait cmd /c setupFmi4c.bat
-start /wait cmd /c setupHDF5.bat
 start /wait cmd /c setupKatex.bat
 start /wait cmd /c setupMsgpack.bat
 start /wait cmd /c setupQwt.bat
@@ -12,3 +11,5 @@ start /wait cmd /c setupLibzip.bat
 start /wait cmd /c setupXerces.bat
 REM DCPLib must come after xerces and libzip (zlib before libzip)
 start /wait cmd /c setupDCPLib.bat
+REM HDF5 must be after zlib and libzip
+start /wait cmd /c setupHDF5.bat
