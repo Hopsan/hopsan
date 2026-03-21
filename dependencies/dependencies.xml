@@ -116,8 +116,8 @@
   </dependency>
 
   <dependency name="fmi4c">
-    <releasefile sha256="8b210f8c75bc4c5bbb47f12fc3cef6b92f226392291be19a982753617d5ffc83">
-      <url>https://github.com/robbr48/fmi4c/archive/refs/tags/v1.1.zip</url>
+    <releasefile sha256="aa709d0e2c77a499336a9adaf0b118967964a3bd11a666cde00447c47aee35d4">
+      <url>https://github.com/robbr48/fmi4c/archive/4a77c6a971750be6b70b7d52f7ee492d0f901819.zip</url>
     </releasefile>
   </dependency>
 
