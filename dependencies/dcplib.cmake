@@ -7,8 +7,8 @@ set(local_dcplib_dir ${CMAKE_CURRENT_LIST_DIR}/dcplib)
 
 find_package(Threads)
 find_package(ICU MODULE COMPONENTS uc data)
-find_package(XercesC CONFIG PATHS ${local_xerces_dir} NO_DEFAULT_PATH)
-find_package(libzip CONFIG PATHS ${local_libzip_dir} NO_DEFAULT_PATH)
+find_package(libzip CONFIG PATHS ${local_libzip_dir})
+find_package(XercesC CONFIG PATHS ${local_xerces_dir})
 
 #add_library(ZIP::ZIP ALIAS libzip::zip)
 # add alias compatible with older cmake versions
