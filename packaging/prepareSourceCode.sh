@@ -1,13 +1,11 @@
 #!/bin/bash
-# $Id$
 
 # Shell script for preparing the Hopsan source code before RELEASE build
-# Author: Peter Nordin peter.nordin@liu.se
 
 E_BADARGS=65
 if [ $# -lt 7 ]; then
   echo "Error: To few input arguments!"
-  echo "Usage: $(basename $0) {hopsancode_root stage_directory base_version release_revision full_version_string doDevRelease doBuildInComponents}"
+  echo "Usage: $(basename $0) {hopsancode_root stage_directory base_version release_revision full_version_string doDevRelease}"
   exit $E_BADARGS
 fi
 
@@ -17,7 +15,6 @@ readonly base_version="$3"
 readonly release_revision="$4"
 readonly full_version_string="$5"
 readonly doDevRelease=$6
-readonly doBuildInComponents=$7
 if [[ "$OSTYPE" == "darwin"* ]]; then
   inkscape_cmd="/Applications/Inkscape.app/Contents/MacOS/Inkscape"
 else
@@ -78,15 +75,3 @@ elif [[ $(command -v convert > /dev/null) -eq 0 ]]; then
 else
   echo Error: Neither Inkscape or convert can be used to generate splash screen
 fi
-
-# If selected, make changes to compile defaultLibrary into Hopsan Core
-# Deprecated, we should not do this anymore
-if [[ $doBuildInComponents == true ]]; then
-  sed 's|.*DEFINES \*= HOPSAN_INTERNALDEFAULTCOMPONENTS|DEFINES *= HOPSAN_INTERNALDEFAULTCOMPONENTS|g' -i Common.prf
-  sed 's|#INTERNALCOMPLIB.CPP#|../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cpp \\|g' -i HopsanCore/HopsanCore.pro
-  sed '/.*<lib>.*/d' -i componentLibraries/defaultLibrary/defaultComponentLibrary.xml
-  sed 's|componentLibraries||g' -i HopsanNG.pro
-fi
-
-# Build user documentation
-./buildDocumentation.sh

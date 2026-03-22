@@ -1,7 +1,5 @@
 #!/bin/bash
-# $Id$
-
-# Shell script building HopsaGUI dependency Discount automatically
+# Shell script building Discount automatically
 
 basedir=`pwd`
 name=discount

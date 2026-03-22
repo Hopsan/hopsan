@@ -116,8 +116,8 @@
   </dependency>
 
   <dependency name="fmi4c">
-    <releasefile sha256="8b210f8c75bc4c5bbb47f12fc3cef6b92f226392291be19a982753617d5ffc83">
-      <url>https://github.com/robbr48/fmi4c/archive/refs/tags/v1.1.zip</url>
+    <releasefile sha256="9e97829e13b47e1b9123b4cbdcf05300556aeb2e1744ed9f8413fdf8104944fc">
+      <url>https://github.com/peterNordin/fmi4c/archive/refs/heads/update_zlib_and_minizip.zip</url>
     </releasefile>
   </dependency>
 

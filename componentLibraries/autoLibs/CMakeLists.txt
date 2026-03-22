@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 3.0)
 project(AutoLibs)
 
 install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/ DESTINATION componentLibraries/autoLibs
