@@ -18,7 +18,7 @@ source setHopsanBuildPaths.sh
 mkdir -p $builddir
 cd $builddir
 
-zmq_cmake_args="-Wno-dev -DBUILD_STATIC=OFF -DZMQ_HAVE_TIPC=OFF -DCMAKE_INSTALL_LIBDIR=lib"
+zmq_cmake_args="-DCMAKE_POLICY_VERSION_MINIMUM=3.5 -Wno-dev -DBUILD_STATIC=OFF -DZMQ_HAVE_TIPC=OFF -DCMAKE_INSTALL_LIBDIR=lib"
 if [[ ${OSTYPE} == darwin* ]]; then
     zmq_cmake_args="${zmq_cmake_args} -DZMQ_BUILD_FRAMEWORK=OFF"
 fi
