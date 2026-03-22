@@ -28,7 +28,7 @@ if "%HOPSAN_BUILD_COMPILER%" == "msvc" (
   set export_symbols_arg=-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON
 )
 
-cmake -S %codedir%
+cmake -S %codedir%\cmake
       -B %builddir%
       -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ^
       -G %HOPSAN_BUILD_CMAKE_GENERATOR% ^
