@@ -15,7 +15,6 @@ override_dh_auto_configure:
 
 override_dh_auto_build:
 #       First build dependencies
-	packaging/fixPythonShebang.sh ./ 3
 	cd dependencies; ./setupAsio.sh	
 	cd dependencies; ./setupFmi4c.sh
 	cd dependencies; ./setupKatex.sh

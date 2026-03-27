@@ -1,8 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # Script to generate all library files from teh existing directory structure and component hpp file
-# Author: Peter Nordin
-# Date:  20150319
-# $Id$
 
 import os
 import sys
