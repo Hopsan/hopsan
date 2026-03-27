@@ -1,8 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # Script to evaluate benchmark results created by benchmarkHopsanCli.py
-# Author: Peter Nordin
-# Date:  20150714
-# $Id: evalBenchmark.py 8194 2015-07-08 14:34:05Z petno25 $
 
 import matplotlib.pyplot as plt
 import sys

@@ -1,7 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # Script to change the license header of code files
-# Author: Peter Nordin
-# $Id$
 
 import os
 import sys
