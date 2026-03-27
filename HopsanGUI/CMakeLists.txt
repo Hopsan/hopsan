@@ -38,6 +38,7 @@ target_link_libraries(${target_name} Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Xml Qt
     qwt hopsancore hopsangeneratorgui symhop ops hopsandcp)
 if(UNIX)
   target_link_libraries(${target_name} Qt5::WebEngineWidgets)
+  target_compile_definitions(${target_name} PRIVATE USEWEBENGINE)
 endif()
 
 target_link_optional_libraries(${target_name} libhopsanremoteclient hopsanhdf5exporter discount katex)
