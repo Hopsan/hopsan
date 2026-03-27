@@ -17,7 +17,7 @@ devversion=2.24.0
 debianDistArchArray=( trixie:amd64:trixie
                       bookworm:amd64:bookworm
                       bullseye:amd64:bullseye )
-ubuntuDistArchArray=( plucky:amd64:trixie
+ubuntuDistArchArray=( questing:amd64:trixie
                       noble:amd64:trixie
                       jammy:amd64:bookworm
                       focal:amd64:bullseye )
