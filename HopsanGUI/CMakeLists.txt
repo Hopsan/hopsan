@@ -29,6 +29,7 @@ target_include_directories(${target_name} PRIVATE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../Utilities>)
 
 target_compile_definitions(${target_name} PRIVATE _USE_MATH_DEFINES)
+target_compile_definitions(${target_name} PRIVATE DEVELOPMENT)
 if(NOT CMAKE_BUILD_TYPE MATCHES Debug)
   # Silence qDebug() for all non Debug configurations
   target_compile_definitions(${target_name} PRIVATE QT_NO_DEBUG_OUTPUT)

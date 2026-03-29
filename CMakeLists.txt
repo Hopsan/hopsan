@@ -79,7 +79,7 @@ if (WIN32)
 
   if (MINGW)
     file(TO_CMAKE_PATH "$ENV{mingw_path}" mingw_home_bin)
-    if (EXISTS ${mingw_path})
+    if (EXISTS ${mingw_home_bin})
         message(STATUS "Installing from MinGW directory: ${mingw_home_bin}")
 
         install(FILES ${mingw_home_bin}/libgcc_s_seh-1.dll
