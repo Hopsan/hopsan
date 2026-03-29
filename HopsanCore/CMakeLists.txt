@@ -37,7 +37,11 @@ if (MSVC)
   # Undefine odd min and max macros to enable use of std::min, std::max, make it public so all projects get this define
   target_compile_definitions(hopsancore PUBLIC NOMINMAX)
 endif()
-target_compile_definitions(hopsancore PRIVATE HOPSANCORE_WRITELOG)
+if (NOT MSVC)
+  # Do not enable core logging with msvc
+  # TODO Investigate why its not working, comment from release script was "so that MSVC dlls do not try to access the log file"
+  target_compile_definitions(hopsancore PRIVATE HOPSANCORE_WRITELOG)
+endif()
 if(CMAKE_BUILD_TYPE MATCHES Debug)
   target_compile_definitions(hopsancore PUBLIC HOPSAN_BUILD_TYPE_DEBUG)
 else()
