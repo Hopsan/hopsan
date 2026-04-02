@@ -42,6 +42,8 @@
 #include <QDomDocument>
 #include <QFile>
 
+#include <ssp4c.h>
+
 //Hopsan includes
 #include "common.h"
 
@@ -125,7 +127,7 @@ public:
     GraphicsView *mpGraphicsView;
     AnimationWidget *mpAnimationWidget;
 
-    void setSsdHandle(ssdHandle* ssd);
+    void setSsdHandle(ssdHandle* ssd, sspHandle* ssp = nullptr);
 
 public slots:
     void setTopLevelSimulationTime(const QString startTime, const QString timeStep, const QString stopTime, UndoStatusEnumT undoSettings=Undo);
@@ -201,6 +203,7 @@ private:
     QMutex mSimulateMutex;
 
     ssdHandle *mSsd;
+    sspHandle *mSsp;
 };
 
 

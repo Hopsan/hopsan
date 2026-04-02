@@ -74,6 +74,9 @@
 
 #include "ssp4c_ssd.h"
 #include "ssp4c_ssd_system.h"
+#include "ssp4c_ssd_element_geometry.h"
+#include "ssp4c_ssd_connection.h"
+#include "ssp4c_ssd_connection_geometry.h"
 
 //! @class ModelWidget
 //! @brief The ModelWidget class is a Widget to contain a simulation model
@@ -168,6 +171,7 @@ ModelWidget::ModelWidget(ModelHandler *pModelHandler, CentralTabWidget *pParentT
     mLastSimulationTime = 0;
 
     mSsd = nullptr;
+    mSsp = nullptr;
 }
 
 
@@ -339,9 +343,10 @@ void ModelWidget::setLogDataHandler(QSharedPointer<LogDataHandler2> pHandler)
     pHandler->setParentModel(this);
 }
 
-void ModelWidget::setSsdHandle(ssdHandle *ssd)
+void ModelWidget::setSsdHandle(ssdHandle *ssd, sspHandle *ssp)
 {
     mSsd = ssd;
+    mSsp = ssp;
 }
 
 //! @brief Sets last simulation time (only use this from project tab widget!)
@@ -1361,22 +1366,69 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
             auto comp = ssp4c_ssd_system_getComponentByIndex(rootSystem, c);
             ssdMap.insert(ssp4c_ssd_component_getName(comp), comp);
         }
+        QMap<QString, ssdConnectionHandle*> ssdConnectionMap;
+        int numConnections = ssp4c_ssd_system_getNumberOfConnections(rootSystem);
+        for(int c=0; c<numConnections; ++c) {
+            auto con = ssp4c_ssd_system_getConnectionByIndex(rootSystem, c);
+            QString startComp = ssp4c_ssd_connection_getStartElement(con);
+            QString startPort = ssp4c_ssd_connection_getStartConnector(con);
+            QString endComp = ssp4c_ssd_connection_getEndElement(con);
+            QString endPort = ssp4c_ssd_connection_getEndConnector(con);
+            QString key = startComp + ":" + startPort + "->" + endComp + ":" + endPort;
+            ssdConnectionMap.insert(key, con);
+        }
         for(const auto &c : mpToplevelSystem->getModelObjects()) {
             if(ssdMap.contains(c->getName())) {
-                //Update!
-                qDebug() << "Updating: " << c->getName();
-            }
-            else {
-                //Add!
-                qDebug() << "Adding: " << c->getName();
+                ssdComponentHandle* ssdComp = ssdMap[c->getName()];
+                ssdElementGeometryHandle* geom = ssp4c_ssd_component_getElementGeometry(ssdComp);
+                if(geom) {
+                    QPointF center = c->getCenterPos();
+                    QRectF rect = c->boundingRect();
+                    double width = rect.width();
+                    double height = rect.height();
+                    double x1 = center.x() - width/2 - 2500;
+                    double x2 = center.x() + width/2 - 2500;
+                    double y1 = center.y() - height/2 - 2500;
+                    double y2 = center.y() + height/2 - 2500;
+                    double rotation = c->rotation();
+                    ssp4c_ssd_elementGeometry_setX1(geom, x1);
+                    ssp4c_ssd_elementGeometry_setX2(geom, x2);
+                    ssp4c_ssd_elementGeometry_setY1(geom, y1);
+                    ssp4c_ssd_elementGeometry_setY2(geom, y2);
+                    ssp4c_ssd_elementGeometry_setRotation(geom, rotation);
+                }
             }
         }
-        for(const auto &name : ssdMap.keys()) {
-            //Remove!
-            if(!mpToplevelSystem->hasModelObject(name)) {
-                qDebug() << "Removing: " << name;
+        for(auto connector : mpToplevelSystem->getSubConnectorPtrs()) {
+            QString startComp = connector->getStartComponentName();
+            QString startPort = connector->getStartPortName();
+            QString endComp = connector->getEndComponentName();
+            QString endPort = connector->getEndPortName();
+            QString key = startComp + ":" + startPort + "->" + endComp + ":" + endPort;
+            if(ssdConnectionMap.contains(key)) {
+                ssdConnectionHandle* ssdCon = ssdConnectionMap[key];
+                ssdConnectionGeometryHandle* conGeom = ssp4c_ssd_connection_getConnectionGeometry(ssdCon);
+                if(conGeom) {
+                    QVector<QPointF> points = connector->getPoints();
+                    int count = points.size();
+                    double* xArray = new double[count];
+                    double* yArray = new double[count];
+                    for(int i=0; i<count; ++i) {
+                        xArray[i] = points[i].x() - 2500;
+                        yArray[i] = points[i].y() - 2500;
+                    }
+                    ssp4c_ssd_connectionGeometry_setPointsX(conGeom, xArray, count);
+                    ssp4c_ssd_connectionGeometry_setPointsY(conGeom, yArray, count);
+                    delete[] xArray;
+                    delete[] yArray;
+                }
             }
         }
+        // Save the SSP
+        if(mSsp) {
+            ssp4c_saveSsp(mSsp, mpToplevelSystem->getModelFileInfo().filePath().toStdString().c_str());
+        }
+        this->setSaved(true);
         return;
     }
 

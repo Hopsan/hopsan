@@ -23,7 +23,8 @@ public:
 
     void addSSP(QFileInfo path);
 
-    public slots:
+public slots:
+    void saveSspModel(QTreeWidgetItem *item);
 
 protected slots:
     void openSSDModel(QTreeWidgetItem*item, int);
@@ -38,6 +39,7 @@ private:
     QMap<QTreeWidgetItem *, ssdSystemHandle *> itemToSystemMap;
     QMap<QTreeWidgetItem *, ssvParameterSetHandle *> itemToSsvMap;
     QMap<QTreeWidgetItem *, ssmParameterMappingHandle *> itemToSsmMap;
+    QMap<sspHandle *, QFileInfo> mSspFileMap;
 };
 
 class SSPTreeWidget : public QTreeWidget
