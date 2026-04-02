@@ -170,8 +170,8 @@ public:
     void takeOwnershipOf(QList<ModelObject*> &rModeObjectlist, QList<Widget*> &rWidgetList);
 
     //GUIModelObject methods
-    ModelObject *addModelObject(QString fullTypeName, QPointF position, double rotation=0, SelectionStatusEnumT startSelected = Deselected, NameVisibilityEnumT nameStatus = UseDefault, UndoStatusEnumT undoSettings = Undo);
-    ModelObject *addModelObject(ModelObjectAppearance* pAppearanceData, QPointF position, double rotation=0, SelectionStatusEnumT startSelected = Deselected, NameVisibilityEnumT nameStatus = UseDefault, UndoStatusEnumT undoSettings = Undo);
+    ModelObject *addModelObject(QString fullTypeName, QPointF position, double rotation=0, SelectionStatusEnumT startSelected = Deselected, NameVisibilityEnumT nameStatus = UseDefault, UndoStatusEnumT undoSettings = Undo, ResizbleEnumT resizable = NotResizable);
+    ModelObject *addModelObject(ModelObjectAppearance* pAppearanceData, QPointF position, double rotation=0, SelectionStatusEnumT startSelected = Deselected, NameVisibilityEnumT nameStatus = UseDefault, UndoStatusEnumT undoSettings = Undo, ResizbleEnumT resizable = NotResizable);
     void deleteModelObject(const QString &rObjectName, UndoStatusEnumT undoSettings=Undo);
     void renameModelObject(QString oldName, QString newName, UndoStatusEnumT undoSettings=Undo);
 

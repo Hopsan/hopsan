@@ -83,6 +83,7 @@ enum GraphicsTypeEnumT {UserGraphics, ISOGraphics, NoGraphics};
 enum ConnectorGeometryEnumT {Vertical, Horizontal, Diagonal};
 enum RenameRestrictionEnumT {Unrestricted, CoreRenameOnly};
 enum UndoStatusEnumT {NoUndo, Undo};
+enum ResizbleEnumT {NotResizable, Resizable};
 enum SaveTargetEnumT {ExistingFile, NewFile};
 enum SaveContentsEnumT {FullModel, ParametersOnly};
 enum ConnectorStyleEnumT {PowerConnectorStyle, SignalConnectorStyle, BrokenConnectorStyle, UndefinedConnectorStyle};

@@ -597,7 +597,7 @@ void SystemObject::renameExternalPort(const QString oldName, const QString newNa
 
 
 //! @brief Helper function that allows calling addGUIModelObject with typeName instead of appearance data
-ModelObject* SystemObject::addModelObject(QString fullTypeName, QPointF position, double rotation, SelectionStatusEnumT startSelected, NameVisibilityEnumT nameStatus, UndoStatusEnumT undoSettings)
+ModelObject* SystemObject::addModelObject(QString fullTypeName, QPointF position, double rotation, SelectionStatusEnumT startSelected, NameVisibilityEnumT nameStatus, UndoStatusEnumT undoSettings, ResizbleEnumT resizable)
 {
     ModelObjectAppearance *pAppearanceData = gpLibraryHandler->getModelObjectAppearancePtr(fullTypeName).data();
 
@@ -632,7 +632,7 @@ ModelObject* SystemObject::addModelObject(QString fullTypeName, QPointF position
             return pObj;
         }
     }
-    return addModelObject(pAppearanceData, position, rotation, startSelected, nameStatus, undoSettings);
+    return addModelObject(pAppearanceData, position, rotation, startSelected, nameStatus, undoSettings, resizable);
 }
 
 
@@ -642,7 +642,7 @@ ModelObject* SystemObject::addModelObject(QString fullTypeName, QPointF position
 //! @param name will be the name of the component.
 //! @returns a pointer to the created and added object
 //! @todo only modelobjects for now
-ModelObject* SystemObject::addModelObject(ModelObjectAppearance *pAppearanceData, QPointF position, double rotation, SelectionStatusEnumT startSelected, NameVisibilityEnumT nameStatus, UndoStatusEnumT undoSettings)
+ModelObject* SystemObject::addModelObject(ModelObjectAppearance *pAppearanceData, QPointF position, double rotation, SelectionStatusEnumT startSelected, NameVisibilityEnumT nameStatus, UndoStatusEnumT undoSettings, ResizbleEnumT resizability)
 {
     // Deselect all other components and connectors
     emit deselectAllGUIObjects();
@@ -664,6 +664,15 @@ ModelObject* SystemObject::addModelObject(ModelObjectAppearance *pAppearanceData
     else if (componentTypeName == HOPSANGUISCOPECOMPONENTTYPENAME)
     {
         pNewModelObject = new ScopeComponent(position, rotation, pAppearanceData, this, startSelected, mGfxType);
+    }
+    else if (componentTypeName == "FMIWrapper")
+    {
+        if(resizability == Resizable) {
+            pNewModelObject = new ResizableComponent(position, rotation, pAppearanceData, this, startSelected, mGfxType);
+        }
+        else {
+            pNewModelObject = new Component(position, rotation, pAppearanceData, this, startSelected, mGfxType);
+        }
     }
     else //Assume some standard component type
     {

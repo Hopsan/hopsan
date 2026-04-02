@@ -1258,8 +1258,11 @@ void Connector::setPointsAndGeometries(const QVector<QPointF> &rPoints, const QS
                 mGeometries.push_back(Horizontal);
             else if(mPoints[i].y() == mPoints[i+1].y())
                 mGeometries.push_back(Vertical);
-            else
+            else {
+                qDebug() << mPoints[i].x() << " != " << mPoints[i+1].x();
+                qDebug() << mPoints[i].y() << " != " << mPoints[i+1].y();
                 mGeometries.push_back(Diagonal);
+            }
         }
         else
         {

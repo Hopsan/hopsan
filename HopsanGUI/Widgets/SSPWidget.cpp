@@ -35,6 +35,7 @@
 #include "Widgets/ProjectTabWidget.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUIModelObject.h"
+#include "GUIObjects/GUIComponent.h"
 #include "GUIPort.h"
 #include "ModelHandler.h"
 #include "common.h"
@@ -51,7 +52,10 @@
 #include "ssp4c_ssd_system.h"
 #include "ssp4c_ssd_component.h"
 #include "ssp4c_ssd_connection.h"
+#include "ssp4c_ssd_connection_geometry.h"
 #include "ssp4c_ssd_connector.h"
+#include "ssp4c_ssd_connector_geometry.h"
+#include "ssp4c_ssd_element_geometry.h"
 #include "ssp4c_ssv_parameter_set.h"
 #include "ssp4c_ssv_parameter.h"
 #include "ssp4c_ssm_parameter_mapping.h"
@@ -303,6 +307,8 @@ void SSPWidget::openSSDModel(QTreeWidgetItem *item, int)
 {
     if (!item) return;
 
+    QMap<Port*, ssdConnectorHandle*> portToConnectorMap;
+
     // Check if this is an SSD item
     if (item->type() == SSPTreeWidget::SSDItem || item->type() == SSPTreeWidget::SystemItem) {
         sspHandle *ssp;
@@ -328,20 +334,76 @@ void SSPWidget::openSSDModel(QTreeWidgetItem *item, int)
             qDebug() << "  component name: " << ssp4c_ssd_component_getName(comp);
             qDebug() << "  component source: " << ssp4c_ssd_component_getSource(comp);
 
-            int connectorsCount = ssp4c_ssd_component_getNumberOfConnectors(comp);
-            for(int i=0; i<connectorsCount; ++i) {
-                ssdConnectorHandle *con = ssp4c_ssd_component_getConnectorByIndex(comp, i);
-                qDebug() << "    connector: " << ssp4c_ssd_connector_getName(con);
-            }
             SystemObject *pSystem = gpModelHandler->getCurrentTopLevelSystem();
             if(pSystem) {
                 QPointF pos = pSystem->getGraphicsViewport().mCenter;
-                ModelObject *pFmuComponent = pSystem->addModelObject("FMIWrapper", pos);
+                ModelObject *pFmuComponent = pSystem->addModelObject("FMIWrapper", pos, 0, Deselected, UseDefault, Undo, Resizable);
+
                 if(pFmuComponent) {
                     QString unzippedLocation = ssp4c_getUnzippedLocation(ssp);
                     QString source = ssp4c_ssd_component_getSource(comp);
                     pFmuComponent->setParameterValue("path", unzippedLocation+"/"+source);
                     pSystem->renameModelObject(pFmuComponent->getName(), ssp4c_ssd_component_getName(comp));
+                    ResizableComponent *pRC = qobject_cast<ResizableComponent*>(pFmuComponent);
+                    pRC->setText(ssp4c_ssd_component_getName(comp));
+
+                    // Set component size and position from ElementGeometry in SSD
+                    ssdElementGeometryHandle *geom = nullptr;
+                    geom = ssp4c_ssd_component_getElementGeometry(comp);
+                    if(geom) {
+                        double x1 = ssp4c_ssd_elementGeometry_getX1(geom) + 2500;   //2500,2500 is center of view
+                        double x2 = ssp4c_ssd_elementGeometry_getX2(geom) + 2500;
+                        double y1 = ssp4c_ssd_elementGeometry_getY1(geom) + 2500;
+                        double y2 = ssp4c_ssd_elementGeometry_getY2(geom) + 2500;
+                        double width = x2 - x1;
+                        double height = y2 - y1;
+                        if(width < 1) {
+                            width = 100;
+                        }
+                        if(height < 1) {
+                            height = 100;
+                        }
+                        double rotation = ssp4c_ssd_elementGeometry_getRotation(geom);
+
+                        // Set position and size
+                        pFmuComponent->setPos(x1, y1);
+                        if(width > 0 && height > 0) {
+                            pRC->setComponentSize(width, height);
+                        }
+                        if(rotation != 0) {
+                            pFmuComponent->setRotation(rotation);
+                        }
+                    }
+                }
+
+                int connectorsCount = ssp4c_ssd_component_getNumberOfConnectors(comp);
+                QStringList visiblePorts;
+                for(int i=0; i<connectorsCount; ++i) {
+                    ssdConnectorHandle *con = ssp4c_ssd_component_getConnectorByIndex(comp, i);
+                    QString conName = ssp4c_ssd_connector_getName(con);
+                    visiblePorts.append(conName);
+
+                    ssdConnectorGeometryHandle *conGeom = ssp4c_ssd_connector_getConnectorGeometry(con);
+                    if(conGeom) {
+                        double x = ssp4c_ssd_connectorGeometry_getX(conGeom);
+                        double y = ssp4c_ssd_connectorGeometry_getY(conGeom);
+
+                        const auto port = pFmuComponent->getPort(ssp4c_ssd_connector_getName(con));
+                        if(port != nullptr) {
+                            qDebug() << "x = " << x;
+                            qDebug() << "y = " << y;
+                            port->getPortAppearance()->x = x;
+                            port->getPortAppearance()->y = y;
+                            pFmuComponent->createRefreshExternalPort(ssp4c_ssd_connector_getName(con));
+                            portToConnectorMap.insert(port, con);
+                        }
+                    }
+
+
+                    qDebug() << "    connector: " << ssp4c_ssd_connector_getName(con);
+                }
+                for(const auto &port : pFmuComponent->getPortListPtrs()) {
+                    port->setVisible(visiblePorts.contains(port->getName()));
                 }
             }
         }
@@ -353,6 +415,8 @@ void SSPWidget::openSSDModel(QTreeWidgetItem *item, int)
             qDebug() << "  start connector: " << ssp4c_ssd_connection_getStartConnector(con);
             qDebug() << "  end element: " << ssp4c_ssd_connection_getEndElement(con);
             qDebug() << "  end connector: " << ssp4c_ssd_connection_getEndConnector(con);
+
+            auto conGeom = ssp4c_ssd_connection_getConnectionGeometry(con);
 
             SystemObject *pSystem = gpModelHandler->getCurrentTopLevelSystem();
             if(pSystem) {
@@ -371,14 +435,31 @@ void SSPWidget::openSSDModel(QTreeWidgetItem *item, int)
                         SystemObject *sysObj = gpModelHandler->getCurrentViewContainerObject();
                         Connector *pCon = sysObj->createConnector(pStartPort, pEndPort, NoUndo);
                         if(pCon != nullptr) {
-                            qDebug() << "Creatd connetor!";
+                            qDebug() << "Created connector!";
                             QVector<QPointF> pointVector;
                             QStringList geometryList;
-                            pointVector.push_back(pCon->getStartPort()->boundingRect().center());
-                            pointVector.push_back(pCon->getEndPort()->boundingRect().center());
-                            geometryList.clear();
-                            geometryList.append(hmf::connector::diagonal);
+
+                            //Start port
+                            auto startPort = pCon->getStartPort();
+                            pointVector.push_back(startPort->mapToScene(startPort->boundingRect().center()));
+
+                            //Middle points
+                            if(conGeom != nullptr) {
+                                int count = 0;
+                                double *pointsX = ssp4c_ssd_connectionGeometry_getPointsX(conGeom, &count);
+                                double *pointsY = ssp4c_ssd_connectionGeometry_getPointsY(conGeom, &count);
+                                for(int i=0; i<count; ++i) {
+                                    pointVector.push_back(QPointF(pointsX[i]+2500, pointsY[i]+2500));
+                                }
+                            }
+
+                            //End port
+                            auto endPort = pCon->getEndPort();
+                            pointVector.push_back(endPort->mapToScene(endPort->boundingRect().center()));
+
                             pCon->setPointsAndGeometries(pointVector, geometryList);
+                            pCon->refreshConnectorAppearance();
+
                         }
                     }
                 }
