@@ -472,6 +472,13 @@ QPointF Connector::getEndPoint()
     return mPoints.last();
 }
 
+
+//! @brief Returns all points of the connector
+QVector<QPointF> Connector::getPoints() const
+{
+    return mPoints;
+}
+
 //! @brief Returns the name of the start port of a connector
 //! @see getEndPortName()
 QString Connector::getStartPortName() const

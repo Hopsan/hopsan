@@ -81,6 +81,7 @@ public:
     void setPointsAndGeometries(const QVector<QPointF> &rPoints, const QStringList &rGeometries);
     QPointF getStartPoint();
     QPointF getEndPoint();
+    QVector<QPointF> getPoints() const;
     ConnectorLine *getLine(int line);
     ConnectorLine *getLastLine();
     int getNumberOfLines();

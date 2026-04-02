@@ -45,6 +45,7 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QContextMenuEvent>
+#include <QFileDialog>
 
 #include "global.h"
 #include "ssp4c.h"
@@ -84,6 +85,9 @@ void SSPWidget::addSSP(QFileInfo path)
     pSspItem->setIcon(0, QIcon(QString(ICONPATH) + "svg/Hopsan-SSP.svg"));
     pSspItem->setText(0,path.fileName());
     mpTree->addTopLevelItem(pSspItem);
+
+    itemToSspMap.insert(pSspItem, ssp);
+    mSspFileMap.insert(ssp, path);
 
     connect(mpTree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(openSSDModel(QTreeWidgetItem*,int)));
 
@@ -290,6 +294,15 @@ void SSPTreeWidget::contextMenuEvent(QContextMenuEvent *event)
 
     QMenu menu(this);
     
+    if(item->type() == SSPItem) {
+        menu.addAction("Save SSP", [this, item]() {
+            auto p = qobject_cast<SSPWidget *>(parentWidget());
+            if(p) {
+                p->saveSspModel(item);
+            }
+        });
+    }
+
     if((item->type() == SSVItem || item->type() == SSMItem) && item->parent()->type() != SSPItem) {
         menu.addAction("Remove from SSD", [this, item]() {
             QTreeWidgetItem *parent = item->parent();
@@ -326,7 +339,7 @@ void SSPWidget::openSSDModel(QTreeWidgetItem *item, int)
 
         auto pModel = gpModelHandler->addNewModel(ssp4c_ssd_getName(ssd));
         pModel->setModelType(ModelWidget::SsdModel);
-        pModel->setSsdHandle(ssd);
+        pModel->setSsdHandle(ssd, ssp);
 
         int componentCount = ssp4c_ssd_system_getNumberOfComponents(system);
         for(int i=0; i<componentCount; ++i) {
@@ -473,6 +486,37 @@ void SSPWidget::openSSDModel(QTreeWidgetItem *item, int)
     // Check if this is an SSM item
     else if (item->type() == SSPTreeWidget::SSMItem) {
         openSSMEditor(item, 0);
+    }
+}
+
+void SSPWidget::saveSspModel(QTreeWidgetItem *item)
+{
+    if(!item || item->type() != SSPTreeWidget::SSPItem) {
+        return;
+    }
+
+    if(!itemToSspMap.contains(item)) {
+        qDebug() << "SSP save: no associated ssp handle";
+        return;
+    }
+
+    sspHandle *ssp = itemToSspMap[item];
+    QFileInfo outFile = mSspFileMap.value(ssp);
+
+    if(outFile.filePath().isEmpty()) {
+        QString saveFile = QFileDialog::getSaveFileName(this, tr("Save SSP"), QString(), tr("SSP Files (*.ssp);;All Files (*)"));
+        if(saveFile.isEmpty()) {
+            return; // canceled
+        }
+        outFile.setFile(saveFile);
+    }
+
+    bool success = (ssp4c_saveSsp(ssp, outFile.absoluteFilePath().toStdString().c_str()) == 0);
+    if(success) {
+        qDebug() << "SSP saved:" << outFile.absoluteFilePath();
+    }
+    else {
+        qDebug() << "SSP save failed:" << outFile.absoluteFilePath();
     }
 }
 
