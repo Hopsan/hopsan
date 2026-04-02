@@ -80,6 +80,42 @@ protected:
     void createPorts();
 };
 
+
+class ResizableComponent : public Component
+{
+    Q_OBJECT
+
+public:
+    ResizableComponent(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, SystemObject *pParentSystem, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics);
+
+    void setRectColor(const QColor &color);
+    void setRectFillColor(const QColor &color);
+    void setText(const QString &text);
+    void setComponentSize(double width, double height);
+    void refreshAppearance() override;
+
+protected:
+    virtual void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override;
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+    virtual void refreshSelectionBoxSize() override;
+
+private:
+    // Resizing members
+    bool mResizeTop;
+    bool mResizeBottom;
+    bool mResizeLeft;
+    bool mResizeRight;
+    bool mIsResizing;
+    QPointF mPosBeforeResize;
+    double mWidthBeforeResize;
+    double mHeightBeforeResize;
+
+    QGraphicsRectItem *mpRect;
+    QGraphicsTextItem *mpText;
+};
+
 class ScopeComponent final : public Component
 {
     Q_OBJECT

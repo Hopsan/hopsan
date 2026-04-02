@@ -50,6 +50,7 @@
 #include "PlotWindow.h"
 #include "Widgets/ModelWidget.h"
 #include "LibraryHandler.h"
+#include "UndoStack.h"
 
 
 Component::Component(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, SystemObject *pParentSystem, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
@@ -458,6 +459,272 @@ QDomElement Component::saveGuiDataToDomElement(QDomElement &rDomElement)
     }
     mModelObjectAppearance.saveSpecificPortsToDomElement(xmlApp, ports);
     return rDomElement;
+}
+
+
+//========== ResizableComponent ==========
+
+ResizableComponent::ResizableComponent(QPointF position, double rotation, ModelObjectAppearance* pAppearanceData, SystemObject *pParentSystem, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
+    : Component(position, rotation, pAppearanceData, pParentSystem, startSelected, gfxType)
+{
+    // Initialize resizing members
+    mResizeTop = false;
+    mResizeBottom = false;
+    mResizeLeft = false;
+    mResizeRight = false;
+    mIsResizing = false;
+    mWidthBeforeResize = 0;
+    mHeightBeforeResize = 0;
+
+    // Hide the icon and create a rectangle instead
+    mpIcon->hide();
+
+    // Create rectangle with default size
+    mpRect = new QGraphicsRectItem(0, 0, 100, 80, this);
+    QPen borderPen;
+    borderPen.setWidth(2);
+    borderPen.setColor(Qt::black);
+    mpRect->setPen(borderPen);
+    mpRect->setBrush(QBrush(Qt::lightGray));
+    mpRect->show();
+
+    // Create text item in the center
+    mpText = new QGraphicsTextItem(this);
+    mpText->setPlainText("Resizable");
+    mpText->setAcceptHoverEvents(false);
+    QFont textFont = mpText->font();
+    textFont.setPointSize(10);
+    mpText->setFont(textFont);
+    mpText->show();
+
+    // Center text in rectangle
+    QRectF textRect = mpText->boundingRect();
+    mpText->setPos((100 - textRect.width()) / 2, (80 - textRect.height()) / 2);
+
+    // Resize the widget to match rectangle size
+    this->resize(mpRect->boundingRect().width(), mpRect->boundingRect().height());
+    this->refreshSelectionBoxSize();
+}
+
+
+//! @brief Refreshes the appearance of the object
+void ResizableComponent::refreshAppearance()
+{
+    //! @todo should make sure we only do this if we really need to resize (after icon change)
+    QPointF centerPos =  this->getCenterPos(); //Remember center pos for resize
+    this->setCenterPos(centerPos); //Re-set center pos after resize
+
+    this->refreshDisplayName();
+    this->refreshExternalPortsAppearanceAndPosition();
+}
+
+//! @brief Set the outline color of the rectangle
+void ResizableComponent::setRectColor(const QColor &color)
+{
+    if(mpRect)
+    {
+        QPen pen = mpRect->pen();
+        pen.setColor(color);
+        mpRect->setPen(pen);
+    }
+}
+
+
+//! @brief Set the fill color of the rectangle
+void ResizableComponent::setRectFillColor(const QColor &color)
+{
+    if(mpRect)
+    {
+        mpRect->setBrush(QBrush(color));
+    }
+}
+
+
+//! @brief Set the text in the center of the rectangle
+void ResizableComponent::setText(const QString &text)
+{
+    if(mpText)
+    {
+        mpText->setPlainText(text);
+        // Re-center the text
+        QRectF rectSize = mpRect->rect();
+        QRectF textRect = mpText->boundingRect();
+        mpText->setPos((rectSize.width() - textRect.width()) / 2, (rectSize.height() - textRect.height()) / 2);
+    }
+}
+
+
+//! @brief Set the component size (width and height)
+void ResizableComponent::setComponentSize(double width, double height)
+{
+    if(width > 0 && height > 0 && mpRect)
+    {
+        this->prepareGeometryChange();
+        mpRect->setRect(0, 0, width, height);
+        this->resize(width, height);
+        refreshSelectionBoxSize();
+
+        // Refresh port positions for the new component size
+        for(int i = 0; i < mPortListPtrs.size(); ++i)
+        {
+            createRefreshExternalPort(mPortListPtrs[i]->getName());
+        }
+    }
+}
+
+
+//! @brief Refresh the selection box to match rectangle size
+void ResizableComponent::refreshSelectionBoxSize()
+{
+    mpSelectionBox->setSize(0.0, 0.0, mpRect->rect().width(), mpRect->rect().height());
+}
+
+
+//! @brief Handle hover movement for edge-based resizing
+void ResizableComponent::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
+{
+    Component::hoverMoveEvent(event);
+
+    this->setCursor(Qt::ArrowCursor);
+    mResizeLeft = false;
+    mResizeRight = false;
+    mResizeTop = false;
+    mResizeBottom = false;
+
+    int resLim = 5;
+
+    if(event->pos().x() > boundingRect().left() && event->pos().x() < boundingRect().left()+resLim)
+    {
+        mResizeLeft = true;
+    }
+    if(event->pos().x() > boundingRect().right()-resLim && event->pos().x() < boundingRect().right())
+    {
+        mResizeRight = true;
+    }
+    if(event->pos().y() > boundingRect().top() && event->pos().y() < boundingRect().top()+resLim)
+    {
+        mResizeTop = true;
+    }
+    if(event->pos().y() > boundingRect().bottom()-resLim && event->pos().y() < boundingRect().bottom())
+    {
+        mResizeBottom = true;
+    }
+
+    if( (mResizeLeft && mResizeTop) || (mResizeRight && mResizeBottom) )
+        this->setCursor(Qt::SizeFDiagCursor);
+    else if( (mResizeTop && mResizeRight) || (mResizeBottom && mResizeLeft) )
+        this->setCursor(Qt::SizeBDiagCursor);
+    else if(mResizeLeft || mResizeRight)
+        this->setCursor(Qt::SizeHorCursor);
+    else if(mResizeTop || mResizeBottom)
+        this->setCursor(Qt::SizeVerCursor);
+}
+
+
+//! @brief Handle mouse press for starting resize operation
+void ResizableComponent::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(mResizeLeft || mResizeRight || mResizeTop || mResizeBottom)
+    {
+        mPosBeforeResize = this->pos();
+        mWidthBeforeResize = boundingRect().width();
+        mHeightBeforeResize = boundingRect().height();
+        mIsResizing = true;
+    }
+    else
+    {
+        mIsResizing = false;
+    }
+    Component::mousePressEvent(event);
+}
+
+
+//! @brief Handle mouse move for resizing the component
+void ResizableComponent::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    Component::mouseMoveEvent(event);
+
+    if (getModelLockLevel()==NotLocked && mIsResizing)
+    {
+        // Calculate the desired new width and height
+        double desiredWidth = mWidthBeforeResize;
+        double desiredHeight = mHeightBeforeResize;
+        QPointF newPos = mPosBeforeResize;
+
+        // Handle left resize
+        if(mResizeLeft)
+        {
+            double deltaX = this->pos().x() - mPosBeforeResize.x();
+            desiredWidth = qMax(5.0, mWidthBeforeResize - deltaX);
+            newPos.setX(mPosBeforeResize.x() + (mWidthBeforeResize - desiredWidth));
+        }
+        // Handle right resize
+        else if(mResizeRight)
+        {
+            double deltaX = this->pos().x() - mPosBeforeResize.x();
+            desiredWidth = qMax(5.0, mWidthBeforeResize + deltaX);
+            newPos.setX(mPosBeforeResize.x());
+        }
+
+        // Handle top resize
+        if(mResizeTop)
+        {
+            double deltaY = this->pos().y() - mPosBeforeResize.y();
+            desiredHeight = qMax(5.0, mHeightBeforeResize - deltaY);
+            newPos.setY(mPosBeforeResize.y() + (mHeightBeforeResize - desiredHeight));
+        }
+        // Handle bottom resize
+        else if(mResizeBottom)
+        {
+            double deltaY = this->pos().y() - mPosBeforeResize.y();
+            desiredHeight = qMax(5.0, mHeightBeforeResize + deltaY);
+            newPos.setY(mPosBeforeResize.y());
+        }
+
+        // Update rectangle size based on the desired new width and height
+        this->prepareGeometryChange();
+        mpRect->setRect(0, 0, desiredWidth, desiredHeight);
+        this->setPos(newPos);
+
+        // Resize the widget to match the rectangle size
+        this->resize(desiredWidth, desiredHeight);
+
+        // Re-center the text
+        if(mpText)
+        {
+            QRectF textRect = mpText->boundingRect();
+            mpText->setPos((desiredWidth - textRect.width()) / 2, (desiredHeight - textRect.height()) / 2);
+        }
+
+        refreshSelectionBoxSize();
+        mpSelectionBox->setActive();
+    }
+}
+
+
+//! @brief Handle mouse release to register resize in undo stack
+void ResizableComponent::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    Component::mouseReleaseEvent(event);
+
+    if(mResizeLeft || mResizeRight || mResizeTop || mResizeBottom)
+    {
+        // Refresh port positions for the new component size
+        for(int i = 0; i < mPortListPtrs.size(); ++i)
+        {
+            createRefreshExternalPort(mPortListPtrs[i]->getName());
+        }
+
+        if(mWidthBeforeResize != boundingRect().width() || mHeightBeforeResize != boundingRect().height())
+        {
+            mpParentSystemObject->getUndoStackPtr()->newPost();
+        }
+        mResizeLeft = false;
+        mResizeRight = false;
+        mResizeTop = false;
+        mResizeBottom = false;
+        mIsResizing = false;
+    }
 }
 
 

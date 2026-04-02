@@ -1341,7 +1341,12 @@ void MainWindow::openRecentModel()
     qDebug() << "Trying to open " << action->text();
     if (action)
     {
-        mpModelHandler->loadModel(action->text());
+        if(QFileInfo(action->text()).suffix() == "ssp") {
+            mpModelHandler->loadSsp(action->text());
+        }
+        else {
+            mpModelHandler->loadModel(action->text());
+        }
     }
 }
 

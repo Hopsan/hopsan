@@ -580,7 +580,13 @@ void WelcomeWidget::mousePressEvent(QMouseEvent *event)
 //! @brief Opens selected recent model from the list and closes the welcome dialog.
 void WelcomeWidget::openRecentModel()
 {
-    gpModelHandler->loadModel(mRecentModelList.at(mpRecentList->currentIndex().row()));
+    QString path = mRecentModelList.at(mpRecentList->currentIndex().row());
+    if(QFileInfo(path).suffix() == "ssp") {
+        gpModelHandler->loadSsp(path);
+    }
+    else {
+        gpModelHandler->loadModel(path);
+    }
 }
 
 
