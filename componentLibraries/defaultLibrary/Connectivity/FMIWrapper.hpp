@@ -229,7 +229,7 @@ private:
     fmi3InstanceHandle *fmi3_instance;
     HString mVisibleOutputs;
     double mTolerance = 1e-4;
-    bool mLoggingOn = false;
+    bool mLoggingOn = true;
     bool mReinstantiate = false;
     bool mIsInstantiated = false;
 
@@ -446,6 +446,18 @@ public:
             }
         }
         else if(mFmiVersion == fmiVersion2) {
+            //Instantiate FMU
+            if(!mReinstantiate) {
+                addDebugMessage("Calling: fmi2Instantiate");
+                fmi2_instance = fmi2_instantiate(fmu, fmi2CoSimulation, FMIWrapper_fmi2Logger, calloc, free, NULL, (fmi2ComponentEnvironment*)this, fmi2False, mLoggingOn);
+                if(!fmi2_instance) {
+                    stopSimulation("Failed to instantiate FMU");
+                    fmi2_instance = NULL;
+                    return;
+                }
+                mIsInstantiated = true;
+            }
+
             if(fmi2_defaultToleranceDefined(fmu)) {
                  mTolerance = fmi2_getDefaultTolerance(fmu);
             }
@@ -547,19 +559,6 @@ public:
                 mVisibleOutputs.erase(mVisibleOutputs.size()-1,1);  //Remove trailing comma
             }
             addConstant("visibleOutputs", "Visible output variables (hidden)", "", mVisibleOutputs, mVisibleOutputs);
-
-    
-            //Instantiate FMU
-            if(!mReinstantiate) {
-                addDebugMessage("Calling: fmi2Instantiate");
-                fmi2_instance = fmi2_instantiate(fmu, fmi2CoSimulation, FMIWrapper_fmi2Logger, calloc, free, NULL, (fmi2ComponentEnvironment*)this, fmi2False, mLoggingOn);
-                if(!fmi2_instance) {
-                    stopSimulation("Failed to instantiate FMU");
-                    fmi2_instance = NULL;
-                    return;
-                }
-                mIsInstantiated = true;
-            }
         }
         else {//FMI 3
             if(fmi3_defaultToleranceDefined(fmu)) {
