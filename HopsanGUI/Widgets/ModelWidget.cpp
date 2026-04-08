@@ -1411,14 +1411,14 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
                 if(conGeom) {
                     QVector<QPointF> points = connector->getPoints();
                     int count = points.size();
-                    double* xArray = new double[count];
-                    double* yArray = new double[count];
-                    for(int i=0; i<count; ++i) {
-                        xArray[i] = points[i].x() - 2500;
-                        yArray[i] = points[i].y() - 2500;
+                    double* xArray = new double[count-2];
+                    double* yArray = new double[count-2];
+                    for(int i=1; i<count-1; ++i) {
+                        xArray[i-1] = points[i].x() - 2500;
+                        yArray[i-1] = points[i].y() - 2500;
                     }
-                    ssp4c_ssd_connectionGeometry_setPointsX(conGeom, xArray, count);
-                    ssp4c_ssd_connectionGeometry_setPointsY(conGeom, yArray, count);
+                    ssp4c_ssd_connectionGeometry_setPointsX(conGeom, xArray, count-2);
+                    ssp4c_ssd_connectionGeometry_setPointsY(conGeom, yArray, count-2);
                     delete[] xArray;
                     delete[] yArray;
                 }
