@@ -903,7 +903,8 @@ public:
 
             if(!mIsInstantiated) {
                 addDebugMessage("Calling: fmi1InstantiateSlave");
-                if(!fmi1_instantiateSlave(fmu, "application/x-fmu-sharedlibrary", 1000, fmi1False, fmi1False, FMIWrapperQ_fmi1Logger, calloc, free, NULL, mLoggingOn)) {
+                fmi1_instance = fmi1_instantiateSlave(fmu, "application/x-fmu-sharedlibrary", 1000, fmi1False, fmi1False, FMIWrapperQ_fmi1Logger, calloc, free, NULL, mLoggingOn);
+                if(fmi1_instance == NULL) {
                     addErrorMessage("Hopsan: fmi1InstantiateSlave() failed!");
                     fmu = NULL;
                     return;
@@ -989,7 +990,8 @@ public:
 
             if(!mIsInstantiated) {
                 addDebugMessage("Calling: fmi2Instantiate");
-                if(!fmi2_instantiate(fmu, fmi2CoSimulation, FMIWrapperQ_fmi2Logger, calloc, free, NULL, (fmi2ComponentEnvironment*)this, fmi2False, mLoggingOn)) {
+                fmi2_instance = fmi2_instantiate(fmu, fmi2CoSimulation, FMIWrapperQ_fmi2Logger, calloc, free, NULL, (fmi2ComponentEnvironment*)this, fmi2False, mLoggingOn);
+                if(fmi2_instance == NULL) {
                     stopSimulation("Failed to instantiate FMU");
                     fmu = NULL;
                     return;
@@ -1092,7 +1094,8 @@ public:
             if(!mIsInstantiated) {
                 addDebugMessage("Calling: fmi3InstantiateCoSimulation");
                 size_t nRequiredIntermediateVariables = 0;
-                if(!fmi3_instantiateCoSimulation(fmu, fmi3False, mLoggingOn, fmi3False, fmi3False, NULL, nRequiredIntermediateVariables, this, FMIWrapperQ_fmi3Logger, FMIWrapperQ_fmi3IntermediateUpdate)) {
+                fmi3_instance = fmi3_instantiateCoSimulation(fmu, fmi3False, mLoggingOn, fmi3False, fmi3False, NULL, nRequiredIntermediateVariables, this, FMIWrapperQ_fmi3Logger, FMIWrapperQ_fmi3IntermediateUpdate);
+                if(fmi3_instance == NULL) {
                     stopSimulation("Failed to instantiate FMU");
                     fmu = NULL;
                     return;
