@@ -704,14 +704,19 @@ bool OptimizationHandler::evaluateCandidate(int idx)
     mEvalId = idx;
     mpHcomHandler->setModelPtr(mModelPtrs.at(idx));
     mpHcomHandler->executeCommand("opt set evalid "+QString::number(idx));
-    mpHcomHandler->executeCommand("call setpars");
 
-    bool simOK=false;
-    simOK = mModelPtrs.at(idx)->simulate_blocking();
+    if(mpHcomHandler->hasFunction("evalexternal")) {
+        mpHcomHandler->executeCommand("call evalexternal");
+    }
+    else {
+        mpHcomHandler->executeCommand("call setpars");
+        bool simOK=false;
+        simOK = mModelPtrs.at(idx)->simulate_blocking();
 
-    if (!simOK)
-    {
-        return false;
+        if (!simOK)
+        {
+            return false;
+        }
     }
 
     mpHcomHandler->executeCommand("opt set evalid "+QString::number(idx));
