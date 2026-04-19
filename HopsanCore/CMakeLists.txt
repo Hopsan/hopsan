@@ -6,7 +6,7 @@ if(WIN32)
 endif()
 find_package(Threads)
 
-set(HOPSANCORE_INSTALL_DST "" CACHE STRING "Hopsan source code installation relative CMAKE_INSTALL_PREFIX ")
+set(HOPSANCORE_INSTALL_DST "" CACHE STRING "Hopsan source code installation relative CMAKE_INSTALL_PREFIX")
 
 # Include dependencies functions
 include(dependencies/libnumhop.cmake)
