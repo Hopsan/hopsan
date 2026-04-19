@@ -7,7 +7,7 @@ if (POLICY CMP0079)
   cmake_policy(SET CMP0079 NEW)
 endif()
 
-set(HOPSANCORE_INSTALL_DST "HopsanCore")
+set(HOPSANCORE_INSTALL_DST "HopsanCore" CACHE STRING "")
 
 include(CheckCXXCompilerFlag)
 if (MINGW)
