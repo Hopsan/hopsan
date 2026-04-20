@@ -1,8 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # Script to benchmark Hopsan Core simulation through the CLI based on different compiler options
-# Author: Peter Nordin
-# Date:  20150708
-# $Id$
 
 import shutil as sh
 import sys

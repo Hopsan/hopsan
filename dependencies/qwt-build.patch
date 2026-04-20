@@ -1,16 +1,5 @@
---- qwtbuild.pri	2019-01-02 16:21:31.556467000 +0000
-+++ qwtbuild.pri	2019-02-07 11:35:07.912813492 +0000
-@@ -50,7 +50,7 @@
-     #QMAKE_CXXFLAGS   *= -Wsign-conversion
-     #QMAKE_CXXFLAGS   *= -Wlogical-op
-     #QMAKE_CXXFLAGS   *= -Werror=format-security
--    #QMAKE_CXXFLAGS   *= -std=c++11
-+    QMAKE_CXXFLAGS   *= -std=c++11
- 
-     # when using the gold linker ( Qt < 4.8 ) - might be
-     # necessary on non linux systems too
---- qwtconfig.pri	2019-01-02 16:21:31.556467000 +0000
-+++ qwtconfig.pri	2019-02-07 11:41:33.202068749 +0000
+--- qwtconfig.pri	2024-05-08 09:00:29.929579700 +0200
++++ qwtconfig.pri	2026-03-20 19:45:37.481705300 +0100
 @@ -28,6 +28,8 @@
      # QWT_INSTALL_PREFIX = C:/Qwt-$$QWT_VERSION-qt-$$QT_VERSION
  }
@@ -20,7 +9,7 @@
  QWT_INSTALL_DOCS      = $${QWT_INSTALL_PREFIX}/doc
  QWT_INSTALL_HEADERS   = $${QWT_INSTALL_PREFIX}/include
  QWT_INSTALL_LIBS      = $${QWT_INSTALL_PREFIX}/lib
-@@ -118,7 +120,7 @@
+@@ -114,7 +116,7 @@
  # Otherwise you have to build it from the designer directory.
  ######################################################################
  
@@ -29,7 +18,25 @@
  
  ######################################################################
  # Compile all Qwt classes into the designer plugin instead
-@@ -161,7 +163,7 @@
+@@ -137,7 +139,7 @@
+ # Otherwise you have to build them from the examples directory.
+ ######################################################################
+ 
+-QWT_CONFIG     += QwtExamples
++#QWT_CONFIG     += QwtExamples
+ 
+ ######################################################################
+ # The playground is primarily intended for the Qwt development
+@@ -148,7 +150,7 @@
+ # Otherwise you have to build them from the playground directory.
+ ######################################################################
+ 
+-QWT_CONFIG     += QwtPlayground
++#QWT_CONFIG     += QwtPlayground
+ 
+ ######################################################################
+ # If you want to auto build the tests, enable the line below
+@@ -164,7 +166,7 @@
  
  macx:!static:CONFIG(qt_framework, qt_framework|qt_no_framework) {
  

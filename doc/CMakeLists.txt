@@ -30,7 +30,7 @@ if (${BUILD_USER_DOCUMENTATION} OR ${BUILD_DEVELOPER_DOCUMENTATION})
                                      [[htmllinkimage{2}="\htmlonly <br><a href=\"\1\"><img src=\"\1\" width=\2 border=0></a><br> \endhtmlonly"]]
                                      [[htmlimagerightcaption{2}="\htmlonly <table style=\"border-spacing: 20px 10px\" border=\"0\"> <tr><td><img src=\"\1\" border=0></td><td><b>\2</b></td></tr> </table> \endhtmlonly"]])
   set(DOXYGEN_VERBATIM_VARS DOXYGEN_ALIASES)
-  
+
   set(DOXYGEN_RECURSIVE              YES)
   set(documentation_directories      ${PROJECT_SOURCE_DIR}/HopsanCore/include
                                      ${PROJECT_SOURCE_DIR}/HopsanCore/src
@@ -66,11 +66,11 @@ if (${BUILD_USER_DOCUMENTATION} OR ${BUILD_DEVELOPER_DOCUMENTATION})
                                       ${PROJECT_SOURCE_DIR}/hopsanremote
                                       ${PROJECT_SOURCE_DIR}/doc)
   endif()
-  
+
   # Ensure that all images are copied, they are not auto copied since most of them are added through alias commands
   file(GLOB png_files ${CMAKE_CURRENT_LIST_DIR}/graphics/*.png)
   set(DOXYGEN_HTML_EXTRA_FILES ${png_files})
-  
+
   # On MINGW CMake TO_NATIVE_PATH inside FindDoxygen does not work, and we need to fix the path here
   if (MINGW)
     string(REPLACE "\\" "" DOXYGEN_DOT_PATH "${DOXYGEN_DOT_PATH}")
