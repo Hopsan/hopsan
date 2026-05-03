@@ -186,27 +186,43 @@ pushd ${outputDir} > /dev/null
 # -----------------------------------------------------------------------------
 # Clone source code to ensure a clean build
 #
+
+# For builds from official upstream, always clean clone to ensure that the correct code is used
+if [[ ${hopsancode_url} == https://github.com/Hopsan/hopsan.git ]]; then
+    rm -rf ${tmp_stage_directory}
+fi
+
 echo "Cloning from ${hopsancode_url} into ${tmp_stage_directory}"
 if [[ -d ${tmp_stage_directory} ]]; then
-    echo "Reusing: ${tmp_stage_directory} as in exists, resetting --hard and clean -ffdx"
+    echo "Reusing: ${tmp_stage_directory} as it exists, resetting --hard and clean -ffdx"
+    set -e
     pushd ${tmp_stage_directory} > /dev/null
     git remote set-url origin ${hopsancode_url}
-    git fetch --all --prune
-    git reset --hard origin/${branch_or_tag_to_clone}
+    git fetch --all --prune --tags
+    if (git show-ref --verify refs/tags/${branch_or_tag_to_clone}) &> /dev/null; then
+        echo "Checking out tag: ${branch_or_tag_to_clone}"
+        git checkout ${branch_or_tag_to_clone}
+        git reset --hard refs/tags/${branch_or_tag_to_clone}
+    else
+        echo "Checking out branch: ${branch_or_tag_to_clone}"
+        git checkout ${branch_or_tag_to_clone}
+        git reset --hard origin/${branch_or_tag_to_clone}
+    fi
     git clean -ffdx
     popd > /dev/null
+    set +e
 else
-    #rm -rf ${tmp_stage_directory}
-    git clone -b ${branch_or_tag_to_clone} --depth 1 ${hopsancode_url} ${tmp_stage_directory}
+    git clone --branch ${branch_or_tag_to_clone} --filter=blob:none ${hopsancode_url} ${tmp_stage_directory}
     if [[ $? -ne 0 ]]; then
         echo Error: Failed to clone from ${hopsancode_url}
         exit 1
     fi
 fi
+
 pushd ${tmp_stage_directory} > /dev/null
 echo "Updaing git submodules"
 git submodule sync
-git submodule update --init --recommend-shallow
+git submodule update --init --filter=blob:none --recursive
 if [[ $? -ne 0 ]]; then
     echo Error: Failed to clone submodules from git
     exit 1
