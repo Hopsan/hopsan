@@ -122,7 +122,7 @@ if [[ ${baseversion_or_tag} =~ ^v ]]; then
 fi
 
 echo "Choose remote to clone from:"
-select remote in file://${hopsancode_root} https://github.com/Hopsan/hopsan.git https://github.com/peterNordin/hopsan.git
+select remote in https://github.com/Hopsan/hopsan.git https://github.com/robbr48/hopsan.git https://github.com/peterNordin/hopsan.git file://${hopsancode_root}
 do
   if [[ -z "$remote" ]]; then
     echo Invalid choice
@@ -201,7 +201,7 @@ if [[ -d ${tmp_stage_directory} ]]; then
     git fetch --all --prune --tags
     if (git show-ref --verify refs/tags/${branch_or_tag_to_clone}) &> /dev/null; then
         echo "Checking out tag: ${branch_or_tag_to_clone}"
-        git checkout ${branch_or_tag_to_clone}
+        git checkout -B ${branch_or_tag_to_clone}
         git reset --hard refs/tags/${branch_or_tag_to_clone}
     else
         echo "Checking out branch: ${branch_or_tag_to_clone}"
@@ -212,11 +212,18 @@ if [[ -d ${tmp_stage_directory} ]]; then
     popd > /dev/null
     set +e
 else
-    git clone --branch ${branch_or_tag_to_clone} --filter=blob:none ${hopsancode_url} ${tmp_stage_directory}
+    git clone --config advice.detachedHead=false --branch ${branch_or_tag_to_clone} --filter=blob:none ${hopsancode_url} ${tmp_stage_directory}
     if [[ $? -ne 0 ]]; then
         echo Error: Failed to clone from ${hopsancode_url}
         exit 1
     fi
+    pushd ${tmp_stage_directory} > /dev/null
+    if (git show-ref --verify refs/tags/${branch_or_tag_to_clone}) &> /dev/null; then
+        echo "Checking out tag as branch: ${branch_or_tag_to_clone}"
+        git checkout -b ${branch_or_tag_to_clone}
+        git reset --hard refs/tags/${branch_or_tag_to_clone}
+    fi
+    popd > /dev/null
 fi
 
 pushd ${tmp_stage_directory} > /dev/null
