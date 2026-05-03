@@ -1,8 +1,6 @@
 #!/bin/bash
-# $Id$
 
 # Shell script for building DEB packages of hopsan for multiple distributions using pbuilder
-# Author: Peter Nordin peter.nordin@liu.se
 
 set -u
 #set -e
@@ -19,7 +17,7 @@ devversion=2.23.1
 debianDistArchArray=( trixie:amd64:trixie
                       bookworm:amd64:bookworm
                       bullseye:amd64:bullseye )
-ubuntuDistArchArray=( plucky:amd64:trixie
+ubuntuDistArchArray=( questing:amd64:trixie
                       noble:amd64:trixie
                       jammy:amd64:bookworm
                       focal:amd64:bullseye )
@@ -124,7 +122,7 @@ if [[ ${baseversion_or_tag} =~ ^v ]]; then
 fi
 
 echo "Choose remote to clone from:"
-select remote in file://${hopsancode_root} https://github.com/Hopsan/hopsan.git https://github.com/peterNordin/hopsan.git
+select remote in https://github.com/Hopsan/hopsan.git https://github.com/robbr48/hopsan.git https://github.com/peterNordin/hopsan.git file://${hopsancode_root}
 do
   if [[ -z "$remote" ]]; then
     echo Invalid choice
@@ -138,10 +136,6 @@ if [[ ${hopsancode_url} == file://${hopsancode_root} ]]; then
   branch_or_tag_to_clone=$(git branch --show-current)
   popd > /dev/null
 fi
-
-echo
-boolAskYNQuestion "Do you want the defaultComponentLibrary to be build in?" n
-readonly doBuildInComponents=${boolYNQuestionAnswer}
 
 echo
 distArchArrayDo=()
@@ -158,7 +152,6 @@ echo
 echo -------------------------------------------------
 echo This is a DEVELOPMENT release: ${doDevRelease}
 echo Release baseversion number: ${baseversion}
-echo Built in components: ${doBuildInComponents}
 echo URL to clone: ${hopsancode_url}
 echo Branch to clone: ${branch_or_tag_to_clone}
 echo
@@ -177,24 +170,66 @@ echo
 #
 outputDir=${hopsancode_root}/output_deb
 outputDebDir=${outputDir}/debs
+# If a persistent cache dir for hopsan dependencies dowloads exists in the "workspace" then prefer it over loca cache that will be removed by git clean
+if [[ -d ${hopsancode_root}/../hopsan-dependencies-cache ]]; then
+    readonly dependencies_cache=${hopsancode_root}/../hopsan-dependencies-cache
+else
+    readonly dependencies_cache=${outputDir}/dependencies-cache
+fi
 readonly tmp_stage_directory=${outputDir}/hopsan-stage
 
 mkdir -p ${outputDebDir}
 mkdir -p ${pbuilderWorkDir}
+mkdir -p ${dependencies_cache}
 pushd ${outputDir} > /dev/null
 
 # -----------------------------------------------------------------------------
 # Clone source code to ensure a clean build
 #
-echo Cloning from ${hopsancode_url} into ${tmp_stage_directory}
-rm -rf ${tmp_stage_directory}
-git clone -b ${branch_or_tag_to_clone} --depth 1 ${hopsancode_url} ${tmp_stage_directory}
-if [[ $? -ne 0 ]]; then
-    echo Error: Failed to clone from ${hopsancode_url}
-    exit 1
+
+# For builds from official upstream, always clean clone to ensure that the correct code is used
+if [[ ${hopsancode_url} == https://github.com/Hopsan/hopsan.git ]]; then
+    rm -rf ${tmp_stage_directory}
 fi
+
+echo "Cloning from ${hopsancode_url} into ${tmp_stage_directory}"
+if [[ -d ${tmp_stage_directory} ]]; then
+    echo "Reusing: ${tmp_stage_directory} as it exists, resetting --hard and clean -ffdx"
+    set -e
+    pushd ${tmp_stage_directory} > /dev/null
+    git remote set-url origin ${hopsancode_url}
+    git fetch --all --prune --tags
+    if (git show-ref --verify refs/tags/${branch_or_tag_to_clone}) &> /dev/null; then
+        echo "Checking out tag: ${branch_or_tag_to_clone}"
+        git checkout -B ${branch_or_tag_to_clone}
+        git reset --hard refs/tags/${branch_or_tag_to_clone}
+    else
+        echo "Checking out branch: ${branch_or_tag_to_clone}"
+        git checkout ${branch_or_tag_to_clone}
+        git reset --hard origin/${branch_or_tag_to_clone}
+    fi
+    git clean -ffdx
+    popd > /dev/null
+    set +e
+else
+    git clone --config advice.detachedHead=false --branch ${branch_or_tag_to_clone} --filter=blob:none ${hopsancode_url} ${tmp_stage_directory}
+    if [[ $? -ne 0 ]]; then
+        echo Error: Failed to clone from ${hopsancode_url}
+        exit 1
+    fi
+    pushd ${tmp_stage_directory} > /dev/null
+    if (git show-ref --verify refs/tags/${branch_or_tag_to_clone}) &> /dev/null; then
+        echo "Checking out tag as branch: ${branch_or_tag_to_clone}"
+        git checkout -b ${branch_or_tag_to_clone}
+        git reset --hard refs/tags/${branch_or_tag_to_clone}
+    fi
+    popd > /dev/null
+fi
+
 pushd ${tmp_stage_directory} > /dev/null
-git submodule update --init --recommend-shallow
+echo "Updaing git submodules"
+git submodule sync
+git submodule update --init --filter=blob:none --recursive
 if [[ $? -ne 0 ]]; then
     echo Error: Failed to clone submodules from git
     exit 1
@@ -218,7 +253,8 @@ readonly packageorigsrcfile=${outputfile_basename}.orig.tar.gz
 readonly package_dirname=${name}-${fullversionname}
 
 stage_directory=${tmp_stage_directory}-${fullversionname}
-mv ${tmp_stage_directory} ${stage_directory}
+rm -rf ${stage_directory} # Cleanup unlikely leftovers
+cp -r ${tmp_stage_directory} ${stage_directory}
 
 # -----------------------------------------------------------------------------
 # Prepare source code inside stage directory and package it into original source package
@@ -226,11 +262,11 @@ mv ${tmp_stage_directory} ${stage_directory}
 readonly hopsancode_gitwc=${stage_directory}
 ${stage_directory}/packaging/prepareSourceCode.sh ${hopsancode_gitwc} ${stage_directory} \
                                                   ${baseversion} ${releaserevision} ${fullversionname} \
-                                                  ${doDevRelease} ${doBuildInComponents}
+                                                  ${doDevRelease}
 # Download dependencies, since that can not be done inside a pbuilder environment
 # Unfortunately all dependencies must be downloaded since we can not know at this point which of them will be used
 pushd ${stage_directory}/dependencies > /dev/null
-./download-dependencies.py --all
+./download-dependencies.py --all --cache ${dependencies_cache}
 popd > /dev/null
 set +e
 # Remove .git directory and submodule files (if present) before packaging source code

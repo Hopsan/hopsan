@@ -1,8 +1,5 @@
-#!/usr/bin/python
-# Script to generate all library files from teh existing directory structure and component hpp file
-# Author: Peter Nordin
-# Date:  20150319
-# $Id$
+#!/usr/bin/env python3
+# Script to generate all library files from the existing directory structure and component hpp file
 
 import os
 import sys
@@ -212,7 +209,7 @@ def findFiles2(parentDir, suffixes, excludeDirs):
 
 def checkTypeName(filepath):
     typename = ''
-    file_h = open(filepath,  'r')
+    file_h = open(filepath,  'r', encoding='utf-8', errors='ignore')
     if not file_h.closed:
         found_creator = False
         # Read until we find the creator function

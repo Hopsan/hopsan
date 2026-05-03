@@ -1,5 +1,4 @@
 @ECHO OFF
-
 REM Bat script for building Discount automatically
 
 setlocal
@@ -12,23 +11,43 @@ set installdir=%basedir%\%name%
 
 call setHopsanBuildPaths.bat
 
-REM Apply build patch
-set PATH=%PATH_WITH_MSYS%
-cd %codedir%
-
 REM Configure with CMake and then build and install
 if exist %builddir% (
   echo Removing existing build directory %builddir%
   rmdir /S /Q %builddir%
 )
-mkdir %builddir%
-cd %builddir%
-set PATH=%PATH_WITHOUT_MSYS%
-cmake -G %HOPSAN_BUILD_CMAKE_GENERATOR% -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DDISCOUNT_ONLY_LIBRARY=ON -DCMAKE_INSTALL_PREFIX=%installdir% %codedir%\cmake
-cmake --build . --config Release --parallel 8
-cmake --build . --config Release --target install
 
-cd %basedir%
+REM Apply build patch
+set PATH=%PATH_WITH_MSYS%
+REM nothing to patch
+set PATH=%PATH_WITHOUT_MSYS%
+
+if "%HOPSAN_BUILD_COMPILER%" == "msvc" (
+  REM Since libmarkdown does not export any symbols explicitly, a lib file is never created, so let cmake export all symbols
+  cmake -S %codedir%\cmake ^
+        -B %builddir% ^
+        -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ^
+        -G %HOPSAN_BUILD_CMAKE_GENERATOR% ^
+        -DCMAKE_BUILD_TYPE=Release ^
+        -DBUILD_SHARED_LIBS=ON ^
+        -DDISCOUNT_ONLY_LIBRARY=ON ^
+        -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON ^
+        -DCMAKE_INSTALL_PREFIX=%installdir%
+) else (
+  cmake -S %codedir%\cmake ^
+        -B %builddir% ^
+        -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ^
+        -G %HOPSAN_BUILD_CMAKE_GENERATOR% ^
+        -DCMAKE_BUILD_TYPE=Release ^
+        -DBUILD_SHARED_LIBS=ON ^
+        -DDISCOUNT_ONLY_LIBRARY=ON ^
+        -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=OFF ^
+        -DCMAKE_INSTALL_PREFIX=%installdir%
+)
+
+cmake --build %builddir% --config Release --parallel 8
+cmake --build %builddir% --config Release --target install
+
 echo.
 echo setupDiscount.bat done
 if "%HOPSAN_BUILD_SCRIPT_NOPAUSE%" == "" (
