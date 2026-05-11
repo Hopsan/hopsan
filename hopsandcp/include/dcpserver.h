@@ -3,6 +3,7 @@
 
 #include "hopsandcp_win32dll.h"
 
+#include <cstdint>
 #include <string>
 #include <vector>
 #include <memory>

@@ -8,19 +8,28 @@ set codedir=%basedir%\%name%-code
 set builddir=%basedir%\%name%-build
 set installdir=%basedir%\%name%
 
-set xercesdir=%basedir:\=/%xerces
-
 call setHopsanBuildPaths.bat
 
-"%git_path%\..\usr\bin\patch" dcplib-code/include/core/dcp/model/pdu/IpToStr.hpp dcplib-patch.txt
+set asiodir=%basedir%\asio-code
+set libzipdir=%basedir%\libzip
+set xercesdir=%basedir%\xerces
+
+set PATH=%PATH_WITH_MSYS%
+patch.exe --forward dcplib-code/include/core/dcp/model/pdu/IpToStr.hpp dcplib-patch.txt
+set PATH=%PATH_WITHOUT_MSYS%
 
 mkdir %builddir%
-cd %builddir%
-cmake -Wno-dev -G %HOPSAN_BUILD_CMAKE_GENERATOR% -DLOGGING=ON -DASIO_ROOT="%basedir%\asio-code" -DXercesC_LIBRARY="%xercesdir%/bin/libxerces-c.dll" -DXercesC_INCLUDE_DIR="%xercesdir%/include" -DXercesC_VERSION="3.2.2" -DZIP_LIBRARY="%basedir%\libzip\bin\libzip.dll" -DZIP_INCLUDE_DIR="%basedir%\libzip\include" -DCMAKE_INSTALL_PREFIX="%installdir%" %codedir%
-cmake --build . --parallel 8
-cmake --build . --target install
+cmake -B"%builddir%" ^
+      -S"%codedir%" ^
+      -G %HOPSAN_BUILD_CMAKE_GENERATOR% ^
+      -Wno-dev ^
+      -DLOGGING=ON ^
+      -DASIO_ROOT="%asiodir%" ^
+      -DCMAKE_PREFIX_PATH="%xercesdir%;%libzipdir%" ^
+      -DCMAKE_INSTALL_PREFIX="%installdir%"
+cmake --build %builddir% --parallel 8
+cmake --build %builddir% --target install
 
-cd %basedir%
 echo.
 echo setupDCPLib.bat done
 if "%HOPSAN_BUILD_SCRIPT_NOPAUSE%" == "" (

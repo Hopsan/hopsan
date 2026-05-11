@@ -2,7 +2,7 @@ name: ghactions-ci-build
 on: [pull_request]
 
 jobs:
-  cmake-msvc2019:
+  cmake-msvc2022:
     timeout-minutes: 30
     runs-on: windows-2025
     env:
@@ -45,13 +45,13 @@ jobs:
         working-directory: dependencies
         run: |
             call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
-            call setupDiscount.bat
-            call setupTclap.bat
-            call setupFmi4c.bat
             call setupZlib.bat
             call setupLibzip.bat
             call setupXerces.bat
             call setupDCPLib.bat
+            call setupDiscount.bat
+            call setupFmi4c.bat
+            call setupTclap.bat
             call setupQwt.bat
 
       - name: Configure
@@ -100,12 +100,12 @@ jobs:
         shell: bash
         working-directory: dependencies
         run: |
-          ./setupDiscount.sh
-          ./setupTclap.sh
-          ./setupFmi4c.sh
           ./setupLibzip.sh
           ./setupXerces.sh
           ./setupDCPLib.sh
+          ./setupDiscount.sh
+          ./setupFmi4c.sh
+          ./setupTclap.sh
           ./setupQwt.sh
 
       - name: Configure

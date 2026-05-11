@@ -2,6 +2,7 @@
 .vs/
 bin/
 HopsanNG_bd/
+build/
 output64/
 output/
 output_deb/

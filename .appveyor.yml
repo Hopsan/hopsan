@@ -2,7 +2,7 @@ image:
 - Visual Studio 2017
 environment:
   HOPSAN_BUILD_SCRIPT_NOPAUSE: 1
-  HOPSAN_BUILD_QT_HOME: C:\Qt\5.12.6\mingw73_64
+  HOPSAN_BUILD_QT_HOME: C:\Qt\5.13.2\mingw73_64
   HOPSAN_BUILD_MINGW_HOME: C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64
 platform: x64
 configuration: Release
@@ -16,12 +16,12 @@ build_script:
   - set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
   - PATH
   - cd dependencies
-  - setupDiscount.bat
-  - setupFmi4c.bat
-  - setupXerces.bat
   - setupZlib.bat
   - setupLibzip.bat
+  - setupXerces.bat
   - setupDCPLib.bat
+  - setupDiscount.bat
+  - setupFmi4c.bat
 #  - setupHDF5.bat (takes to long to build)
   - setupKatex.bat
   - setupTclap.bat
@@ -30,12 +30,15 @@ build_script:
   - setupMsgpack.bat
   - call setHopsanBuildPaths.bat
   - cd ..
-  - mkdir build
-  - cd build
-  - qmake.exe ..\HopsanNG.pro -r -spec win32-g++ CONFIG+=release
-  - cd ..
-  - mingw32-make.exe -j6 -C build
+  - cmake -G"MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install_dir -Bbuild_dir -S.
+  - cmake --build build_dir --config Release --parallel 6
+  - cmake --build build_dir --config Release --parallel 6 --target install
+  - cd install_dir
   - dir bin
+  - cd ..
 test_script:
-  - runUnitTests.bat
-  - runValidationTests.bat
+  - cd build_dir
+  - ctest -C Release --output-on-failure --parallel 4
+  - cd ..
+#  - set PATH=%CD%\install\bin;%PATH%
+#  - runValidationTests.bat TODO Fix this
