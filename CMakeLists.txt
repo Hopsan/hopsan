@@ -89,14 +89,14 @@ if (WIN32)
 
         # Qt binaries that are only part of the mingw build
         if (EXISTS ${qt_home_bin})
-            install(FILES ${qt_home_bin}/Qt5WebKit.dll
-                          ${qt_home_bin}/Qt5WebKitWidgets.dll
-                          ${qt_home_bin}/libicuin56.dll
-                          ${qt_home_bin}/libicuuc56.dll
-                          ${qt_home_bin}/libicudt56.dll
-                          ${qt_home_bin}/libeay32.dll
-                          ${qt_home_bin}/ssleay32.dll
-                    DESTINATION bin)
+          install_files_if_they_exist(bin
+                                      ${qt_home_bin}/Qt5WebKit.dll
+                                      ${qt_home_bin}/Qt5WebKitWidgets.dll
+                                      ${qt_home_bin}/libicuin56.dll
+                                      ${qt_home_bin}/libicuuc56.dll
+                                      ${qt_home_bin}/libicudt56.dll
+                                      ${qt_home_bin}/libeay32.dll
+                                      ${qt_home_bin}/ssleay32.dll)
         endif()
     else()
         message(WARNING "Env variable mingw_path not set, not installing mingw binaries")
