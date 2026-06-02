@@ -3339,6 +3339,30 @@ void ComponentSystem::distributeNodePointers(vector< vector<Node*> > &/*rSplitNo
 //    }
 //}
 
+
+//! @brief Used for initialization in exported FMUs
+//! @details Calls simulateOneTimestep() for each component in the system. Time variable is not increased.
+void ComponentSystem::simulateOnceWithoutIncreasingTime()
+{
+    //Signal components
+    for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
+    {
+        mComponentSignalptrs[s]->simulateOneTimestep();
+    }
+
+    //C components
+    for (size_t c=0; c < mComponentCptrs.size(); ++c)
+    {
+        mComponentCptrs[c]->simulateOneTimestep();
+    }
+
+    //Q components
+    for (size_t q=0; q < mComponentQptrs.size(); ++q)
+    {
+        mComponentQptrs[q]->simulateOneTimestep();
+    }
+}
+
 //! @brief Simulate function for single-threaded simulations.
 //! @param[in] stopT Simulate from current time until stop time
 void ComponentSystem::simulate(const double stopT)
