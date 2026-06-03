@@ -115,7 +115,7 @@ void DcpMaster::configuration() {
         mpManager->CFG_scope(fromServerId, dataId, DcpScope::Initialization_Run_NonRealTime);
         mpManager->CFG_output(fromServerId, dataId, 0, connections[i].fromVr);
         mpManager->CFG_steps(fromServerId, dataId, 1);
-        numOfCmd[fromServerId] += 4;
+        numOfCmd[fromServerId] += 3;
 
         for(size_t j=0; j<connections[i].toServers.size(); ++j) {
             uint8_t toServerId = uint8_t(connections[i].toServers[j]);
@@ -125,6 +125,7 @@ void DcpMaster::configuration() {
             mpManager->CFG_source_network_information_UDP(toServerId, dataId, asio::ip::address_v4::from_string(*serverDescriptions[toServerId-1]->TransportProtocols.UDP_IPv4->Control->host).to_uint(), *serverDescriptions[toServerId-1]->TransportProtocols.UDP_IPv4->Control->port+1);
             mpManager->CFG_target_network_information_UDP(fromServerId, dataId,  asio::ip::address_v4::from_string(*serverDescriptions[toServerId-1]->TransportProtocols.UDP_IPv4->Control->host).to_uint(), *serverDescriptions[toServerId-1]->TransportProtocols.UDP_IPv4->Control->port);
             numOfCmd[toServerId] += 4;
+            numOfCmd[fromServerId] += 1;
         }
     }
 }
