@@ -264,12 +264,13 @@ fmi2Status fmi2GetReal(fmi2Component c,
                        size_t nValueReferences,
                        fmi2Real values[])
 {
+    fmuContext *fmu =(fmuContext*)c;
+
     if(state == Initializing)
     {
       fmu->pSystem->simulateOnceWithoutIncreasingTime();  //Solve equations without increasing time during initialization
     }
 
-    fmuContext *fmu =(fmuContext*)c;
     fmi2Status status = fmi2OK;
     for(size_t i=0; i<nValueReferences; ++i) {
         if(valueReferences[i] >= NUMDATAPTRS+1) {
