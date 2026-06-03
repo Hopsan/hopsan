@@ -2,20 +2,20 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.0"
    width="24.999998"
    height="24.999998"
    id="svg3336"
-   inkscape:version="0.48.0 r9654"
-   sodipodi:docname="mecinterfacec.svg">
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   sodipodi:docname="MechanicInterfaceC.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <metadata
      id="metadata13">
     <rdf:RDF>
@@ -42,12 +42,15 @@
      id="namedview11"
      showgrid="false"
      inkscape:zoom="8"
-     inkscape:cx="-25.658642"
-     inkscape:cy="10.736703"
+     inkscape:cx="-25.5625"
+     inkscape:cy="10.6875"
      inkscape:window-x="336"
      inkscape:window-y="76"
      inkscape:window-maximized="0"
-     inkscape:current-layer="svg3336" />
+     inkscape:current-layer="svg3336"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1" />
   <defs
      id="defs3338">
     <linearGradient
@@ -75,22 +78,30 @@
     </marker>
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient3761"
-       id="linearGradient3767"
-       x1="0.25"
-       y1="25.124998"
-       x2="9.75"
-       y2="0.12499809"
+       xlink:href="#linearGradient2"
+       id="linearGradient3"
+       x1="4.8925781"
+       y1="0.89453125"
+       x2="4.8925781"
+       y2="24.25"
        gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       id="linearGradient2"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#5a5a5a;stop-opacity:1;"
+         offset="0"
+         id="stop2" />
+      <stop
+         style="stop-color:#dcdcdc;stop-opacity:1;"
+         offset="1"
+         id="stop3" />
+    </linearGradient>
   </defs>
-  <rect
-     style="fill:url(#linearGradient3767);fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.49999988000000010;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-     id="rect3760"
-     width="8.5"
-     height="23.5"
-     x="0.74999994"
-     y="0.74999809"
-     ry="0" />
+  <path
+     id="rect1"
+     style="font-variation-settings:normal;vector-effect:none;fill:url(#linearGradient3);fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;stop-color:#000000"
+     d="M 2.5136722,0.82226355 0.75,1.0703104 V 3.8476541 L 2.5136722,4.095701 V 7.4999978 L 0.75,7.7480447 v 2.7773443 l 1.7636722,0.248047 v 3.404297 L 0.75,14.42578 v 2.777344 l 1.7636722,0.248047 v 3.404296 L 0.75,21.103514 v 2.777344 l 1.7636722,0.248047 v 0.04883 h 4.757812 V 0.82226355 Z" />
   <path
      style="fill:#660000;fill-opacity:1;stroke:#660000;stroke-width:1.49999988000000010;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
      d="m 5.6874981,17.285381 8.9812029,0 0,-3.166667 8.738467,4.75 -8.738467,4.75 0,-3.166667 -8.9812029,0 z"
@@ -103,13 +114,4 @@
      id="path2984-7"
      inkscape:connector-curvature="0"
      sodipodi:nodetypes="cccccccc" />
-  <path
-     sodipodi:type="arc"
-     style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:10;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-     id="path3801"
-     sodipodi:cx="-17.5"
-     sodipodi:cy="5.4999981"
-     sodipodi:rx="1.875"
-     sodipodi:ry="10"
-     d="m -15.625,5.4999981 a 1.875,10 0 1 1 -3.75,0 1.875,10 0 1 1 3.75,0 z" />
 </svg>
