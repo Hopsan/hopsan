@@ -98,8 +98,8 @@
   </dependency>
 
   <dependency name="dcplib">
-    <releasefile sha256="4acf1115359bb6e8ed351993f27f5ccb7e8f70c208bc33221fb67ab4845f0210">
-      <url>https://github.com/modelica/DCPLib/archive/refs/tags/v0.2.zip</url>
+    <releasefile sha256="553b26515e4dc586b75d0b0c607c99b1e54ea8cda7ab89375c02fd1ee83f2c2d">
+      <url>https://github.com/modelica/DCPLib/archive/359d16b.zip</url>
     </releasefile>
   </dependency>
 
