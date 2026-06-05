@@ -52,6 +52,7 @@ INCLUDEPATH *= $${PWD}/../dependencies/dcplib-code/include/master
 INCLUDEPATH *= $${PWD}/../dependencies/dcplib-code/include/slave
 INCLUDEPATH *= $${PWD}/../dependencies/dcplib-code/include/xml
 INCLUDEPATH *= $${PWD}/../dependencies/dcplib-code/include/zip
+INCLUDEPATH *= $${PWD}/../dependencies/dcplib-code/include/model
 #--------------------------------------------------
 
 #--------------------------------------------------------

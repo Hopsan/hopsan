@@ -6,6 +6,7 @@
 #include "dcp/logic/DcpManagerSlave.hpp"
 #include "dcp/zip/DcpSlaveWriter.hpp"
 #include "dcp/driver/ethernet/udp/UdpDriver.hpp"
+#include <dcp/model/constant/DcpState.hpp>
 
 //#include "HopsanEssentials.h"
 #include "HopsanCoreMacros.h"
@@ -111,6 +112,8 @@ DcpServer::DcpServer(ComponentSystem *pSystem, const std::string host, int port,
     mManager->addLogListener(
             std::bind(&OstreamLog::logOstream, *mpStdLog, std::placeholders::_1));
     mManager->setGenerateLogString(true);
+
+    mManager->setStateChangedListener<SYNC>(std::bind(&DcpServer::stateChanged, this, std::placeholders::_1));
 }
 
 DcpServer::~DcpServer()
@@ -263,6 +266,10 @@ void DcpServer::doStep(uint64_t steps)
     //Simulate
     mSimulationTime += steps*mCommunicationStep;
     mpRootSystem->simulate(mSimulationTime);
+    if(mpRootSystem->wasSimulationAborted()) {
+        //mManager->stopRunning();
+        mManager->stop();
+    }
 
      // Write outputs
     for(size_t o=0; o<mOutputs.size(); ++o) {
@@ -277,7 +284,11 @@ void DcpServer::setTimeRes(const uint32_t numerator, const uint32_t denominator)
 
 void DcpServer::stop()
 {
-    //dynamic_cast<AbstractDcpManager*>(mManager)->stop();
-    mpDriver->getDcpDriver().stopReceiving();
-    mpDriver->getDcpDriver().disconnect();
+}
+
+void DcpServer::stateChanged(DcpState state)
+{
+    if(state == DcpState::ALIVE) {
+        mpDriver->getDcpDriver().stopReceiving();
+    }
 }
