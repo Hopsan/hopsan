@@ -69,15 +69,17 @@ void DcpMaster::addConnection(size_t fromServer, size_t fromVr, std::vector<size
 
 
 void DcpMaster::start() {
-    std::thread b(&DcpManagerMaster::start, mpManager);
+    std::thread b(&DcpMaster::startDcpMasterThread, this);
     std::chrono::seconds dura(1);
     std::this_thread::sleep_for(dura);
+
     DcpOpMode mode = DcpOpMode::NRT;
     if(mRealTime) {
         mode = DcpOpMode::SRT;
     }
 
-    for(size_t i=0; i<serverDescriptions.size(); ++i) {
+    for(size_t i=0; i<serverDescriptions.size() && mSuccess; ++i) {
+        serverStates[i+1] = DcpState::ALIVE;
         mpManager->STC_register(u_char(i+1), DcpState::ALIVE, convertToUUID(serverDescriptions[i]->uuid), mode, 1, 0);
     }
     b.join();
@@ -192,7 +194,19 @@ void DcpMaster::receiveNAck(uint8_t sender, uint16_t pduSeqId, DcpError errorCod
     (void)sender;
     (void)pduSeqId;
     (void)errorCode;
-    std::exit(1);
+    mpSystem->addErrorMessage(hopsan::HString("RSP_NACK received from sender ")+serverDescriptions[sender-1]->dcpSlaveName.c_str()+hopsan::HString(" (")+to_hstring(serverDescriptions[sender-1]->uuid)+")\n");
+    for(int i=0; i<serverDescriptions.size(); ++i) {
+        if(serverStates[i+1] == DcpState::CONFIGURATION) {
+            mpManager->STC_deregister(u_char(i+1), DcpState::CONFIGURATION);
+            serversWaitingToStop++;
+            if(serversWaitingToStop == serverDescriptions.size()) {
+                mpManager->stop();
+            }
+        }
+        else {
+            mpManager->STC_stop(u_char(i+1), serverStates[i+1]);
+        }
+    }
 }
 
 
@@ -205,6 +219,7 @@ void DcpMaster::dataReceived(uint16_t dataId, size_t length, uint8_t payload[]) 
 
 void DcpMaster::receiveStateChangedNotification(uint8_t sender,
                                                 DcpState state) {
+    serverStates[sender] = state;
     switch (state) {
         case DcpState::CONFIGURATION:
             configuration();
@@ -261,6 +276,7 @@ void DcpMaster::receiveStateChangedNotification(uint8_t sender,
             if(serversWaitingToStop < serverDescriptions.size()) {
                 return;
             }
+            deregister();
             mpManager->stop();
             break;
 
@@ -287,6 +303,18 @@ void DcpMaster::timer(hopsan::ComponentSystem *pSystem, double startTime, double
         simTime += 0.1;
         (*pSystem->getTimePtr()) = simTime;
         std::this_thread::sleep_until(time);
+    }
+}
+
+void DcpMaster::startDcpMasterThread()
+{
+    mSuccess = true;
+    try {
+        mpManager->start();
+    } catch (std::exception& e) {
+        std::cout << e.what() << "\n";
+        mpSystem->addErrorMessage(e.what());
+        mSuccess = false;
     }
 }
 

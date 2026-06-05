@@ -48,6 +48,7 @@ private:
     void dataReceived(uint16_t dataId, size_t length, uint8_t payload[]);
     void receiveStateChangedNotification(uint8_t sender, DcpState state);
     void timer(hopsan::ComponentSystem *pSystem, double startTime, double stopTime);
+    void startDcpMasterThread();
 
     hopsan::ComponentSystem *mpSystem;
     bool mRealTime;
@@ -83,6 +84,10 @@ private:
     uint8_t serversRunPastStopTime = 0;
     uint8_t serversWaitingForInitialize = 0;
     uint8_t serversWaitingToRun = 0;
+
+    std::map<uint8_t, DcpState> serverStates;
+
+    bool mSuccess;
 };
 
 void getDataFromProtocolFile(const hopsan::HString &rFilePath, hopsan::HString &rName, hopsan::HString &rVariables, hopsan::HString &rValueReferences);

@@ -16,6 +16,7 @@ struct SlaveDescription_t;
 class DcpManagerSlave;
 class UdpDriver;
 class OstreamLog;
+enum class DcpState : uint8_t;
 
 HOPSANDCP_DLLAPI class DcpServer
 {
@@ -48,6 +49,7 @@ private:
     void doStep(uint64_t steps);
     void setTimeRes(const uint32_t numerator, const uint32_t denominator);
     void stop();
+    void stateChanged(DcpState state);
 };
 
 #endif // DcpServer_H
