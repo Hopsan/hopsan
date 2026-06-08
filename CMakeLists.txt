@@ -1,11 +1,13 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.10)
 project(Hopsan)
 
 cmake_policy(SET CMP0054 NEW)
-cmake_policy(SET CMP0079 NEW)
+cmake_policy(SET CMP0057 NEW)
+if (POLICY CMP0079)
+  cmake_policy(SET CMP0079 NEW)
+endif()
 
-set(HOPSANCORE_INSTALL_DST "HopsanCore")
-message(WARNING "Hopsan CMake support is still experimental, but should be  working for for GCC / MinGW and limited MSVC build")
+set(HOPSANCORE_INSTALL_DST "HopsanCore" CACHE STRING "")
 
 include(CheckCXXCompilerFlag)
 if (MINGW)
@@ -77,7 +79,7 @@ if (WIN32)
 
   if (MINGW)
     file(TO_CMAKE_PATH "$ENV{mingw_path}" mingw_home_bin)
-    if (EXISTS ${mingw_path})
+    if (EXISTS ${mingw_home_bin})
         message(STATUS "Installing from MinGW directory: ${mingw_home_bin}")
 
         install(FILES ${mingw_home_bin}/libgcc_s_seh-1.dll
@@ -87,14 +89,14 @@ if (WIN32)
 
         # Qt binaries that are only part of the mingw build
         if (EXISTS ${qt_home_bin})
-            install(FILES ${qt_home_bin}/Qt5WebKit.dll
-                          ${qt_home_bin}/Qt5WebKitWidgets.dll
-                          ${qt_home_bin}/libicuin56.dll
-                          ${qt_home_bin}/libicuuc56.dll
-                          ${qt_home_bin}/libicudt56.dll
-                          ${qt_home_bin}/libeay32.dll
-                          ${qt_home_bin}/ssleay32.dll
-                    DESTINATION bin)
+          install_files_if_they_exist(bin
+                                      ${qt_home_bin}/Qt5WebKit.dll
+                                      ${qt_home_bin}/Qt5WebKitWidgets.dll
+                                      ${qt_home_bin}/libicuin56.dll
+                                      ${qt_home_bin}/libicuuc56.dll
+                                      ${qt_home_bin}/libicudt56.dll
+                                      ${qt_home_bin}/libeay32.dll
+                                      ${qt_home_bin}/ssleay32.dll)
         endif()
     else()
         message(WARNING "Env variable mingw_path not set, not installing mingw binaries")

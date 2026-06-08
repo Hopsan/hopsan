@@ -273,12 +273,20 @@ PlotArea::PlotArea(PlotTab *pParentPlotTab)
     // Legend Stuff
     mpRightPlotLegend = new PlotLegend(QwtPlot::yRight);
     mpRightPlotLegend->attach(mpQwtPlot);
+#if QWT_VERSION >= 0x060300
     mpRightPlotLegend->setAlignmentInCanvas(Qt::AlignRight | Qt::AlignTop);
+#else
+    mpRightPlotLegend->setAlignment(Qt::AlignRight | Qt::AlignTop);
+#endif
     mpRightPlotLegend->setZ(LegendBelowCurveZOrderType);
 
     mpLeftPlotLegend = new PlotLegend(QwtPlot::yLeft);
     mpLeftPlotLegend->attach(mpQwtPlot);
+#if QWT_VERSION >= 0x060300
     mpLeftPlotLegend->setAlignmentInCanvas(Qt::AlignLeft | Qt::AlignTop);
+#else
+    mpLeftPlotLegend->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+#endif
     mpLeftPlotLegend->setZ(LegendBelowCurveZOrderType);
 
     constructLegendSettingsDialog();
@@ -1862,6 +1870,7 @@ void PlotArea::applyLegendSettings()
         int alignL = mpLegendLPosition->currentIndex();
         int alignR = mpLegendRPosition->currentIndex();
 
+#if QWT_VERSION >= 0x060300
         if ( alignL == 0 )
         {
             mpLeftPlotLegend->setAlignmentInCanvas(Qt::AlignTop | Qt::AlignLeft);
@@ -1887,6 +1896,33 @@ void PlotArea::applyLegendSettings()
         {
             mpRightPlotLegend->setAlignmentInCanvas(Qt::AlignVCenter | Qt::AlignRight);
         }
+#else
+        if ( alignL == 0 )
+        {
+            mpLeftPlotLegend->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+        }
+        else if ( alignL == 1 )
+        {
+            mpLeftPlotLegend->setAlignment(Qt::AlignBottom | Qt::AlignLeft);
+        }
+        else
+        {
+            mpLeftPlotLegend->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
+        }
+
+        if ( alignR == 0 )
+        {
+            mpRightPlotLegend->setAlignment(Qt::AlignTop | Qt::AlignRight);
+        }
+        else if ( alignR == 1 )
+        {
+            mpRightPlotLegend->setAlignment(Qt::AlignBottom | Qt::AlignRight);
+        }
+        else
+        {
+            mpRightPlotLegend->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+        }
+#endif
 
         QColor bgColor(mpLegendBgColor->currentText());
         //bgColor.setAlpha(128);
@@ -2709,6 +2745,7 @@ void PlotArea::setSmartYAxisLimits(const QwtPlot::Axis axisId, QwtInterval axisL
 void PlotArea::calculateLegendBufferOffsets(const QwtPlot::Axis axisId, double &rBottomOffset, double &rTopOffset)
 {
     double leftLegendHeight=0, rightLegendHeight=0;
+#if QWT_VERSION >= 0x060300
     if (mpLeftPlotLegend->isVisible())
     {
         leftLegendHeight = mpLeftPlotLegend->geometry(mpQwtPlot->geometry()).height() + mpLeftPlotLegend->offsetInCanvas(Qt::Vertical);
@@ -2717,11 +2754,26 @@ void PlotArea::calculateLegendBufferOffsets(const QwtPlot::Axis axisId, double &
     {
         rightLegendHeight = mpRightPlotLegend->geometry(mpQwtPlot->geometry()).height() + mpRightPlotLegend->offsetInCanvas(Qt::Vertical);
     }
+#else
+    if (mpLeftPlotLegend->isVisible())
+    {
+        leftLegendHeight = mpLeftPlotLegend->geometry(mpQwtPlot->geometry()).height() + mpLeftPlotLegend->borderDistance();
+    }
+    if (mpRightPlotLegend->isVisible())
+    {
+        rightLegendHeight = mpRightPlotLegend->geometry(mpQwtPlot->geometry()).height() + mpRightPlotLegend->borderDistance();
+    }
+#endif
     //! @todo even if a legend is empty it seems to be visible and the borderDistance will be added, this causes unnecessary space when on top or bottom (and the other legend is not)
 
     // Figure out vertical alignment, by bitwise masking
+#if QWT_VERSION >= 0x060300
     Qt::Alignment lva = mpLeftPlotLegend->alignmentInCanvas() & Qt::AlignVertical_Mask;
     Qt::Alignment rva = mpRightPlotLegend->alignmentInCanvas() & Qt::AlignVertical_Mask;
+#else
+    Qt::Alignment lva = mpLeftPlotLegend->alignment() & Qt::AlignVertical_Mask;
+    Qt::Alignment rva = mpRightPlotLegend->alignment() & Qt::AlignVertical_Mask;
+#endif
 
     rBottomOffset = rTopOffset = 0;
     if(mpLegendsAutoOffsetCheckBox->isChecked())

@@ -1,5 +1,5 @@
 @ECHO OFF
-REM Bat script building libzip dependency automatically
+REM Bat script building libxerces dependency automatically
 
 setlocal
 set basedir=%~dp0
@@ -15,9 +15,20 @@ call setHopsanBuildPaths.bat
 
 mkdir %builddir%
 cd %builddir%
-cmake -Wno-dev -G %HOPSAN_BUILD_CMAKE_GENERATOR% -DCMAKE_INSTALL_PREFIX="%installdir%" %codedir%
-cmake --build . --parallel 8
-cmake --build . --target install
+if "%HOPSAN_BUILD_COMPILER%" == "msvc" (
+  cmake -Wno-dev -G %HOPSAN_BUILD_CMAKE_GENERATOR% ^
+        -DCMAKE_BUILD_TYPE=Debug ^
+        -DCMAKE_INSTALL_PREFIX="%installdir%" ^
+        %codedir%
+  cmake --build . --config Debug --parallel 8
+  cmake --build . --config Debug --target install
+)
+cmake -Wno-dev -G %HOPSAN_BUILD_CMAKE_GENERATOR% ^
+      -DCMAKE_BUILD_TYPE=Release ^
+      -DCMAKE_INSTALL_PREFIX="%installdir%" ^
+      %codedir%
+cmake --build . --config Release --parallel 8
+cmake --build . --config Release --target install
 
 cd %basedir%
 echo.
