@@ -9,7 +9,7 @@ configuration: Release
 install:
   - git submodule update --init
   - cd dependencies
-  - download-dependencies.py discount qwt zeromq cppzmq msgpack-c katex tclap fmi4c xerces asio zlib libzip dcplib
+  - download-dependencies.py discount qwt zeromq cppzmq msgpack-c katex tclap fmi4c xerces asio zlib libzip dcplib ssp4c
   - cd ..
 build_script:
 # Remove sh.exe from PATH so that CMake works
@@ -28,6 +28,7 @@ build_script:
   - setupQwt.bat
   - setupZeroMQ.bat
   - setupMsgpack.bat
+    setupSsp4c.bat
   - call setHopsanBuildPaths.bat
   - cd ..
   - mkdir build
