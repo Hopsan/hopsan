@@ -41,15 +41,9 @@ endif()
 
 target_link_libraries(${target_name} Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Xml Qt5::Svg Qt5::Network Qt5::Test Qt5::PrintSupport
     qwt hopsancore hopsangeneratorgui symhop ops hopsandcp xercesc ssp4c )
-<<<<<<< HEAD
-<<<<<<< HEAD
 if(UNIX)
 target_link_libraries(${target_name} Qt5::WebEngineWidgets)
 endif()
-=======
->>>>>>> 226b534b5 (SSP support (wip))
-=======
->>>>>>> 8bad348f9 (SSP support (wip))
 
 target_link_optional_libraries(${target_name} libhopsanremoteclient hopsanhdf5exporter discount katex)
 
