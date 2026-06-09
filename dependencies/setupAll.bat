@@ -12,3 +12,4 @@ start /wait cmd /c setupLibzip.bat
 start /wait cmd /c setupXerces.bat
 REM DCPLib must come after xerces and libzip (zlib before libzip)
 start /wait cmd /c setupDCPLib.bat
+start /wait cmd /c setupSsp4c.bat

@@ -12,3 +12,4 @@
 ./setupZeroMQ.sh
 # DCPLib must come after xerces and libzip
 ./setupDCPLib.sh
+./setupSsp4c.sh
