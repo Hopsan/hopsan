@@ -233,7 +233,7 @@ fmi3Status fmi3EnterInitializationMode(fmi3Instance instance,
     }
 
     if(fmu->loggingOn) {
-        fmu->logger(fmu->instanceEnvironment, fmi3Error, "info", "Entering initialization mode...");
+        fmu->logger(fmu->instanceEnvironment, fmi3Info, "info", "Entering initialization mode...");
     }
 
     fmu->pSystem->initialize(startTime, stopTime);

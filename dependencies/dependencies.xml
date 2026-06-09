@@ -121,4 +121,10 @@
     </releasefile>
   </dependency>
 
+  <dependency name="ssp4c">
+    <releasefile sha256="ee1713a2a04cc3f8e480f2e9958b4f5ef5f94888c350d92ddfb4c878946dc568">
+      <url>https://github.com/robbr48/ssp4c/archive/refs/tags/v1.0.zip</url>
+    </releasefile>
+  </dependency>
+
 </hopsandependencies>
