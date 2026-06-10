@@ -32,6 +32,25 @@
 ******************************
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
+2.24.0 (2026-06-10)
+
+----- New Features -----
+Experimental support for the SSP standard
+
+----- Enhancements -----
+Improvements to DCP support
+Added TLM interface components for DCP cosimulation
+
+----- Bugs -----
+Trigger simulation code from getReal during intialization in exported FMUs
+Fix error when setting parameters in subsystems from HCOM
+Removed accidentally added code to MechanicInterfaceC
+Fix crash when reinstantiating FMUWrapper components
+
+----- General -----
+- General improvements to CMake and thirdparty libs
+
+---------------------------------------------------------------------------------------------------------------------------------------------
 2.23.1 (2025-08-18)
 
 ----- Enhancements -----
