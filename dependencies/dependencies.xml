@@ -122,7 +122,7 @@
   </dependency>
 
   <dependency name="ssp4c">
-    <releasefile sha256="ee1713a2a04cc3f8e480f2e9958b4f5ef5f94888c350d92ddfb4c878946dc568">
+    <releasefile sha256="2c1172ac57cfc9e026f5ce8296f0f8f43823eb974bff7eb90cb92b1a3137618c">
       <url>https://github.com/robbr48/ssp4c/archive/refs/tags/v1.0.zip</url>
     </releasefile>
   </dependency>
