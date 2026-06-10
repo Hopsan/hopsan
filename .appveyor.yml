@@ -28,7 +28,7 @@ build_script:
   - setupQwt.bat
   - setupZeroMQ.bat
   - setupMsgpack.bat
-    setupSsp4c.bat
+  - setupSsp4c.bat
   - call setHopsanBuildPaths.bat
   - cd ..
   - mkdir build
