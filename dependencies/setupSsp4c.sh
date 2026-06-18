@@ -21,7 +21,7 @@ mkdir -p $builddir
 cd $builddir
 
 # Generate makefiles
-cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=${installdir} -DCMAKE_BUILD_TYPE=Release -DSSP4C_BUILD_SHARED=OFF ${codedir}
+cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -Wno-dev -DCMAKE_INSTALL_PREFIX=${installdir} -DCMAKE_BUILD_TYPE=Release -DSSP4C_BUILD_SHARED=OFF ${codedir}
 
 # Build and install
 cmake --build . --parallel 8
