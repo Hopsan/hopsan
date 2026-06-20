@@ -58,7 +58,6 @@ class AnimationWidget;
 class SimulationThreadHandler;
 class GUIMessageHandler;
 class LogDataHandler2;
-class ssdHandle;
 
 #include "CoreAccess.h"
 #include "RemoteCoreAccess.h"

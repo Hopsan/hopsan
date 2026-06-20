@@ -27,14 +27,13 @@
 //! @brief A widget for editing SSM parameter mappings
 //! @author Robert Braun <robert.braun@liu.se>
 //!
-//$Id$
 
 #include "SSMEditorWidget.h"
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QPushButton>
-#include <QHeaderView>
 #include <QDebug>
+#include <QHBoxLayout>
+#include <QHeaderView>
+#include <QTableWidgetItem>
+#include <QVBoxLayout>
 
 #include "ssp4c_ssm_parameter_mapping.h"
 #include "ssp4c_ssm_mapping_entry.h"

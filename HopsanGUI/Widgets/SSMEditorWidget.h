@@ -27,18 +27,16 @@
 //! @brief A widget for editing SSM parameter mappings
 //! @author Robert Braun <robert.braun@liu.se>
 //!
-//$Id$
 
 #ifndef SSMEDITORGWIDGET_H
 #define SSMEDITORGWIDGET_H
 
-#include <QWidget>
+#include <QPushButton>
 #include <QTableWidget>
-#include <QTableWidgetItem>
+#include <QWidget>
 
 // Forward declarations
-class ssmParameterMappingHandle;
-class QPushButton;
+struct ssmParameterMappingHandle;
 
 class SSMEditorWidget : public QWidget
 {

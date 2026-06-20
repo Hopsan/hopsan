@@ -27,14 +27,13 @@
 //! @brief A widget for editing SSV parameter sets
 //! @author Robert Braun <robert.braun@liu.se>
 //!
-//$Id$
 
 #include "SSVEditorWidget.h"
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QPushButton>
-#include <QHeaderView>
 #include <QDebug>
+#include <QHBoxLayout>
+#include <QHeaderView>
+#include <QTableWidgetItem>
+#include <QVBoxLayout>
 
 #include "ssp4c.h"
 #include "ssp4c_ssv_parameter_set.h"

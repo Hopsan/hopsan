@@ -27,18 +27,16 @@
 //! @brief A widget for editing SSV parameter sets
 //! @author Robert Braun <robert.braun@liu.se>
 //!
-//$Id$
 
 #ifndef SSVEDITORWIDGET_H
 #define SSVEDITORWIDGET_H
 
-#include <QWidget>
+#include <QPushButton>
 #include <QTableWidget>
-#include <QTableWidgetItem>
+#include <QWidget>
 
 // Forward declarations
-class ssvParameterSetHandle;
-class QPushButton;
+struct ssvParameterSetHandle;
 
 class SSVEditorWidget : public QWidget
 {

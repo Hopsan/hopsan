@@ -1,19 +1,40 @@
-#include <QWidget>
-#include <QObject>
-#include <QTreeWidget>
-
 #ifndef SSPWIDGET_H
 #define SSPWIDGET_H
 
 #include <QFileInfo>
+#include <QObject>
+#include <QTreeWidget>
+#include <QWidget>
 
 //Forward declarations
-class sspHandle;
-class ssdHandle;
-class ssvParameterSetHandle;
-class ssmParameterMappingHandle;
-class ssdSystemHandle;
-class SSPTreeWidget;
+struct sspHandle;
+struct ssdHandle;
+struct ssvParameterSetHandle;
+struct ssmParameterMappingHandle;
+struct ssdSystemHandle;
+
+class SSPTreeWidget : public QTreeWidget
+{
+    Q_OBJECT
+
+public:
+    explicit SSPTreeWidget(QWidget *parent = nullptr);
+
+    enum ItemType {
+        SSPItem,
+        SSDItem = QTreeWidgetItem::UserType + 1,
+        SystemItem,
+        FMUItem,
+        SSVItem,
+        SSMItem
+    };
+
+protected:
+    void startDrag(Qt::DropActions supportedActions) override;
+    void dragMoveEvent(QDragMoveEvent *event) override;
+    void dropEvent(QDropEvent *event) override;
+    void contextMenuEvent(QContextMenuEvent *event) override;
+};
 
 class SSPWidget : public QWidget
 {
@@ -41,30 +62,5 @@ private:
     QMap<QTreeWidgetItem *, ssmParameterMappingHandle *> itemToSsmMap;
     QMap<sspHandle *, QFileInfo> mSspFileMap;
 };
-
-class SSPTreeWidget : public QTreeWidget
-{
-    Q_OBJECT
-
-public:
-    explicit SSPTreeWidget(QWidget *parent = nullptr);
-
-    enum ItemType {
-        SSPItem,
-        SSDItem = QTreeWidgetItem::UserType + 1,
-        SystemItem,
-        FMUItem,
-        SSVItem,
-        SSMItem
-    };
-
-protected:
-    void startDrag(Qt::DropActions supportedActions) override;
-    void dragMoveEvent(QDragMoveEvent *event) override;
-    void dropEvent(QDropEvent *event) override;
-    void contextMenuEvent(QContextMenuEvent *event) override;
-};
-
-
 
 #endif // SSPWIDGET_H
