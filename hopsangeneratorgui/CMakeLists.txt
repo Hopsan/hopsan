@@ -8,28 +8,26 @@ endif()
 find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
 set(CMAKE_AUTOMOC ON)
 
-set(target_name hopsangeneratorgui)
-
 # Find source code
 file(GLOB_RECURSE srcfiles src/*.cpp)
 file(GLOB_RECURSE headerfiles include/*.h include/*.hpp)
 
 # Create library target and add source code files
-add_library(${target_name} STATIC ${srcfiles} ${headerfiles})
+add_library(hopsangeneratorgui STATIC ${srcfiles} ${headerfiles})
 
 # Set include directories
-target_include_directories(${target_name} PUBLIC
+target_include_directories(hopsangeneratorgui PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
 # Set link dependencies
-target_link_libraries(${target_name} Qt5::Core Qt5::Gui Qt5::Widgets)
+target_link_libraries(hopsangeneratorgui Qt5::Core Qt5::Gui Qt5::Widgets)
 
 # Set compiler definitions
 # TODO: Should create aseparat target for debug/release flag, right now this is set on hopsancore, but only those who depend on it will get the flag automatically
 if(CMAKE_BUILD_TYPE MATCHES Debug)
-  target_compile_definitions(${target_name} PRIVATE HOPSAN_BUILD_TYPE_DEBUG)
+  target_compile_definitions(hopsangeneratorgui PRIVATE HOPSAN_BUILD_TYPE_DEBUG)
 else()
-  target_compile_definitions(${target_name} PRIVATE HOPSAN_BUILD_TYPE_RELEASE)
-  target_compile_definitions(${target_name} PRIVATE QT_NO_DEBUG_OUTPUT)
+  target_compile_definitions(hopsangeneratorgui PRIVATE HOPSAN_BUILD_TYPE_RELEASE)
+  target_compile_definitions(hopsangeneratorgui PRIVATE QT_NO_DEBUG_OUTPUT)
 endif()

@@ -8,21 +8,19 @@ endif()
 include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/hdf5.cmake)
 
 if (TARGET module_hdf5-shared)
-  set(target_name hopsanhdf5exporter)
-
   # Find source code
   file(GLOB_RECURSE srcfiles ${CMAKE_CURRENT_LIST_DIR}/*.cpp
                              ${CMAKE_CURRENT_LIST_DIR}/*.h
                              ${CMAKE_CURRENT_LIST_DIR}/*.hpp)
 
   # Create library target and add source code files
-  add_library(${target_name} STATIC ${srcfiles})
+  add_library(hopsanhdf5exporter STATIC ${srcfiles})
 
   # Set include directories
-  target_include_directories(${target_name} PUBLIC
+  target_include_directories(hopsanhdf5exporter PUBLIC
                              $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
                              $<INSTALL_INTERFACE:include>)
 
   # Set link dependencies
-  target_link_libraries(${target_name} hopsancore hdf5::hdf5-shared hdf5::hdf5_cpp-shared)
+  target_link_libraries(hopsanhdf5exporter hopsancore hdf5::hdf5-shared hdf5::hdf5_cpp-shared)
 endif()

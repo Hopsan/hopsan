@@ -23,41 +23,39 @@ include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/discount.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/katex.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/ssp4c.cmake)
 
-set(target_name hopsangui)
-
 file(GLOB_RECURSE srcfiles *.cpp *.h *.hpp *.qrc)
-add_executable(${target_name} ${srcfiles})
+add_executable(hopsangui ${srcfiles})
 
-target_include_directories(${target_name} PRIVATE
+target_include_directories(hopsangui PRIVATE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../Utilities>)
 
-target_compile_definitions(${target_name} PRIVATE _USE_MATH_DEFINES)
-target_compile_definitions(${target_name} PRIVATE DEVELOPMENT)
+target_compile_definitions(hopsangui PRIVATE _USE_MATH_DEFINES)
+target_compile_definitions(hopsangui PRIVATE DEVELOPMENT)
 if(NOT CMAKE_BUILD_TYPE MATCHES Debug)
   # Silence qDebug() for all non Debug configurations
-  target_compile_definitions(${target_name} PRIVATE QT_NO_DEBUG_OUTPUT)
+  target_compile_definitions(hopsangui PRIVATE QT_NO_DEBUG_OUTPUT)
 endif()
 
-target_link_libraries(${target_name} Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Xml Qt5::Svg Qt5::Network Qt5::Test Qt5::PrintSupport
+target_link_libraries(hopsangui Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Xml Qt5::Svg Qt5::Network Qt5::Test Qt5::PrintSupport
     qwt hopsancore hopsangeneratorgui symhop ops hopsandcp ssp4c::ssp4c)
 if(UNIX)
   message(STATUS "Linking with Qt5::WebEngineWidgets")
-  target_link_libraries(${target_name} Qt5::WebEngineWidgets)
-  target_compile_definitions(${target_name} PRIVATE USEWEBENGINE)
+  target_link_libraries(hopsangui Qt5::WebEngineWidgets)
+  target_compile_definitions(hopsangui PRIVATE USEWEBENGINE)
 endif()
 # If Qt5WebKitWidgets was found, link it
 if (Qt5WebKitWidgets_DIR)
   message(STATUS "Linking with Qt5::WebKitWidgets")
-  target_link_libraries(${target_name} Qt5::WebKitWidgets)
-  target_compile_definitions(${target_name} PRIVATE USEWEBKIT)
+  target_link_libraries(hopsangui Qt5::WebKitWidgets)
+  target_compile_definitions(hopsangui PRIVATE USEWEBKIT)
 endif()
 
-target_link_optional_libraries(${target_name} libhopsanremoteclient hopsanhdf5exporter discount katex)
+target_link_optional_libraries(hopsangui libhopsanremoteclient hopsanhdf5exporter discount katex)
 
-set_target_properties(${target_name} PROPERTIES INSTALL_RPATH "\$ORIGIN/../lib")
+set_target_properties(hopsangui PROPERTIES INSTALL_RPATH "\$ORIGIN/../lib")
 
-install(TARGETS ${target_name}
+install(TARGETS hopsangui
   RUNTIME DESTINATION bin
 )
 
