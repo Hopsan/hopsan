@@ -14,6 +14,11 @@ file(GLOB_RECURSE headerfiles include/*.h include/*.hpp)
 # Create library target and add source code files
 add_library(hopsandcp STATIC ${srcfiles} ${headerfiles})
 
+if(MSVC)
+  # Enable multi-core build with MSVC
+  target_compile_options(hopsandcp PRIVATE "/MP")
+endif()
+
 # Set include directories
 target_include_directories(hopsandcp PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../HopsanCore/include>

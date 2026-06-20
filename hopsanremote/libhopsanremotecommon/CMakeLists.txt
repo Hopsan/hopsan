@@ -6,6 +6,11 @@ file(GLOB_RECURSE srcfiles src/*.cpp include/*.h include/*.hpp)
 add_library(libhopsanremotecommon STATIC ${srcfiles})
 set_target_properties(libhopsanremotecommon PROPERTIES OUTPUT_NAME hopsanremotecommon)
 
+if(MSVC)
+  # Enable multi-core build with MSVC
+  target_compile_options(libhopsanremotecommon PRIVATE "/MP")
+endif()
+
 target_include_directories(libhopsanremotecommon PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)

@@ -7,6 +7,12 @@ include(${CMAKE_CURRENT_LIST_DIR}/../../dependencies/fmi4c.cmake)
 file(GLOB_RECURSE component_files *.cpp *.cci *.h *.hpp)
 
 add_library(defaultcomponentlibrary SHARED ${component_files})
+
+if(MSVC)
+  # Enable multi-core build with MSVC
+  target_compile_options(defaultcomponentlibrary PRIVATE "/MP")
+endif()
+
 target_include_directories(defaultcomponentlibrary PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 

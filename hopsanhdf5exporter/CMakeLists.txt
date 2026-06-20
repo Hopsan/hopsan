@@ -16,6 +16,11 @@ if (TARGET module_hdf5-shared)
   # Create library target and add source code files
   add_library(hopsanhdf5exporter STATIC ${srcfiles})
 
+  if(MSVC)
+    # Enable multi-core build with MSVC
+    target_compile_options(hopsanhdf5exporter PRIVATE "/MP")
+  endif()
+
   # Set include directories
   target_include_directories(hopsanhdf5exporter PUBLIC
                              $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>

@@ -4,6 +4,11 @@ file(GLOB srcfiles *.cpp *.h)
 
 add_executable(hopsanaddresserver ${srcfiles})
 
+if(MSVC)
+  # Enable multi-core build with MSVC
+  target_compile_options(hopsanaddresserver PRIVATE "/MP")
+endif()
+
 target_include_directories(hopsanaddresserver PRIVATE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../dependencies/tclap/include>)

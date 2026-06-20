@@ -14,6 +14,11 @@ file(GLOB_RECURSE srcfiles src/*.cpp include/*.h include/*.hpp templates.qrc)
 
 add_library(hopsangenerator SHARED ${srcfiles})
 
+if(MSVC)
+  # Enable multi-core build with MSVC
+  target_compile_options(hopsangenerator PRIVATE "/MP")
+endif()
+
 # Set compiler definitions
 if(WIN32)
   target_compile_definitions(hopsangenerator PRIVATE HOPSANGENERATOR_DLLEXPORT)

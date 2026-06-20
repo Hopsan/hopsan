@@ -15,6 +15,11 @@ file(GLOB_RECURSE headerfiles include/*.h include/*.hpp)
 # Create library target and add source code files
 add_library(hopsangeneratorgui STATIC ${srcfiles} ${headerfiles})
 
+if(MSVC)
+  # Enable multi-core build with MSVC
+  target_compile_options(hopsangeneratorgui PRIVATE "/MP")
+endif()
+
 # Set include directories
 target_include_directories(hopsangeneratorgui PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>

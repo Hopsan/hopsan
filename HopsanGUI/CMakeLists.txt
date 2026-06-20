@@ -26,6 +26,11 @@ include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/ssp4c.cmake)
 file(GLOB_RECURSE srcfiles *.cpp *.h *.hpp *.qrc)
 add_executable(hopsangui ${srcfiles})
 
+if(MSVC)
+  # Enable multi-core build with MSVC
+  target_compile_options(hopsangui PRIVATE "/MP")
+endif()
+
 target_include_directories(hopsangui PRIVATE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../Utilities>)

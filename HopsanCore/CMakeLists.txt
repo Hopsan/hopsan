@@ -25,6 +25,11 @@ add_indexingcsvparser_src(hopsancore)
 add_rapidxml_src(hopsancore)
 add_sundials_src(hopsancore)
 
+if(MSVC)
+  # Enable multi-core build with MSVC
+  target_compile_options(hopsancore PRIVATE "/MP")
+endif()
+
 # Set compiler definitions
 if(WIN32)
   target_compile_definitions(hopsancore PRIVATE HOPSANCORE_DLLEXPORT)

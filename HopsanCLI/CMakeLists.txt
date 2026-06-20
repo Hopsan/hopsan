@@ -9,6 +9,11 @@ file(GLOB_RECURSE hopsancli_srcfiles *.cpp *.h *.hpp)
 
 add_executable(hopsancli ${hopsancli_srcfiles})
 
+if(MSVC)
+  # Enable multi-core build with MSVC
+  target_compile_options(hopsancli PRIVATE "/MP")
+endif()
+
 target_include_directories(hopsancli PRIVATE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../HopsanCore/dependencies/rapidxml>
