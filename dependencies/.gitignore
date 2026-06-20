@@ -14,7 +14,9 @@ libzip/
 zlib/
 xerces/
 dcplib/
-*.zip
-*.tar.gz
-*.tar.bz2
+ssp4c/
 *.7z
+*.tar.bz2
+*.tar.gz
+*.tar.xz
+*.zip
