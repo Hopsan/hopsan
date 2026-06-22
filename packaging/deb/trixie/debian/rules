@@ -24,6 +24,7 @@ override_dh_auto_build:
 	cd dependencies; ./setupKatex.sh
 	cd dependencies; ./setupMsgpack.sh
 	cd dependencies; ./setupTclap.sh
+	cd dependencies; ./setupSsp4c.sh
 
 #       Now build Hopsan
 	mkdir -p hopsan-build
