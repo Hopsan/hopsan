@@ -65,7 +65,7 @@ You also need  Microsoft Visual Studio Build Tools or Microsoft Visual Studio.
 To download, verify and unpack the source code for third-party dependencies, use the ```dependencies/download-dependencies.py``` script.
 * Open a terminal and got to the ```dependencies``` directory
 * To fetch all dependencies: ```download-dependencies.py --all```
-* To fetch only the bare minimum run: ```download-dependencies.py qwt fmilibrary tclap```
+* To fetch only the bare minimum run: ```download-dependencies.py qwt tclap```
 
 #### Build Third-party Dependencies (MinGW)
 Build the dependencies using each ```setupName.bat``` scripts. Run them by double-clicking or running them from a CMD terminal.
