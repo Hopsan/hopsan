@@ -38,8 +38,8 @@ have_local_hdf5() {
   LIBS *= -L$${libdir} -L$${bindir} -lhdf5$${dbg_ext} -lhdf5_cpp$${dbg_ext}
   win32 {
      # On Windows, since RPATH is ignored by LoadLibrary(), copy the library file to the bin directory after build instead
-     src_file1 = $$quote($${homedir}/bin/hdf5$${dbg_ext}.dll)
-     src_file2 = $$quote($${homedir}/bin/hdf5_cpp$${dbg_ext}.dll)
+     src_file1 = $$quote($${homedir}/bin/libhdf5$${dbg_ext}.dll)
+     src_file2 = $$quote($${homedir}/bin/libhdf5_cpp$${dbg_ext}.dll)
      dst_dir = $$quote($${PWD}/../bin)
      # Replace slashes in paths with backslashes for Windows
      src_file1 ~= s,/,\\,g
