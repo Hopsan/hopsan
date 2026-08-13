@@ -1,0 +1,15 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+upstream-name: hopsan
+upstream-contact: Peter Nordin <jpn.peter@gmail.com>
+Source: https://github.com/Hopsan/hopsan
+
+Files: hopsan/*
+Copyright: 2021 Hopsan Group <jpn.peter@gmail.com>
+License: GPL-3+ and Apache-2.0
+/usr/share/common-licenses/GPL-3
+/usr/share/common-licenses/Apache-2.0
+
+Files: debian/*
+Copyright: 2021 Peter Nordin <jpn.peter@gmail.com>
+License: GPL-3+
+/usr/share/common-licenses/GPL-3

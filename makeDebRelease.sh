@@ -14,10 +14,12 @@ name=hopsan
 devversion=2.24.0
 
 # Pbuilder dists and archs
-debianDistArchArray=( trixie:amd64:trixie
+debianDistArchArray=( forky:amd64:forky
+                      trixie:amd64:trixie
                       bookworm:amd64:bookworm
                       bullseye:amd64:bullseye )
-ubuntuDistArchArray=( questing:amd64:trixie
+ubuntuDistArchArray=( resolute:amd64:forky
+                      questing:amd64:trixie
                       noble:amd64:trixie
                       jammy:amd64:bookworm
                       focal:amd64:bullseye )
