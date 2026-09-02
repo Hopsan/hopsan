@@ -236,6 +236,14 @@ private:
     bool mReinstantiate = false;
     bool mIsInstantiated = false;
 
+    size_t mNumStates, mNumEventIndicators;
+    std::vector<double> mStates;      // states at current time mTime
+    std::vector<double> mStatesPrev;  // states at start of the current step
+    std::vector<double> mEventIndicators;      // event indicators, current
+    std::vector<double> mEventIndicatorsPrev;  // event indicators, previous step
+    size_t mMaxNewtonIt = 25;
+    double mNewtonTol = 1e-8;
+    fmi2EventInfo mEventInfo;
 
 public:
     static Component *Creator()
@@ -626,10 +634,23 @@ public:
             //Instantiate FMU
             if(!mReinstantiate) {
                 addDebugMessage("Calling: fmi2Instantiate");
-                fmi2_instance = fmi2_instantiate(fmu, fmi2CoSimulation, FMIWrapperQ_fmi2Logger, calloc, free, NULL, (fmi2ComponentEnvironment*)this, fmi2False, mLoggingOn);
+                fmi2Type fmuType = fmi2ModelExchange;
+                if(fmi2_getSupportsCoSimulation(fmu)) {
+                    fmuType = fmi2CoSimulation;
+                }
+                fmi2_instance = fmi2_instantiate(fmu, fmuType, FMIWrapperQ_fmi2Logger, calloc, free, NULL, (fmi2ComponentEnvironment*)this, fmi2False, mLoggingOn);
                 if(NULL == fmi2_instance) {
                     stopSimulation("Failed to instantiate FMU");
                     return;
+                }
+
+                if(fmuType == fmi2ModelExchange) {
+                    mNumStates = (size_t)fmi2_getNumberOfContinuousStates(fmu);
+                    mNumEventIndicators = (size_t)fmi2_getNumberOfEventIndicators(fmu);
+                         mStates.assign(mNumStates, 0.0);
+                    mStatesPrev.assign(mNumStates, 0.0);
+                    mEventIndicators.assign(mNumEventIndicators, 0.0);
+                    mEventIndicatorsPrev.assign(mNumEventIndicators, 0.0);
                 }
                 mIsInstantiated = true;
             }
@@ -1081,8 +1102,21 @@ public:
             addDebugMessage("Calling: fmi2_exitInitializationMode");
             status = fmi2_exitInitializationMode(fmi2_instance);
             if(status != fmi2OK) {
-                stopSimulation("fmi3ExitInitializationMode() failed");
+                stopSimulation("fmi2ExitInitializationMode() failed");
                 return;
+            }
+
+            if(!fmi2_getSupportsCoSimulation(fmu)) {
+                mEventInfo.newDiscreteStatesNeeded = fmi2True;
+                while (mEventInfo.newDiscreteStatesNeeded) {
+                    fmi2_newDiscreteStates(fmi2_instance, &mEventInfo);
+                }
+                fmi2_enterContinuousTimeMode(fmi2_instance);
+                    fmi2_getContinuousStates(fmi2_instance, mStates.data(), mNumStates);
+                if (mNumEventIndicators > 0) {
+                    fmi2_getEventIndicators(fmi2_instance, mEventIndicators.data(), mNumEventIndicators);
+                    mEventIndicatorsPrev = mEventIndicators;
+                }
             }
         }
         else {
@@ -1305,11 +1339,132 @@ public:
                 status = fmi2_setBoolean(fmi2_instance, &it->first, 1, &value);
             }
 
-            //Take step
-            status = fmi2_doStep(fmi2_instance, mTime-mTimestep, mTimestep, fmi3True);
-            if (status != fmi2OK) {
-                stopSimulation("fmi2DoStep() failed, status = "+to_hstring(status));
-                return;
+            if(fmi2_getSupportsCoSimulation(fmu)) {
+                //Take step
+                status = fmi2_doStep(fmi2_instance, mTime-mTimestep, mTimestep, fmi2True);
+                if (status != fmi2OK) {
+                    stopSimulation("fmi2DoStep() failed, status = "+to_hstring(status));
+                    return;
+                }
+            }
+            else {
+                // FMI 2 for model exchange
+
+                // Save the initial model state
+                mStatesPrev = mStates;
+                mEventIndicatorsPrev = mEventIndicators;
+
+                // Start time for the integration
+                double t = mTime-mTimestep;
+
+                while(t < mTime) {
+                    // Integrate using implicit Euler from start time to end time
+                    newtonSolveImplicitEuler(mTime, mTime-t);
+
+                    fmi2_setContinuousStates(fmi2_instance, mStates.data(), mNumStates);
+
+                    //Check if there were any state events during the step
+                    bool stateEvent = false;
+                    if (mNumEventIndicators > 0) {
+                        fmi2_getEventIndicators(fmi2_instance, mEventIndicators.data(), mNumEventIndicators);
+                        for(size_t i = 0; i < mNumEventIndicators; ++i) {
+                            if((mEventIndicators[i] > 0.0) != (mEventIndicatorsPrev[i] > 0.0)) {
+                                stateEvent = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    fmi2_setTime(fmi2_instance, mTime);
+
+
+                     if(!stateEvent) {
+                         break;  //No event, step finished!
+                     }
+                     else {
+                        //An event was detected, narrow down time window to find event time
+
+                        double left  = t;
+                        double right = mTime;
+
+                        std::vector<double> eventIndicatorsLeft = mEventIndicatorsPrev;
+                        double eventTolerance = std::min(1e-6, 0.01*mTimestep);
+
+                        while ((right - left) > eventTolerance) {
+                            const double mid = 0.5 * (left + right);
+
+                            // Reset states to beginning of time window
+                            fmi2_setTime(fmi2_instance, t);
+                            fmi2_setContinuousStates(fmi2_instance, mStatesPrev.data(), mNumStates);
+
+                            // Integrate over first half of the time window
+                            newtonSolveImplicitEuler(t, mid-t);
+
+                            fmi2_setTime(fmi2_instance, mid);
+                            fmi2_setContinuousStates(fmi2_instance, mStates.data(), mNumStates);
+                            fmi2_getEventIndicators(fmi2_instance, mEventIndicators.data(), mNumEventIndicators);
+
+                            //Check if there were any eventse during first half of time window
+                            bool stateEvent = false;
+                            for(size_t i = 0; i < mNumEventIndicators; ++i) {
+                                if((eventIndicatorsLeft[i] > 0.0) != (mEventIndicators[i] > 0.0)) {
+                                    stateEvent = true;
+                                    break;
+                                }
+                            }
+                            if (stateEvent) {
+                                //Event in first half, so narrow down to first half
+                                right = mid;
+                            }
+                            else
+                            {
+                                //No event in first half, so narrow down window to second half
+                                left = mid;
+                                eventIndicatorsLeft = mEventIndicators;
+                            }
+                        }
+
+                        //Detected event time is middle of final narrow window
+                        const double te = 0.5 * (left + right);
+
+                        //Reset to start time for current step
+                        fmi2_setTime(fmi2_instance, t);
+                        fmi2_setContinuousStates(fmi2_instance, mStatesPrev.data(), mNumStates);
+
+                        //Integrate to event time
+                        newtonSolveImplicitEuler(te, te-t);
+
+                        fmi2_setTime(fmi2_instance, te);
+                        fmi2_setContinuousStates(fmi2_instance, mStates.data(), mNumStates);
+
+                        //Perform event iteration
+                        fmi2_enterEventMode(fmi2_instance);
+
+                        bool newDiscreteStatesNeeded = true;
+
+                        mEventInfo.newDiscreteStatesNeeded = fmi2True;
+                        mEventInfo.terminateSimulation = fmi2False;
+                        int iterations = 0;
+                        while (mEventInfo.newDiscreteStatesNeeded) {
+                            fmi2_newDiscreteStates(fmi2_instance, &mEventInfo);
+
+                            //Limit maximum number of event iterations
+                            ++iterations;
+                            if(iterations > 100) {
+                                stopSimulation("Event iteration reached maximmum number of iterations.");
+                                break;
+                            }
+                        }
+
+                        fmi2_enterContinuousTimeMode(fmi2_instance);
+
+                        //Continue integrating from event time
+                        t = te;
+
+                        fmi2_getContinuousStates(fmi2_instance, mStatesPrev.data(), mNumStates);
+                        fmi2_getEventIndicators(fmi2_instance, mEventIndicatorsPrev.data(), mNumEventIndicators);
+                     }
+                 }
             }
 
             //Forward outputs
@@ -1560,6 +1715,143 @@ public:
             }
         }
         return ret;
+    }
+
+    //! @brief Help function for evaluating FMU derivatives
+    //! @param [in] t Simulation time
+    //! @param [in] x State vector
+    //! @param [out] xdot State derivatives
+    bool evaluateDerivatives(double t, const std::vector<double>& x, std::vector<double>& xdot)
+    {
+        fmi2_setTime(fmi2_instance, t);
+        fmi2_setContinuousStates(fmi2_instance, x.data(), mNumStates);
+        fmi2_getDerivatives(fmi2_instance, xdot.data(), mNumStates);
+        return true;
+    }
+
+    //! @brief Compute dense jacobian
+    //! @param [in] x State vector
+    //! @param [in] f0 Derivatives
+    //! @param [out] J Jacobian matrix
+    bool computeJacobian(double t,
+                         const std::vector<double>& x,
+                         const std::vector<double>& f0,
+                         std::vector<std::vector<double>>& J)
+    {
+        J.assign(mNumStates, std::vector<double>(mNumStates, 0.0));
+
+        std::vector<double> xPerturbed = x;
+        std::vector<double> fPerturbed(mNumStates);
+
+        for (size_t j = 0; j < mNumStates; ++j) {
+            const double h = std::max(1e-8, 1e-6 * std::fabs(x[j]));
+            xPerturbed[j] = x[j] + h;
+
+            evaluateDerivatives(t, xPerturbed, fPerturbed);
+
+            for (size_t i = 0; i < mNumStates; ++i) {
+                J[i][j] = (fPerturbed[i] - f0[i]) / h;
+            }
+            xPerturbed[j] = x[j];
+        }
+        return true;
+    }
+
+    //! @brief Integrates using implicit Euler from endTime-stepSize to endTime
+    //! @param [in] endTime End time of the integration
+    //! @param [in] stepSize Step size for the integration
+    bool newtonSolveImplicitEuler(double endTime, double stepSize)
+    {
+        std::vector<double> xNew = mStatesPrev;  // explicit-Euler-ish initial guess
+        std::vector<double> f(mNumStates), R(mNumStates), delta(mNumStates);
+        std::vector<std::vector<double>> J, A;
+
+        for (size_t it = 0; it < mMaxNewtonIt; ++it) {
+            evaluateDerivatives(endTime, xNew, f);
+
+            for (size_t i = 0; i < mNumStates; ++i) {
+                R[i] = xNew[i] - mStatesPrev[i] - stepSize * f[i];
+            }
+
+            double resNorm = 0.0;
+            for (double r : R) resNorm += r * r;
+            resNorm = std::sqrt(resNorm);
+
+            if (resNorm < mNewtonTol) {
+
+                mStates = xNew;
+                return true;
+            }
+
+            computeJacobian(endTime, xNew, f, J);
+
+            // A = I - dt * J
+            A = J;
+            for (size_t i = 0; i < mNumStates; ++i) {
+                for (size_t k = 0; k < mNumStates; ++k) {
+                    A[i][k] *= -stepSize;
+                }
+                A[i][i] += 1.0;
+            }
+
+            std::vector<double> rhs(mNumStates);
+            for (size_t i = 0; i < mNumStates; ++i) rhs[i] = -R[i];
+
+            if (!luSolve(A, rhs, delta)) {
+                stopSimulation("Jacobian is singular!");
+                return false;  // singular Jacobian
+            }
+
+            for (size_t i = 0; i < mNumStates; ++i) {
+                xNew[i] += delta[i];
+            }
+        }
+
+        stopSimulation("Newwton iteration failed to converge!");
+        return false;  // did not converge within mMaxNewtonIt iterations
+    }
+
+    //! @brief Solve the system A*x=b using LU decomposition
+    bool luSolve(std::vector<std::vector<double>> A, std::vector<double> b,
+                 std::vector<double>& x)
+    {
+        const size_t n = A.size();
+        x.assign(n, 0.0);
+
+        for (size_t k = 0; k < n; ++k) {
+            size_t piv = k;
+            double maxVal = std::fabs(A[k][k]);
+            for (size_t i = k + 1; i < n; ++i) {
+                if (std::fabs(A[i][k]) > maxVal) {
+                    maxVal = std::fabs(A[i][k]);
+                    piv = i;
+                }
+            }
+            if (maxVal < 1e-14) {
+                return false;  // singular (to working precision)
+            }
+            if (piv != k) {
+                std::swap(A[k], A[piv]);
+                std::swap(b[k], b[piv]);
+            }
+
+            for (size_t i = k + 1; i < n; ++i) {
+                const double factor = A[i][k] / A[k][k];
+                for (size_t j = k; j < n; ++j) {
+                    A[i][j] -= factor * A[k][j];
+                }
+                b[i] -= factor * b[k];
+            }
+        }
+
+        for (int i = n - 1; i >= 0; --i) {
+            double sum = b[i];
+            for (int j = i + 1; j < n; ++j) {
+                sum -= A[i][j] * x[j];
+            }
+            x[i] = sum / A[i][i];
+        }
+        return true;
     }
 };
 
