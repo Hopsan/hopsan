@@ -121,9 +121,9 @@ void FMIWrapper_fmi2Logger(fmi2ComponentEnvironment pComponentEnvironment,
 }
 
 void  FMIWrapper_fmi3Logger(fmi3InstanceEnvironment instanceEnvironment,
-             fmi3Status status,
-             fmi3String category,
-             fmi3String message)
+                           fmi3Status status,
+                           fmi3String category,
+                           fmi3String message)
 {
     HOPSAN_UNUSED(category);
 
@@ -152,14 +152,14 @@ void  FMIWrapper_fmi3Logger(fmi3InstanceEnvironment instanceEnvironment,
 }
 
 void FMIWrapper_fmi3IntermediateUpdate(
-        fmi3InstanceEnvironment instanceEnvironment,
-        fmi3Float64  intermediateUpdateTime,
-        fmi3Boolean  intermediateVariableSetRequested,
-        fmi3Boolean  intermediateVariableGetAllowed,
-        fmi3Boolean  intermediateStepFinished,
-        fmi3Boolean  canReturnEarly,
-        fmi3Boolean* earlyReturnRequested,
-        fmi3Float64* earlyReturnTime)
+    fmi3InstanceEnvironment instanceEnvironment,
+    fmi3Float64  intermediateUpdateTime,
+    fmi3Boolean  intermediateVariableSetRequested,
+    fmi3Boolean  intermediateVariableGetAllowed,
+    fmi3Boolean  intermediateStepFinished,
+    fmi3Boolean  canReturnEarly,
+    fmi3Boolean* earlyReturnRequested,
+    fmi3Float64* earlyReturnTime)
 {
     HOPSAN_UNUSED(instanceEnvironment);
     HOPSAN_UNUSED(intermediateUpdateTime);
@@ -229,9 +229,18 @@ private:
     fmi3InstanceHandle *fmi3_instance;
     HString mVisibleOutputs;
     double mTolerance = 1e-4;
-    bool mLoggingOn = true;
+    bool mLoggingOn = false;
     bool mReinstantiate = false;
     bool mIsInstantiated = false;
+
+    size_t mNumStates, mNumEventIndicators;
+    std::vector<double> mStates;      // states at current time mTime
+    std::vector<double> mStatesPrev;  // states at start of the current step
+    std::vector<double> mEventIndicators;      // event indicators, current
+    std::vector<double> mEventIndicatorsPrev;  // event indicators, previous step
+    size_t mMaxNewtonIt = 25;
+    double mNewtonTol = 1e-8;
+    fmi2EventInfo mEventInfo;
 
 public:
     static Component *Creator()
@@ -309,7 +318,7 @@ public:
 
         HString fmuName = "fmu_"+to_hstring(rand() % 1000000000);
         addDebugMessage("FMU name: "+fmuName);
-        
+
         fmu = fmi4c_loadFmu(findFilePath(mFmuPath).c_str(), fmuName.c_str());
         if(fmu == nullptr) {
             addErrorMessage("Failed to load FMU file: "+mFmuPath);
@@ -321,20 +330,20 @@ public:
             addErrorMessage("The code only supports FMI version 1, 2 and 3");
             return;
         }
-        
+
         if(mFmiVersion == fmiVersion1) {
             if(fmu == NULL) {
                 addErrorMessage("Failed to load FMU file: "+mFmuPath);
                 return;
             }
-            
+
             if(fmi1_defaultToleranceDefined(fmu)) {
-                 mTolerance = fmi1_getDefaultTolerance(fmu);
+                mTolerance = fmi1_getDefaultTolerance(fmu);
             }
             addConstant("tol", "Relative tolerance", "", mTolerance, mTolerance);
             addConstant("loggingOn", "Enable FMU logging", "", mLoggingOn, mLoggingOn);
 
-           //Loop through variables in FMU and generate the lists
+            //Loop through variables in FMU and generate the lists
             for(int i=0; i<fmi1_getNumberOfVariables(fmu); ++i) {
                 addDebugMessage("Testing variable...");
                 fmi1VariableHandle* var = fmi1_getVariableByIndex(fmu, i+1);
@@ -353,7 +362,7 @@ public:
                 addDebugMessage("Causality = "+to_hstring(causality));
                 addDebugMessage("Data type = "+to_hstring(type));
                 unsigned int vr = (unsigned int)fmi1_getVariableValueReference(var);
-    
+
                 if(variability == fmi1VariabilityParameter && type == fmi1DataTypeString) {
                     addDebugMessage("String parameter: "+HString(name));
                     const char* startValue = fmi1_getVariableStartString(var);
@@ -433,7 +442,7 @@ public:
             }
             addConstant("visibleOutputs", "Visible output variables (hidden)", "", mVisibleOutputs, mVisibleOutputs);
 
-    
+
             //Instantiate FMU
             if(!mReinstantiate) {
                 addDebugMessage("Calling: fmi1InstantiateSlave");
@@ -449,22 +458,36 @@ public:
             //Instantiate FMU
             if(!mReinstantiate) {
                 addDebugMessage("Calling: fmi2Instantiate");
-                fmi2_instance = fmi2_instantiate(fmu, fmi2CoSimulation, FMIWrapper_fmi2Logger, calloc, free, NULL, (fmi2ComponentEnvironment*)this, fmi2False, mLoggingOn);
+                fmi2Type fmuType = fmi2ModelExchange;
+                if(fmi2_getSupportsCoSimulation(fmu)) {
+                    fmuType = fmi2CoSimulation;
+                }
+                fmi2_instance = fmi2_instantiate(fmu, fmuType, FMIWrapper_fmi2Logger, calloc, free, NULL, (fmi2ComponentEnvironment*)this, fmi2False, mLoggingOn);
                 if(!fmi2_instance) {
                     stopSimulation("Failed to instantiate FMU");
                     fmi2_instance = NULL;
                     return;
                 }
+
+                if(fmuType == fmi2ModelExchange) {
+                    mNumStates = (size_t)fmi2_getNumberOfContinuousStates(fmu);
+                    mNumEventIndicators = (size_t)fmi2_getNumberOfEventIndicators(fmu);
+
+                    mStates.assign(mNumStates, 0.0);
+                    mStatesPrev.assign(mNumStates, 0.0);
+                    mEventIndicators.assign(mNumEventIndicators, 0.0);
+                    mEventIndicatorsPrev.assign(mNumEventIndicators, 0.0);
+                }
                 mIsInstantiated = true;
             }
 
             if(fmi2_defaultToleranceDefined(fmu)) {
-                 mTolerance = fmi2_getDefaultTolerance(fmu);
+                mTolerance = fmi2_getDefaultTolerance(fmu);
             }
             addConstant("tol", "Relative tolerance", "", mTolerance, mTolerance);
             addConstant("loggingOn", "Enable FMU logging", "", mLoggingOn, mLoggingOn);
-            
-           //Loop through variables in FMU and generate the lists
+
+            //Loop through variables in FMU and generate the lists
             for(int i=0; i<fmi2_getNumberOfVariables(fmu); ++i) {
                 fmi2VariableHandle* var = fmi2_getVariableByIndex(fmu, i+1);
                 const char* name = fmi2_getVariableName(var);
@@ -479,7 +502,7 @@ public:
                     unit = "";
                 }
                 unsigned int vr = (unsigned int)fmi2_getVariableValueReference(var);
-    
+
                 if(causality == fmi2CausalityParameter && type == fmi2DataTypeString) {
                     addDebugMessage("String parameter: "+HString(name));
                     const char* startValue = fmi2_getVariableStartString(var);
@@ -562,7 +585,7 @@ public:
         }
         else {//FMI 3
             if(fmi3_defaultToleranceDefined(fmu)) {
-                 mTolerance = fmi3_getDefaultTolerance(fmu);
+                mTolerance = fmi3_getDefaultTolerance(fmu);
             }
             addConstant("tol", "Relative tolerance", "", mTolerance, mTolerance);
             addConstant("loggingOn", "Enable FMU logging", "", mLoggingOn, mLoggingOn);
@@ -950,53 +973,53 @@ public:
 
             //Loop through output variables and assign start values
             for(int i=0; i<fmi2_getNumberOfVariables(fmu); ++i) {
-                 fmi2VariableHandle *var = fmi2_getVariableByIndex(fmu,i+1);
+                fmi2VariableHandle *var = fmi2_getVariableByIndex(fmu,i+1);
 
-                 fmi2DataType type = fmi2_getVariableDataType(var);
-                 fmi2Causality causality = fmi2_getVariableCausality(var);
-                 fmi2ValueReference vr = (fmi2ValueReference)fmi2_getVariableValueReference(var);
+                fmi2DataType type = fmi2_getVariableDataType(var);
+                fmi2Causality causality = fmi2_getVariableCausality(var);
+                fmi2ValueReference vr = (fmi2ValueReference)fmi2_getVariableValueReference(var);
 
-                 if(causality == fmi2CausalityOutput && type == fmi2DataTypeReal) {
-                     for(auto it = mRealOutputs.begin(); it != mRealOutputs.end(); it++) {
-                         if(it->first == vr) {
-                             (*it->second) = fmi2_getVariableStartReal(var);
-                         }
-                     }
-                 }
-                 else if(causality == fmi2CausalityOutput && type == fmi2DataTypeInteger) {
-                     for(auto it = mIntOutputs.begin(); it != mIntOutputs.end(); it++) {
-                         if(it->first == vr) {
-                             (*it->second) = fmi2_getVariableStartInteger(var);
-                         }
-                     }
-                 }
-                 else if(causality == fmi2CausalityOutput && type == fmi2DataTypeBoolean) {
-                     for (auto it = mBoolOutputs.begin(); it != mBoolOutputs.end(); it++) {
-                         if(it->first == vr) {
-                             (*it->second) = fmi2_getVariableStartBoolean(var);
-                         }
-                     }
-                 }
-             }
+                if(causality == fmi2CausalityOutput && type == fmi2DataTypeReal) {
+                    for(auto it = mRealOutputs.begin(); it != mRealOutputs.end(); it++) {
+                        if(it->first == vr) {
+                            (*it->second) = fmi2_getVariableStartReal(var);
+                        }
+                    }
+                }
+                else if(causality == fmi2CausalityOutput && type == fmi2DataTypeInteger) {
+                    for(auto it = mIntOutputs.begin(); it != mIntOutputs.end(); it++) {
+                        if(it->first == vr) {
+                            (*it->second) = fmi2_getVariableStartInteger(var);
+                        }
+                    }
+                }
+                else if(causality == fmi2CausalityOutput && type == fmi2DataTypeBoolean) {
+                    for (auto it = mBoolOutputs.begin(); it != mBoolOutputs.end(); it++) {
+                        if(it->first == vr) {
+                            (*it->second) = fmi2_getVariableStartBoolean(var);
+                        }
+                    }
+                }
+            }
 
-             fmi2Status status;
+            fmi2Status status;
 
-             for(std::map<fmi2ValueReference,double>::iterator it = mRealParameters.begin(); it != mRealParameters.end(); it++) {
-                 fmi2Real value = (fmi2Real)it->second;
-                 status = fmi2_setReal(fmi2_instance, &it->first, 1, &value);
-             }
-             for(std::map<fmi2ValueReference,HString>::iterator it = mStringParameters.begin(); it != mStringParameters.end(); ++it) {
-                 fmi2String value = it->second.c_str();
-                 status = fmi2_setString(fmi2_instance, &it->first, 1, &value);
-             }
-             for(std::map<fmi2ValueReference,bool>::iterator it = mBoolParameters.begin(); it != mBoolParameters.end(); ++it) {
-                 fmi2Boolean value = (fmi2Boolean)it->second;
-                 status = fmi2_setBoolean(fmi2_instance, &it->first, 1, &value);
-             }
-             for(std::map<fmi2ValueReference,int>::iterator it = mIntParameters.begin(); it != mIntParameters.end(); ++it) {
-                 fmi2Integer value = (fmi2Integer)it->second;
-                 status = fmi2_setInteger(fmi2_instance, &it->first, 1, &value);
-             }
+            for(std::map<fmi2ValueReference,double>::iterator it = mRealParameters.begin(); it != mRealParameters.end(); it++) {
+                fmi2Real value = (fmi2Real)it->second;
+                status = fmi2_setReal(fmi2_instance, &it->first, 1, &value);
+            }
+            for(std::map<fmi2ValueReference,HString>::iterator it = mStringParameters.begin(); it != mStringParameters.end(); ++it) {
+                fmi2String value = it->second.c_str();
+                status = fmi2_setString(fmi2_instance, &it->first, 1, &value);
+            }
+            for(std::map<fmi2ValueReference,bool>::iterator it = mBoolParameters.begin(); it != mBoolParameters.end(); ++it) {
+                fmi2Boolean value = (fmi2Boolean)it->second;
+                status = fmi2_setBoolean(fmi2_instance, &it->first, 1, &value);
+            }
+            for(std::map<fmi2ValueReference,int>::iterator it = mIntParameters.begin(); it != mIntParameters.end(); ++it) {
+                fmi2Integer value = (fmi2Integer)it->second;
+                status = fmi2_setInteger(fmi2_instance, &it->first, 1, &value);
+            }
 
 
             //Setup experiment
@@ -1006,7 +1029,7 @@ public:
                 stopSimulation("fmi2_setupExperiment() failed");
                 return;
             }
-    
+
             //Enter initialization mode
             addDebugMessage("Calling: fmi2EnterInitializationMode");
             status = fmi2_enterInitializationMode(fmi2_instance);
@@ -1014,13 +1037,27 @@ public:
                 stopSimulation("fmi2EnterInitializationMode() failed");
                 return;
             }
-    
+
             //Exit initialization mode
             addDebugMessage("Calling: fmi2ExitInitializationMode");
             status = fmi2_exitInitializationMode(fmi2_instance);
             if(status != fmi2OK) {
-                stopSimulation("fmi3ExitInitializationMode() failed");
+                stopSimulation("fmi2ExitInitializationMode() failed");
                 return;
+            }
+
+            if(!fmi2_getSupportsCoSimulation(fmu)) {
+                mEventInfo.newDiscreteStatesNeeded = fmi2True;
+                while (mEventInfo.newDiscreteStatesNeeded) {
+                    fmi2_newDiscreteStates(fmi2_instance, &mEventInfo);
+                }
+                fmi2_enterContinuousTimeMode(fmi2_instance);
+
+                fmi2_getContinuousStates(fmi2_instance, mStates.data(), mNumStates);
+                if (mNumEventIndicators > 0) {
+                    fmi2_getEventIndicators(fmi2_instance, mEventIndicators.data(), mNumEventIndicators);
+                    mEventIndicatorsPrev = mEventIndicators;
+                }
             }
         }
         else {
@@ -1028,7 +1065,7 @@ public:
                 stopSimulation("No FMU file loaded.");
                 return;
             }
-        
+
             //Instantiate FMU
             if(!mIsInstantiated) {
                 addDebugMessage("Calling: fmi3InstantiateCoSimulation");
@@ -1045,11 +1082,11 @@ public:
             //Loop through output variables and assign start values
             for(int i=0; i<fmi3_getNumberOfVariables(fmu); ++i) {
                 fmi3VariableHandle *var = fmi3_getVariableByIndex(fmu,i+1);
-                
+
                 fmi3DataType type = fmi3_getVariableDataType(var);
                 fmi3Causality causality = fmi3_getVariableCausality(var);
                 fmi3ValueReference vr = fmi3_getVariableValueReference(var);
-    
+
                 if(causality == fmi3CausalityOutput && type == fmi3DataTypeFloat64) {
                     for(auto it = mFloat64Outputs.begin(); it != mFloat64Outputs.end(); it++) {
                         if(it->first == vr) {
@@ -1128,7 +1165,7 @@ public:
                     }
                 }
             }
-    
+
             fmi3Status status;
 
             for(std::map<fmi3ValueReference,double>::iterator it = mFloat64Parameters.begin(); it != mFloat64Parameters.end(); it++) {
@@ -1179,7 +1216,7 @@ public:
                 fmi3UInt8 value = (fmi3UInt8)it->second;
                 status = fmi3_setUInt8(fmi3_instance, &it->first, 1, &value, 1);
             }
-    
+
             //Enter initialization mode
             addDebugMessage("Calling: fmi3EnterInitializationMode");
             double tstop = 10;
@@ -1205,10 +1242,10 @@ public:
             if(NULL == fmi1_instance) {
                 return;
             }
-            
+
             fmi1Status status;
-            
-           //Forward inputs
+
+            //Forward inputs
             std::map<fmi1ValueReference,double*>::iterator it;
             for(it = mRealInputs.begin(); it != mRealInputs.end(); it++) {
                 status = fmi1_setReal(fmi1_instance, &it->first, 1, it->second);
@@ -1221,36 +1258,36 @@ public:
                 fmi1Boolean value = fmi1Boolean(*it->second);
                 status = fmi1_setBoolean(fmi1_instance, &it->first, 1, &value);
             }
-     
-             //Take step
-             status = fmi1_doStep(fmi1_instance, mTime-mTimestep, mTimestep, fmi1True);
-             if (status != fmi1OK) {
-                 stopSimulation("fmi1DoStep() failed, status = "+to_hstring(status));
-                 return;
-             }
-     
-             //Forward outputs
-             for(it = mRealOutputs.begin(); it != mRealOutputs.end(); it++) {
-                 status = fmi1_getReal(fmi1_instance, &it->first, 1, it->second);
-             }
-             for(it = mIntOutputs.begin(); it != mIntOutputs.end(); it++) {
-                 int temp;
-                 status = fmi1_getInteger(fmi1_instance, &it->first, 1, &temp);
-                 (*it->second) = temp;
-             }
-             for(it = mBoolOutputs.begin(); it != mBoolOutputs.end(); it++) {
-                 fmi1Boolean temp;
-                 status = fmi1_getBoolean(fmi1_instance, &it->first, 1, &temp);
-                 (*it->second) = temp;
-             }
+
+            //Take step
+            status = fmi1_doStep(fmi1_instance, mTime-mTimestep, mTimestep, fmi1True);
+            if (status != fmi1OK) {
+                stopSimulation("fmi1DoStep() failed, status = "+to_hstring(status));
+                return;
+            }
+
+            //Forward outputs
+            for(it = mRealOutputs.begin(); it != mRealOutputs.end(); it++) {
+                status = fmi1_getReal(fmi1_instance, &it->first, 1, it->second);
+            }
+            for(it = mIntOutputs.begin(); it != mIntOutputs.end(); it++) {
+                int temp;
+                status = fmi1_getInteger(fmi1_instance, &it->first, 1, &temp);
+                (*it->second) = temp;
+            }
+            for(it = mBoolOutputs.begin(); it != mBoolOutputs.end(); it++) {
+                fmi1Boolean temp;
+                status = fmi1_getBoolean(fmi1_instance, &it->first, 1, &temp);
+                (*it->second) = temp;
+            }
         }
         else if(mFmiVersion == fmiVersion2) {
             if(NULL == fmu) {
                 return;
             }
-            
+
             fmi2Status status;
-            
+
             //Forward inputs
             std::map<fmi2ValueReference,double*>::iterator it;
             for(it = mRealInputs.begin(); it != mRealInputs.end(); it++) {
@@ -1264,35 +1301,156 @@ public:
                 int value = int(*it->second);
                 status = fmi2_setBoolean(fmi2_instance, &it->first, 1, &value);
             }
-     
-             //Take step
-             status = fmi2_doStep(fmi2_instance, mTime-mTimestep, mTimestep, fmi3True);
-             if (status != fmi2OK) {
-                 stopSimulation("fmi2DoStep() failed, status = "+to_hstring(status));
-                 return;
-             }
-     
-             //Forward outputs
-             for(it = mRealOutputs.begin(); it != mRealOutputs.end(); it++) {
-                 status = fmi2_getReal(fmi2_instance, &it->first, 1, it->second);
-             }
-             for(it = mIntOutputs.begin(); it != mIntOutputs.end(); it++) {
-                 int temp;
-                 status = fmi2_getInteger(fmi2_instance, &it->first, 1, &temp);
-                 (*it->second) = temp;
-             }
-             for(it = mBoolOutputs.begin(); it != mBoolOutputs.end(); it++) {
-                 int temp;
-                 status = fmi2_getBoolean(fmi2_instance, &it->first, 1, &temp);
-                 (*it->second) = temp;
-             }
+
+            if(fmi2_getSupportsCoSimulation(fmu)) {
+                //Take step
+                status = fmi2_doStep(fmi2_instance, mTime-mTimestep, mTimestep, fmi3True);
+                if (status != fmi2OK) {
+                    stopSimulation("fmi2DoStep() failed, status = "+to_hstring(status));
+                    return;
+                }
+            }
+            else {
+                // FMI 2 for model exchange
+
+                // Save the initial model state
+                mStatesPrev = mStates;
+                mEventIndicatorsPrev = mEventIndicators;
+
+                // Start time for the integration
+                double t = mTime-mTimestep;
+
+                while(t < mTime) {
+                    // Integrate using implicit Euler from start time to end time
+                    newtonSolveImplicitEuler(mTime, mTime-t);
+
+                    fmi2_setContinuousStates(fmi2_instance, mStates.data(), mNumStates);
+
+                    //Check if there were any state events during the step
+                    bool stateEvent = false;
+                    if (mNumEventIndicators > 0) {
+                        fmi2_getEventIndicators(fmi2_instance, mEventIndicators.data(), mNumEventIndicators);
+                        for(size_t i = 0; i < mNumEventIndicators; ++i) {
+                            if((mEventIndicators[i] > 0.0) != (mEventIndicatorsPrev[i] > 0.0)) {
+                                stateEvent = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    fmi2_setTime(fmi2_instance, mTime);
+
+
+                     if(!stateEvent) {
+                         break;  //No event, step finished!
+                     }
+                     else {
+                        //An event was detected, narrow down time window to find event time
+
+                        double left  = t;
+                        double right = mTime;
+
+                        std::vector<double> eventIndicatorsLeft = mEventIndicatorsPrev;
+                        double eventTolerance = std::min(1e-6, 0.01*mTimestep);
+
+                        while ((right - left) > eventTolerance) {
+                            const double mid = 0.5 * (left + right);
+
+                            // Reset states to beginning of time window
+                            fmi2_setTime(fmi2_instance, t);
+                            fmi2_setContinuousStates(fmi2_instance, mStatesPrev.data(), mNumStates);
+
+                            // Integrate over first half of the time window
+                            newtonSolveImplicitEuler(t, mid-t);
+
+                            fmi2_setTime(fmi2_instance, mid);
+                            fmi2_setContinuousStates(fmi2_instance, mStates.data(), mNumStates);
+                            fmi2_getEventIndicators(fmi2_instance, mEventIndicators.data(), mNumEventIndicators);
+
+                            //Check if there were any eventse during first half of time window
+                            bool stateEvent = false;
+                            for(size_t i = 0; i < mNumEventIndicators; ++i) {
+                                if((eventIndicatorsLeft[i] > 0.0) != (mEventIndicators[i] > 0.0)) {
+                                    stateEvent = true;
+                                    break;
+                                }
+                            }
+                            if (stateEvent) {
+                                //Event in first half, so narrow down to first half
+                                right = mid;
+                            }
+                            else
+                            {
+                                //No event in first half, so narrow down window to second half
+                                left = mid;
+                                eventIndicatorsLeft = mEventIndicators;
+                            }
+                        }
+
+                        //Detected event time is middle of final narrow window
+                        const double te = 0.5 * (left + right);
+
+                        //Reset to start time for current step
+                        fmi2_setTime(fmi2_instance, t);
+                        fmi2_setContinuousStates(fmi2_instance, mStatesPrev.data(), mNumStates);
+
+                        //Integrate to event time
+                        newtonSolveImplicitEuler(te, te-t);
+
+                        fmi2_setTime(fmi2_instance, te);
+                        fmi2_setContinuousStates(fmi2_instance, mStates.data(), mNumStates);
+
+                        //Perform event iteration
+                        fmi2_enterEventMode(fmi2_instance);
+
+                        bool newDiscreteStatesNeeded = true;
+
+                        mEventInfo.newDiscreteStatesNeeded = fmi2True;
+                        mEventInfo.terminateSimulation = fmi2False;
+                        int iterations = 0;
+                        while (mEventInfo.newDiscreteStatesNeeded) {
+                            fmi2_newDiscreteStates(fmi2_instance, &mEventInfo);
+
+                            //Limit maximum number of event iterations
+                            ++iterations;
+                            if(iterations > 100) {
+                                stopSimulation("Event iteration reached maximmum number of iterations.");
+                                break;
+                            }
+                        }
+
+                        fmi2_enterContinuousTimeMode(fmi2_instance);
+
+                        //Continue integrating from event time
+                        t = te;
+
+                        fmi2_getContinuousStates(fmi2_instance, mStatesPrev.data(), mNumStates);
+                        fmi2_getEventIndicators(fmi2_instance, mEventIndicatorsPrev.data(), mNumEventIndicators);
+                     }
+                 }
+            }
+
+            //Forward outputs
+            for(it = mRealOutputs.begin(); it != mRealOutputs.end(); it++) {
+                status = fmi2_getReal(fmi2_instance, &it->first, 1, it->second);
+            }
+            for(it = mIntOutputs.begin(); it != mIntOutputs.end(); it++) {
+                int temp;
+                status = fmi2_getInteger(fmi2_instance, &it->first, 1, &temp);
+                (*it->second) = temp;
+            }
+            for(it = mBoolOutputs.begin(); it != mBoolOutputs.end(); it++) {
+                int temp;
+                status = fmi2_getBoolean(fmi2_instance, &it->first, 1, &temp);
+                (*it->second) = temp;
+            }
         }
         else { //FMI 3
             if(NULL == fmu) {
                 return;
             }
             fmi3Status status;
-            
+
             //Forward inputs
             std::map<fmi3ValueReference,double*>::iterator itr;
             for(itr = mFloat64Inputs.begin(); itr != mFloat64Inputs.end(); itr++) {
@@ -1342,75 +1500,75 @@ public:
                 status = fmi3_setUInt8(fmi3_instance, &iti->first, 1, &value, 1);
             }
 
-     
-             //Take step
-             bool eventEncountered, terminateSimulation, earlyReturn;
-             double lastT;
-             status = fmi3_doStep(fmi3_instance, mTime, mTimestep, fmi3True, &eventEncountered, &terminateSimulation, &earlyReturn, &lastT);
-             if (status != fmi3OK) {
-                 stopSimulation("fmi3DoStep() failed, status = "+to_hstring(status));
-                 return;
-             }
-     
-             //Forward outputs
-             std::map<fmi3ValueReference,double*>::iterator it;
-             for(it = mFloat64Outputs.begin(); it != mFloat64Outputs.end(); it++) {
-                 fmi3Float64 value;
-                 status = fmi3_getFloat64(fmi3_instance, &it->first, 1, &value, 1);
-                 (*it->second) = (double)value;
-             }
-             for(it = mFloat32Outputs.begin(); it != mFloat32Outputs.end(); it++) {
-                 fmi3Float32 value;
-                 status = fmi3_getFloat32(fmi3_instance, &it->first, 1, &value, 1);
-                 (*it->second) = (double)value;
-             }
-             for(it = mInt64Outputs.begin(); it != mInt64Outputs.end(); it++) {
-                 fmi3Int64 value;
-                 status = fmi3_getInt64(fmi3_instance, &it->first, 1, &value, 1);
-                 (*it->second) = (double)value;
-             }
-             for(it = mInt32Outputs.begin(); it != mInt32Outputs.end(); it++) {
-                 fmi3Int32 value;
-                 status = fmi3_getInt32(fmi3_instance, &it->first, 1, &value, 1);
-                 (*it->second) = (double)value;
-             }
-             for(it = mInt16Outputs.begin(); it != mInt16Outputs.end(); it++) {
-                 fmi3Int16 value;
-                 status = fmi3_getInt16(fmi3_instance, &it->first, 1, &value, 1);
-                 (*it->second) = (double)value;
-             }
-             for(it = mInt8Outputs.begin(); it != mInt8Outputs.end(); it++) {
-                 fmi3Int8 value;
-                 status = fmi3_getInt8(fmi3_instance, &it->first, 1, &value, 1);
-                 (*it->second) = (double)value;
-             }
-             for(it = mUInt64Outputs.begin(); it != mUInt64Outputs.end(); it++) {
-                 fmi3UInt64 value;
-                 status = fmi3_getUInt64(fmi3_instance, &it->first, 1, &value, 1);
-                 (*it->second) = (double)value;
-             }
-             for(it = mUInt32Outputs.begin(); it != mUInt32Outputs.end(); it++) {
-                 fmi3UInt32 value;
-                 status = fmi3_getUInt32(fmi3_instance, &it->first, 1, &value, 1);
-                 (*it->second) = (double)value;
-             }
-             for(it = mUInt16Outputs.begin(); it != mUInt16Outputs.end(); it++) {
-                 fmi3UInt16 value;
-                 status = fmi3_getUInt16(fmi3_instance, &it->first, 1, &value, 1);
-                 (*it->second) = (double)value;
-             }
-             for(it = mUInt8Outputs.begin(); it != mUInt8Outputs.end(); it++) {
-                 fmi3UInt8 value;
-                 status = fmi3_getUInt8(fmi3_instance, &it->first, 1, &value, 1);
-                 (*it->second) = (double)value;
-             }
-             for(it = mBoolOutputs.begin(); it != mBoolOutputs.end(); it++) {
-                 bool temp;
-                 status = fmi3_getBoolean(fmi3_instance, &it->first, 1, &temp, 1);
-                 (*it->second) = temp;
-             }
-         }
-    }
+
+            //Take step
+            bool eventEncountered, terminateSimulation, earlyReturn;
+            double lastT;
+            status = fmi3_doStep(fmi3_instance, mTime, mTimestep, fmi3True, &eventEncountered, &terminateSimulation, &earlyReturn, &lastT);
+            if (status != fmi3OK) {
+                stopSimulation("fmi3DoStep() failed, status = "+to_hstring(status));
+                return;
+            }
+
+            //Forward outputs
+            std::map<fmi3ValueReference,double*>::iterator it;
+            for(it = mFloat64Outputs.begin(); it != mFloat64Outputs.end(); it++) {
+                fmi3Float64 value;
+                status = fmi3_getFloat64(fmi3_instance, &it->first, 1, &value, 1);
+                (*it->second) = (double)value;
+            }
+            for(it = mFloat32Outputs.begin(); it != mFloat32Outputs.end(); it++) {
+                fmi3Float32 value;
+                status = fmi3_getFloat32(fmi3_instance, &it->first, 1, &value, 1);
+                (*it->second) = (double)value;
+            }
+            for(it = mInt64Outputs.begin(); it != mInt64Outputs.end(); it++) {
+                fmi3Int64 value;
+                status = fmi3_getInt64(fmi3_instance, &it->first, 1, &value, 1);
+                (*it->second) = (double)value;
+            }
+            for(it = mInt32Outputs.begin(); it != mInt32Outputs.end(); it++) {
+                fmi3Int32 value;
+                status = fmi3_getInt32(fmi3_instance, &it->first, 1, &value, 1);
+                (*it->second) = (double)value;
+            }
+            for(it = mInt16Outputs.begin(); it != mInt16Outputs.end(); it++) {
+                fmi3Int16 value;
+                status = fmi3_getInt16(fmi3_instance, &it->first, 1, &value, 1);
+                (*it->second) = (double)value;
+            }
+            for(it = mInt8Outputs.begin(); it != mInt8Outputs.end(); it++) {
+                fmi3Int8 value;
+                status = fmi3_getInt8(fmi3_instance, &it->first, 1, &value, 1);
+                (*it->second) = (double)value;
+            }
+            for(it = mUInt64Outputs.begin(); it != mUInt64Outputs.end(); it++) {
+                fmi3UInt64 value;
+                status = fmi3_getUInt64(fmi3_instance, &it->first, 1, &value, 1);
+                (*it->second) = (double)value;
+            }
+            for(it = mUInt32Outputs.begin(); it != mUInt32Outputs.end(); it++) {
+                fmi3UInt32 value;
+                status = fmi3_getUInt32(fmi3_instance, &it->first, 1, &value, 1);
+                (*it->second) = (double)value;
+            }
+            for(it = mUInt16Outputs.begin(); it != mUInt16Outputs.end(); it++) {
+                fmi3UInt16 value;
+                status = fmi3_getUInt16(fmi3_instance, &it->first, 1, &value, 1);
+                (*it->second) = (double)value;
+            }
+            for(it = mUInt8Outputs.begin(); it != mUInt8Outputs.end(); it++) {
+                fmi3UInt8 value;
+                status = fmi3_getUInt8(fmi3_instance, &it->first, 1, &value, 1);
+                (*it->second) = (double)value;
+            }
+            for(it = mBoolOutputs.begin(); it != mBoolOutputs.end(); it++) {
+                bool temp;
+                status = fmi3_getBoolean(fmi3_instance, &it->first, 1, &temp, 1);
+                (*it->second) = temp;
+            }
+        }
+    };
 
     void finalize()
     {
@@ -1437,14 +1595,19 @@ public:
             }
             if(mReinstantiate) {
                 addDebugMessage("Calling: fmi2Terminate");
+                std::cout << "Calling: fmi2Terminate" << "\n";
                 fmi2_terminate(fmi2_instance);
                 addDebugMessage("Calling: fmi2FreeInstance");
+                std::cout << "Calling: fmi2FreeInstance" << "\n";
                 mIsInstantiated = false;
                 fmi2_freeInstance(fmi2_instance);
             }
             else {
                 addDebugMessage("Calling: fmi2Reset");
+                std::cout << "Calling: fmi2Reset" << "\n";
                 fmi2_reset(fmi2_instance);
+                addDebugMessage("Returned from fmi2Reset");
+                std::cout << ("Returned from fmi2Reset") << "\n";
             }
         }
         else {
@@ -1482,10 +1645,12 @@ public:
             if(NULL == fmu) {
                 return;
             }
-            addDebugMessage("Calling: fmi2FreeInstance");
+            addDebugMessage("Calling: fmi2FreeInstance (katt)");
             mIsInstantiated = false;
             fmi2_freeInstance(fmi2_instance);
+            addDebugMessage("Calling: fmi4c_freeFmu");
             fmi4c_freeFmu(fmu);
+            addDebugMessage("Setting pointers to NULL");
             fmi2_instance = NULL;
             fmu = NULL;
         }
@@ -1512,16 +1677,155 @@ public:
         HString ret = rName;
         for (size_t i=0; i<ret.size(); ++i) {
             if (!(((ret[i] >= LOWERCASE_LOW) && (ret[i] <= LOWERCASE_HIGH)) ||
-                   ((ret[i] >= UPPERCASE_LOW) && (ret[i] <= UPPERCASE_HIGH)) ||
-                   ((ret[i] >= NUMBERS_LOW)   && (ret[i] <= NUMBERS_HIGH))   ||
-                   (ret[i] == UNDERSCORE)))
+                  ((ret[i] >= UPPERCASE_LOW) && (ret[i] <= UPPERCASE_HIGH)) ||
+                  ((ret[i] >= NUMBERS_LOW)   && (ret[i] <= NUMBERS_HIGH))   ||
+                  (ret[i] == UNDERSCORE)))
             {
                 ret[i] = '_';
             }
         }
         return ret;
     }
+
+    //! @brief Help function for evaluating FMU derivatives
+    //! @param [in] t Simulation time
+    //! @param [in] x State vector
+    //! @param [out] xdot State derivatives
+    bool evaluateDerivatives(double t, const std::vector<double>& x, std::vector<double>& xdot)
+    {
+        fmi2_setTime(fmi2_instance, t);
+        fmi2_setContinuousStates(fmi2_instance, x.data(), mNumStates);
+        fmi2_getDerivatives(fmi2_instance, xdot.data(), mNumStates);
+        return true;
+    }
+
+    //! @brief Compute dense jacobian
+    //! @param [in] x State vector
+    //! @param [in] f0 Derivatives
+    //! @param [out] J Jacobian matrix
+    bool computeJacobian(double t,
+                           const std::vector<double>& x,
+                           const std::vector<double>& f0,
+                           std::vector<std::vector<double>>& J)
+    {
+        J.assign(mNumStates, std::vector<double>(mNumStates, 0.0));
+
+        std::vector<double> xPerturbed = x;
+        std::vector<double> fPerturbed(mNumStates);
+
+        for (size_t j = 0; j < mNumStates; ++j) {
+            const double h = std::max(1e-8, 1e-6 * std::fabs(x[j]));
+            xPerturbed[j] = x[j] + h;
+
+            evaluateDerivatives(t, xPerturbed, fPerturbed);
+
+            for (size_t i = 0; i < mNumStates; ++i) {
+                J[i][j] = (fPerturbed[i] - f0[i]) / h;
+            }
+            xPerturbed[j] = x[j];
+        }
+        return true;
+    }
+
+    //! @brief Integrates using implicit Euler from endTime-stepSize to endTime
+    //! @param [in] endTime End time of the integration
+    //! @param [in] stepSize Step size for the integration
+    bool newtonSolveImplicitEuler(double endTime, double stepSize)
+    {
+        std::vector<double> xNew = mStatesPrev;  // explicit-Euler-ish initial guess
+        std::vector<double> f(mNumStates), R(mNumStates), delta(mNumStates);
+        std::vector<std::vector<double>> J, A;
+
+        for (size_t it = 0; it < mMaxNewtonIt; ++it) {
+            evaluateDerivatives(endTime, xNew, f);
+
+            for (size_t i = 0; i < mNumStates; ++i) {
+                R[i] = xNew[i] - mStatesPrev[i] - stepSize * f[i];
+            }
+
+            double resNorm = 0.0;
+            for (double r : R) resNorm += r * r;
+            resNorm = std::sqrt(resNorm);
+
+            if (resNorm < mNewtonTol) {
+
+                mStates = xNew;
+                return true;
+            }
+
+            computeJacobian(endTime, xNew, f, J);
+
+            // A = I - dt * J
+            A = J;
+            for (size_t i = 0; i < mNumStates; ++i) {
+                for (size_t k = 0; k < mNumStates; ++k) {
+                    A[i][k] *= -stepSize;
+                }
+                A[i][i] += 1.0;
+            }
+
+            std::vector<double> rhs(mNumStates);
+            for (size_t i = 0; i < mNumStates; ++i) rhs[i] = -R[i];
+
+            if (!luSolve(A, rhs, delta)) {
+                stopSimulation("Jacobian is singular!");
+                return false;  // singular Jacobian
+            }
+
+            for (size_t i = 0; i < mNumStates; ++i) {
+                xNew[i] += delta[i];
+            }
+        }
+
+        stopSimulation("Newwton iteration failed to converge!");
+        return false;  // did not converge within mMaxNewtonIt iterations
+    }
+
+    //! @brief Solve the system A*x=b using LU decomposition
+    bool luSolve(std::vector<std::vector<double>> A, std::vector<double> b,
+                 std::vector<double>& x)
+    {
+        const size_t n = A.size();
+        x.assign(n, 0.0);
+
+        for (size_t k = 0; k < n; ++k) {
+            size_t piv = k;
+            double maxVal = std::fabs(A[k][k]);
+            for (size_t i = k + 1; i < n; ++i) {
+                if (std::fabs(A[i][k]) > maxVal) {
+                    maxVal = std::fabs(A[i][k]);
+                    piv = i;
+                }
+            }
+            if (maxVal < 1e-14) {
+                return false;  // singular (to working precision)
+            }
+            if (piv != k) {
+                std::swap(A[k], A[piv]);
+                std::swap(b[k], b[piv]);
+            }
+
+            for (size_t i = k + 1; i < n; ++i) {
+                const double factor = A[i][k] / A[k][k];
+                for (size_t j = k; j < n; ++j) {
+                    A[i][j] -= factor * A[k][j];
+                }
+                b[i] -= factor * b[k];
+            }
+        }
+
+        for (int i = n - 1; i >= 0; --i) {
+            double sum = b[i];
+            for (int j = i + 1; j < n; ++j) {
+                sum -= A[i][j] * x[j];
+            }
+            x[i] = sum / A[i][i];
+        }
+        return true;
+    }
 };
+
+
 
 #endif
 }
