@@ -280,7 +280,7 @@ void MainWindow::createContents()
     //Create the SSP widget and hide it
     mpSSPWidget = new SSPWidget(this);
     gpSSPWidget = mpSSPWidget;
-    //mpSSPWidget->setVisible(false);
+    mpSSPWidget->setVisible(false);
 
     // Create the HVC Widget
     mpHVCWidget = new HVCWidget(this);
@@ -308,7 +308,7 @@ void MainWindow::createContents()
     mpSSPWidgetDock->setAllowedAreas((Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea));
     mpSSPWidgetDock->setWidget(mpSSPWidget);
     addDockWidget(Qt::RightDockWidgetArea, mpSSPWidgetDock);
-    //mpSSPWidgetDock->hide();
+    mpSSPWidgetDock->hide();
 
     //Create the undo dock widget and hide it
     mpUndoWidgetDock = new QDockWidget(tr("Undo History"), this);
