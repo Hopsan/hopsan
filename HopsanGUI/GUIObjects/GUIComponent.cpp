@@ -233,6 +233,13 @@ bool Component::setParameterValue(QString name, QString value, bool force)
                 }
 
                 con->finishCreation(false);  //Re-establish connection
+
+                //Reconnect connector in HopsanCore
+                CoreSystemAccess *pCore = mpParentSystemObject->getCoreSystemAccessPtr();
+                pCore->connect(con->getStartPort()->getParentModelObjectName(),
+                               con->getStartPort()->getName(),
+                               con->getEndPort()->getParentModelObjectName(),
+                               con->getEndPort()->getName());
             }
         }
 
