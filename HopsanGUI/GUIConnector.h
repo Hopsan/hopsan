@@ -127,6 +127,7 @@ public slots:
     void select();
     void setDashed(bool value);
     void setFallbackDomElement(const QDomElement &rElement);
+    void getFallbackData(QString &startComponentName, QString &startPortName, QString &endComponentName, QString &endPortName);
 
 private slots:
     void setVisible(bool visible);
