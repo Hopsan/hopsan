@@ -1219,6 +1219,14 @@ void Connector::setFallbackDomElement(const QDomElement &rElement)
     mFallbackDomElement = rElement.cloneNode().toElement();
 }
 
+//! @brief Returns fallback data for reconnecting broken connectors
+void Connector::getFallbackData(QString &startComponentName, QString &startPortName, QString &endComponentName, QString &endPortName) {
+    startComponentName = mFallbackDomElement.attribute(hmf::connector::startcomponent);
+    startPortName = mFallbackDomElement.attribute(hmf::connector::startport);
+    endComponentName = mFallbackDomElement.attribute(hmf::connector::endcomponent);
+    endPortName = mFallbackDomElement.attribute(hmf::connector::endport);
+}
+
 
 void Connector::setVisible(bool visible)
 {

@@ -234,6 +234,11 @@ bool Component::setParameterValue(QString name, QString value, bool force)
 
                 con->finishCreation(false);  //Re-establish connection
 
+                //Check that ports are not null, just in case
+                if(con->getStartPort() == nullptr || con->getEndPort() == nullptr) {
+                    continue;
+                }
+
                 //Reconnect connector in HopsanCore
                 CoreSystemAccess *pCore = mpParentSystemObject->getCoreSystemAccessPtr();
                 pCore->connect(con->getStartPort()->getParentModelObjectName(),
@@ -243,6 +248,45 @@ bool Component::setParameterValue(QString name, QString value, bool force)
             }
         }
 
+        //Reconnect broken connectors (typically loaded from model file)
+        for(const auto &con : mpParentSystemObject->getSubConnectorPtrs()) {
+            if(!con->isBroken()) {
+                continue;
+            }
+            QString startComponentName, startPortName, endComponentName, endPortName;
+            con->getFallbackData(startComponentName, startPortName, endComponentName, endPortName);
+            if(con->getStartPort() == nullptr) {
+                if(startComponentName == this->getName() && this->getPort(startPortName) != nullptr) {
+                    con->setStartPort(this->getPort(startPortName));
+                }
+                else {
+                    con->setStartPort(mpParentSystemObject->getModelObjectPort(startComponentName, startPortName));
+                }
+            }
+            if(con->getEndPort() == nullptr) {
+                if(endComponentName == this->getName() && this->getPort(endPortName) != nullptr) {
+                    con->setEndPort(this->getPort(endPortName));
+                }
+                else {
+                    con->setEndPort(mpParentSystemObject->getModelObjectPort(endComponentName, endPortName));
+                }
+            }
+
+            //Re-establish connection
+            con->finishCreation(false);
+
+            //Check that ports are not null, just in case
+            if(con->getStartPort() == nullptr || con->getEndPort() == nullptr) {
+                continue;
+            }
+
+            //Reconnect connector in HopsanCore
+            CoreSystemAccess *pCore = mpParentSystemObject->getCoreSystemAccessPtr();
+            pCore->connect(con->getStartPort()->getParentModelObjectName(),
+                           con->getStartPort()->getName(),
+                           con->getEndPort()->getParentModelObjectName(),
+                           con->getEndPort()->getName());
+        }
 
         //Adjust icon scale
         this->getAppearanceData()->setIconScale(qMax(qMax(inputs.size(),outputs.size())/3.0,1.0), UserGraphics);
