@@ -15,7 +15,7 @@ from enum import IntEnum
 
 # -------------------- Setup Start --------------------
 # Version numbers
-gBaseVersion = '2.24.0'
+gBaseVersion = '2.24.2'
 gReleaseRevision = ''
 gFullVersion = gBaseVersion
 gReleaseFileVersionName = gBaseVersion
