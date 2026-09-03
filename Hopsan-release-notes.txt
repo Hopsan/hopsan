@@ -32,6 +32,23 @@
 ******************************
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
+2.24.2 (2026-09-03)
+
+----- New Features -----
+- FMI 2.0 for Model Exchange is now supporeted in FMIWrapper and FMIWrapperQ
+
+----- Bug Fixes -----
+- Fix failed reconnection in HopsanCore after reconfiguring FMI components
+- Always reconnect to broken connectors after reconfiguring FMI components
+- SSP widget is no longer always visible
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+2.24.1 (2026-06-22)
+
+Special flathub release with updated third-party libraries, KDE runtime and a switch to cmake as the build system.
+
+---------------------------------------------------------------------------------------------------------------------------------------------
 2.24.0 (2026-06-10)
 
 ----- New Features -----
