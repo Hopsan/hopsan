@@ -125,6 +125,8 @@ public:
     void showHelpPopupMessage(const QString &rMessage);
     void hideHelpPopupMessage();
 
+    void openSSPWidget();
+
     //Widgets
     //! @todo These should probably not be public
     UndoWidget *mpUndoWidget;

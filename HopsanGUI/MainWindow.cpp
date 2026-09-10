@@ -1334,6 +1334,22 @@ void MainWindow::openSystemParametersWidget()
 }
 
 
+//! @brief Opens the SystemParametersWidget widget.
+void MainWindow::openSSPWidget()
+{
+    if(!mpSSPWidget->isVisible())
+    {
+        mpSSPWidgetDock->setWidget(mpSSPWidget);
+        mpSSPWidgetDock->show();
+        mpSSPWidgetDock->raise();
+    }
+    else
+    {
+        mpSSPWidgetDock->hide();
+    }
+}
+
+
 //! @brief Opens a recent model
 void MainWindow::openRecentModel()
 {

@@ -422,6 +422,7 @@ TextEditorWidget *ModelHandler::loadTextFile(QString fileName)
 void ModelHandler::loadSsp(QString fileName)
 {
     gpSSPWidget->addSSP(QFileInfo(fileName));
+    gpMainWindow->openSSPWidget();
 }
 
 
