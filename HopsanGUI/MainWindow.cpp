@@ -301,6 +301,7 @@ void MainWindow::createContents()
     mpSystemParametersDock = new QDockWidget(tr("System Parameters"), this);
     mpSystemParametersDock->setAllowedAreas((Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea));
     addDockWidget(Qt::RightDockWidgetArea, mpSystemParametersDock);
+    mpSystemParametersDock->setWidget(mpSystemParametersWidget);
     mpSystemParametersDock->hide();
 
     //Create the SSP dock widget and hide it
@@ -1071,6 +1072,8 @@ void MainWindow::createMenus()
     mpViewMenu->addAction(mpToggleSignalsAction);
     mpViewMenu->addSeparator();
     mpViewMenu->addAction(mpLibDock->toggleViewAction());
+    mpViewMenu->addAction(mpSystemParametersDock->toggleViewAction());
+    mpViewMenu->addAction(mpSSPWidgetDock->toggleViewAction());
     mpViewMenu->addAction(mpEditToolBar->toggleViewAction());
     mpViewMenu->addAction(mpFileToolBar->toggleViewAction());
     mpViewMenu->addAction(mpTerminalDock->toggleViewAction());
