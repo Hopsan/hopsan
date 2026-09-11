@@ -179,6 +179,13 @@ fmi2Component fmi2Instantiate(fmi2String instanceName,
         }
         get_all_hopsan_messages(fmu);
     }
+    else {
+      if(fmu->loggingOn) {
+          fmu->logger(fmu->componentEnvironment, fmu->instanceName, fmi2Error, "eror", "Model could not be loaded.");
+      }
+      return NULL;
+    }
+
 
     INITDATAPTRS
 
