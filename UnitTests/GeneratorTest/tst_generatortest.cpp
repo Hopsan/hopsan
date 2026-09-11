@@ -418,6 +418,70 @@ private slots:
         QTest::newRow("0") << mHopsanCore.loadHMFModelFile(modelpath.toStdString().c_str(),start,stop) << stop;
     }
 
+    void Generator_FMU_Export_FMI3() {
+        QFETCH(ComponentSystem*, system);
+        QFETCH(double, modelstoptime);
+#if defined(__APPLE__)
+        QWARN("Generator FMU tests are disbaled on MacOS, until generator code works there");
+#else
+
+        QStringList args;
+        QProcess p;
+
+        QString testStopTime = QString::number(modelstoptime*2);
+
+        std::vector<char*> externalLibraries;
+        constexpr int numExternalLibraries = 0;
+
+#if !defined(HOPSANCOMPILED64BIT)
+        // Run FMUChecker for FMU 3.0 32-bit export
+        std::string outpath = cwd+"/fmu3 32/";
+        bool exportOK = callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, mHopsanInstallRoot.c_str(),  gcc32Path.c_str(),
+                                               3, 32, &generatorMessageCallback, this);
+        if (!exportOK) {
+            printMessages();
+        }
+
+        QVERIFY2(QFile::exists(qcwd+"/fmu3 32/unittestmodel_export.fmu"), qPrintable(QString("Failed to export to FMI 3.0 32-bit")));
+#endif
+
+#if defined (HOPSANCOMPILED64BIT)
+        // Run FMUChecker for FMU 3.0 64-bit export
+        std::string outpath = cwd+"/fmu3 64/";
+        bool exportOK = callFmuExportGenerator(outpath.c_str(), system, externalLibraries.data(), numExternalLibraries, mHopsanInstallRoot.c_str(),  gcc64Path.c_str(),
+                                               3, 64, &generatorMessageCallback, this);
+        if (!exportOK) {
+            printMessages();
+        }
+
+        //! @todo Maybe check with fmi4ctest, now we only check if file exists
+        QVERIFY2(QFile::exists(qcwd+"/fmu3 64/unittestmodel_export.fmu"), qPrintable(QString("Failed to export to FMI 3.0 64-bit")));
+#endif
+#endif
+    }
+
+    void Generator_FMU_Export_FMI3_data() {
+        QTest::addColumn<ComponentSystem*>("system");
+        QTest::addColumn<double>("modelstoptime");
+        QString modelpath = mTestDataRoot + "/unittestmodel_export.hmf";
+        QFile file(modelpath);
+
+#if !defined (HOPSANCOMPILED64BIT)
+        removeDir(QDir::currentPath()+"/fmu3 32/");
+        QDir().mkpath(QDir::currentPath()+"/fmu3 32/");
+        file.copy(QDir::currentPath()+"/fmu3 32/unittestmodel_export.hmf");
+#endif
+
+#if defined (HOPSANCOMPILED64BIT)
+        removeDir(QDir::currentPath()+"/fmu3 64/");
+        QDir().mkpath(QDir::currentPath()+"/fmu3 64/");
+        file.copy(QDir::currentPath()+"/fmu3 64/unittestmodel_export.hmf");
+#endif
+
+        double start, stop;
+        QTest::newRow("0") << mHopsanCore.loadHMFModelFile(modelpath.toStdString().c_str(),start,stop) << stop;
+    }
+
     void Generator_FMU_Import()
     {
         ComponentSystem * pSystem = mHopsanCore.createComponentSystem();
@@ -454,9 +518,11 @@ private slots:
 #if defined (HOPSANCOMPILED64BIT)
         QTest::newRow("0") << HString(QDir::currentPath().toStdString().c_str())+"/fmu1 64/unittestmodel_export.fmu";
         QTest::newRow("1") << HString(QDir::currentPath().toStdString().c_str())+"/fmu2 64/unittestmodel_export.fmu";
+        QTest::newRow("2") << HString(QDir::currentPath().toStdString().c_str())+"/fmu3 64/unittestmodel_export.fmu";
 #else
         QTest::newRow("0") << HString(QDir::currentPath().toStdString().c_str())+"/fmu1 32/unittestmodel_export.fmu";
         QTest::newRow("1") << HString(QDir::currentPath().toStdString().c_str())+"/fmu2 32/unittestmodel_export.fmu";
+        QTest::newRow("2") << HString(QDir::currentPath().toStdString().c_str())+"/fmu3 32/unittestmodel_export.fmu";
 #endif
     }
 
