@@ -225,6 +225,7 @@ private:
 int main(int argc, char *argv[])
 {
     bool returnSuccess=false;
+    bool fmiExportFailed=false;
     try {
         TCLAP::CmdLine cmd("HopsanCLI", ' ', HOPSANCLIVERSION);
 
@@ -240,6 +241,9 @@ int main(int argc, char *argv[])
         TCLAP::ValueArg<std::string> coreLogFileOption("", "log.corelogfile", "The simulation core log file destination", false, "", "Filepath", cmd);
         TCLAP::ValueArg<std::string> buildCompLibOption("", "buildComponentLibrary", "Build the specified component library (point to the library xml)", false, "", "string", cmd);
         TCLAP::ValueArg<std::string> destinationOption("d","destination","Destination for resulting files",false,"","Path to directory", cmd);
+        TCLAP::ValueArg<std::string> fmiExportOption("","exportFMU","Export the model to an FMU in this directory",false,"","Path to directory", cmd);
+        TCLAP::ValueArg<std::string> fmiVersionOption("","fmiVersion","FMI version for FMU export: [1, 2, 3]",false,"2","integer", cmd);
+        TCLAP::ValueArg<std::string> compilerPathOption("","compilerPath","Path to the compiler bin directory used for code generation",false,"","Path to directory", cmd);
         TCLAP::ValueArg<std::string> saveSimulationStateOption("", "saveSimState", "Export the simulation state to this file", false, "Path to file", "string", cmd);
         TCLAP::ValueArg<std::string> loadSimulationStateOption("", "loadSimState", "Load the simulation state (with time offset) from this file", false, "Path to file", "string", cmd);
         TCLAP::ValueArg<std::string> loadSimulationSVOption("", "loadSimStartValues", "Load the start values (simulation state without time offset) from this file", false, "Path to file", "string", cmd);
@@ -823,6 +827,22 @@ int main(int argc, char *argv[])
             printWaitingMessages(printDebugOption.getValue(), silentOption.getValue());
             if (nErrors < 1)
             {
+                if (fmiExportOption.isSet())
+                {
+                    int fmiVersion = atoi(fmiVersionOption.getValue().c_str());
+                    if (fmiVersion < 1 || fmiVersion > 3)
+                    {
+                        printErrorMessage("FMI version must be 1, 2, or 3", silentOption.getValue());
+                        fmiExportFailed = true;
+                    }
+                    else
+                    {
+                        cout << "Exporting model to FMI " << fmiVersion << " in: " << fmiExportOption.getValue() << endl;
+                        returnSuccess = exportFmu(fmiExportOption.getValue(), hmfPathOption.getValue(), pRootSystem, fmiVersion, compilerPathOption.getValue());
+                        fmiExportFailed = !returnSuccess;
+                    }
+                }
+
                 if (parameterImportOption.isSet())
                 {
                     cout << "Importing parameter values from file: " << parameterImportOption.getValue() << endl;
@@ -1084,7 +1104,7 @@ int main(int argc, char *argv[])
         std::cout << "error: " << e.error() << " for arg " << e.argId() << std::endl;
     }
 
-    if (returnSuccess)
+    if (returnSuccess && !fmiExportFailed)
     {
         return 0;
     }
