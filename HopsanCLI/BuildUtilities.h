@@ -29,7 +29,12 @@
 
 #include <string>
 
+namespace hopsan {
+class ComponentSystem;
+}
+
 bool buildComponentLibrary(const std::string &rLibraryXML, std::string &rOutput);
+bool exportFmu(const std::string &rOutputPath, const std::string &rModelPath, hopsan::ComponentSystem *pSystem, int version, const std::string &rCompilerPath);
 
 
 

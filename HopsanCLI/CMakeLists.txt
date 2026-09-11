@@ -21,6 +21,8 @@ target_include_directories(hopsancli PRIVATE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../Utilities>)
 
 target_link_libraries(hopsancli hopsancore)
+target_compile_definitions(hopsancli PRIVATE HOPSANCLI_USEGENERATOR)
+target_link_libraries(hopsancli hopsangenerator)
 target_link_optional_libraries(hopsancli hopsanhdf5exporter)
 
 set_target_properties(hopsancli PROPERTIES INSTALL_RPATH "\$ORIGIN/../lib")

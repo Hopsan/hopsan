@@ -27,12 +27,52 @@
 
 #include "BuildUtilities.h"
 #include "CliUtilities.h"
+#include "ComponentSystem.h"
+
+#include <cerrno>
+#include <fstream>
+
+#ifdef _WIN32
+#include <direct.h>
+#else
+#include <sys/stat.h>
+#endif
 
 #if defined(HOPSANCLI_USEGENERATOR)
 #include "hopsangenerator.h"
 #endif
 
 namespace {
+    bool makeDirectory(const std::string &path)
+    {
+        if (path.empty()) {
+            return false;
+        }
+
+        std::string currentPath;
+        for (size_t i = 0; i < path.size(); ++i)
+        {
+            currentPath += path[i];
+            if (path[i] != '/' && path[i] != '\\' && i + 1 < path.size()) {
+                continue;
+            }
+
+            if (currentPath.size() == 1 || (currentPath.size() == 3 && currentPath[1] == ':')) {
+                continue;
+            }
+
+#ifdef _WIN32
+            const int result = _mkdir(currentPath.c_str());
+#else
+            const int result = mkdir(currentPath.c_str(), 0777);
+#endif
+            if (result != 0 && errno != EEXIST) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     void messageHandler(const char* msg, const char type, void* pDummy)
     {
         if (type == 'E') {
@@ -56,6 +96,51 @@ bool buildComponentLibrary(const std::string &rLibraryXML, std::string &rOutput)
     callComponentLibraryCompiler(rLibraryXML.c_str(), cflags, lflags, hopsanRootPath.c_str(), compilerPath, &messageHandler, nullptr);
     return true;
 #else
+    printErrorMessage("This HopsanCLI is not built with HopsanGenerator support");
+    return false;
+#endif
+}
+
+bool exportFmu(const std::string &rOutputPath, const std::string &rModelPath, hopsan::ComponentSystem *pSystem, int version, const std::string &rCompilerPath)
+{
+#if defined(HOPSANCLI_USEGENERATOR)
+    if (!makeDirectory(rOutputPath)) {
+        printErrorMessage("Unable to create FMI export directory: "+rOutputPath);
+        return false;
+    }
+
+    std::ifstream sourceModel(rModelPath.c_str(), std::ios::binary);
+    if (!sourceModel.is_open()) {
+        printErrorMessage("Unable to open model file for FMI export: "+rModelPath);
+        return false;
+    }
+
+    const std::string modelFilePath = rOutputPath+"/"+pSystem->getName().c_str()+".hmf";
+    std::ofstream stagedModel(modelFilePath.c_str(), std::ios::binary);
+    if (!stagedModel.is_open()) {
+        printErrorMessage("Unable to stage model file for FMI export: "+modelFilePath);
+        return false;
+    }
+    stagedModel << sourceModel.rdbuf();
+    if (!stagedModel.good()) {
+        printErrorMessage("Failed to stage model file for FMI export: "+modelFilePath);
+        return false;
+    }
+
+    const std::string hopsanRootPath = getCurrentExecPath()+"/..";
+
+    stagedModel.close();
+    sourceModel.close();
+
+    return callFmuExportGenerator(rOutputPath.c_str(), pSystem, nullptr, 0,
+                                  hopsanRootPath.c_str(), rCompilerPath.c_str(), version, 64,
+                                  &messageHandler, nullptr);
+#else
+    (void)rOutputPath;
+    (void)rModelPath;
+    (void)pSystem;
+    (void)version;
+    (void)rCompilerPath;
     printErrorMessage("This HopsanCLI is not built with HopsanGenerator support");
     return false;
 #endif
