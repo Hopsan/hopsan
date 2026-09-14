@@ -1,7 +1,7 @@
 ### Description
 ![FMIWrapper picture](FMIWrapper.svg)
 
-This Q-type component encapsulates an imported FMU for co-simulation. All versions of FMI (1, 2 and 3) are supported. Select the FMU file using the "path" parameter. 
+This Q-type component encapsulates an imported FMU for co-simulation or model exchange. All versions of FMI (1, 2 and 3) are supported. Select the FMU file using the "path" parameter.
          
             
 

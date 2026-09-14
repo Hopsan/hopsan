@@ -78,7 +78,7 @@ void FMIWrapperQ_fmi1Logger(fmi1Component*, fmi1String instanceName, fmi1Status 
     HOPSAN_UNUSED(category);
     va_list args;
     va_start(args, message);
-    printf(message, args);  //This is the best we can do, because FMI 1.0 does not allow passing a pointer to the actual component
+    printf(message, args);
     va_end(args);
 }
 
@@ -235,6 +235,7 @@ private:
     bool mLoggingOn = false;
     bool mReinstantiate = false;
     bool mIsInstantiated = false;
+    bool mFmi3SupportsCoSimulation = true;
 
     size_t mNumStates, mNumEventIndicators;
     std::vector<double> mStates;      // states at current time mTime
@@ -902,9 +903,24 @@ public:
 
             //Instantiate FMU
             if(!mReinstantiate) {
-                addDebugMessage("Calling: fmi3InstantiateCoSimulation");
-                size_t nRequiredIntermediateVariables = 0;
-                fmi3_instance = fmi3_instantiateCoSimulation(fmu, fmi3False, mLoggingOn, fmi3False, fmi3False, NULL, nRequiredIntermediateVariables, this, FMIWrapperQ_fmi3Logger, FMIWrapperQ_fmi3IntermediateUpdate);
+                mFmi3SupportsCoSimulation = fmi3_supportsCoSimulation(fmu);
+                if(mFmi3SupportsCoSimulation) {
+                    addDebugMessage("Calling: fmi3InstantiateCoSimulation");
+                    size_t nRequiredIntermediateVariables = 0;
+                    fmi3_instance = fmi3_instantiateCoSimulation(fmu, fmi3False, mLoggingOn, fmi3False, fmi3False, NULL, nRequiredIntermediateVariables, this, FMIWrapperQ_fmi3Logger, FMIWrapperQ_fmi3IntermediateUpdate);
+                }
+                else if(fmi3_supportsModelExchange(fmu)) {
+                    addDebugMessage("Calling: fmi3InstantiateModelExchange");
+                    fmi3_instance = fmi3_instantiateModelExchange(fmu, fmi3False, mLoggingOn, this, FMIWrapperQ_fmi3Logger);
+                    if(fmi3_instance != NULL) {
+                        fmi3_getNumberOfContinuousStates(fmi3_instance, &mNumStates);
+                        fmi3_getNumberOfEventIndicators(fmi3_instance, &mNumEventIndicators);
+                        mStates.assign(mNumStates, 0.0);
+                        mStatesPrev.assign(mNumStates, 0.0);
+                        mEventIndicators.assign(mNumEventIndicators, 0.0);
+                        mEventIndicatorsPrev.assign(mNumEventIndicators, 0.0);
+                    }
+                }
                 if (NULL == fmi3_instance) {
                     stopSimulation("Failed to instantiate FMU");
                     return;
@@ -1126,9 +1142,24 @@ public:
             }
 
             if(!mIsInstantiated) {
-                addDebugMessage("Calling: fmi3InstantiateCoSimulation");
-                size_t nRequiredIntermediateVariables = 0;
-                fmi3_instance = fmi3_instantiateCoSimulation(fmu, fmi3False, mLoggingOn, fmi3False, fmi3False, NULL, nRequiredIntermediateVariables, this, FMIWrapperQ_fmi3Logger, FMIWrapperQ_fmi3IntermediateUpdate);
+                mFmi3SupportsCoSimulation = fmi3_supportsCoSimulation(fmu);
+                if(mFmi3SupportsCoSimulation) {
+                    addDebugMessage("Calling: fmi3InstantiateCoSimulation");
+                    size_t nRequiredIntermediateVariables = 0;
+                    fmi3_instance = fmi3_instantiateCoSimulation(fmu, fmi3False, mLoggingOn, fmi3False, fmi3False, NULL, nRequiredIntermediateVariables, this, FMIWrapperQ_fmi3Logger, FMIWrapperQ_fmi3IntermediateUpdate);
+                }
+                else if(fmi3_supportsModelExchange(fmu)) {
+                    addDebugMessage("Calling: fmi3InstantiateModelExchange");
+                    fmi3_instance = fmi3_instantiateModelExchange(fmu, fmi3False, mLoggingOn, this, FMIWrapperQ_fmi3Logger);
+                    if(fmi3_instance != NULL) {
+                        fmi3_getNumberOfContinuousStates(fmi3_instance, &mNumStates);
+                        fmi3_getNumberOfEventIndicators(fmi3_instance, &mNumEventIndicators);
+                        mStates.assign(mNumStates, 0.0);
+                        mStatesPrev.assign(mNumStates, 0.0);
+                        mEventIndicators.assign(mNumEventIndicators, 0.0);
+                        mEventIndicatorsPrev.assign(mNumEventIndicators, 0.0);
+                    }
+                }
                 if(fmi3_instance == NULL) {
                     stopSimulation("Failed to instantiate FMU");
                     fmu = NULL;
@@ -1269,6 +1300,32 @@ public:
             if(status != fmi3OK) {
                 stopSimulation("fmi3ExitInitializationMode() failed");
                 return;
+            }
+            if(!mFmi3SupportsCoSimulation) {
+                fmi3Boolean discreteStatesNeedUpdate = fmi3True;
+                fmi3Boolean terminateSimulation = fmi3False;
+                fmi3Boolean nominalsChanged = fmi3False;
+                fmi3Boolean statesChanged = fmi3False;
+                fmi3Boolean nextEventTimeDefined = fmi3False;
+                fmi3Float64 nextEventTime = 0.0;
+                while(discreteStatesNeedUpdate) {
+                    status = fmi3_updateDiscreteStates(fmi3_instance, &discreteStatesNeedUpdate, &terminateSimulation,
+                                                       &nominalsChanged, &statesChanged, &nextEventTimeDefined, &nextEventTime);
+                    if(status != fmi3OK || terminateSimulation) {
+                        stopSimulation("fmi3UpdateDiscreteStates() failed");
+                        return;
+                    }
+                }
+                status = fmi3_enterContinuousTimeMode(fmi3_instance);
+                if(status != fmi3OK) {
+                    stopSimulation("fmi3EnterContinuousTimeMode() failed");
+                    return;
+                }
+                fmi3_getContinuousStates(fmi3_instance, mStates.data(), mNumStates);
+                if(mNumEventIndicators > 0) {
+                    fmi3_getEventIndicators(fmi3_instance, mEventIndicators.data(), mNumEventIndicators);
+                    mEventIndicatorsPrev = mEventIndicators;
+                }
             }
         }
     }
@@ -1539,12 +1596,127 @@ public:
 
 
             //Take step
-            bool eventEncountered, terminateSimulation, earlyReturn;
-            double lastT;
-            status = fmi3_doStep(fmi3_instance, mTime, mTimestep, fmi3True, &eventEncountered, &terminateSimulation, &earlyReturn, &lastT);
-            if (status != fmi3OK) {
-                stopSimulation("fmi3DoStep() failed, status = "+to_hstring(status));
-                return;
+            if(mFmi3SupportsCoSimulation) {
+                bool eventEncountered, terminateSimulation, earlyReturn;
+                double lastT;
+                status = fmi3_doStep(fmi3_instance, mTime, mTimestep, fmi3True, &eventEncountered, &terminateSimulation, &earlyReturn, &lastT);
+                if (status != fmi3OK) {
+                    stopSimulation("fmi3DoStep() failed, status = "+to_hstring(status));
+                    return;
+                }
+            }
+            else {
+                mStatesPrev = mStates;
+                mEventIndicatorsPrev = mEventIndicators;
+                double t = mTime-mTimestep;
+                while(t < mTime) {
+                    if(!newtonSolveImplicitEuler(mTime, mTime-t)) {
+                        stopSimulation("FMI 3 implicit Euler iteration failed.");
+                        return;
+                    }
+                    status = fmi3_setContinuousStates(fmi3_instance, mStates.data(), mNumStates);
+                    if(status != fmi3OK) {
+                        stopSimulation("fmi3SetContinuousStates() failed, status = "+to_hstring(status));
+                        return;
+                    }
+                    bool stateEvent = false;
+                    if(mNumEventIndicators > 0) {
+                        status = fmi3_getEventIndicators(fmi3_instance, mEventIndicators.data(), mNumEventIndicators);
+                        if(status != fmi3OK) {
+                            stopSimulation("fmi3GetEventIndicators() failed, status = "+to_hstring(status));
+                            return;
+                        }
+                        for(size_t i = 0; i < mNumEventIndicators; ++i) {
+                            if((mEventIndicators[i] > 0.0) != (mEventIndicatorsPrev[i] > 0.0)) {
+                                stateEvent = true;
+                                break;
+                            }
+                        }
+                    }
+                    status = fmi3_setTime(fmi3_instance, mTime);
+                    if(status != fmi3OK) {
+                        stopSimulation("fmi3SetTime() failed, status = "+to_hstring(status));
+                        return;
+                    }
+                    if(!stateEvent) {
+                        break;
+                    }
+
+                    double left = t;
+                    double right = mTime;
+                    std::vector<double> eventIndicatorsLeft = mEventIndicatorsPrev;
+                    const double eventTolerance = std::min(1e-6, 0.01*mTimestep);
+                    while((right-left) > eventTolerance) {
+                        const double mid = 0.5*(left+right);
+                        fmi3_setTime(fmi3_instance, t);
+                        fmi3_setContinuousStates(fmi3_instance, mStatesPrev.data(), mNumStates);
+                        if(!newtonSolveImplicitEuler(t, mid-t)) {
+                            stopSimulation("FMI 3 implicit Euler event iteration failed.");
+                            return;
+                        }
+                        fmi3_setTime(fmi3_instance, mid);
+                        fmi3_setContinuousStates(fmi3_instance, mStates.data(), mNumStates);
+                        fmi3_getEventIndicators(fmi3_instance, mEventIndicators.data(), mNumEventIndicators);
+                        bool eventInFirstHalf = false;
+                        for(size_t i = 0; i < mNumEventIndicators; ++i) {
+                            if((eventIndicatorsLeft[i] > 0.0) != (mEventIndicators[i] > 0.0)) {
+                                eventInFirstHalf = true;
+                                break;
+                            }
+                        }
+                        if(eventInFirstHalf) {
+                            right = mid;
+                        }
+                        else {
+                            left = mid;
+                            eventIndicatorsLeft = mEventIndicators;
+                        }
+                    }
+
+                    const double eventTime = 0.5*(left+right);
+                    fmi3_setTime(fmi3_instance, t);
+                    fmi3_setContinuousStates(fmi3_instance, mStatesPrev.data(), mNumStates);
+                    if(!newtonSolveImplicitEuler(eventTime, eventTime-t)) {
+                        stopSimulation("FMI 3 implicit Euler event integration failed.");
+                        return;
+                    }
+                    fmi3_setTime(fmi3_instance, eventTime);
+                    fmi3_setContinuousStates(fmi3_instance, mStates.data(), mNumStates);
+                    status = fmi3_enterEventMode(fmi3_instance);
+                    if(status != fmi3OK) {
+                        stopSimulation("fmi3EnterEventMode() failed, status = "+to_hstring(status));
+                        return;
+                    }
+                    fmi3Boolean discreteStatesNeedUpdate = fmi3True;
+                    fmi3Boolean terminateSimulation = fmi3False;
+                    fmi3Boolean nominalsChanged = fmi3False;
+                    fmi3Boolean statesChanged = fmi3False;
+                    fmi3Boolean nextEventTimeDefined = fmi3False;
+                    fmi3Float64 nextEventTime = 0.0;
+                    size_t iterations = 0;
+                    while(discreteStatesNeedUpdate) {
+                        status = fmi3_updateDiscreteStates(fmi3_instance, &discreteStatesNeedUpdate, &terminateSimulation,
+                                                           &nominalsChanged, &statesChanged, &nextEventTimeDefined, &nextEventTime);
+                        if(status != fmi3OK || terminateSimulation) {
+                            stopSimulation("fmi3UpdateDiscreteStates() failed, status = "+to_hstring(status));
+                            return;
+                        }
+                        if(++iterations > 100) {
+                            stopSimulation("FMI 3 event iteration reached maximum number of iterations.");
+                            return;
+                        }
+                    }
+                    status = fmi3_enterContinuousTimeMode(fmi3_instance);
+                    if(status != fmi3OK) {
+                        stopSimulation("fmi3EnterContinuousTimeMode() failed, status = "+to_hstring(status));
+                        return;
+                    }
+                    t = eventTime;
+                    fmi3_getContinuousStates(fmi3_instance, mStatesPrev.data(), mNumStates);
+                    if(mNumEventIndicators > 0) {
+                        fmi3_getEventIndicators(fmi3_instance, mEventIndicatorsPrev.data(), mNumEventIndicators);
+                    }
+                }
             }
 
             //Forward outputs
@@ -1723,10 +1895,16 @@ public:
     //! @param [out] xdot State derivatives
     bool evaluateDerivatives(double t, const std::vector<double>& x, std::vector<double>& xdot)
     {
-        fmi2_setTime(fmi2_instance, t);
-        fmi2_setContinuousStates(fmi2_instance, x.data(), mNumStates);
-        fmi2_getDerivatives(fmi2_instance, xdot.data(), mNumStates);
-        return true;
+        if(mFmiVersion == fmiVersion2) {
+            fmi2_setTime(fmi2_instance, t);
+            fmi2_setContinuousStates(fmi2_instance, x.data(), mNumStates);
+            return fmi2_getDerivatives(fmi2_instance, xdot.data(), mNumStates) == fmi2OK;
+        }
+
+        //Assume version 3
+        fmi3_setTime(fmi3_instance, t);
+        fmi3_setContinuousStates(fmi3_instance, x.data(), mNumStates);
+        return fmi3_getContinuousStateDerivatives(fmi3_instance, xdot.data(), mNumStates) == fmi3OK;
     }
 
     //! @brief Compute dense jacobian
