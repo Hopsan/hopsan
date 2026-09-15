@@ -91,12 +91,10 @@ void FMIWrapperQ_fmi2Logger(fmi2ComponentEnvironment pComponentEnvironment,
 {
     HOPSAN_UNUSED(instanceName);
     HOPSAN_UNUSED(category);
-
     hopsan::Component* pComponent = (hopsan::Component*)pComponentEnvironment;
     if (pComponent == NULL) {
         return;
     }
-
     char buffer[512];
     va_list args;
     va_start(args, message);
@@ -236,6 +234,7 @@ private:
     bool mReinstantiate = false;
     bool mIsInstantiated = false;
     bool mFmi3SupportsCoSimulation = true;
+    bool mFmi1ModelExchange = false;
 
     size_t mNumStates, mNumEventIndicators;
     std::vector<double> mStates;      // states at current time mTime
@@ -521,8 +520,15 @@ public:
 
             //Instantiate FMU
             if(!mReinstantiate) {
-                addDebugMessage("Calling: fmi1InstantiateSlave");
-                fmi1_instance = fmi1_instantiateSlave(fmu, "application/x-fmu-sharedlibrary", 1000, fmi1False, fmi1False, FMIWrapperQ_fmi1Logger, calloc, free, NULL, mLoggingOn);
+                mFmi1ModelExchange = fmi1_getType(fmu) == fmi1ModelExchange;
+                if(mFmi1ModelExchange) {
+                    addDebugMessage("Calling: fmi1InstantiateModel");
+                    fmi1_instance = fmi1_instantiateModel(fmu, FMIWrapperQ_fmi1Logger, calloc, free, mLoggingOn);
+                }
+                else {
+                    addDebugMessage("Calling: fmi1InstantiateSlave");
+                    fmi1_instance = fmi1_instantiateSlave(fmu, "application/x-fmu-sharedlibrary", 1000, fmi1False, fmi1False, FMIWrapperQ_fmi1Logger, calloc, free, NULL, mLoggingOn);
+                }
                 if(fmi1_instance == NULL) {
                     addErrorMessage("Hopsan: fmi1InstantiateSlave() failed!");
                     fmu = NULL;
@@ -939,8 +945,23 @@ public:
             }
 
             if(!mIsInstantiated) {
-                addDebugMessage("Calling: fmi1InstantiateSlave");
-                fmi1_instance = fmi1_instantiateSlave(fmu, "application/x-fmu-sharedlibrary", 1000, fmi1False, fmi1False, FMIWrapperQ_fmi1Logger, calloc, free, NULL, mLoggingOn);
+                mFmi1ModelExchange = fmi1_getType(fmu) == fmi1ModelExchange;
+                if(mFmi1ModelExchange) {
+                    addDebugMessage("Calling: fmi1InstantiateModel");
+                    fmi1_instance = fmi1_instantiateModel(fmu, FMIWrapperQ_fmi1Logger, calloc, free, mLoggingOn);
+                    if(fmi1_instance != NULL) {
+                        mNumStates = fmi1_getNumberOfContinuousStates(fmu);
+                        mNumEventIndicators = fmi1_getNumberOfEventIndicators(fmu);
+                        mStates.assign(mNumStates, 0.0);
+                        mStatesPrev.assign(mNumStates, 0.0);
+                        mEventIndicators.assign(mNumEventIndicators, 0.0);
+                        mEventIndicatorsPrev.assign(mNumEventIndicators, 0.0);
+                    }
+                }
+                else {
+                    addDebugMessage("Calling: fmi1InstantiateSlave");
+                    fmi1_instance = fmi1_instantiateSlave(fmu, "application/x-fmu-sharedlibrary", 1000, fmi1False, fmi1False, FMIWrapperQ_fmi1Logger, calloc, free, NULL, mLoggingOn);
+                }
                 if(fmi1_instance == NULL) {
                     addErrorMessage("Hopsan: fmi1InstantiateSlave() failed!");
                     fmu = NULL;
@@ -1012,8 +1033,22 @@ public:
             }
 
             //Enter initialization mode
-            addDebugMessage("Calling: fmi1InitializeSlave");
-            status = fmi1_initializeSlave(fmi1_instance,mTime,fmi1False,0);
+            if(mFmi1ModelExchange) {
+                fmi1EventInfo eventInfo = {fmi1False, fmi1False, fmi1False, fmi1False, fmi1False, 0.0};
+                addDebugMessage("Calling: fmi1Initialize");
+                status = fmi1_initialize(fmi1_instance, fmi1False, mTolerance, &eventInfo);
+                if(status == fmi1OK) {
+                    fmi1_getContinuousStates(fmi1_instance, mStates.data(), mNumStates);
+                    if(mNumEventIndicators > 0) {
+                        fmi1_getEventIndicators(fmi1_instance, mEventIndicators.data(), mNumEventIndicators);
+                        mEventIndicatorsPrev = mEventIndicators;
+                    }
+                }
+            }
+            else {
+                addDebugMessage("Calling: fmi1InitializeSlave");
+                status = fmi1_initializeSlave(fmi1_instance,mTime,fmi1False,0);
+            }
             if(status != fmi1OK) {
                 stopSimulation("fmi1InitializeSlave() failed");
                 return;
@@ -1354,10 +1389,58 @@ public:
             }
 
             //Take step
-            status = fmi1_doStep(fmi1_instance, mTime-mTimestep, mTimestep, fmi1True);
-            if (status != fmi1OK) {
-                stopSimulation("fmi1DoStep() failed, status = "+to_hstring(status));
-                return;
+            if(mFmi1ModelExchange) {
+                mStatesPrev = mStates;
+                mEventIndicatorsPrev = mEventIndicators;
+                if(!newtonSolveImplicitEuler(mTime, mTimestep)) {
+                    stopSimulation("FMI 1 implicit Euler iteration failed.");
+                    return;
+                }
+                status = fmi1_setTime(fmi1_instance, mTime);
+                status = fmi1_setContinuousStates(fmi1_instance, mStates.data(), mNumStates);
+                if(mNumEventIndicators > 0) {
+                    status = fmi1_getEventIndicators(fmi1_instance, mEventIndicators.data(), mNumEventIndicators);
+                }
+                bool stateEvent = false;
+                for(size_t i = 0; i < mNumEventIndicators; ++i) {
+                    if((mEventIndicators[i] > 0.0) != (mEventIndicatorsPrev[i] > 0.0)) {
+                        stateEvent = true;
+                        break;
+                    }
+                }
+                fmi1Boolean callEventUpdate = fmi1False;
+                status = fmi1_completedIntegratorStep(fmi1_instance, &callEventUpdate);
+                if(status != fmi1OK) {
+                    stopSimulation("fmi1CompletedIntegratorStep() failed, status = "+to_hstring(status));
+                    return;
+                }
+                if(stateEvent || callEventUpdate) {
+                    fmi1EventInfo eventInfo = {fmi1True, fmi1False, fmi1False, fmi1False, fmi1False, 0.0};
+                    size_t iterations = 0;
+                    do {
+                        status = fmi1_eventUpdate(fmi1_instance, fmi1False, &eventInfo);
+                        if(status != fmi1OK || eventInfo.terminateSimulation) {
+                            stopSimulation("fmi1EventUpdate() failed, status = "+to_hstring(status));
+                            return;
+                        }
+                        if(++iterations > 100) {
+                            stopSimulation("FMI 1 event iteration reached maximum number of iterations.");
+                            return;
+                        }
+                    } while(!eventInfo.iterationConverged);
+                    fmi1_getContinuousStates(fmi1_instance, mStates.data(), mNumStates);
+                    if(mNumEventIndicators > 0) {
+                        fmi1_getEventIndicators(fmi1_instance, mEventIndicators.data(), mNumEventIndicators);
+                    }
+                }
+                mEventIndicatorsPrev = mEventIndicators;
+            }
+            else {
+                status = fmi1_doStep(fmi1_instance, mTime-mTimestep, mTimestep, fmi1True);
+                if (status != fmi1OK) {
+                    stopSimulation("fmi1DoStep() failed, status = "+to_hstring(status));
+                    return;
+                }
             }
 
             //Forward outputs
@@ -1788,14 +1871,16 @@ public:
             if(mReinstantiate)
             {
                 addDebugMessage("Calling: fmi1Terminate");
-                fmi1_terminate(fmi1_instance);
+                if(mFmi1ModelExchange) fmi1_terminate(fmi1_instance);
+                else fmi1_terminateSlave(fmi1_instance);
                 addDebugMessage("Calling: fmi1FreeSlaveInstance");
                 mIsInstantiated = false;
-                fmi1_freeSlaveInstance(fmi1_instance);
+                if(mFmi1ModelExchange) fmi1_freeModelInstance(fmi1_instance);
+                else fmi1_freeSlaveInstance(fmi1_instance);
             }
             else {
                 addDebugMessage("Calling: fmi1Reset");
-                fmi1_resetSlave(fmi1_instance);
+                if(!mFmi1ModelExchange) fmi1_resetSlave(fmi1_instance);
             }
         }
         else if(mFmiVersion == fmiVersion2) {
@@ -1803,8 +1888,6 @@ public:
                 return;
             }
             if(mReinstantiate) {
-                addDebugMessage("Calling: fmi2Terminate");
-                fmi2_terminate(fmi2_instance);
                 addDebugMessage("Calling: fmi2FreeInstance");
                 mIsInstantiated = false;
                 fmi2_freeInstance(fmi2_instance);
@@ -1840,7 +1923,8 @@ public:
             }
             addDebugMessage("Calling: fmi3FreeSlaveInstance");
             mIsInstantiated = false;
-            fmi1_freeSlaveInstance(fmi1_instance);
+            if(mFmi1ModelExchange) fmi1_freeModelInstance(fmi1_instance);
+            else fmi1_freeSlaveInstance(fmi1_instance);
             fmi4c_freeFmu(fmu);
             fmi1_instance = NULL;
             fmu = NULL;
@@ -1895,6 +1979,11 @@ public:
     //! @param [out] xdot State derivatives
     bool evaluateDerivatives(double t, const std::vector<double>& x, std::vector<double>& xdot)
     {
+        if(mFmiVersion == fmiVersion1) {
+            fmi1_setTime(fmi1_instance, t);
+            fmi1_setContinuousStates(fmi1_instance, x.data(), mNumStates);
+            return fmi1_getDerivatives(fmi1_instance, xdot.data(), mNumStates) == fmi1OK;
+        }
         if(mFmiVersion == fmiVersion2) {
             fmi2_setTime(fmi2_instance, t);
             fmi2_setContinuousStates(fmi2_instance, x.data(), mNumStates);
