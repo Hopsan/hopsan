@@ -245,6 +245,10 @@ private:
     double mNewtonTol = 1e-8;
     fmi2EventInfo mEventInfo;
 
+    std::vector<HString> mIntegrationMethods;
+    int mIntegrationMethod;
+    enum class IntegrationMethods { ExplicitEuler, ImplicitEuler };
+
 public:
     static Component *Creator()
     {
@@ -258,6 +262,9 @@ public:
         addConstant("reinstantiate", "Create a new FMU instance for every simulation", "", mReinstantiate, mReinstantiate);
         setReconfigurationParameter("path");
         setReconfigurationParameter("portspecs");
+
+        mIntegrationMethods.push_back("Explicit Euler");
+        mIntegrationMethods.push_back("Implicit Euler");
     }
 
     void reconfigure()
@@ -522,8 +529,18 @@ public:
             if(!mReinstantiate) {
                 mFmi1ModelExchange = fmi1_getType(fmu) == fmi1ModelExchange;
                 if(mFmi1ModelExchange) {
+                    addConditionalConstant("method", "Integration Method", mIntegrationMethods, mIntegrationMethod);
+
                     addDebugMessage("Calling: fmi1InstantiateModel");
                     fmi1_instance = fmi1_instantiateModel(fmu, FMIWrapperQ_fmi1Logger, calloc, free, mLoggingOn);
+                    if(fmi1_instance != NULL) {
+                        mNumStates = (size_t)fmi1_getNumberOfContinuousStates(fmu);
+                        mNumEventIndicators = (size_t)fmi1_getNumberOfEventIndicators(fmu);
+                        mStates.assign(mNumStates, 0.0);
+                        mStatesPrev.assign(mNumStates, 0.0);
+                        mEventIndicators.assign(mNumEventIndicators, 0.0);
+                        mEventIndicatorsPrev.assign(mNumEventIndicators, 0.0);
+                    }
                 }
                 else {
                     addDebugMessage("Calling: fmi1InstantiateSlave");
@@ -545,6 +562,33 @@ public:
             addInfoMessage("Successfully instantiated FMU");
         }
         else if(mFmiVersion == fmiVersion2) {
+            //Instantiate FMU
+            if(!mReinstantiate) {
+                addDebugMessage("Calling: fmi2Instantiate");
+                fmi2Type fmuType = fmi2ModelExchange;
+                if(fmi2_getSupportsCoSimulation(fmu)) {
+                    fmuType = fmi2CoSimulation;
+                    addDebugMessage("FMU type: co-simulation");
+                }
+                fmi2_instance = fmi2_instantiate(fmu, fmuType, FMIWrapperQ_fmi2Logger, calloc, free, NULL, (fmi2ComponentEnvironment*)this, fmi2False, mLoggingOn);
+                if(NULL == fmi2_instance) {
+                    stopSimulation("Failed to instantiate FMU");
+                    return;
+                }
+
+                if(fmuType == fmi2ModelExchange) {
+                    mNumStates = (size_t)fmi2_getNumberOfContinuousStates(fmu);
+                    mNumEventIndicators = (size_t)fmi2_getNumberOfEventIndicators(fmu);
+                    mStates.assign(mNumStates, 0.0);
+                    mStatesPrev.assign(mNumStates, 0.0);
+                    mEventIndicators.assign(mNumEventIndicators, 0.0);
+                    mEventIndicatorsPrev.assign(mNumEventIndicators, 0.0);
+
+                    addConditionalConstant("method", "Integration Method", mIntegrationMethods, mIntegrationMethod);
+                }
+                mIsInstantiated = true;
+            }
+
             if(fmi2_defaultToleranceDefined(fmu)) {
                 mTolerance = fmi2_getDefaultTolerance(fmu);
             }
@@ -638,29 +682,7 @@ public:
             addConstant("visibleOutputs", "Visible output variables (hidden)", "", mVisibleOutputs, mVisibleOutputs);
 
 
-            //Instantiate FMU
-            if(!mReinstantiate) {
-                addDebugMessage("Calling: fmi2Instantiate");
-                fmi2Type fmuType = fmi2ModelExchange;
-                if(fmi2_getSupportsCoSimulation(fmu)) {
-                    fmuType = fmi2CoSimulation;
-                }
-                fmi2_instance = fmi2_instantiate(fmu, fmuType, FMIWrapperQ_fmi2Logger, calloc, free, NULL, (fmi2ComponentEnvironment*)this, fmi2False, mLoggingOn);
-                if(NULL == fmi2_instance) {
-                    stopSimulation("Failed to instantiate FMU");
-                    return;
-                }
 
-                if(fmuType == fmi2ModelExchange) {
-                    mNumStates = (size_t)fmi2_getNumberOfContinuousStates(fmu);
-                    mNumEventIndicators = (size_t)fmi2_getNumberOfEventIndicators(fmu);
-                         mStates.assign(mNumStates, 0.0);
-                    mStatesPrev.assign(mNumStates, 0.0);
-                    mEventIndicators.assign(mNumEventIndicators, 0.0);
-                    mEventIndicatorsPrev.assign(mNumEventIndicators, 0.0);
-                }
-                mIsInstantiated = true;
-            }
         }
         else {//FMI 3
             if(fmi3_defaultToleranceDefined(fmu)) {
@@ -925,6 +947,7 @@ public:
                         mStatesPrev.assign(mNumStates, 0.0);
                         mEventIndicators.assign(mNumEventIndicators, 0.0);
                         mEventIndicatorsPrev.assign(mNumEventIndicators, 0.0);
+                        addConditionalConstant("method", "Integration Method", mIntegrationMethods, mIntegrationMethod);
                     }
                 }
                 if (NULL == fmi3_instance) {
@@ -1053,9 +1076,10 @@ public:
                 stopSimulation("fmi1InitializeSlave() failed");
                 return;
             }
+            addDebugMessage("Model initialized!");
         }
         else if(mFmiVersion == fmiVersion2) {
-            if(fmi2_instance == NULL) {
+            if(fmu == NULL) {
                 stopSimulation("No FMU file loaded.");
                 return;
             }
@@ -1116,7 +1140,7 @@ public:
 
             fmi2Status status;
 
-            for(std::map<fmi2ValueReference,double>::iterator it = mRealParameters.begin(); it != mRealParameters.end(); it++) {
+            for(std::map<fmi1ValueReference,double>::iterator it = mRealParameters.begin(); it != mRealParameters.end(); it++) {
                 fmi2Real value = (fmi2Real)it->second;
                 status = fmi2_setReal(fmi2_instance, &it->first, 1, &value);
             }
@@ -1392,7 +1416,7 @@ public:
             if(mFmi1ModelExchange) {
                 mStatesPrev = mStates;
                 mEventIndicatorsPrev = mEventIndicators;
-                if(!newtonSolveImplicitEuler(mTime, mTimestep)) {
+                if(!solve(mTime, mTimestep)) {
                     stopSimulation("FMI 1 implicit Euler iteration failed.");
                     return;
                 }
@@ -1499,7 +1523,7 @@ public:
 
                 while(t < mTime) {
                     // Integrate using implicit Euler from start time to end time
-                    newtonSolveImplicitEuler(mTime, mTime-t);
+                    solve(mTime, mTime-t);
 
                     fmi2_setContinuousStates(fmi2_instance, mStates.data(), mNumStates);
 
@@ -1538,7 +1562,7 @@ public:
                             fmi2_setContinuousStates(fmi2_instance, mStatesPrev.data(), mNumStates);
 
                             // Integrate over first half of the time window
-                            newtonSolveImplicitEuler(t, mid-t);
+                            solve(t, mid-t);
 
                             fmi2_setTime(fmi2_instance, mid);
                             fmi2_setContinuousStates(fmi2_instance, mStates.data(), mNumStates);
@@ -1572,7 +1596,7 @@ public:
                         fmi2_setContinuousStates(fmi2_instance, mStatesPrev.data(), mNumStates);
 
                         //Integrate to event time
-                        newtonSolveImplicitEuler(te, te-t);
+                        solve(te, te-t);
 
                         fmi2_setTime(fmi2_instance, te);
                         fmi2_setContinuousStates(fmi2_instance, mStates.data(), mNumStates);
@@ -1693,7 +1717,7 @@ public:
                 mEventIndicatorsPrev = mEventIndicators;
                 double t = mTime-mTimestep;
                 while(t < mTime) {
-                    if(!newtonSolveImplicitEuler(mTime, mTime-t)) {
+                    if(!solve(mTime, mTime-t)) {
                         stopSimulation("FMI 3 implicit Euler iteration failed.");
                         return;
                     }
@@ -1733,7 +1757,7 @@ public:
                         const double mid = 0.5*(left+right);
                         fmi3_setTime(fmi3_instance, t);
                         fmi3_setContinuousStates(fmi3_instance, mStatesPrev.data(), mNumStates);
-                        if(!newtonSolveImplicitEuler(t, mid-t)) {
+                        if(!solve(t, mid-t)) {
                             stopSimulation("FMI 3 implicit Euler event iteration failed.");
                             return;
                         }
@@ -1759,7 +1783,7 @@ public:
                     const double eventTime = 0.5*(left+right);
                     fmi3_setTime(fmi3_instance, t);
                     fmi3_setContinuousStates(fmi3_instance, mStatesPrev.data(), mNumStates);
-                    if(!newtonSolveImplicitEuler(eventTime, eventTime-t)) {
+                    if(!solve(eventTime, eventTime-t)) {
                         stopSimulation("FMI 3 implicit Euler event integration failed.");
                         return;
                     }
@@ -2020,6 +2044,35 @@ public:
                 J[i][j] = (fPerturbed[i] - f0[i]) / h;
             }
             xPerturbed[j] = x[j];
+        }
+        return true;
+    }
+
+    //! @brief Integrates using specified integration method from endTime-stepSize to endTime
+    //! @param [in] endTime End time of the integration
+    //! @param [in] stepSize Step size for the integration
+    bool solve(double endTime, double stepSize)
+    {
+        if(mIntegrationMethod == (int)IntegrationMethods::ExplicitEuler) {
+            return solveExplicitEuler(endTime, stepSize);
+        }
+        else if(mIntegrationMethod == (int)IntegrationMethods::ImplicitEuler) {
+            return newtonSolveImplicitEuler(endTime, stepSize);
+        }
+        else {
+            return false;   //Should never happen
+        }
+    }
+
+    //! @brief Integrates using explicit Euler from endTime-stepSize to endTime
+    //! @param [in] endTime End time of the integration
+    //! @param [in] stepSize Step size for the integration
+    bool solveExplicitEuler(double endTime, double stepSize)
+    {
+        std::vector<double> f(mNumStates);
+        evaluateDerivatives(endTime-stepSize, mStatesPrev, f);
+        for (size_t i = 0; i < mNumStates; ++i) {
+            mStates[i] = mStatesPrev[i] + stepSize*f[i];
         }
         return true;
     }

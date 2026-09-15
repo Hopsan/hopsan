@@ -222,6 +222,10 @@ private:
     double mNewtonTol = 1e-8;
     fmi2EventInfo mEventInfo;
 
+    std::vector<HString> mIntegrationMethods;
+    int mIntegrationMethod;
+    enum class IntegrationMethods { ExplicitEuler, ImplicitEuler };
+
 public:
     static Component *Creator()
     {
@@ -233,6 +237,9 @@ public:
         addConstant("path", "Path to functional mockup unit (FMU)", mFmuPath);
         addConstant("reinstantiate", "Create a new FMU instance for every simulation", "", mReinstantiate, mReinstantiate);
         setReconfigurationParameter("path");
+
+        mIntegrationMethods.push_back("Explicit Euler");
+        mIntegrationMethods.push_back("Implicit Euler");
     }
 
     void reconfigure()
@@ -339,6 +346,7 @@ public:
                 if(unit == NULL) {
                     unit = "";
                 }
+
                 addDebugMessage("Causality = "+to_hstring(causality));
                 addDebugMessage("Data type = "+to_hstring(type));
                 unsigned int vr = (unsigned int)fmi1_getVariableValueReference(var);
@@ -427,11 +435,13 @@ public:
             if(!mReinstantiate) {
                 mFmi1ModelExchange = fmi1_getType(fmu) == fmi1ModelExchange;
                 if(mFmi1ModelExchange) {
+                    addConditionalConstant("method", "Integration Method", mIntegrationMethods, mIntegrationMethod);
+
                     addDebugMessage("Calling: fmi1InstantiateModel");
                     fmi1_instance = fmi1_instantiateModel(fmu, FMIWrapper_fmi1Logger, calloc, free, mLoggingOn);
                     if(fmi1_instance != NULL) {
-                        mNumStates = fmi1_getNumberOfContinuousStates(fmu);
-                        mNumEventIndicators = fmi1_getNumberOfEventIndicators(fmu);
+                        mNumStates = (size_t)fmi1_getNumberOfContinuousStates(fmu);
+                        mNumEventIndicators = (size_t)fmi1_getNumberOfEventIndicators(fmu);
                         mStates.assign(mNumStates, 0.0);
                         mStatesPrev.assign(mNumStates, 0.0);
                         mEventIndicators.assign(mNumEventIndicators, 0.0);
@@ -448,6 +458,13 @@ public:
                 }
                 mIsInstantiated = true;
             }
+
+            if(NULL == fmu) {
+                stopSimulation("Failed to instantiate FMU");
+                return;
+            }
+
+            addInfoMessage("Successfully instantiated FMU");
         }
         else if(mFmiVersion == fmiVersion2) {
             //Instantiate FMU
@@ -467,11 +484,12 @@ public:
                 if(fmuType == fmi2ModelExchange) {
                     mNumStates = (size_t)fmi2_getNumberOfContinuousStates(fmu);
                     mNumEventIndicators = (size_t)fmi2_getNumberOfEventIndicators(fmu);
-
                     mStates.assign(mNumStates, 0.0);
                     mStatesPrev.assign(mNumStates, 0.0);
                     mEventIndicators.assign(mNumEventIndicators, 0.0);
                     mEventIndicatorsPrev.assign(mNumEventIndicators, 0.0);
+
+                    addConditionalConstant("method", "Integration Method", mIntegrationMethods, mIntegrationMethod);
                 }
                 mIsInstantiated = true;
             }
@@ -873,6 +891,7 @@ public:
                         mStatesPrev.assign(mNumStates, 0.0);
                         mEventIndicators.assign(mNumEventIndicators, 0.0);
                         mEventIndicatorsPrev.assign(mNumEventIndicators, 0.0);
+                        addConditionalConstant("method", "Integration Method", mIntegrationMethods, mIntegrationMethod);
                     }
                 }
                 if(!fmi3_instance) {
@@ -1342,7 +1361,7 @@ public:
             if(mFmi1ModelExchange) {
                 mStatesPrev = mStates;
                 mEventIndicatorsPrev = mEventIndicators;
-                if(!newtonSolveImplicitEuler(mTime, mTimestep)) {
+                if(!solve(mTime, mTimestep)) {
                     stopSimulation("FMI 1 implicit Euler iteration failed.");
                     return;
                 }
@@ -1449,7 +1468,7 @@ public:
 
                 while(t < mTime) {
                     // Integrate using implicit Euler from start time to end time
-                    newtonSolveImplicitEuler(mTime, mTime-t);
+                    solve(mTime, mTime-t);
 
                     fmi2_setContinuousStates(fmi2_instance, mStates.data(), mNumStates);
 
@@ -1488,7 +1507,7 @@ public:
                             fmi2_setContinuousStates(fmi2_instance, mStatesPrev.data(), mNumStates);
 
                             // Integrate over first half of the time window
-                            newtonSolveImplicitEuler(t, mid-t);
+                            solve(t, mid-t);
 
                             fmi2_setTime(fmi2_instance, mid);
                             fmi2_setContinuousStates(fmi2_instance, mStates.data(), mNumStates);
@@ -1522,7 +1541,7 @@ public:
                         fmi2_setContinuousStates(fmi2_instance, mStatesPrev.data(), mNumStates);
 
                         //Integrate to event time
-                        newtonSolveImplicitEuler(te, te-t);
+                        solve(te, te-t);
 
                         fmi2_setTime(fmi2_instance, te);
                         fmi2_setContinuousStates(fmi2_instance, mStates.data(), mNumStates);
@@ -1641,7 +1660,7 @@ public:
             else {
                 mStatesPrev = mStates;
                 mEventIndicatorsPrev = mEventIndicators;
-                if(!newtonSolveImplicitEuler(mTime, mTimestep)) {
+                if(!solve(mTime, mTimestep)) {
                     stopSimulation("FMI 3 implicit Euler iteration failed.");
                     return;
                 }
@@ -1858,7 +1877,7 @@ public:
             if(NULL == fmu) {
                 return;
             }
-            addDebugMessage("Calling: fmi2FreeInstance (katt)");
+            addDebugMessage("Calling: fmi2FreeInstance");
             mIsInstantiated = false;
             fmi2_freeInstance(fmi2_instance);
             addDebugMessage("Calling: fmi4c_freeFmu");
@@ -1948,6 +1967,35 @@ public:
                 J[i][j] = (fPerturbed[i] - f0[i]) / h;
             }
             xPerturbed[j] = x[j];
+        }
+        return true;
+    }
+
+    //! @brief Integrates using specified integration method from endTime-stepSize to endTime
+    //! @param [in] endTime End time of the integration
+    //! @param [in] stepSize Step size for the integration
+    bool solve(double endTime, double stepSize)
+    {
+        if(mIntegrationMethod == (int)IntegrationMethods::ExplicitEuler) {
+            return solveExplicitEuler(endTime, stepSize);
+        }
+        else if(mIntegrationMethod == (int)IntegrationMethods::ImplicitEuler) {
+            return newtonSolveImplicitEuler(endTime, stepSize);
+        }
+        else {
+            return false;   //Should never happen
+        }
+    }
+
+    //! @brief Integrates using explicit Euler from endTime-stepSize to endTime
+    //! @param [in] endTime End time of the integration
+    //! @param [in] stepSize Step size for the integration
+    bool solveExplicitEuler(double endTime, double stepSize)
+    {
+        std::vector<double> f(mNumStates);
+        evaluateDerivatives(endTime-stepSize, mStatesPrev, f);
+        for (size_t i = 0; i < mNumStates; ++i) {
+            mStates[i] = mStatesPrev[i] + stepSize*f[i];
         }
         return true;
     }
