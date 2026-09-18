@@ -32,6 +32,17 @@
 ******************************
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
+2.24.4 (2026-09-18)
+
+----- Bug Fixes -----
+- Hopsan executable icon is now working again
+- Development mode is now disabled on Windows release builds
+- SSP widget is now opened when loading an SSP
+
+----- Features -----
+- Dock widgets can now be toggled from view menu
+
+---------------------------------------------------------------------------------------------------------------------------------------------
 2.24.3 (2026-09-07)
 
 ----- Bug Fixes -----
