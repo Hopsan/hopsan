@@ -11,7 +11,7 @@ set -u
 hopsancode_root=$(pwd)
 pbuilderWorkDir=/var/tmp/deb_hopsan/pbuilder
 name=hopsan
-devversion=2.24.3
+devversion=2.24.4
 
 # Pbuilder dists and archs
 debianDistArchArray=( forky:amd64:forky
