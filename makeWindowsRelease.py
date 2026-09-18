@@ -483,7 +483,7 @@ def prepare_source_code(version_number: str, revision_number: str, dev_release: 
         # TODO: Use as CMake option instead maybe
         replace_pattern(
             g_hopsan_src_dir / "HopsanGUI" / "CMakeLists.txt",
-            r"target_compile_definitions(${target_name} PRIVATE DEVELOPMENT)",
+            r"target_compile_definitions\(hopsangui PRIVATE DEVELOPMENT\)",
             r"",
         )
 
