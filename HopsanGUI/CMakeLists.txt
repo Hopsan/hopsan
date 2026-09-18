@@ -24,7 +24,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/katex.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/ssp4c.cmake)
 
 file(GLOB_RECURSE srcfiles *.cpp *.h *.hpp *.qrc)
-add_executable(hopsangui ${srcfiles})
+add_executable(hopsangui ${srcfiles} HOPSANGUI.rc)
 
 if(MSVC)
   # Enable multi-core build with MSVC
