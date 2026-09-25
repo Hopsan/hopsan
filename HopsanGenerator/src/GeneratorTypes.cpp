@@ -785,7 +785,9 @@ void getModelVariables(hopsan::ComponentSystem *pSystem, QList<ModelVariableSpec
                     causality = ModelVariableCausality::Input;
                 }
             }
-            vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), portName, node.shortname.c_str(), node.id, pPort->getStartValue(node.id), causality, QString(node.unit.c_str())));
+            if(node.varType != hopsan::HiddenType) {
+                vars.append(ModelVariableSpecification(systemHierarchy, names[i].c_str(), portName, node.shortname.c_str(), node.id, pPort->getStartValue(node.id), causality, QString(node.unit.c_str())));
+            }
         }
     }
 }
