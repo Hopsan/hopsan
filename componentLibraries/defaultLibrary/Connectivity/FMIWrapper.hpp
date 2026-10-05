@@ -947,24 +947,21 @@ public:
                 fmi1ValueReference vr = (fmi1ValueReference)fmi1_getVariableValueReference(var);
 
                 if(causality == fmi1CausalityOutput && type == fmi1DataTypeReal) {
-                    for (auto it = mRealOutputs.begin(); it != mRealOutputs.end(); it++) {
-                        if(it -> first == vr) {
-                            (*it->second) = fmi1_getVariableStartReal(var);
-                        }
+                    auto range = mRealOutputs.equal_range(vr);
+                    for (auto it = range.first; it != range.second; ++it) {
+                        (*it->second) = fmi1_getVariableStartReal(var);
                     }
                 }
                 else if(causality == fmi1CausalityOutput && type == fmi1DataTypeInteger) {
-                    for (auto it = mIntOutputs.begin(); it != mIntOutputs.end(); it++) {
-                        if(it -> first == vr) {
-                            (*it->second) = fmi1_getVariableStartInteger(var);
-                        }
+                    auto range = mIntOutputs.equal_range(vr);
+                    for (auto it = range.first; it != range.second; ++it) {
+                        (*it->second) = fmi1_getVariableStartInteger(var);
                     }
                 }
                 else if(causality == fmi1CausalityOutput && type == fmi1DataTypeBoolean) {
-                    for (auto it = mBoolOutputs.begin(); it != mBoolOutputs.end(); it++) {
-                        if(it -> first == vr) {
-                            (*it->second) = fmi1_getVariableStartBoolean(var);
-                        }
+                    auto range = mBoolOutputs.equal_range(vr);
+                    for (auto it = range.first; it != range.second; ++it) {
+                        (*it->second) = fmi1_getVariableStartBoolean(var);
                     }
                 }
             }
@@ -1037,24 +1034,21 @@ public:
                 fmi2ValueReference vr = (fmi2ValueReference)fmi2_getVariableValueReference(var);
 
                 if(causality == fmi2CausalityOutput && type == fmi2DataTypeReal) {
-                    for(auto it = mRealOutputs.begin(); it != mRealOutputs.end(); it++) {
-                        if(it->first == vr) {
-                            (*it->second) = fmi2_getVariableStartReal(var);
-                        }
+                    auto range = mRealOutputs.equal_range(vr);
+                    for (auto it = range.first; it != range.second; ++it) {
+                        (*it->second) = fmi2_getVariableStartReal(var);
                     }
                 }
                 else if(causality == fmi2CausalityOutput && type == fmi2DataTypeInteger) {
-                    for(auto it = mIntOutputs.begin(); it != mIntOutputs.end(); it++) {
-                        if(it->first == vr) {
-                            (*it->second) = fmi2_getVariableStartInteger(var);
-                        }
+                    auto range = mIntOutputs.equal_range(vr);
+                    for (auto it = range.first; it != range.second; ++it) {
+                        (*it->second) = fmi2_getVariableStartInteger(var);
                     }
                 }
                 else if(causality == fmi2CausalityOutput && type == fmi2DataTypeBoolean) {
-                    for (auto it = mBoolOutputs.begin(); it != mBoolOutputs.end(); it++) {
-                        if(it->first == vr) {
-                            (*it->second) = fmi2_getVariableStartBoolean(var);
-                        }
+                    auto range = mBoolOutputs.equal_range(vr);
+                    for (auto it = range.first; it != range.second; ++it) {
+                        (*it->second) = fmi2_getVariableStartBoolean(var);
                     }
                 }
             }
