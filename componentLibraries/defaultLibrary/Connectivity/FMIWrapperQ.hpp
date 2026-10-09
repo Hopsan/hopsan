@@ -2076,9 +2076,15 @@ public:
                 return;
             }
             addDebugMessage("Calling: fmi3FreeSlaveInstance");
-            mIsInstantiated = false;
-            if(mFmi1ModelExchange) fmi1_freeModelInstance(fmi1_instance);
-            else fmi1_freeSlaveInstance(fmi1_instance);
+            if(mIsInstantiated) {
+                mIsInstantiated = false;
+                if(mFmi1ModelExchange) {
+                    fmi1_freeModelInstance(fmi1_instance);
+                }
+                else {
+                    fmi1_freeSlaveInstance(fmi1_instance);
+                }
+            }
             fmi4c_freeFmu(fmu);
             fmi1_instance = NULL;
             fmu = NULL;
@@ -2088,8 +2094,10 @@ public:
                 return;
             }
             addDebugMessage("Calling: fmi2FreeInstance");
-            mIsInstantiated = false;
-            fmi2_freeInstance(fmi2_instance);
+            if(mIsInstantiated) {
+                mIsInstantiated = false;
+                fmi2_freeInstance(fmi2_instance);
+            }
             fmi4c_freeFmu(fmu);
             fmi2_instance = NULL;
             fmu = NULL;
@@ -2099,8 +2107,10 @@ public:
                 return;
             }
             addDebugMessage("Calling: fmi3FreeInstance");
-            mIsInstantiated = false;
-            fmi3_freeInstance(fmi3_instance);
+            if(mIsInstantiated) {
+                mIsInstantiated = false;
+                fmi3_freeInstance(fmi3_instance);
+            }
             fmi4c_freeFmu(fmu);
             fmi3_instance = NULL;
             fmu = NULL;
