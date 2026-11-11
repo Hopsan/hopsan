@@ -43,7 +43,8 @@ function(add_sundials_src target)
 
   target_include_directories(${target} PRIVATE
     $<BUILD_INTERFACE:${sundials_dir}/include>
-    $<BUILD_INTERFACE:${sundials_extra_dir}/include>)
+    $<BUILD_INTERFACE:${sundials_extra_dir}/include>
+    $<BUILD_INTERFACE:${sundials_dir}/src/sundials>)
 endfunction()
 
 function(install_sundials_src destination)
