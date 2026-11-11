@@ -246,8 +246,9 @@ private:
     fmi2EventInfo mEventInfo;
 
     std::vector<HString> mIntegrationMethods;
-    int mIntegrationMethod;
+
     enum class IntegrationMethods { ExplicitEuler, ImplicitEuler };
+    int mIntegrationMethod = (int)IntegrationMethods::ImplicitEuler;
 
 public:
     static Component *Creator()

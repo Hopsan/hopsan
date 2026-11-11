@@ -13,6 +13,12 @@
 
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
+#ifdef USEFMI4C
+#include <cvode/cvode.h>
+#include <nvector/nvector_serial.h>
+#include <sunlinsol/sunlinsol_dense.h>
+#include <sunmatrix/sunmatrix_dense.h>
+#endif
 
 #ifdef USEFMI4C
 #include "fmi4c.h"
@@ -224,7 +230,7 @@ private:
 
     std::vector<HString> mIntegrationMethods;
     int mIntegrationMethod;
-    enum class IntegrationMethods { ExplicitEuler, ImplicitEuler };
+    enum class IntegrationMethods { ExplicitEuler, ImplicitEuler, CVODE };
 
 public:
     static Component *Creator()
@@ -240,6 +246,7 @@ public:
 
         mIntegrationMethods.push_back("Explicit Euler");
         mIntegrationMethods.push_back("Implicit Euler");
+        mIntegrationMethods.push_back("CVODE");
     }
 
     void reconfigure()
@@ -1356,7 +1363,7 @@ public:
                 mStatesPrev = mStates;
                 mEventIndicatorsPrev = mEventIndicators;
                 if(!solve(mTime, mTimestep)) {
-                    stopSimulation("FMI 1 implicit Euler iteration failed.");
+                    stopSimulation("FMI 1 "+mIntegrationMethods[(size_t)mIntegrationMethod]+" solver failed.");
                     return;
                 }
                 status = fmi1_setTime(fmi1_instance, mTime);
@@ -1655,7 +1662,7 @@ public:
                 mStatesPrev = mStates;
                 mEventIndicatorsPrev = mEventIndicators;
                 if(!solve(mTime, mTimestep)) {
-                    stopSimulation("FMI 3 implicit Euler iteration failed.");
+                    stopSimulation("FMI 3 "+mIntegrationMethods[(size_t)mIntegrationMethod]+" solver failed.");
                     return;
                 }
                 status = fmi3_setTime(fmi3_instance, mTime);
@@ -1986,9 +1993,111 @@ public:
         else if(mIntegrationMethod == (int)IntegrationMethods::ImplicitEuler) {
             return newtonSolveImplicitEuler(endTime, stepSize);
         }
+        else if(mIntegrationMethod == (int)IntegrationMethods::CVODE) {
+            return solveCVODE(endTime, stepSize);
+        }
         else {
             return false;   //Should never happen
         }
+    }
+
+    static int cvodeRhs(realtype t, N_Vector y, N_Vector ydot, void *userData)
+    {
+        FMIWrapper *wrapper = static_cast<FMIWrapper*>(userData);
+        std::vector<double> states(wrapper->mNumStates);
+        std::vector<double> derivatives(wrapper->mNumStates);
+        for(size_t i=0; i<wrapper->mNumStates; ++i) {
+            states[i] = NV_Ith_S(y, (sunindextype)i);
+        }
+        if(!wrapper->evaluateDerivatives(t, states, derivatives)) {
+            return -1;
+        }
+        for(size_t i=0; i<wrapper->mNumStates; ++i) {
+            NV_Ith_S(ydot, (sunindextype)i) = derivatives[i];
+        }
+        return 0;
+    }
+
+    //! @brief Integrates using CVODE from endTime-stepSize to endTime
+    bool solveCVODE(double endTime, double stepSize)
+    {
+        if(mNumStates == 0) {
+            return true;
+        }
+
+        const double startTime = endTime - stepSize;
+        void *cvodeMem = CVodeCreate(CV_BDF);
+        N_Vector states = N_VNew_Serial((sunindextype)mNumStates);
+        SUNMatrix matrix = states ? SUNDenseMatrix((sunindextype)mNumStates, (sunindextype)mNumStates) : NULL;
+        SUNLinearSolver linearSolver = (states && matrix) ? SUNLinSol_Dense(states, matrix) : NULL;
+        int status = CV_SUCCESS;
+        HString failedOperation;
+
+        if(!cvodeMem) {
+            failedOperation = "CVodeCreate";
+        }
+        else if(!states) {
+            failedOperation = "N_VNew_Serial";
+        }
+        else if(!matrix) {
+            failedOperation = "SUNDenseMatrix";
+        }
+        else if(!linearSolver) {
+            failedOperation = "SUNLinSol_Dense";
+        }
+        else {
+            for(size_t i=0; i<mNumStates; ++i) {
+                NV_Ith_S(states, (sunindextype)i) = mStatesPrev[i];
+            }
+            status = CVodeSetUserData(cvodeMem, this);
+            if(status != CV_SUCCESS) {
+                failedOperation = "CVodeSetUserData";
+            }
+            else if((status = CVodeInit(cvodeMem, cvodeRhs, startTime, states)) != CV_SUCCESS) {
+                failedOperation = "CVodeInit";
+            }
+            else if((status = CVodeSetLinearSolver(cvodeMem, linearSolver, matrix)) != CV_SUCCESS) {
+                failedOperation = "CVodeSetLinearSolver";
+            }
+            else if((status = CVodeSStolerances(cvodeMem, mTolerance, mTolerance)) != CV_SUCCESS) {
+                failedOperation = "CVodeSStolerances";
+            }
+            else {
+                realtype reachedTime = startTime;
+                status = CVode(cvodeMem, endTime, states, &reachedTime, CV_NORMAL);
+                if(status < 0) {
+                    failedOperation = "CVode";
+                }
+                else {
+                    for(size_t i=0; i<mNumStates; ++i) {
+                        mStates[i] = NV_Ith_S(states, (sunindextype)i);
+                    }
+                }
+            }
+        }
+
+        if(cvodeMem) {
+            CVodeFree(&cvodeMem);
+        }
+        if(linearSolver) {
+            SUNLinSolFree(linearSolver);
+        }
+        if(matrix) {
+            SUNMatDestroy(matrix);
+        }
+        if(states) {
+            N_VDestroy(states);
+        }
+
+        if(!failedOperation.empty()) {
+            HString message = "CVODE integration failed in "+failedOperation;
+            if(status != CV_SUCCESS) {
+                message += " (status "+to_hstring(status)+")";
+            }
+            stopSimulation(message+".");
+            return false;
+        }
+        return true;
     }
 
     //! @brief Integrates using explicit Euler from endTime-stepSize to endTime
