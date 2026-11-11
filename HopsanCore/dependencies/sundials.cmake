@@ -8,6 +8,13 @@ set(sundials_c
     ${sundials_dir}/src/kinsol/kinsol_direct.c
     ${sundials_dir}/src/kinsol/kinsol_bbdpre.c
     ${sundials_dir}/src/kinsol/kinsol.c
+    ${sundials_dir}/src/cvode/cvode.c
+    ${sundials_dir}/src/cvode/cvode_io.c
+    ${sundials_dir}/src/cvode/cvode_ls.c
+    ${sundials_dir}/src/cvode/cvode_nls.c
+    ${sundials_dir}/src/cvode/cvode_proj.c
+    ${sundials_dir}/src/sunnonlinsol/newton/sunnonlinsol_newton.c
+    ${sundials_dir}/src/sunnonlinsol/fixedpoint/sunnonlinsol_fixedpoint.c
     ${sundials_dir}/src/sunmatrix/dense/fsunmatrix_dense.c
     ${sundials_dir}/src/sunmatrix/dense/sunmatrix_dense.c
     ${sundials_dir}/src/nvector/serial/fnvector_serial.c

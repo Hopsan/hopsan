@@ -3,10 +3,13 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_DEBUG_POSTFIX _d)
 
 include(${CMAKE_CURRENT_LIST_DIR}/../../dependencies/fmi4c.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../../HopsanCore/dependencies/sundials.cmake)
 
 file(GLOB_RECURSE component_files *.cpp *.cci *.h *.hpp)
 
 add_library(defaultcomponentlibrary SHARED ${component_files})
+
+add_sundials_src(defaultcomponentlibrary)
 
 if(MSVC)
   # Enable multi-core build with MSVC
