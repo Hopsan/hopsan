@@ -13,12 +13,11 @@
 
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
-#ifdef USEFMI4C
+
 #include <cvode/cvode.h>
 #include <nvector/nvector_serial.h>
 #include <sunlinsol/sunlinsol_dense.h>
 #include <sunmatrix/sunmatrix_dense.h>
-#endif
 
 #ifdef USEFMI4C
 #include "fmi4c.h"
