@@ -18,6 +18,41 @@ DESTDIR = $${PWD}/
 # *= Means append unique
 INCLUDEPATH *= $${PWD}/code/
 INCLUDEPATH *= $${PWD}/../../HopsanCore/include/
+INCLUDEPATH *= $${PWD}/../../HopsanCore/dependencies/sundials/include/
+INCLUDEPATH *= $${PWD}/../../HopsanCore/dependencies/sundials/src/sundials/
+INCLUDEPATH *= $${PWD}/../../HopsanCore/dependencies/sundials-extra/include/
+SOURCES += $${PWD}/../../HopsanCore/dependencies/sundials/src/kinsol/kinsol_spils.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/kinsol/kinsol_ls.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/kinsol/kinsol_io.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/kinsol/kinsol_direct.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/kinsol/kinsol_bbdpre.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/kinsol/kinsol.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/cvode/cvode.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/cvode/cvode_io.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/cvode/cvode_ls.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/cvode/cvode_nls.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/cvode/cvode_proj.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/sunnonlinsol/newton/sunnonlinsol_newton.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/sunnonlinsol/fixedpoint/sunnonlinsol_fixedpoint.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/sunmatrix/dense/fsunmatrix_dense.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/sunmatrix/dense/sunmatrix_dense.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/nvector/serial/fnvector_serial.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/nvector/serial/nvector_serial.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/sundials/sundials_futils.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/sundials/sundials_nvector_senswrapper.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/sundials/sundials_nonlinearsolver.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/sundials/sundials_version.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/sundials/sundials_iterative.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/sundials/sundials_band.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/sundials/sundials_direct.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/sundials/sundials_dense.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/sundials/sundials_nvector.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/sundials/sundials_linearsolver.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/sundials/sundials_matrix.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/sundials/sundials_math.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/sunmatrix/band/sunmatrix_band.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/sunlinsol/band/sunlinsol_band.c \
+           $${PWD}/../../HopsanCore/dependencies/sundials/src/sunlinsol/dense/sunlinsol_dense.c \
 
 # The location of the HopsanCore .dll or .so file, needed to link against when compiling your library
 LIBS *= -L$${PWD}/../../bin
